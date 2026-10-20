@@ -515,5 +515,195 @@
         "alt": "I dag med nästa uppgift, agendan och möten från två kalendrar"
       }
     }
+  },
+  "families": {
+    "metaTitle": "tududi för familjer · En plan för hela hushållet",
+    "metaDescription": "Sysslor, skolskjuts, tider att passa och inköpslistan på ett gemensamt ställe. Lägg till din partner och barnen, se vem som gör vad och sluta vara familjens enda minne.",
+    "hero": {
+      "badge": "För familjer med fullt upp",
+      "titleLine1": "Hushållet vilar på ett enda huvud.",
+      "titleLine2": "Det borde det inte.",
+      "lede": "Sysslor, skolskjuts, tider att passa och inköpslistan på ett gemensamt ställe. Lägg till din partner och barnen, se vem som gör vad och sluta vara familjens enda minne.",
+      "ctaPrimary": "Kom igång nu",
+      "ctaTrial": "Starta din kostnadsfria provperiod på {{days}} dagar",
+      "ctaSecondary": "Se en familjevecka",
+      "note": "Ingen server att sätta upp. Månadsvis eller årsvis, och du kan avsluta när du vill.",
+      "noteTrial": "Gratis i {{days}} dagar, inget kort behövs. Lägg till din partner under provperioden.",
+      "screenshotAlt": "tududis gränssnitt med vyn Idag och de planerade uppgifterna"
+    },
+    "pains": {
+      "eyebrow": "Den mentala lasten",
+      "title": "Att organisera är inte det svåra. Att komma ihåg är det.",
+      "sub": "De flesta familjeappar ger dig ännu ett ställe att skriva saker på. Problemet var aldrig att skriva. Det är att bara en person vet var allt finns.",
+      "turn": "Skriv ner det en gång. Ge det till någon. Släpp det ur huvudet.",
+      "items": {
+        "oneHead": {
+          "title": "Ett huvud bär hela huset",
+          "body": "Tandläkaren, lappen till skolan, pannservicen, födelsedagspresenten till ett barn du har träffat två gånger. Allt bor i en person, och den personen får aldrig lägga ifrån sig det."
+        },
+        "groupChat": {
+          "title": "Gruppchatten är inget system",
+          "body": "Ett meddelande om att ”någon får gärna köpa mjölk” läses av tre personer och köps av ingen. Det hinner försvinna uppåt innan någon gör något."
+        },
+        "tooManyApps": {
+          "title": "En app för varje hörn",
+          "body": "En kalender här, en inköpslista där, ett syssloschema på kylskåpet, anteckningar i någons telefon. Fem ställen att titta på, och det du behöver är aldrig det som är öppet."
+        }
+      }
+    },
+    "week": {
+      "eyebrow": "En familjevecka",
+      "title": "Fånga det, planera det, lämna över det",
+      "sub": "Samma loop varje vecka: saken dyker upp, den får en dag och en ansvarig, och den blir gjord utan att du behöver påminna.",
+      "stepLabel": "Steg {{n}}",
+      "steps": {
+        "capture": {
+          "title": "Skriv ner det när det händer",
+          "body": "Skriv det som du skulle säga det. tududi läser av datumet, taggarna och personen och sorterar in det.",
+          "points": [
+            "”Tandläkare för Emma nästa torsdag 17.00” blir en uppgift med datum",
+            "Nämn @Maria så blir den hennes, inte allas",
+            "Skicka det från Telegram medan du fortfarande sitter i bilen på parkeringen"
+          ],
+          "alt": "Inmatningsrutan som gör en inskriven rad till en uppgift med datum"
+        },
+        "plan": {
+          "title": "Planera dagen runt skolans kalender",
+          "body": "Hämta in skolans, jobbets och familjens kalendrar som skrivskyddade flöden och planera dagen runt det som redan är bestämt.",
+          "points": [
+            "Google, Outlook eller vilken iCal-adress som helst, och den hålls privat",
+            "Återkommande sysslor hamnar på rätt dag utan att skrivas in igen",
+            "AI-planeraren gör ett utkast till dagen om du vill, och håller sig undan om du inte vill"
+          ],
+          "alt": "Dagsplaneraren med kalenderhändelser och uppgifter på en tidslinje"
+        },
+        "today": {
+          "title": "Alla ser sin egen lista",
+          "body": "Varje person loggar in till sin egen Idag. Ingen behöver fråga vad de ska göra, och ingen behöver bli tillfrågad.",
+          "points": [
+            "Tavlan Alla visar vem som har vad, med en blick",
+            "Påminnelser på varje telefon, inte bara på din",
+            "Avbockat är avbockat, för hela familjen"
+          ],
+          "alt": "Vyn Idag med uppgifterna som är planerade för dagen"
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Byggt för ett hushåll",
+      "title": "Ett ställe, alla med",
+      "sub": "Inte en sysslolista med prenumeration. Samma system som folk använder för att sköta sitt jobb, uppsatt för dem du bor med.",
+      "cards": {
+        "partner": {
+          "title": "Lägg till din partner",
+          "body": "En andra vuxen med egen inloggning, egen lista och samma delade projekt. Inte ett delat lösenord."
+        },
+        "kids": {
+          "title": "Barn utan e-post",
+          "body": "Lägg till ett barn med bara namnet. Du skapar en inloggningslänk och skickar den till barnets surfplatta, och så är de inne i 30 dagar."
+        },
+        "everyone": {
+          "title": "Tavlan Alla",
+          "body": "En sida med varje person och det som är tilldelat dem. Det snabbaste sättet att se att lasten inte är delad."
+        },
+        "chores": {
+          "title": "Sysslor som kommer tillbaka",
+          "body": "Soporna på tisdagar, blommorna var tredje dag, bilservicen varje år. Ställ in det en gång så kommer det tillbaka av sig självt."
+        },
+        "habits": {
+          "title": "Vanor för de små",
+          "body": "Pianoövning, läsning före läggdags, tandborstning två gånger om dagen. Sviter de kan se, utan klistermärkesschema."
+        },
+        "lists": {
+          "title": "Listor att bocka av",
+          "body": "Inköp, packning, checklistan inför semestern. En anteckning med kryssrutor som vem som helst i familjen kan öppna och bocka av."
+        },
+        "calendars": {
+          "title": "Kalendrar, inlästa",
+          "body": "Skolterminer, arbetspass och fotbollsmatcher ligger bredvid dina uppgifter, så att planen tar hänsyn till dem."
+        },
+        "projects": {
+          "title": "Delade projekt",
+          "body": "Sommarsemestern, köksrenoveringen, flytten. Dela ett projekt med dem som är med i det, och bara med dem."
+        },
+        "phones": {
+          "title": "På varje telefon",
+          "body": "Lägg den på hemskärmen på iPhone eller Android. Pushpåminnelser kommer fram där varje person faktiskt tittar."
+        }
+      }
+    },
+    "ai": {
+      "kicker": "AI om du vill",
+      "titleLine1": "Tio minuters planering,",
+      "titleLine2": "klar på en.",
+      "lede": "Be om en plan så gör assistenten ett utkast till dagen runt skolskjutsen, mötena och det som är försenat. Den är avstängd tills du slår på den, och tududi är komplett utan den.",
+      "cards": {
+        "fixedTimes": {
+          "title": "Planerar runt fasta tider",
+          "body": "Hämtning klockan tre går inte att flytta. Utkastet lägger uppgifterna i luckorna, inte ovanpå den."
+        },
+        "brief": {
+          "title": "En morgonsammanfattning",
+          "body": "Vad som ska vara klart, vad som halkat efter, vad som kommer den här veckan. Läs den till första kaffet."
+        },
+        "wrapUp": {
+          "title": "En kvällsavstämning",
+          "body": "Vad som blev gjort och vad som flyttas till i morgon, så att inget tyst faller bort från listan."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Pris",
+      "title": "Pris per person, betalt av en",
+      "sub": "Du betalar för dig själv och för varje familjemedlem som får en egen inloggning. Samma pris för alla, på en faktura.",
+      "or": "eller",
+      "priceNote": "Allt ingår. Avsluta när du vill.",
+      "priceNoteTrial": "{{days}} dagar gratis, inget kort behövs. Avsluta när du vill.",
+      "features": [
+        "Ditt eget konto, plus en plats för varje familjemedlem",
+        "Barnen loggar in med en länk, ingen e-post behövs",
+        "Delade projekt, listor och tavlan Alla",
+        "Kalenderflöden, påminnelser på varje telefon, Telegram-boten",
+        "Uppdateringar och dagliga säkerhetskopior sköts åt dig, {{proStorageGb}} GB lagring",
+        "Exportera allt när du vill, radera kontot själv"
+      ],
+      "action": "Kom igång →",
+      "actionTrial": "Starta gratis provperiod →",
+      "twoParents": "Två föräldrar: {{monthly}} i månaden, eller {{yearly}} om året."
+    },
+    "faq": {
+      "eyebrow": "Frågor",
+      "title": "Det familjer frågar först",
+      "items": {
+        "kidsEmail": {
+          "q": "Behöver barnen en e-postadress?",
+          "a": "Nej. Lägg till ett barn med bara namnet, skapa sedan en inloggningslänk från sidan Personer och skicka den hur du vill: ett meddelande, en lapp vid surfplattan, eller personligen. Länken loggar in dem i 30 dagar och du kan dra tillbaka den när som helst."
+        },
+        "whoPays": {
+          "q": "Betalar alla i familjen?",
+          "a": "En person betalar. Varje medlem med egen inloggning är en plats till samma pris som din, fakturerad till kontoägaren. Medlemmar kan inte lägga till fler medlemmar, så fakturan stannar på ett ställe."
+        },
+        "privacy": {
+          "q": "Kan min partner se allt jag skriver?",
+          "a": "Nej. Varje person har sina egna uppgifter och anteckningar. Andra ser bara det du delar med dem eller tilldelar dem, projekt för projekt."
+        },
+        "trial": {
+          "q": "Kan vi prova som familj först?",
+          "a": "Det finns en pengarna-tillbaka-garanti på 14 dagar, så du kan köra en riktig vecka med familjen och få pengarna tillbaka om det inte passar.",
+          "aTrial": "Ja. Varje nytt konto får en gratis provperiod på {{days}} dagar utan kort, och du kan lägga till en medlem under den, så att du och din partner kan köra en riktig vecka innan ni bestämmer er."
+        },
+        "leaving": {
+          "q": "Vad händer om vi slutar använda det?",
+          "a": "Exportera allt som en fil från din profil när du vill, och radera kontot själv. tududi är öppen källkod, så exporten går också att öppna i en egen installation om du hellre kör det hemma."
+        }
+      }
+    },
+    "closing": {
+      "title": "Lägg ifrån dig det. Någon annan har det nu.",
+      "sub": "Sätt upp hushållet på en kväll. Vi sköter servern, uppdateringarna och säkerhetskopiorna.",
+      "primary": "Kom igång",
+      "primaryTrial": "Starta gratis provperiod",
+      "secondary": "Se allt tududi gör"
+    }
   }
 }

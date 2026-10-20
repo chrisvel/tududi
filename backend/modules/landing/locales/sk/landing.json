@@ -516,5 +516,195 @@
     "body": "Na zlepšenie vašej skúsenosti s touto stránkou používame cookies. Nastavia sa, len ak ich prijmete.",
     "accept": "Prijať",
     "decline": "Odmietnuť"
+  },
+  "families": {
+    "metaTitle": "tududi pre rodiny · Jeden plán pre celú domácnosť",
+    "metaDescription": "Domáce povinnosti, cesty do školy, termíny u lekára a nákupný zoznam na jednom spoločnom mieste. Pridajte partnera a deti, pozrite sa, kto čo robí, a prestaňte byť jedinou pamäťou rodiny.",
+    "hero": {
+      "badge": "Pre zaneprázdnené rodiny",
+      "titleLine1": "Domácnosť stojí na jednej hlave.",
+      "titleLine2": "Nemala by.",
+      "lede": "Domáce povinnosti, cesty do školy, termíny u lekára a nákupný zoznam na jednom spoločnom mieste. Pridajte partnera a deti, pozrite sa, kto čo robí, a prestaňte byť jedinou pamäťou rodiny.",
+      "ctaPrimary": "Začnite teraz",
+      "ctaTrial": "Vyskúšajte {{days}} dní zadarmo",
+      "ctaSecondary": "Pozrite si rodinný týždeň",
+      "note": "Žiadny server na nastavovanie. Mesačne alebo ročne a zrušiť môžete kedykoľvek.",
+      "noteTrial": "{{days}} dní zadarmo, bez platobnej karty. Partnera môžete pridať už počas skúšobného obdobia.",
+      "screenshotAlt": "Rozhranie tududi so zobrazením Dnes a naplánovanými úlohami"
+    },
+    "pains": {
+      "eyebrow": "Mentálna záťaž",
+      "title": "Organizovať nie je to ťažké. Ťažké je pamätať si.",
+      "sub": "Väčšina rodinných aplikácií vám dá ďalšie miesto, kam niečo zapísať. Problémom nikdy nebolo písanie. Problém je, že len jeden človek vie, kde čo je.",
+      "turn": "Zapíšte to raz. Dajte to niekomu. Pustite to z hlavy.",
+      "items": {
+        "oneHead": {
+          "title": "Jedna hlava drží celý dom",
+          "body": "Zubár, súhlas na školský výlet, servis kotla, darček na narodeniny pre dieťa, ktoré ste videli dvakrát. Všetko to žije v jednom človeku a ten to nikdy nemôže zložiť."
+        },
+        "groupChat": {
+          "title": "Skupinový chat nie je systém",
+          "body": "Správu „môže niekto kúpiť mlieko“ si prečítajú traja a nekúpi ho nikto. Odroluje preč skôr, než s ňou niekto niečo urobí."
+        },
+        "tooManyApps": {
+          "title": "Aplikácia na každý kút",
+          "body": "Kalendár tu, nákupný zoznam tam, rozpis povinností na chladničke, poznámky v niečím telefóne. Päť miest, kde hľadať, a to, ktoré potrebujete, nie je nikdy otvorené."
+        }
+      }
+    },
+    "week": {
+      "eyebrow": "Rodinný týždeň",
+      "title": "Zapíšte, naplánujte, odovzdajte",
+      "sub": "Každý týždeň ten istý kolobeh: vec príde, dostane deň a zodpovedného a vybaví sa bez toho, aby ste to museli pripomínať.",
+      "stepLabel": "Krok {{n}}",
+      "steps": {
+        "capture": {
+          "title": "Zapíšte to hneď, ako to príde",
+          "body": "Napíšte to tak, ako by ste to povedali. tududi rozpozná dátum, štítky aj osobu a zaradí to.",
+          "points": [
+            "„Emma zubár budúci štvrtok o 17:00“ sa zmení na úlohu s dátumom",
+            "Spomeňte @Maria a úloha patrí jej, nie všetkým",
+            "Pošlite to z Telegramu, ešte kým stojíte na parkovisku"
+          ],
+          "alt": "Pole na zachytávanie mení napísaný riadok na úlohu s dátumom"
+        },
+        "plan": {
+          "title": "Naplánujte deň podľa školského kalendára",
+          "body": "Pripojte školský, pracovný a rodinný kalendár ako zdroje len na čítanie a plánujte deň okolo toho, čo je už pevne dané.",
+          "points": [
+            "Google, Outlook alebo akákoľvek adresa iCal, ktorá zostane súkromná",
+            "Opakujúce sa povinnosti pristanú v správny deň bez nového zadávania",
+            "Plánovač s AI vám navrhne deň, ak chcete, a ak nie, zostane vypnutý"
+          ],
+          "alt": "Plánovač dňa s udalosťami z kalendára a úlohami na časovej osi"
+        },
+        "today": {
+          "title": "Každý vidí svoj vlastný zoznam",
+          "body": "Každý sa prihlási do svojho Dnes. Nikto sa nemusí pýtať, čo má robiť, a nikoho netreba prosiť.",
+          "points": [
+            "Nástenka Všetci na prvý pohľad ukáže, kto má čo",
+            "Pripomienky na telefóne každého, nielen na vašom",
+            "Odškrtnuté je odškrtnuté, pre celú rodinu"
+          ],
+          "alt": "Zobrazenie Dnes s úlohami naplánovanými na daný deň"
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Pre domácnosť",
+      "title": "Jedno miesto, všetci v ňom",
+      "sub": "Nie je to rozpis povinností s predplatným. Je to ten istý systém, v ktorom ľudia riadia prácu, nastavený pre tých, s ktorými bývate.",
+      "cards": {
+        "partner": {
+          "title": "Pridajte partnera",
+          "body": "Druhý dospelý s vlastným prihlásením, vlastným zoznamom a rovnakými zdieľanými projektmi. Žiadne spoločné heslo."
+        },
+        "kids": {
+          "title": "Deti bez e-mailu",
+          "body": "Dieťa pridáte len menom. Vytvoríte odkaz na prihlásenie, pošlete ho na jeho tablet a dieťa je prihlásené na 30 dní."
+        },
+        "everyone": {
+          "title": "Nástenka Všetci",
+          "body": "Jedna stránka s každým človekom a tým, čo má pridelené. Najrýchlejší spôsob, ako zistiť, že záťaž nie je rozdelená."
+        },
+        "chores": {
+          "title": "Povinnosti, ktoré sa vracajú",
+          "body": "Smeti v utorok, kvety každý tretí deň, servis auta každý rok. Nastavíte raz a vráti sa samo."
+        },
+        "habits": {
+          "title": "Návyky pre najmenších",
+          "body": "Cvičenie na klavíri, čítanie pred spaním, zuby dvakrát denne. Série, ktoré deti vidia, bez tabuľky s nálepkami."
+        },
+        "lists": {
+          "title": "Zoznamy na odškrtávanie",
+          "body": "Nákup, balenie, kontrolný zoznam na dovolenku. Poznámka so začiarkavacími políčkami, ktorú môže otvoriť a odškrtať ktokoľvek z rodiny."
+        },
+        "calendars": {
+          "title": "Kalendáre na jednom mieste",
+          "body": "Školský rok, pracovné zmeny aj futbalové zápasy sú vedľa vašich úloh, takže plán s nimi počíta."
+        },
+        "projects": {
+          "title": "Zdieľané projekty",
+          "body": "Letná dovolenka, rekonštrukcia kuchyne, sťahovanie. Projekt zdieľate s tými, ktorých sa týka, a s nikým iným."
+        },
+        "phones": {
+          "title": "Na každom telefóne",
+          "body": "Nainštalujte si ho na plochu v iPhone alebo Androide. Pripomienky prídu tam, kam sa každý naozaj pozerá."
+        }
+      }
+    },
+    "ai": {
+      "kicker": "Voliteľná AI",
+      "titleLine1": "Desať minút plánovania",
+      "titleLine2": "hotových za jednu.",
+      "lede": "Požiadajte o plán a asistent navrhne deň okolo cesty do školy, stretnutí a toho, čo mešká. Je vypnutý, kým ho nezapnete, a tududi je kompletné aj bez neho.",
+      "cards": {
+        "fixedTimes": {
+          "title": "Plánuje okolo pevných časov",
+          "body": "Vyzdvihnutie o tretej sa nedá posunúť. Návrh dá úlohy do medzier, nie naň."
+        },
+        "brief": {
+          "title": "Ranný prehľad",
+          "body": "Čo je na rade, čo skĺzlo, čo prichádza tento týždeň. Prečítajte si ho pri prvej káve."
+        },
+        "wrapUp": {
+          "title": "Večerné zhrnutie",
+          "body": "Čo je hotové a čo sa presúva na zajtra, aby nič nepotichu nevypadlo zo zoznamu."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Cena",
+      "title": "Cena za osobu, platí jeden",
+      "sub": "Platíte za seba a za každého člena rodiny, ktorý má vlastné prihlásenie. Rovnaká cena pre všetkých, na jednej faktúre.",
+      "or": "alebo",
+      "priceNote": "Všetko v cene. Zrušiť môžete kedykoľvek.",
+      "priceNoteTrial": "{{days}} dní zadarmo, bez platobnej karty. Zrušiť môžete kedykoľvek.",
+      "features": [
+        "Váš vlastný účet a miesto pre každého člena rodiny",
+        "Deti sa prihlasujú odkazom, e-mail netreba",
+        "Zdieľané projekty, zoznamy a nástenka Všetci",
+        "Kalendárové zdroje, pripomienky na každom telefóne, bot pre Telegram",
+        "Aktualizácie a denné zálohy riešime my, {{proStorageGb}} GB úložiska",
+        "Kedykoľvek všetko exportujete a účet si zrušíte sami"
+      ],
+      "action": "Začať →",
+      "actionTrial": "Vyskúšať zadarmo →",
+      "twoParents": "Dvaja rodičia: {{monthly}} mesačne alebo {{yearly}} ročne."
+    },
+    "faq": {
+      "eyebrow": "Otázky",
+      "title": "Na čo sa rodiny pýtajú najskôr",
+      "items": {
+        "kidsEmail": {
+          "q": "Potrebujú deti e-mailovú adresu?",
+          "a": "Nie. Dieťa pridáte len menom, potom na stránke Ľudia vytvoríte odkaz na prihlásenie a pošlete mu ho, ako chcete: správou, poznámkou na tablete, osobne. Odkaz ho prihlási na 30 dní a kedykoľvek ho môžete zrušiť."
+        },
+        "whoPays": {
+          "q": "Platí každý v rodine?",
+          "a": "Platí jeden človek. Každý člen s vlastným prihlásením je miesto za rovnakú cenu ako to vaše a účtuje sa vlastníkovi účtu. Členovia nemôžu pridávať ďalších členov, takže faktúra zostáva na jednom mieste."
+        },
+        "privacy": {
+          "q": "Vidí partner všetko, čo si zapíšem?",
+          "a": "Nie. Každý má vlastné úlohy a poznámky. Ostatní vidia len to, čo s nimi zdieľate alebo im pridelíte, projekt po projekte."
+        },
+        "trial": {
+          "q": "Môžeme si to najprv vyskúšať ako rodina?",
+          "a": "Platí 14-dňová záruka vrátenia peňazí, takže môžete s rodinou prežiť skutočný týždeň a ak vám to nesadne, peniaze dostanete späť.",
+          "aTrial": "Áno. Každý nový účet dostane {{days}} dní zadarmo bez platobnej karty a počas nich môžete pridať jedného člena, aby ste s partnerom prežili skutočný týždeň skôr, než sa rozhodnete."
+        },
+        "leaving": {
+          "q": "Čo ak to prestaneme používať?",
+          "a": "Kedykoľvek všetko exportujete z profilu do jedného súboru a účet si zrušíte sami. tududi je open source, takže export sa otvorí aj vo vlastnej inštalácii, ak by ste ho radšej prevádzkovali doma."
+        }
+      }
+    },
+    "closing": {
+      "title": "Zložte to. Teraz to má niekto iný.",
+      "sub": "Domácnosť nastavíte za jeden večer. Server, aktualizácie a zálohy riešime my.",
+      "primary": "Začať",
+      "primaryTrial": "Vyskúšať zadarmo",
+      "secondary": "Pozrite si všetko, čo tududi dokáže"
+    }
   }
 }
