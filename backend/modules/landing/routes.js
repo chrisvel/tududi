@@ -196,14 +196,23 @@ function createLandingRouter(landing) {
     const pageUrl = (locale, suffix = '') =>
         `${siteOrigin.replace(/\/$/, '')}${localePath(locale, suffix)}`;
 
-    async function renderPage(req, res, locale, template, extra = {}) {
-        res.cookie(LANG_COOKIE, locale, {
-            maxAge: LANG_COOKIE_MAX_AGE,
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: secureCookie,
-            path: '/',
-        });
+    async function renderPage(
+        req,
+        res,
+        locale,
+        template,
+        extra = {},
+        { rememberLocale = true } = {}
+    ) {
+        if (rememberLocale) {
+            res.cookie(LANG_COOKIE, locale, {
+                maxAge: LANG_COOKIE_MAX_AGE,
+                httpOnly: true,
+                sameSite: 'lax',
+                secure: secureCookie,
+                path: '/',
+            });
+        }
         res.setHeader('Content-Security-Policy', csp);
         res.setHeader('Cache-Control', 'public, max-age=300');
 
@@ -428,6 +437,21 @@ function createLandingRouter(landing) {
         }).catch(next);
     });
     router.get('/en/cloud', (req, res) => res.redirect(301, '/cloud'));
+
+    // The page for busy families. English only, one URL, so the nav and
+    // footer render in English too and the visitor's remembered language is
+    // left alone, the same rule as the legal pages.
+    router.get('/families', (req, res, next) => {
+        renderPage(
+            req,
+            res,
+            DEFAULT_LOCALE,
+            'families.ejs',
+            { canonicalUrl: pageUrl(DEFAULT_LOCALE, '/families') },
+            { rememberLocale: false }
+        ).catch(next);
+    });
+    router.get('/family', (req, res) => res.redirect(301, '/families'));
 
     // Terms, privacy and refunds. English only and one URL each, so there is
     // never a question of which language version is binding. The chrome

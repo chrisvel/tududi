@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<%
+    // The families page is a campaign page for one buyer, the parent who
+    // already holds the household in their head, so it ships in English only
+    // and its copy lives here rather than in locales/. The nav and footer
+    // around it come from the same catalog as the homepage.
+    const t = i18n.t;
+    const personalPrice = pricing.launchActive ? pricing.annual : pricing.standard;
+    const metaTitle = 'tududi for families · One plan for the whole household';
+    const metaDescription = 'Chores, school runs, appointments and the shopping list in one shared place. Add your partner and the kids, see who is doing what, and stop being the family\'s only memory.';
+
+    const pains = [
+        { icon: 'fas fa-brain', title: 'One head holds the whole house',
+          body: 'The dentist, the permission slip, the boiler service, the birthday present for a child you have met twice. It all lives in one person, and that person never gets to put it down.' },
+        { icon: 'fas fa-comments', title: 'The group chat is not a system',
+          body: 'A message that says "can someone get milk" is read by three people and bought by nobody. It scrolls away before anyone acts on it.' },
+        { icon: 'fas fa-th', title: 'An app for every corner',
+          body: 'A calendar here, a shopping list there, a chore chart on the fridge, notes in somebody\'s phone. Five places to look, and the one you need is never the one open.' },
+    ];
+
+    // The order a family week actually runs. Screenshots are the homepage's,
+    // from a seeded account, so every name in them is sample data.
+    const weekSteps = [
+        { icon: 'fas fa-bolt', img: 'capture-light.png',
+          title: 'Write it down the moment it happens',
+          body: 'Type it the way you would say it. tududi reads the date, the tags and the person, and files it.',
+          points: [
+              '"Dentist for Emma next Thursday 5pm" becomes a dated task',
+              'Mention @Maria and it is hers, not everyone\'s',
+              'Send it from Telegram while you are still in the car park',
+          ],
+          alt: 'The capture box turning a typed line into a task with a date' },
+        { icon: 'fas fa-calendar-day', img: 'plan-light.png',
+          title: 'Plan the day around the school calendar',
+          body: 'Bring in the school, work and family calendars as read-only feeds, and plan the day around what is already fixed.',
+          points: [
+              'Google, Outlook or any iCal address, kept private',
+              'Recurring chores land on the right day without being re-entered',
+              'The AI planner drafts a day if you want one, and stays off if you do not',
+          ],
+          alt: 'The day planner with calendar events and tasks on a timeline' },
+        { icon: 'fas fa-check-double', img: 'today-light.png',
+          title: 'Everyone sees their own list',
+          body: 'Each person signs in to their own Today. Nobody has to ask what they are supposed to be doing, and nobody has to be asked.',
+          points: [
+              'The Everyone board shows who has what, at a glance',
+              'Reminders on each phone, not just on yours',
+              'Ticked off is ticked off, for the whole family',
+          ],
+          alt: 'The Today view with the tasks planned for the day' },
+    ];
+
+    const familyFeatures = [
+        { icon: 'fas fa-user-plus', title: 'Add your partner',
+          body: 'A second adult with their own login, their own list and the same shared projects. Not a shared password.' },
+        { icon: 'fas fa-child', title: 'Kids without an email',
+          body: 'Add a child by name only. You make a sign-in link and send it to their tablet, and they are in for 30 days.' },
+        { icon: 'fas fa-users', title: 'The Everyone board',
+          body: 'One page with every person and what is assigned to them. The quickest way to see that the load is not shared.' },
+        { icon: 'fas fa-sync-alt', title: 'Chores that come back',
+          body: 'Bins on Tuesday, plants every third day, the car service every year. Set it once and it returns on its own.' },
+        { icon: 'fas fa-redo-alt', title: 'Habits for the small ones',
+          body: 'Piano practice, reading before bed, teeth twice a day. Streaks they can see, without a sticker chart.' },
+        { icon: 'fas fa-list-check', title: 'Lists you can tick',
+          body: 'Shopping, packing, the holiday checklist. A note with checkboxes anyone in the family can open and tick.' },
+        { icon: 'fas fa-calendar-alt', title: 'Calendars, read in',
+          body: 'School terms, work shifts and the football fixtures sit next to your tasks, so the plan respects them.' },
+        { icon: 'fas fa-folder-open', title: 'Shared projects',
+          body: 'The summer holiday, the kitchen renovation, the move. Share a project with whoever is in it, and only them.' },
+        { icon: 'fas fa-mobile-alt', title: 'On every phone',
+          body: 'Install it to the home screen on iPhone or Android. Push reminders arrive where each person actually looks.' },
+    ];
+
+    const faqs = [
+        { id: 'faq-kids-email', q: 'Do the kids need an email address?',
+          a: 'No. Add a child by name only, then make a sign-in link from the People page and send it to them however you like: a message, a note on the tablet, in person. The link signs them in for 30 days and you can take it back at any time.' },
+        { id: 'faq-who-pays', q: 'Does everyone in the family pay?',
+          a: 'One person pays. Every member with their own login is a seat at the same price as yours, billed to the account owner. Members cannot add more members, so the bill stays in one place.' },
+        { id: 'faq-privacy', q: 'Can my partner see everything I write?',
+          a: 'No. Each person has their own tasks and notes. Others only see what you share with them or assign to them, project by project.' },
+        { id: 'faq-trial', q: 'Can we try it as a family first?',
+          a: trialDays > 0
+              ? 'Yes. Every new account gets a ' + trialDays + '-day free trial with no card, and you can add one member during it, so you and your partner can run a real week before deciding.'
+              : 'There is a 14-day money-back guarantee, so you can run a real week with your family and get the money back if it does not fit.' },
+        { id: 'faq-leaving', q: 'What if we stop using it?',
+          a: 'Export everything as one file from your profile at any time, and delete the account yourself. tududi is open source, so the export also opens in a self-hosted copy if you would rather run it at home.' },
+    ];
+%>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= metaTitle %></title>
+    <meta name="description" content="<%= metaDescription %>">
+    <link rel="canonical" href="<%= canonicalUrl %>" />
+    <%- include('partials/social-meta', { title: metaTitle, description: metaDescription, url: canonicalUrl }) %>
+    <meta property="og:locale" content="en_US">
+    <script type="application/ld+json"><%- jsonForScript({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        inLanguage: 'en',
+        mainEntity: faqs.map(function (item) {
+            return {
+                '@type': 'Question',
+                '@id': canonicalUrl + '#' + item.id,
+                name: item.q,
+                acceptedAnswer: { '@type': 'Answer', text: item.a },
+            };
+        }),
+    }) %></script>
+    <link rel="icon" href="/landing-assets/favicon.ico">
+    <%- include('partials/head-assets') %>
+    <%- include('partials/styles') %>
+    <style>
+        .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        .pain-card { background: #fff; border-radius: 14px; padding: 28px 24px; box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04); }
+        .pain-card i { color: #e0645c; font-size: 20px; margin-bottom: 14px; }
+        .pain-card h3 { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+        .pain-card p { color: #4b5563; font-size: 15.5px; line-height: 1.6; }
+        .pain-turn { text-align: center; font-family: 'Manrope', 'Inter', sans-serif; font-size: clamp(20px, 2.6vw, 26px); font-weight: 700; color: #111827; margin-top: 48px; }
+        .family-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        @media (min-width: 960px) { .family-grid { grid-template-columns: repeat(3, 1fr); } }
+        .family-price { text-align: center; color: #4b5563; font-size: 15px; margin-top: 18px; }
+        .family-price strong { color: #111827; }
+    </style>
+</head>
+<body>
+    <%- include('partials/nav') %>
+
+    <section class="hero">
+        <div class="hero-glow"></div>
+        <div class="hero-inner">
+            <div class="hero-badges">
+                <span class="hero-badge hero-badge-launch">
+                    <i class="fas fa-house-user"></i>
+                    <span>For busy families</span>
+                </span>
+            </div>
+            <h1>The household runs on one head.<br>It should not.</h1>
+            <p class="hero-lede">
+                Chores, school runs, appointments and the shopping list in one shared place. Add your partner and the kids, see who is doing what, and stop being the family's only memory.
+            </p>
+            <div class="hero-actions">
+                <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= trialDays > 0 ? 'Start your free ' + trialDays + '-day trial' : 'Start now' %></a>
+                <a href="#plan" class="btn-secondary">See a family week</a>
+            </div>
+            <p class="hero-note"><i class="fas fa-cloud"></i><%= trialDays > 0 ? 'Free for ' + trialDays + ' days, no card needed. Add your partner during the trial.' : 'No server to set up. Monthly or yearly, and you can cancel any time.' %></p>
+        </div>
+
+        <div class="browser-frame">
+            <div class="browser-dots">
+                <span style="background:#e0645c;"></span>
+                <span style="background:#e5b95c;"></span>
+                <span style="background:#61c454;"></span>
+            </div>
+            <video id="hero-video" class="hero-video" muted loop playsinline preload="metadata"
+                   poster="/landing-assets/screenshots/hero-light.png"
+                   aria-label="The tududi interface, showing the Today view with planned tasks">
+                <source src="/landing-assets/screenshots/hero.mp4" type="video/mp4">
+            </video>
+            <script>
+                (function () {
+                    var v = document.getElementById('hero-video');
+                    if (!v || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                    v.preload = 'auto';
+                    var p = v.play();
+                    if (p && p.catch) p.catch(function () {});
+                })();
+            </script>
+        </div>
+    </section>
+
+    <section class="section" style="background:#f7f6f3;">
+        <div class="container">
+            <div class="section-head">
+                <span class="eyebrow">The mental load</span>
+                <h2 class="section-title">Organising is not the hard part. Remembering is.</h2>
+                <p class="section-sub" style="max-width:720px; margin:0 auto;">Most family apps give you another place to type things. The problem was never typing. It is that only one person knows where everything is.</p>
+            </div>
+            <div class="pain-grid">
+                <% pains.forEach(function (pain) { %>
+                <div class="pain-card">
+                    <i class="<%= pain.icon %>" aria-hidden="true"></i>
+                    <h3><%= pain.title %></h3>
+                    <p><%= pain.body %></p>
+                </div>
+                <% }); %>
+            </div>
+            <p class="pain-turn">Write it once. Give it to someone. Let it leave your head.</p>
+        </div>
+    </section>
+
+    <section id="plan" class="section plan-day">
+        <div class="container">
+            <div class="section-head">
+                <span class="eyebrow">A family week</span>
+                <h2 class="section-title">Capture it, plan it, hand it over</h2>
+                <p class="section-sub" style="max-width:720px; margin:0 auto;">The same loop every week: the thing arrives, it gets a day and an owner, and it gets done without a reminder from you.</p>
+            </div>
+            <% weekSteps.forEach(function (step, i) { %>
+            <div class="plan-step<%= i % 2 ? ' plan-step-flip' : '' %>">
+                <div class="plan-step-text">
+                    <span class="plan-step-num"><i class="<%= step.icon %>"></i>Step <%= i + 1 %></span>
+                    <h3><%= step.title %></h3>
+                    <p><%= step.body %></p>
+                    <ul>
+                        <% step.points.forEach(function (point) { %>
+                        <li><i class="fas fa-check"></i><%= point %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+                <div class="browser-frame plan-step-shot">
+                    <div class="browser-dots">
+                        <span style="background:#e0645c;"></span>
+                        <span style="background:#e5b95c;"></span>
+                        <span style="background:#61c454;"></span>
+                    </div>
+                    <img src="/landing-assets/screenshots/<%= step.img %>" alt="<%= step.alt %>" loading="lazy">
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </section>
+
+    <section id="features" class="section features">
+        <div class="container">
+            <div class="section-head" style="margin-bottom:72px;">
+                <span class="eyebrow">Built for a household</span>
+                <h2 class="section-title">One place, everyone in it</h2>
+                <p class="section-sub" style="max-width:720px; margin:0 auto;">Not a chore chart with a subscription. The same system people use to run their work, set up for the people you live with.</p>
+            </div>
+            <div class="feature-grid family-grid">
+                <% familyFeatures.forEach(function (card) { %>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="<%= card.icon %>"></i></div>
+                    <h4><%= card.title %></h4>
+                    <p><%= card.body %></p>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+    <section id="ai" class="section section-dark">
+        <div class="container-md">
+            <div class="ai-kicker">
+                <span class="ai-kicker-icon"><i class="fas fa-wand-magic-sparkles"></i></span>
+                <span class="ai-kicker-label">Optional AI</span>
+            </div>
+            <h2 class="ai-title">Ten minutes of planning,<br>done in one.</h2>
+            <p class="ai-lede">Ask for a plan and the assistant drafts the day around the school run, the meetings and what is overdue. It is off until you switch it on, and tududi is complete without it.</p>
+            <div class="auto-grid">
+                <div class="dark-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <h4>Plans around fixed times</h4>
+                    <p>Pick-up at three is not negotiable. The draft puts tasks in the gaps, not on top of it.</p>
+                </div>
+                <div class="dark-card">
+                    <i class="fas fa-sun"></i>
+                    <h4>A morning brief</h4>
+                    <p>What is due, what slipped, what is coming this week. Read it with the first coffee.</p>
+                </div>
+                <div class="dark-card">
+                    <i class="fas fa-flag-checkered"></i>
+                    <h4>An evening wrap-up</h4>
+                    <p>What got done and what moves to tomorrow, so nothing quietly falls off the list.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="section" style="background:#f7f6f3;">
+        <div class="container-sm">
+            <div class="section-head">
+                <span class="eyebrow">Pricing</span>
+                <h2 class="section-title">Priced per person, paid by one</h2>
+                <p class="section-sub">You pay for yourself and for each family member who gets their own login. Same price for everyone, on one bill.</p>
+            </div>
+
+            <div class="plan-grid" style="grid-template-columns:minmax(0,1fr); max-width:520px; margin:0 auto;">
+                <div class="plan plan-featured">
+                    <div class="plan-head">
+                        <div class="plan-icon"><i class="fas fa-cloud"></i></div>
+                        <h3><%= t('pricing.plans.cloud.name') %></h3>
+                    </div>
+                    <%# Same numbers as the homepage card, from the same config,
+                        so the two pages cannot quote different prices. %>
+                    <div class="plan-price">
+                        <div class="plan-amount">
+                            <span><%= money(pricing.monthly) %></span>
+                            <span>/month per person</span>
+                        </div>
+                        <div class="plan-pro-line">
+                            <span class="plan-pro-sep">or</span>
+                            <strong><%= money(personalPrice) %></strong>/year per person
+                            <% if (pricing.launchActive) { %>
+                            <span class="plan-tag">EARLY BIRD</span>
+                            <% } %>
+                        </div>
+                        <div class="plan-price-note"><%= trialDays > 0 ? trialDays + ' days free, no card needed. Cancel any time.' : 'Everything included. Cancel any time.' %></div>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i>Your own account, plus a seat for each family member</li>
+                        <li><i class="fas fa-check"></i>Kids sign in with a link, no email needed</li>
+                        <li><i class="fas fa-check"></i>Shared projects, lists and the Everyone board</li>
+                        <li><i class="fas fa-check"></i>Calendar feeds, reminders on every phone, the Telegram bot</li>
+                        <li><i class="fas fa-check"></i>Updates and daily backups handled, <%= plans.proStorageGb %> GB of storage</li>
+                        <li><i class="fas fa-check"></i>Export everything any time, delete your account yourself</li>
+                    </ul>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? 'Start free trial →' : 'Get started →' %></a>
+                </div>
+            </div>
+            <p class="family-price">Two parents: <strong><%= money(pricing.monthly * 2) %></strong> a month, or <strong><%= money(personalPrice * 2) %></strong> a year.</p>
+            <p class="plan-fineprint" style="text-align:center; margin-top:12px;"><%= t('pricing.fineprint') %></p>
+        </div>
+    </section>
+
+    <section id="faq" class="section faq">
+        <div class="container-sm">
+            <div class="section-head" style="margin-bottom:48px;">
+                <span class="eyebrow">Questions</span>
+                <h2 class="section-title" style="margin-bottom:16px;">What families ask first</h2>
+            </div>
+            <div class="faq-list">
+                <% faqs.forEach(function (item, i) { %>
+                <details class="faq-item" id="<%= item.id %>"<%= i === 0 ? ' open' : '' %>>
+                    <summary class="faq-q"><h4><%= item.q %></h4></summary>
+                    <div class="faq-a">
+                        <p><%= item.a %></p>
+                    </div>
+                </details>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" style="padding-top:72px; padding-bottom:72px;">
+        <div class="container-sm">
+            <div class="closing" style="margin-top:0;">
+                <h2 class="section-title" style="font-size:32px; margin-bottom:14px;">Put it down. Someone else has it now.</h2>
+                <p>Set up the household in an evening. We run the server, the updates and the backups.</p>
+                <div class="closing-actions">
+                    <a href="<%= appUrl %>/register" class="btn-primary"><i class="fas fa-cloud"></i><%= trialDays > 0 ? 'Start free trial' : 'Get started' %></a>
+                    <a href="/" class="btn-secondary">See everything tududi does</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <%- include('partials/footer') %>
+
+    <script>
+        // The nav toggle, the same behaviour as the homepage's, minus the
+        // parts for widgets this page does not have.
+        (function () {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMobile = document.getElementById('nav-mobile');
+            if (!navToggle || !navMobile) return;
+            function setNavOpen(open) {
+                navMobile.classList.toggle('open', open);
+                navToggle.setAttribute('aria-expanded', String(open));
+                navToggle.querySelector('i').className = open ? 'fas fa-times' : 'fas fa-bars';
+            }
+            navToggle.addEventListener('click', () => setNavOpen(!navMobile.classList.contains('open')));
+            navMobile.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setNavOpen(false)));
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setNavOpen(false); });
+            window.addEventListener('resize', () => { if (window.innerWidth > 1180) setNavOpen(false); });
+        })();
+    </script>
+</body>
+</html>

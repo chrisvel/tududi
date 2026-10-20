@@ -243,6 +243,27 @@ describe('Landing page', () => {
         expect(alias.headers.location).toBe('/cloud');
     });
 
+    it('serves the families page in English without changing the remembered language', async () => {
+        const res = await request(app)
+            .get('/families')
+            .set('Host', 'tududi.com')
+            .set('Cookie', 'tududi_lang=de');
+        expect(res.status).toBe(200);
+        expect(res.text).toContain('<html lang="en"');
+        expect(res.text).toContain('For busy families');
+        expect(res.text).toContain('https://app.tududi.com/register');
+        expect(res.text).toContain(
+            'rel="canonical" href="https://tududi.com/families"'
+        );
+        expect(res.headers['set-cookie']).toBeUndefined();
+
+        const alias = await request(app)
+            .get('/family')
+            .set('Host', 'tududi.com');
+        expect(alias.status).toBe(301);
+        expect(alias.headers.location).toBe('/families');
+    });
+
     it('makes Cloud signup the only offer in the hero', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         const heroStart = res.text.indexOf('<section class="hero"');
