@@ -515,5 +515,195 @@
         "alt": "Aujourd’hui avec la tâche suivante, l’agenda et les réunions de deux agendas"
       }
     }
+  },
+  "families": {
+    "metaTitle": "tududi pour les familles · Un seul plan pour toute la maison",
+    "metaDescription": "Tâches ménagères, trajets d'école, rendez-vous et liste de courses au même endroit, partagé. Ajoutez votre conjoint et les enfants, voyez qui fait quoi, et cessez d'être la seule mémoire de la famille.",
+    "hero": {
+      "badge": "Pour les familles bien occupées",
+      "titleLine1": "Toute la maison repose sur une seule tête.",
+      "titleLine2": "Ça ne devrait pas.",
+      "lede": "Tâches ménagères, trajets d'école, rendez-vous et liste de courses au même endroit, partagé. Ajoutez votre conjoint et les enfants, voyez qui fait quoi, et cessez d'être la seule mémoire de la famille.",
+      "ctaPrimary": "Commencer maintenant",
+      "ctaTrial": "Commencez votre essai gratuit de {{days}} jours",
+      "ctaSecondary": "Voir une semaine en famille",
+      "note": "Aucun serveur à configurer. Mensuel ou annuel, résiliable à tout moment.",
+      "noteTrial": "Gratuit pendant {{days}} jours, sans carte bancaire. Ajoutez votre conjoint pendant l'essai.",
+      "screenshotAlt": "L'interface de tududi, affichant la vue Aujourd'hui et ses tâches planifiées"
+    },
+    "pains": {
+      "eyebrow": "La charge mentale",
+      "title": "Organiser n'est pas le plus dur. Se souvenir, si.",
+      "sub": "La plupart des applis familiales vous donnent un endroit de plus où écrire. Le problème n'a jamais été d'écrire. C'est qu'une seule personne sait où se trouve tout.",
+      "turn": "Notez-le une fois. Confiez-le à quelqu'un. Libérez-vous la tête.",
+      "items": {
+        "oneHead": {
+          "title": "Une seule tête porte toute la maison",
+          "body": "Le dentiste, l'autorisation de sortie scolaire, l'entretien de la chaudière, le cadeau d'anniversaire pour un enfant croisé deux fois. Tout repose sur une personne, et cette personne ne peut jamais le poser."
+        },
+        "groupChat": {
+          "title": "La conversation de groupe n'est pas un système",
+          "body": "Un message qui dit \"quelqu'un peut prendre du lait ?\" est lu par trois personnes et acheté par personne. Il disparaît plus haut avant que quiconque s'en occupe."
+        },
+        "tooManyApps": {
+          "title": "Une appli pour chaque recoin",
+          "body": "Un agenda ici, une liste de courses là, un tableau des tâches sur le frigo, des notes dans le téléphone de quelqu'un. Cinq endroits où regarder, et celui qu'il vous faut n'est jamais celui qui est ouvert."
+        }
+      }
+    },
+    "week": {
+      "eyebrow": "Une semaine en famille",
+      "title": "Notez, planifiez, confiez",
+      "sub": "La même boucle chaque semaine : la chose arrive, elle reçoit un jour et un responsable, et elle est faite sans que vous ayez à la rappeler.",
+      "stepLabel": "Étape {{n}}",
+      "steps": {
+        "capture": {
+          "title": "Notez-le au moment où ça arrive",
+          "body": "Tapez-le comme vous le diriez. tududi repère la date, les étiquettes et la personne, et le range au bon endroit.",
+          "points": [
+            "\"Dentiste pour Emma jeudi prochain à 17h\" devient une tâche datée",
+            "Mentionnez @Maria et la tâche est à elle, pas à tout le monde",
+            "Envoyez-le depuis Telegram alors que vous êtes encore sur le parking"
+          ],
+          "alt": "La zone de saisie transformant une ligne tapée en tâche datée"
+        },
+        "plan": {
+          "title": "Planifiez la journée autour du calendrier scolaire",
+          "body": "Importez les agendas de l'école, du travail et de la famille en flux de lecture seule, et planifiez la journée autour de ce qui est déjà fixé.",
+          "points": [
+            "Google, Outlook ou n'importe quelle adresse iCal, en toute confidentialité",
+            "Les tâches ménagères récurrentes tombent au bon jour sans être ressaisies",
+            "Le planificateur IA prépare une ébauche de journée si vous le souhaitez, et reste éteint sinon"
+          ],
+          "alt": "Le planificateur de journée avec les événements d'agenda et les tâches sur une frise horaire"
+        },
+        "today": {
+          "title": "Chacun voit sa propre liste",
+          "body": "Chaque personne se connecte à son propre Aujourd'hui. Personne n'a à demander ce qu'il doit faire, et personne n'a à le lui dire.",
+          "points": [
+            "Le tableau Tout le monde montre qui a quoi, en un coup d'œil",
+            "Des rappels sur chaque téléphone, pas seulement sur le vôtre",
+            "Ce qui est coché est coché, pour toute la famille"
+          ],
+          "alt": "La vue Aujourd'hui avec les tâches prévues pour la journée"
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Pensé pour un foyer",
+      "title": "Un seul endroit, tout le monde dedans",
+      "sub": "Pas un tableau des tâches avec abonnement. Le même système que des gens utilisent pour gérer leur travail, adapté aux personnes avec qui vous vivez.",
+      "cards": {
+        "partner": {
+          "title": "Ajoutez votre conjoint",
+          "body": "Un second adulte avec son propre identifiant, sa propre liste et les mêmes projets partagés. Pas un mot de passe partagé."
+        },
+        "kids": {
+          "title": "Des enfants sans e-mail",
+          "body": "Ajoutez un enfant avec son seul prénom. Vous créez un lien de connexion, l'envoyez sur sa tablette, et il est connecté pour 30 jours."
+        },
+        "everyone": {
+          "title": "Le tableau Tout le monde",
+          "body": "Une page avec chaque personne et ce qui lui est attribué. Le moyen le plus rapide de voir que la charge n'est pas partagée."
+        },
+        "chores": {
+          "title": "Des tâches qui reviennent",
+          "body": "Les poubelles le mardi, les plantes tous les trois jours, la révision de la voiture chaque année. Réglez-le une fois et cela revient tout seul."
+        },
+        "habits": {
+          "title": "Des habitudes pour les petits",
+          "body": "Le piano, la lecture avant de dormir, les dents deux fois par jour. Des séries qu'ils peuvent voir, sans tableau à gommettes."
+        },
+        "lists": {
+          "title": "Des listes à cocher",
+          "body": "Les courses, la valise, la liste des vacances. Une note avec des cases que n'importe qui dans la famille peut ouvrir et cocher."
+        },
+        "calendars": {
+          "title": "Les agendas, intégrés",
+          "body": "Les périodes scolaires, les horaires de travail et les matchs de foot s'affichent à côté de vos tâches, pour que le plan en tienne compte."
+        },
+        "projects": {
+          "title": "Des projets partagés",
+          "body": "Les vacances d'été, la rénovation de la cuisine, le déménagement. Partagez un projet avec les personnes concernées, et seulement elles."
+        },
+        "phones": {
+          "title": "Sur chaque téléphone",
+          "body": "Installez-le sur l'écran d'accueil d'un iPhone ou d'un Android. Les rappels arrivent là où chacun regarde vraiment."
+        }
+      }
+    },
+    "ai": {
+      "kicker": "IA facultative",
+      "titleLine1": "Dix minutes de planification,",
+      "titleLine2": "faites en une.",
+      "lede": "Demandez un plan et l'assistant prépare une ébauche de journée autour du trajet d'école, des réunions et de ce qui est en retard. Il reste éteint tant que vous ne l'activez pas, et tududi est complet sans lui.",
+      "cards": {
+        "fixedTimes": {
+          "title": "Planifie autour des horaires fixes",
+          "body": "La sortie d'école à 15h ne se négocie pas. L'ébauche place les tâches dans les créneaux libres, pas par-dessus."
+        },
+        "brief": {
+          "title": "Un point du matin",
+          "body": "Ce qui arrive à échéance, ce qui a glissé, ce qui vient cette semaine. À lire avec le premier café."
+        },
+        "wrapUp": {
+          "title": "Un bilan du soir",
+          "body": "Ce qui a été fait et ce qui passe à demain, pour que rien ne tombe de la liste sans bruit."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Tarifs",
+      "title": "Un prix par personne, payé par une seule",
+      "sub": "Vous payez pour vous et pour chaque membre de la famille qui a son propre identifiant. Le même prix pour tous, sur une seule facture.",
+      "or": "ou",
+      "priceNote": "Tout est inclus. Résiliable à tout moment.",
+      "priceNoteTrial": "{{days}} jours gratuits, sans carte bancaire. Résiliable à tout moment.",
+      "features": [
+        "Votre propre compte, plus une place pour chaque membre de la famille",
+        "Les enfants se connectent avec un lien, sans e-mail",
+        "Projets partagés, listes et le tableau Tout le monde",
+        "Flux d'agenda, rappels sur chaque téléphone, le bot Telegram",
+        "Mises à jour et sauvegardes quotidiennes gérées, {{proStorageGb}} Go de stockage",
+        "Exportez tout à tout moment, supprimez votre compte vous-même"
+      ],
+      "action": "Commencer →",
+      "actionTrial": "Commencer l'essai gratuit →",
+      "twoParents": "Deux parents : {{monthly}} par mois, ou {{yearly}} par an."
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "Ce que les familles demandent d'abord",
+      "items": {
+        "kidsEmail": {
+          "q": "Les enfants ont-ils besoin d'une adresse e-mail ?",
+          "a": "Non. Ajoutez un enfant avec son seul prénom, créez un lien de connexion depuis la page Personnes et envoyez-le-lui comme vous voulez : un message, un mot à côté de la tablette, en personne. Le lien le connecte pour 30 jours et vous pouvez le révoquer à tout moment."
+        },
+        "whoPays": {
+          "q": "Tout le monde dans la famille paie-t-il ?",
+          "a": "Une seule personne paie. Chaque membre avec son propre identifiant est une place au même prix que la vôtre, facturée au titulaire du compte. Les membres ne peuvent pas ajouter d'autres membres, la facture reste donc au même endroit."
+        },
+        "privacy": {
+          "q": "Mon conjoint peut-il voir tout ce que j'écris ?",
+          "a": "Non. Chaque personne a ses propres tâches et notes. Les autres ne voient que ce que vous partagez avec eux ou leur attribuez, projet par projet."
+        },
+        "trial": {
+          "q": "Peut-on d'abord l'essayer en famille ?",
+          "a": "Il y a une garantie satisfait ou remboursé de 14 jours : vous pouvez vivre une vraie semaine en famille et être remboursé si cela ne vous convient pas.",
+          "aTrial": "Oui. Chaque nouveau compte bénéficie d'un essai gratuit de {{days}} jours sans carte bancaire, et vous pouvez ajouter un membre pendant l'essai : vous et votre conjoint pouvez vivre une vraie semaine avant de décider."
+        },
+        "leaving": {
+          "q": "Et si nous arrêtons de l'utiliser ?",
+          "a": "Exportez tout dans un seul fichier depuis votre profil à tout moment, et supprimez le compte vous-même. tududi est open source, l'export s'ouvre donc aussi dans une copie auto-hébergée si vous préférez le faire tourner chez vous."
+        }
+      }
+    },
+    "closing": {
+      "title": "Posez-le. Quelqu'un d'autre s'en occupe maintenant.",
+      "sub": "Organisez le foyer en une soirée. Nous gérons le serveur, les mises à jour et les sauvegardes.",
+      "primary": "Commencer",
+      "primaryTrial": "Commencer l'essai gratuit",
+      "secondary": "Voir tout ce que fait tududi"
+    }
   }
 }

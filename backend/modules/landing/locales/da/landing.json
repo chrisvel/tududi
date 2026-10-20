@@ -515,5 +515,195 @@
         "alt": "I dag med næste opgave, dagsordenen og møder fra to kalendere"
       }
     }
+  },
+  "families": {
+    "metaTitle": "tududi til familier · Én plan for hele husstanden",
+    "metaDescription": "Huslige pligter, skolekørsel, aftaler og indkøbslisten samlet ét sted. Tilføj din partner og børnene, se hvem der gør hvad, og hold op med at være familiens eneste hukommelse.",
+    "hero": {
+      "badge": "Til travle familier",
+      "titleLine1": "Husstanden kører på ét hoved.",
+      "titleLine2": "Det burde den ikke.",
+      "lede": "Huslige pligter, skolekørsel, aftaler og indkøbslisten samlet ét sted. Tilføj din partner og børnene, se hvem der gør hvad, og hold op med at være familiens eneste hukommelse.",
+      "ctaPrimary": "Kom i gang nu",
+      "ctaTrial": "Start din gratis prøveperiode på {{days}} dage",
+      "ctaSecondary": "Se en familieuge",
+      "note": "Ingen server at sætte op. Månedlig eller årlig, og du kan opsige når som helst.",
+      "noteTrial": "Gratis i {{days}} dage, uden betalingskort. Tilføj din partner allerede i prøveperioden.",
+      "screenshotAlt": "tududis brugerflade med I dag-visningen og planlagte opgaver"
+    },
+    "pains": {
+      "eyebrow": "Den mentale belastning",
+      "title": "Det svære er ikke at organisere. Det er at huske.",
+      "sub": "De fleste familieapps giver dig bare endnu et sted at skrive ting. Problemet var aldrig at skrive. Det er, at kun én person ved, hvor alting er.",
+      "turn": "Skriv det én gang. Giv det til nogen. Få det ud af hovedet.",
+      "items": {
+        "oneHead": {
+          "title": "Ét hoved bærer hele huset",
+          "body": "Tandlægen, sedlen der skal underskrives, servicetjekket af fyret, gaven til et barn, du har mødt to gange. Det hele bor i én person, og den person får aldrig lov at lægge det fra sig."
+        },
+        "groupChat": {
+          "title": "Gruppechatten er ikke et system",
+          "body": "En besked som \"kan nogen købe mælk\" bliver læst af tre og købt af ingen. Den er scrollet væk, før nogen gør noget ved den."
+        },
+        "tooManyApps": {
+          "title": "En app til hvert hjørne",
+          "body": "En kalender her, en indkøbsliste der, en opgaveplan på køleskabet, noter i en eller andens telefon. Fem steder at kigge, og det du skal bruge er aldrig det, der er åbent."
+        }
+      }
+    },
+    "week": {
+      "eyebrow": "En familieuge",
+      "title": "Skriv det ned, planlæg det, giv det videre",
+      "sub": "Den samme runde hver uge: tingen dukker op, den får en dag og en ansvarlig, og den bliver gjort, uden at du skal minde nogen om den.",
+      "stepLabel": "Trin {{n}}",
+      "steps": {
+        "capture": {
+          "title": "Skriv det ned, i det øjeblik det sker",
+          "body": "Skriv det, som du ville sige det. tududi læser datoen, tags og personen og lægger det på plads.",
+          "points": [
+            "\"Tandlæge Emma næste torsdag kl. 17\" bliver en opgave med dato",
+            "Nævn @Maria, og så er det hendes, ikke alles",
+            "Send det fra Telegram, mens du stadig holder på parkeringspladsen"
+          ],
+          "alt": "Indtastningsfeltet gør en skrevet linje til en opgave med dato"
+        },
+        "plan": {
+          "title": "Planlæg dagen efter skolekalenderen",
+          "body": "Hent skolens, arbejdets og familiens kalendere ind som skrivebeskyttede feeds, og planlæg dagen omkring det, der allerede ligger fast.",
+          "points": [
+            "Google, Outlook eller en hvilken som helst iCal-adresse, holdt privat",
+            "Tilbagevendende pligter lander på den rigtige dag uden at blive skrevet ind igen",
+            "AI-planlæggeren laver et udkast til dagen, hvis du vil, og forbliver slukket, hvis du ikke vil"
+          ],
+          "alt": "Dagsplanlæggeren med kalenderaftaler og opgaver på en tidslinje"
+        },
+        "today": {
+          "title": "Alle ser deres egen liste",
+          "body": "Hver person logger ind på sin egen I dag. Ingen behøver at spørge, hvad de skal lave, og ingen behøver at blive spurgt.",
+          "points": [
+            "Alle-tavlen viser med ét blik, hvem der har hvad",
+            "Påmindelser på hver telefon, ikke kun på din",
+            "Afkrydset er afkrydset, for hele familien"
+          ],
+          "alt": "I dag-visningen med de opgaver, der er planlagt for dagen"
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Bygget til en husstand",
+      "title": "Ét sted, alle med",
+      "sub": "Ikke en opgaveplan med abonnement. Det samme system, folk bruger til at styre deres arbejde, sat op til dem, du bor sammen med.",
+      "cards": {
+        "partner": {
+          "title": "Tilføj din partner",
+          "body": "En voksen mere med eget login, egen liste og de samme delte projekter. Ikke en delt adgangskode."
+        },
+        "kids": {
+          "title": "Børn uden e-mail",
+          "body": "Tilføj et barn kun med navn. Du laver et login-link og sender det til barnets tablet, og så er det logget ind i 30 dage."
+        },
+        "everyone": {
+          "title": "Alle-tavlen",
+          "body": "Én side med hver person og det, der er tildelt dem. Den hurtigste måde at se, at byrden ikke er delt."
+        },
+        "chores": {
+          "title": "Pligter, der kommer igen",
+          "body": "Skraldespande om tirsdagen, planter hver tredje dag, bilen til service hvert år. Sæt det op én gang, så kommer det igen af sig selv."
+        },
+        "habits": {
+          "title": "Vaner for de små",
+          "body": "Klaverøvning, læsning før sengetid, tænder to gange om dagen. Stimer de kan se, uden et klistermærkeskema."
+        },
+        "lists": {
+          "title": "Lister du kan krydse af",
+          "body": "Indkøb, pakning, tjeklisten til ferien. En note med afkrydsningsfelter, som alle i familien kan åbne og krydse af."
+        },
+        "calendars": {
+          "title": "Kalendere, hentet ind",
+          "body": "Skoleferier, arbejdsvagter og fodboldkampene står ved siden af dine opgaver, så planen tager hensyn til dem."
+        },
+        "projects": {
+          "title": "Delte projekter",
+          "body": "Sommerferien, det nye køkken, flytningen. Del et projekt med dem, der er med i det, og kun dem."
+        },
+        "phones": {
+          "title": "På hver telefon",
+          "body": "Installer den på hjemmeskærmen på iPhone eller Android. Push-påmindelser kommer frem der, hvor hver person faktisk kigger."
+        }
+      }
+    },
+    "ai": {
+      "kicker": "AI hvis du vil",
+      "titleLine1": "Ti minutters planlægning,",
+      "titleLine2": "klaret på ét.",
+      "lede": "Bed om en plan, og assistenten laver et udkast til dagen omkring skolekørslen, møderne og det, der er forsinket. Den er slukket, indtil du tænder den, og tududi er komplet uden.",
+      "cards": {
+        "fixedTimes": {
+          "title": "Planlægger omkring faste tider",
+          "body": "Afhentning klokken tre er ikke til forhandling. Udkastet lægger opgaver i hullerne, ikke oven i den."
+        },
+        "brief": {
+          "title": "Et morgenoverblik",
+          "body": "Hvad der skal nås, hvad der gled, hvad der kommer i denne uge. Læs det over den første kop kaffe."
+        },
+        "wrapUp": {
+          "title": "En aftenopsamling",
+          "body": "Hvad der blev gjort, og hvad der flytter til i morgen, så intet stille falder af listen."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Priser",
+      "title": "Pris pr. person, betalt af én",
+      "sub": "Du betaler for dig selv og for hvert familiemedlem, der får sit eget login. Samme pris for alle, på én regning.",
+      "or": "eller",
+      "priceNote": "Alt inkluderet. Opsig når som helst.",
+      "priceNoteTrial": "{{days}} dage gratis, uden betalingskort. Opsig når som helst.",
+      "features": [
+        "Din egen konto, plus en plads til hvert familiemedlem",
+        "Børn logger ind med et link, ingen e-mail nødvendig",
+        "Delte projekter, lister og Alle-tavlen",
+        "Kalenderfeeds, påmindelser på hver telefon, Telegram-botten",
+        "Opdateringer og daglige sikkerhedskopier klaret, {{proStorageGb}} GB lagerplads",
+        "Eksporter alt når som helst, slet selv din konto"
+      ],
+      "action": "Kom i gang →",
+      "actionTrial": "Start gratis prøveperiode →",
+      "twoParents": "To forældre: {{monthly}} om måneden eller {{yearly}} om året."
+    },
+    "faq": {
+      "eyebrow": "Spørgsmål",
+      "title": "Det familier spørger om først",
+      "items": {
+        "kidsEmail": {
+          "q": "Skal børnene have en e-mailadresse?",
+          "a": "Nej. Tilføj et barn kun med navn, lav så et login-link fra siden Personer, og giv det videre, som du vil: en besked, en note på tabletten, ansigt til ansigt. Linket logger barnet ind i 30 dage, og du kan trække det tilbage når som helst."
+        },
+        "whoPays": {
+          "q": "Betaler alle i familien?",
+          "a": "Én person betaler. Hvert medlem med eget login er en plads til samme pris som din, faktureret til kontoejeren. Medlemmer kan ikke tilføje flere medlemmer, så regningen bliver ét sted."
+        },
+        "privacy": {
+          "q": "Kan min partner se alt, hvad jeg skriver?",
+          "a": "Nej. Hver person har sine egne opgaver og noter. Andre ser kun det, du deler med dem eller tildeler dem, projekt for projekt."
+        },
+        "trial": {
+          "q": "Kan vi prøve det som familie først?",
+          "a": "Der er 14 dages pengene-tilbage-garanti, så I kan køre en rigtig uge som familie og få pengene tilbage, hvis det ikke passer.",
+          "aTrial": "Ja. Hver ny konto får en gratis prøveperiode på {{days}} dage uden betalingskort, og du kan tilføje ét medlem undervejs, så du og din partner kan køre en rigtig uge, før I beslutter jer."
+        },
+        "leaving": {
+          "q": "Hvad hvis vi holder op med at bruge det?",
+          "a": "Eksporter alt som én fil fra din profil når som helst, og slet selv kontoen. tududi er open source, så eksporten kan også åbnes i en selvhostet kopi, hvis du hellere vil køre det derhjemme."
+        }
+      }
+    },
+    "closing": {
+      "title": "Læg det fra dig. En anden har det nu.",
+      "sub": "Sæt husstanden op på en aften. Vi står for serveren, opdateringerne og sikkerhedskopierne.",
+      "primary": "Kom i gang",
+      "primaryTrial": "Start gratis prøveperiode",
+      "secondary": "Se alt, hvad tududi kan"
+    }
   }
 }

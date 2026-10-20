@@ -515,5 +515,195 @@
         "alt": "Today with the next task, the agenda and meetings from two calendars"
       }
     }
+  },
+  "families": {
+    "metaTitle": "tududi for families · One plan for the whole household",
+    "metaDescription": "Chores, school runs, appointments and the shopping list in one shared place. Add your partner and the kids, see who is doing what, and stop being the family's only memory.",
+    "hero": {
+      "badge": "For busy families",
+      "titleLine1": "The household runs on one head.",
+      "titleLine2": "It should not.",
+      "lede": "Chores, school runs, appointments and the shopping list in one shared place. Add your partner and the kids, see who is doing what, and stop being the family's only memory.",
+      "ctaPrimary": "Start now",
+      "ctaTrial": "Start your free {{days}}-day trial",
+      "ctaSecondary": "See a family week",
+      "note": "No server to set up. Monthly or yearly, and you can cancel any time.",
+      "noteTrial": "Free for {{days}} days, no card needed. Add your partner during the trial.",
+      "screenshotAlt": "The tududi interface, showing the Today view with planned tasks"
+    },
+    "pains": {
+      "eyebrow": "The mental load",
+      "title": "Organising is not the hard part. Remembering is.",
+      "sub": "Most family apps give you another place to type things. The problem was never typing. It is that only one person knows where everything is.",
+      "turn": "Write it once. Give it to someone. Let it leave your head.",
+      "items": {
+        "oneHead": {
+          "title": "One head holds the whole house",
+          "body": "The dentist, the permission slip, the boiler service, the birthday present for a child you have met twice. It all lives in one person, and that person never gets to put it down."
+        },
+        "groupChat": {
+          "title": "The group chat is not a system",
+          "body": "A message that says \"can someone get milk\" is read by three people and bought by nobody. It scrolls away before anyone acts on it."
+        },
+        "tooManyApps": {
+          "title": "An app for every corner",
+          "body": "A calendar here, a shopping list there, a chore chart on the fridge, notes in somebody's phone. Five places to look, and the one you need is never the one open."
+        }
+      }
+    },
+    "week": {
+      "eyebrow": "A family week",
+      "title": "Capture it, plan it, hand it over",
+      "sub": "The same loop every week: the thing arrives, it gets a day and an owner, and it gets done without a reminder from you.",
+      "stepLabel": "Step {{n}}",
+      "steps": {
+        "capture": {
+          "title": "Write it down the moment it happens",
+          "body": "Type it the way you would say it. tududi reads the date, the tags and the person, and files it.",
+          "points": [
+            "\"Dentist for Emma next Thursday 5pm\" becomes a dated task",
+            "Mention @Maria and it is hers, not everyone's",
+            "Send it from Telegram while you are still in the car park"
+          ],
+          "alt": "The capture box turning a typed line into a task with a date"
+        },
+        "plan": {
+          "title": "Plan the day around the school calendar",
+          "body": "Bring in the school, work and family calendars as read-only feeds, and plan the day around what is already fixed.",
+          "points": [
+            "Google, Outlook or any iCal address, kept private",
+            "Recurring chores land on the right day without being re-entered",
+            "The AI planner drafts a day if you want one, and stays off if you do not"
+          ],
+          "alt": "The day planner with calendar events and tasks on a timeline"
+        },
+        "today": {
+          "title": "Everyone sees their own list",
+          "body": "Each person signs in to their own Today. Nobody has to ask what they are supposed to be doing, and nobody has to be asked.",
+          "points": [
+            "The Everyone board shows who has what, at a glance",
+            "Reminders on each phone, not just on yours",
+            "Ticked off is ticked off, for the whole family"
+          ],
+          "alt": "The Today view with the tasks planned for the day"
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Built for a household",
+      "title": "One place, everyone in it",
+      "sub": "Not a chore chart with a subscription. The same system people use to run their work, set up for the people you live with.",
+      "cards": {
+        "partner": {
+          "title": "Add your partner",
+          "body": "A second adult with their own login, their own list and the same shared projects. Not a shared password."
+        },
+        "kids": {
+          "title": "Kids without an email",
+          "body": "Add a child by name only. You make a sign-in link and send it to their tablet, and they are in for 30 days."
+        },
+        "everyone": {
+          "title": "The Everyone board",
+          "body": "One page with every person and what is assigned to them. The quickest way to see that the load is not shared."
+        },
+        "chores": {
+          "title": "Chores that come back",
+          "body": "Bins on Tuesday, plants every third day, the car service every year. Set it once and it returns on its own."
+        },
+        "habits": {
+          "title": "Habits for the small ones",
+          "body": "Piano practice, reading before bed, teeth twice a day. Streaks they can see, without a sticker chart."
+        },
+        "lists": {
+          "title": "Lists you can tick",
+          "body": "Shopping, packing, the holiday checklist. A note with checkboxes anyone in the family can open and tick."
+        },
+        "calendars": {
+          "title": "Calendars, read in",
+          "body": "School terms, work shifts and the football fixtures sit next to your tasks, so the plan respects them."
+        },
+        "projects": {
+          "title": "Shared projects",
+          "body": "The summer holiday, the kitchen renovation, the move. Share a project with whoever is in it, and only them."
+        },
+        "phones": {
+          "title": "On every phone",
+          "body": "Install it to the home screen on iPhone or Android. Push reminders arrive where each person actually looks."
+        }
+      }
+    },
+    "ai": {
+      "kicker": "Optional AI",
+      "titleLine1": "Ten minutes of planning,",
+      "titleLine2": "done in one.",
+      "lede": "Ask for a plan and the assistant drafts the day around the school run, the meetings and what is overdue. It is off until you switch it on, and tududi is complete without it.",
+      "cards": {
+        "fixedTimes": {
+          "title": "Plans around fixed times",
+          "body": "Pick-up at three is not negotiable. The draft puts tasks in the gaps, not on top of it."
+        },
+        "brief": {
+          "title": "A morning brief",
+          "body": "What is due, what slipped, what is coming this week. Read it with the first coffee."
+        },
+        "wrapUp": {
+          "title": "An evening wrap-up",
+          "body": "What got done and what moves to tomorrow, so nothing quietly falls off the list."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "Priced per person, paid by one",
+      "sub": "You pay for yourself and for each family member who gets their own login. Same price for everyone, on one bill.",
+      "or": "or",
+      "priceNote": "Everything included. Cancel any time.",
+      "priceNoteTrial": "{{days}} days free, no card needed. Cancel any time.",
+      "features": [
+        "Your own account, plus a seat for each family member",
+        "Kids sign in with a link, no email needed",
+        "Shared projects, lists and the Everyone board",
+        "Calendar feeds, reminders on every phone, the Telegram bot",
+        "Updates and daily backups handled, {{proStorageGb}} GB of storage",
+        "Export everything any time, delete your account yourself"
+      ],
+      "action": "Get started →",
+      "actionTrial": "Start free trial →",
+      "twoParents": "Two parents: {{monthly}} a month, or {{yearly}} a year."
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "What families ask first",
+      "items": {
+        "kidsEmail": {
+          "q": "Do the kids need an email address?",
+          "a": "No. Add a child by name only, then make a sign-in link from the People page and send it to them however you like: a message, a note on the tablet, in person. The link signs them in for 30 days and you can take it back at any time."
+        },
+        "whoPays": {
+          "q": "Does everyone in the family pay?",
+          "a": "One person pays. Every member with their own login is a seat at the same price as yours, billed to the account owner. Members cannot add more members, so the bill stays in one place."
+        },
+        "privacy": {
+          "q": "Can my partner see everything I write?",
+          "a": "No. Each person has their own tasks and notes. Others only see what you share with them or assign to them, project by project."
+        },
+        "trial": {
+          "q": "Can we try it as a family first?",
+          "a": "There is a 14-day money-back guarantee, so you can run a real week with your family and get the money back if it does not fit.",
+          "aTrial": "Yes. Every new account gets a {{days}}-day free trial with no card, and you can add one member during it, so you and your partner can run a real week before deciding."
+        },
+        "leaving": {
+          "q": "What if we stop using it?",
+          "a": "Export everything as one file from your profile at any time, and delete the account yourself. tududi is open source, so the export also opens in a self-hosted copy if you would rather run it at home."
+        }
+      }
+    },
+    "closing": {
+      "title": "Put it down. Someone else has it now.",
+      "sub": "Set up the household in an evening. We run the server, the updates and the backups.",
+      "primary": "Get started",
+      "primaryTrial": "Start free trial",
+      "secondary": "See everything tududi does"
+    }
   }
 }

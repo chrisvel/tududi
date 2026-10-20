@@ -243,25 +243,40 @@ describe('Landing page', () => {
         expect(alias.headers.location).toBe('/cloud');
     });
 
-    it('serves the families page in English without changing the remembered language', async () => {
-        const res = await request(app)
+    it('serves the families page, in English and in other locales', async () => {
+        const en = await request(app)
             .get('/families')
-            .set('Host', 'tududi.com')
-            .set('Cookie', 'tududi_lang=de');
-        expect(res.status).toBe(200);
-        expect(res.text).toContain('<html lang="en"');
-        expect(res.text).toContain('For busy families');
-        expect(res.text).toContain('https://app.tududi.com/register');
-        expect(res.text).toContain(
+            .set('Host', 'tududi.com');
+        expect(en.status).toBe(200);
+        expect(en.text).toContain('<html lang="en"');
+        expect(en.text).toContain('For busy families');
+        expect(en.text).toContain('https://app.tududi.com/register');
+        expect(en.text).toContain(
             'rel="canonical" href="https://tududi.com/families"'
         );
-        expect(res.headers['set-cookie']).toBeUndefined();
+        expect(en.text).toContain(
+            'hreflang="fr" href="https://tududi.com/fr/families"'
+        );
+        // Every string resolved, none fell through to its key.
+        expect(en.text).not.toMatch(/families\.[a-z]+\.[A-Za-z.]+/);
 
-        const alias = await request(app)
-            .get('/family')
+        const fr = await request(app)
+            .get('/fr/families')
             .set('Host', 'tududi.com');
-        expect(alias.status).toBe(301);
-        expect(alias.headers.location).toBe('/families');
+        expect(fr.status).toBe(200);
+        expect(fr.text).toContain('<html lang="fr"');
+        expect(fr.text).not.toContain('For busy families');
+
+        for (const [from, to] of [
+            ['/en/families', '/families'],
+            ['/family', '/families'],
+        ]) {
+            const alias = await request(app)
+                .get(from)
+                .set('Host', 'tududi.com');
+            expect(alias.status).toBe(301);
+            expect(alias.headers.location).toBe(to);
+        }
     });
 
     it('makes Cloud signup the only offer in the hero', async () => {
@@ -978,6 +993,15 @@ describe('Landing page', () => {
         const middleware = hostSwitch({ hosts: [] });
         middleware({ hostname: 'tududi.com', path: '/' }, {}, next);
         expect(next).toHaveBeenCalled();
+    });
+
+    it('translates every families page string in each language', () => {
+        const missing = preloadCatalogs();
+        LOCALE_CODES.forEach((code) => {
+            expect(
+                (missing[code] || []).filter((k) => k.startsWith('families.'))
+            ).toEqual([]);
+        });
     });
 
     it('loads every catalog and carries the Cloud plan in each language', () => {

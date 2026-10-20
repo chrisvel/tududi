@@ -196,23 +196,14 @@ function createLandingRouter(landing) {
     const pageUrl = (locale, suffix = '') =>
         `${siteOrigin.replace(/\/$/, '')}${localePath(locale, suffix)}`;
 
-    async function renderPage(
-        req,
-        res,
-        locale,
-        template,
-        extra = {},
-        { rememberLocale = true } = {}
-    ) {
-        if (rememberLocale) {
-            res.cookie(LANG_COOKIE, locale, {
-                maxAge: LANG_COOKIE_MAX_AGE,
-                httpOnly: true,
-                sameSite: 'lax',
-                secure: secureCookie,
-                path: '/',
-            });
-        }
+    async function renderPage(req, res, locale, template, extra = {}) {
+        res.cookie(LANG_COOKIE, locale, {
+            maxAge: LANG_COOKIE_MAX_AGE,
+            httpOnly: true,
+            sameSite: 'lax',
+            secure: secureCookie,
+            path: '/',
+        });
         res.setHeader('Content-Security-Policy', csp);
         res.setHeader('Cache-Control', 'public, max-age=300');
 
@@ -438,19 +429,22 @@ function createLandingRouter(landing) {
     });
     router.get('/en/cloud', (req, res) => res.redirect(301, '/cloud'));
 
-    // The page for busy families. English only, one URL, so the nav and
-    // footer render in English too and the visitor's remembered language is
-    // left alone, the same rule as the legal pages.
-    router.get('/families', (req, res, next) => {
-        renderPage(
-            req,
-            res,
-            DEFAULT_LOCALE,
-            'families.ejs',
-            { canonicalUrl: pageUrl(DEFAULT_LOCALE, '/families') },
-            { rememberLocale: false }
-        ).catch(next);
+    // The page for busy families, in every language the homepage has.
+    // Literal paths for the same reason the cloud ones are literal.
+    const familiesPaths = [
+        '/families',
+        ...LOCALE_CODES.filter((c) => c !== DEFAULT_LOCALE).map(
+            (c) => `/${c}/families`
+        ),
+    ];
+    router.get(familiesPaths, (req, res, next) => {
+        const segments = req.path.split('/').filter(Boolean);
+        const locale = segments.length > 1 ? segments[0] : DEFAULT_LOCALE;
+        renderPage(req, res, locale, 'families.ejs', {
+            canonicalUrl: pageUrl(locale, '/families'),
+        }).catch(next);
     });
+    router.get('/en/families', (req, res) => res.redirect(301, '/families'));
     router.get('/family', (req, res) => res.redirect(301, '/families'));
 
     // Terms, privacy and refunds. English only and one URL each, so there is

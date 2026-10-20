@@ -515,5 +515,195 @@
         "alt": "Tänään-näkymä, jossa seuraava tehtävä, agenda ja kahden kalenterin tapaamiset"
       }
     }
+  },
+  "families": {
+    "metaTitle": "tududi perheille · Yksi suunnitelma koko kotitaloudelle",
+    "metaDescription": "Kotityöt, koulukyydit, ajanvaraukset ja kauppalista yhdessä jaetussa paikassa. Lisää puolisosi ja lapset, näe kuka tekee mitäkin, ja lakkaa olemasta perheen ainoa muisti.",
+    "hero": {
+      "badge": "Kiireisille perheille",
+      "titleLine1": "Koko koti pyörii yhden pään varassa.",
+      "titleLine2": "Ei pitäisi.",
+      "lede": "Kotityöt, koulukyydit, ajanvaraukset ja kauppalista yhdessä jaetussa paikassa. Lisää puolisosi ja lapset, näe kuka tekee mitäkin, ja lakkaa olemasta perheen ainoa muisti.",
+      "ctaPrimary": "Aloita nyt",
+      "ctaTrial": "Aloita {{days}} päivän ilmainen kokeilu",
+      "ctaSecondary": "Katso perheen viikko",
+      "note": "Ei palvelinta pystytettäväksi. Kuukausittain tai vuosittain, ja voit peruuttaa milloin tahansa.",
+      "noteTrial": "Ilmainen {{days}} päivää, ei maksukorttia. Lisää puolisosi jo kokeilun aikana.",
+      "screenshotAlt": "tududin käyttöliittymä, jossa näkyy Tänään-näkymä ja suunnitellut tehtävät"
+    },
+    "pains": {
+      "eyebrow": "Henkinen kuorma",
+      "title": "Järjestäminen ei ole vaikeaa. Muistaminen on.",
+      "sub": "Useimmat perhesovellukset antavat vain uuden paikan, johon kirjoittaa. Ongelma ei koskaan ollut kirjoittaminen. Ongelma on, että vain yksi ihminen tietää, missä kaikki on.",
+      "turn": "Kirjoita se kerran. Anna se jollekulle. Päästä se pois päästäsi.",
+      "items": {
+        "oneHead": {
+          "title": "Yksi pää kantaa koko kodin",
+          "body": "Hammaslääkäri, koulun lupalappu, lämmityskattilan huolto, synttärilahja lapselle, jonka olet tavannut kahdesti. Kaikki on yhden ihmisen varassa, eikä se ihminen pääse koskaan laskemaan sitä käsistään."
+        },
+        "groupChat": {
+          "title": "Ryhmächatti ei ole järjestelmä",
+          "body": "Viestin \"voisiko joku hakea maitoa\" lukee kolme ihmistä eikä kukaan osta. Se valuu pois näkyvistä ennen kuin kukaan tekee asialle mitään."
+        },
+        "tooManyApps": {
+          "title": "Oma sovellus joka nurkkaan",
+          "body": "Kalenteri täällä, kauppalista tuolla, kotityölista jääkaapin ovessa, muistiinpanoja jonkun puhelimessa. Viisi paikkaa katsoa, ja juuri tarvitsemasi ei ole koskaan auki."
+        }
+      }
+    },
+    "week": {
+      "eyebrow": "Perheen viikko",
+      "title": "Kirjaa, suunnittele, anna eteenpäin",
+      "sub": "Sama kierto joka viikko: asia tulee vastaan, se saa päivän ja tekijän, ja se tulee tehdyksi ilman että sinun tarvitsee muistuttaa.",
+      "stepLabel": "Vaihe {{n}}",
+      "steps": {
+        "capture": {
+          "title": "Kirjaa se heti kun se tapahtuu",
+          "body": "Kirjoita se niin kuin sanoisit sen. tududi tunnistaa päivän, tagit ja henkilön, ja vie sen oikeaan paikkaan.",
+          "points": [
+            "\"Emman hammaslääkäri ensi torstaina klo 17\" muuttuu päivätyksi tehtäväksi",
+            "Mainitse @Maria, niin tehtävä on hänen, ei kaikkien",
+            "Lähetä se Telegramista, kun istut vielä autossa parkkipaikalla"
+          ],
+          "alt": "Kirjauslaatikko muuttaa kirjoitetun rivin päivätyksi tehtäväksi"
+        },
+        "plan": {
+          "title": "Suunnittele päivä koulun kalenterin ympärille",
+          "body": "Tuo koulun, työn ja perheen kalenterit vain luku -syötteinä ja suunnittele päivä sen ympärille, mikä on jo lyöty lukkoon.",
+          "points": [
+            "Google, Outlook tai mikä tahansa iCal-osoite, yksityisenä",
+            "Toistuvat kotityöt osuvat oikealle päivälle ilman uudelleen kirjaamista",
+            "Tekoälysuunnittelija tekee päivästä luonnoksen, jos haluat, ja pysyy pois päältä, jos et"
+          ],
+          "alt": "Päivän suunnittelunäkymä, jossa kalenteritapahtumat ja tehtävät ovat aikajanalla"
+        },
+        "today": {
+          "title": "Jokainen näkee oman listansa",
+          "body": "Jokainen kirjautuu omaan Tänään-näkymäänsä. Kenenkään ei tarvitse kysyä, mitä pitäisi tehdä, eikä ketään tarvitse käskeä.",
+          "points": [
+            "Kaikki-taulu näyttää yhdellä silmäyksellä, kenellä on mitäkin",
+            "Muistutukset jokaisen puhelimeen, ei vain sinun",
+            "Tehty on tehty, koko perheelle"
+          ],
+          "alt": "Tänään-näkymä päivälle suunnitelluilla tehtävillä"
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Tehty kotitaloudelle",
+      "title": "Yksi paikka, kaikki mukana",
+      "sub": "Ei kotityölista kuukausimaksulla. Sama järjestelmä, jolla ihmiset hoitavat työnsä, valmiina niille, joiden kanssa asut.",
+      "cards": {
+        "partner": {
+          "title": "Lisää puolisosi",
+          "body": "Toinen aikuinen omilla tunnuksillaan, omalla listallaan ja samoilla jaetuilla projekteilla. Ei jaettua salasanaa."
+        },
+        "kids": {
+          "title": "Lapset ilman sähköpostia",
+          "body": "Lisää lapsi pelkällä nimellä. Teet kirjautumislinkin, lähetät sen hänen tablettiinsa, ja hän on sisällä 30 päivää."
+        },
+        "everyone": {
+          "title": "Kaikki-taulu",
+          "body": "Yksi sivu, jolla näkyy jokainen ihminen ja hänelle annetut tehtävät. Nopein tapa nähdä, ettei kuorma jakaudu."
+        },
+        "chores": {
+          "title": "Kotityöt, jotka palaavat",
+          "body": "Roskat tiistaisin, kasvit joka kolmas päivä, auton huolto kerran vuodessa. Aseta kerran, ja se palaa itsestään."
+        },
+        "habits": {
+          "title": "Tapoja pienille",
+          "body": "Pianoharjoitus, iltasatu, hampaiden pesu kahdesti päivässä. Putket, jotka he näkevät, ilman tarrataulukkoa."
+        },
+        "lists": {
+          "title": "Listat, joita voi ruksia",
+          "body": "Kauppalista, pakkauslista, lomalista. Muistiinpano valintaruuduilla, jonka kuka tahansa perheessä voi avata ja ruksia."
+        },
+        "calendars": {
+          "title": "Kalenterit mukana",
+          "body": "Koulun lukukaudet, työvuorot ja jalkapallo-ottelut näkyvät tehtäviesi vieressä, joten suunnitelma ottaa ne huomioon."
+        },
+        "projects": {
+          "title": "Jaetut projektit",
+          "body": "Kesäloma, keittiöremontti, muutto. Jaa projekti niille, jotka ovat siinä mukana, ja vain heille."
+        },
+        "phones": {
+          "title": "Jokaisessa puhelimessa",
+          "body": "Asenna se iPhonen tai Androidin aloitusnäytölle. Muistutukset tulevat sinne, minne kukin oikeasti katsoo."
+        }
+      }
+    },
+    "ai": {
+      "kicker": "Valinnainen tekoäly",
+      "titleLine1": "Kymmenen minuutin suunnittelu",
+      "titleLine2": "yhdessä minuutissa.",
+      "lede": "Pyydä suunnitelma, ja avustaja tekee päivästä luonnoksen koulukyytien, palaverien ja myöhässä olevien asioiden ympärille. Se on pois päältä, kunnes kytket sen päälle, ja tududi on valmis ilman sitäkin.",
+      "cards": {
+        "fixedTimes": {
+          "title": "Suunnittelee kiinteiden aikojen ympärille",
+          "body": "Hakeminen kolmelta ei jousta. Luonnos laittaa tehtävät väleihin, ei sen päälle."
+        },
+        "brief": {
+          "title": "Aamun katsaus",
+          "body": "Mikä erääntyy, mikä lipsui, mitä tällä viikolla on tulossa. Lue se ensimmäisen kahvin kanssa."
+        },
+        "wrapUp": {
+          "title": "Illan yhteenveto",
+          "body": "Mitä tehtiin ja mikä siirtyy huomiseen, jotta mikään ei putoa listalta huomaamatta."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Hinnoittelu",
+      "title": "Hinta per henkilö, maksaa yksi",
+      "sub": "Maksat itsestäsi ja jokaisesta perheenjäsenestä, jolla on omat tunnukset. Sama hinta kaikille, yhdellä laskulla.",
+      "or": "tai",
+      "priceNote": "Kaikki mukana. Peru milloin tahansa.",
+      "priceNoteTrial": "{{days}} päivää ilmaiseksi, ei maksukorttia. Peru milloin tahansa.",
+      "features": [
+        "Oma tilisi sekä paikka jokaiselle perheenjäsenelle",
+        "Lapset kirjautuvat linkillä, sähköpostia ei tarvita",
+        "Jaetut projektit, listat ja Kaikki-taulu",
+        "Kalenterisyötteet, muistutukset jokaiseen puhelimeen, Telegram-botti",
+        "Päivitykset ja päivittäiset varmuuskopiot hoidettu, {{proStorageGb}} Gt tallennustilaa",
+        "Vie kaikki milloin tahansa, poista tilisi itse"
+      ],
+      "action": "Aloita →",
+      "actionTrial": "Aloita ilmainen kokeilu →",
+      "twoParents": "Kaksi vanhempaa: {{monthly}} kuukaudessa tai {{yearly}} vuodessa."
+    },
+    "faq": {
+      "eyebrow": "Kysymykset",
+      "title": "Mitä perheet kysyvät ensin",
+      "items": {
+        "kidsEmail": {
+          "q": "Tarvitsevatko lapset sähköpostiosoitteen?",
+          "a": "Eivät. Lisää lapsi pelkällä nimellä, tee kirjautumislinkki Ihmiset-sivulta ja lähetä se hänelle miten haluat: viestillä, lappuna tabletin viereen, kasvokkain. Linkki pitää hänet kirjautuneena 30 päivää, ja voit perua sen milloin tahansa."
+        },
+        "whoPays": {
+          "q": "Maksaako jokainen perheenjäsen?",
+          "a": "Yksi maksaa. Jokainen jäsen omilla tunnuksillaan on paikka samaan hintaan kuin sinun, ja se laskutetaan tilin omistajalta. Jäsenet eivät voi lisätä uusia jäseniä, joten lasku pysyy yhdessä paikassa."
+        },
+        "privacy": {
+          "q": "Näkeekö puolisoni kaiken, mitä kirjoitan?",
+          "a": "Ei. Jokaisella on omat tehtävänsä ja muistiinpanonsa. Muut näkevät vain sen, minkä jaat heille tai annat heille tehtäväksi, projekti kerrallaan."
+        },
+        "trial": {
+          "q": "Voimmeko kokeilla sitä ensin koko perheen kanssa?",
+          "a": "Meillä on 14 päivän rahat takaisin -takuu, joten voit elää oikean viikon perheesi kanssa ja saada rahat takaisin, jos se ei sovi teille.",
+          "aTrial": "Kyllä. Jokainen uusi tili saa {{days}} päivän ilmaisen kokeilun ilman maksukorttia, ja voit lisätä kokeilun aikana yhden jäsenen, joten sinä ja puolisosi voitte elää oikean viikon ennen päätöstä."
+        },
+        "leaving": {
+          "q": "Entä jos lopetamme käytön?",
+          "a": "Vie kaikki yhtenä tiedostona profiilistasi milloin tahansa ja poista tili itse. tududi on avointa lähdekoodia, joten viennin voi avata myös omalla palvelimella, jos haluat mieluummin pyörittää sitä kotona."
+        }
+      }
+    },
+    "closing": {
+      "title": "Laske se käsistäsi. Nyt se on jollain muulla.",
+      "sub": "Laita kotitalous kuntoon yhdessä illassa. Me hoidamme palvelimen, päivitykset ja varmuuskopiot.",
+      "primary": "Aloita",
+      "primaryTrial": "Aloita ilmainen kokeilu",
+      "secondary": "Katso kaikki, mitä tududi tekee"
+    }
   }
 }

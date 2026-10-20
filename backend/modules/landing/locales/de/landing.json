@@ -515,5 +515,195 @@
         "alt": "Heute mit der nächsten Aufgabe, der Agenda und Terminen aus zwei Kalendern"
       }
     }
+  },
+  "families": {
+    "metaTitle": "tududi für Familien · Ein Plan für den ganzen Haushalt",
+    "metaDescription": "Hausarbeit, Schulwege, Termine und die Einkaufsliste an einem gemeinsamen Ort. Füge deinen Partner und die Kinder hinzu, sieh, wer was erledigt, und hör auf, das einzige Gedächtnis der Familie zu sein.",
+    "hero": {
+      "badge": "Für volle Familienkalender",
+      "titleLine1": "Der Haushalt hängt an einem Kopf.",
+      "titleLine2": "Das muss nicht sein.",
+      "lede": "Hausarbeit, Schulwege, Termine und die Einkaufsliste an einem gemeinsamen Ort. Füge deinen Partner und die Kinder hinzu, sieh, wer was erledigt, und hör auf, das einzige Gedächtnis der Familie zu sein.",
+      "ctaPrimary": "Jetzt starten",
+      "ctaTrial": "{{days}} Tage kostenlos testen",
+      "ctaSecondary": "Eine Familienwoche ansehen",
+      "note": "Kein Server einzurichten. Monatlich oder jährlich, und du kannst jederzeit kündigen.",
+      "noteTrial": "{{days}} Tage kostenlos, ohne Karte. Füge deinen Partner schon in der Testphase hinzu.",
+      "screenshotAlt": "Die Oberfläche von tududi mit der Heute-Ansicht und geplanten Aufgaben"
+    },
+    "pains": {
+      "eyebrow": "Die mentale Last",
+      "title": "Organisieren ist nicht das Schwere. Daran denken ist es.",
+      "sub": "Die meisten Familien-Apps geben dir nur einen weiteren Ort zum Tippen. Das Tippen war nie das Problem. Das Problem ist, dass nur eine Person weiß, wo alles ist.",
+      "turn": "Einmal aufschreiben. Jemandem geben. Aus dem Kopf haben.",
+      "items": {
+        "oneHead": {
+          "title": "Ein Kopf trägt das ganze Haus",
+          "body": "Der Zahnarzt, der Elternbrief, die Wartung der Heizung, das Geschenk für ein Kind, das du zweimal gesehen hast. Alles liegt bei einer Person, und diese Person kann es nie ablegen."
+        },
+        "groupChat": {
+          "title": "Der Gruppenchat ist kein System",
+          "body": "Eine Nachricht wie \"kann jemand Milch holen\" lesen drei Leute, und gekauft hat sie niemand. Sie ist weggescrollt, bevor jemand etwas tut."
+        },
+        "tooManyApps": {
+          "title": "Eine App für jede Ecke",
+          "body": "Hier ein Kalender, dort eine Einkaufsliste, ein Putzplan am Kühlschrank, Notizen im Handy von irgendwem. Fünf Orte zum Nachsehen, und der, den du brauchst, ist nie gerade offen."
+        }
+      }
+    },
+    "week": {
+      "eyebrow": "Eine Familienwoche",
+      "title": "Festhalten, planen, abgeben",
+      "sub": "Jede Woche derselbe Ablauf: Etwas kommt rein, es bekommt einen Tag und eine zuständige Person, und es wird erledigt, ohne dass du daran erinnern musst.",
+      "stepLabel": "Schritt {{n}}",
+      "steps": {
+        "capture": {
+          "title": "Schreib es auf, sobald es passiert",
+          "body": "Tipp es so, wie du es sagen würdest. tududi erkennt das Datum, die Tags und die Person und legt es ab.",
+          "points": [
+            "\"Zahnarzt Emma nächsten Donnerstag 17 Uhr\" wird zur Aufgabe mit Datum",
+            "Erwähne @Maria, und es ist ihre Aufgabe, nicht die von allen",
+            "Schick es per Telegram, während du noch auf dem Parkplatz stehst"
+          ],
+          "alt": "Das Eingabefeld macht aus einer getippten Zeile eine Aufgabe mit Datum"
+        },
+        "plan": {
+          "title": "Plane den Tag um den Schulkalender herum",
+          "body": "Hol Schul-, Arbeits- und Familienkalender als schreibgeschützte Feeds herein und plane den Tag um das, was schon feststeht.",
+          "points": [
+            "Google, Outlook oder jede iCal-Adresse, privat gehalten",
+            "Wiederkehrende Hausarbeit landet am richtigen Tag, ohne neu eingetragen zu werden",
+            "Der KI-Planer entwirft einen Tag, wenn du willst, und bleibt aus, wenn nicht"
+          ],
+          "alt": "Der Tagesplaner mit Kalenderterminen und Aufgaben auf einer Zeitleiste"
+        },
+        "today": {
+          "title": "Jeder sieht seine eigene Liste",
+          "body": "Jede Person meldet sich bei ihrem eigenen Heute an. Niemand muss fragen, was zu tun ist, und niemand muss gefragt werden.",
+          "points": [
+            "Die Ansicht \"Jeder\" zeigt auf einen Blick, wer was hat",
+            "Erinnerungen auf jedem Handy, nicht nur auf deinem",
+            "Abgehakt ist abgehakt, für die ganze Familie"
+          ],
+          "alt": "Die Heute-Ansicht mit den Aufgaben, die für den Tag geplant sind"
+        }
+      }
+    },
+    "features": {
+      "eyebrow": "Gemacht für einen Haushalt",
+      "title": "Ein Ort, alle drin",
+      "sub": "Kein Putzplan mit Abo. Dasselbe System, mit dem Leute ihre Arbeit organisieren, eingerichtet für die Menschen, mit denen du lebst.",
+      "cards": {
+        "partner": {
+          "title": "Füge deinen Partner hinzu",
+          "body": "Ein zweiter Erwachsener mit eigenem Login, eigener Liste und denselben gemeinsamen Projekten. Kein geteiltes Passwort."
+        },
+        "kids": {
+          "title": "Kinder ohne E-Mail",
+          "body": "Füge ein Kind nur mit Namen hinzu. Du erstellst einen Anmeldelink, schickst ihn auf sein Tablet, und es ist für 30 Tage drin."
+        },
+        "everyone": {
+          "title": "Die Ansicht \"Jeder\"",
+          "body": "Eine Seite mit jeder Person und dem, was ihr zugewiesen ist. Der schnellste Weg zu sehen, dass die Last nicht geteilt ist."
+        },
+        "chores": {
+          "title": "Hausarbeit, die wiederkommt",
+          "body": "Mülltonnen am Dienstag, Pflanzen jeden dritten Tag, die Autoinspektion jedes Jahr. Einmal einstellen, und es kommt von selbst wieder."
+        },
+        "habits": {
+          "title": "Gewohnheiten für die Kleinen",
+          "body": "Klavier üben, vor dem Schlafen lesen, zweimal am Tag Zähne putzen. Serien, die sie sehen können, ohne Stickerheft."
+        },
+        "lists": {
+          "title": "Listen zum Abhaken",
+          "body": "Einkaufen, Packen, die Urlaubscheckliste. Eine Notiz mit Kästchen, die jeder in der Familie öffnen und abhaken kann."
+        },
+        "calendars": {
+          "title": "Kalender, eingelesen",
+          "body": "Schulferien, Arbeitsschichten und die Fußballspiele stehen neben deinen Aufgaben, damit der Plan sie berücksichtigt."
+        },
+        "projects": {
+          "title": "Gemeinsame Projekte",
+          "body": "Der Sommerurlaub, die neue Küche, der Umzug. Teile ein Projekt mit allen, die beteiligt sind, und nur mit ihnen."
+        },
+        "phones": {
+          "title": "Auf jedem Handy",
+          "body": "Auf iPhone oder Android zum Startbildschirm hinzufügen. Push-Erinnerungen kommen dort an, wo jede Person wirklich hinschaut."
+        }
+      }
+    },
+    "ai": {
+      "kicker": "KI nach Wunsch",
+      "titleLine1": "Zehn Minuten Planung,",
+      "titleLine2": "in einer erledigt.",
+      "lede": "Bitte um einen Plan, und der Assistent entwirft den Tag um den Schulweg, die Meetings und das Überfällige herum. Er ist aus, bis du ihn einschaltest, und tududi ist auch ohne ihn vollständig.",
+      "cards": {
+        "fixedTimes": {
+          "title": "Plant um feste Zeiten herum",
+          "body": "Abholen um drei ist nicht verhandelbar. Der Entwurf legt Aufgaben in die Lücken, nicht darüber."
+        },
+        "brief": {
+          "title": "Ein Morgenüberblick",
+          "body": "Was fällig ist, was liegen geblieben ist, was diese Woche kommt. Zu lesen beim ersten Kaffee."
+        },
+        "wrapUp": {
+          "title": "Ein Abendrückblick",
+          "body": "Was erledigt ist und was auf morgen rutscht, damit nichts still von der Liste fällt."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Preise",
+      "title": "Pro Person berechnet, von einer bezahlt",
+      "sub": "Du zahlst für dich und für jedes Familienmitglied mit eigenem Login. Gleicher Preis für alle, auf einer Rechnung.",
+      "or": "oder",
+      "priceNote": "Alles inklusive. Jederzeit kündbar.",
+      "priceNoteTrial": "{{days}} Tage kostenlos, ohne Karte. Jederzeit kündbar.",
+      "features": [
+        "Dein eigenes Konto, plus ein Platz für jedes Familienmitglied",
+        "Kinder melden sich per Link an, ohne E-Mail",
+        "Gemeinsame Projekte, Listen und die Ansicht \"Jeder\"",
+        "Kalender-Feeds, Erinnerungen auf jedem Handy, der Telegram-Bot",
+        "Updates und tägliche Backups erledigt, {{proStorageGb}} GB Speicher",
+        "Jederzeit alles exportieren, das Konto selbst löschen"
+      ],
+      "action": "Loslegen →",
+      "actionTrial": "Kostenlos testen →",
+      "twoParents": "Zwei Eltern: {{monthly}} im Monat oder {{yearly}} im Jahr."
+    },
+    "faq": {
+      "eyebrow": "Fragen",
+      "title": "Was Familien zuerst fragen",
+      "items": {
+        "kidsEmail": {
+          "q": "Brauchen die Kinder eine E-Mail-Adresse?",
+          "a": "Nein. Füge ein Kind nur mit Namen hinzu, erstelle dann auf der Seite Personen einen Anmeldelink und gib ihn weiter, wie du willst: per Nachricht, als Notiz auf dem Tablet, persönlich. Der Link meldet das Kind für 30 Tage an, und du kannst ihn jederzeit zurückziehen."
+        },
+        "whoPays": {
+          "q": "Zahlt jeder in der Familie?",
+          "a": "Eine Person zahlt. Jedes Mitglied mit eigenem Login ist ein Platz zum gleichen Preis wie deiner, abgerechnet über den Kontoinhaber. Mitglieder können keine weiteren Mitglieder hinzufügen, also bleibt die Rechnung an einer Stelle."
+        },
+        "privacy": {
+          "q": "Kann mein Partner alles sehen, was ich schreibe?",
+          "a": "Nein. Jede Person hat ihre eigenen Aufgaben und Notizen. Andere sehen nur, was du mit ihnen teilst oder ihnen zuweist, Projekt für Projekt."
+        },
+        "trial": {
+          "q": "Können wir es erst als Familie ausprobieren?",
+          "a": "Es gibt eine 14-tägige Geld-zurück-Garantie. Ihr könnt also eine echte Woche als Familie damit leben und bekommt das Geld zurück, wenn es nicht passt.",
+          "aTrial": "Ja. Jedes neue Konto bekommt eine kostenlose Testphase von {{days}} Tagen ohne Karte, und du kannst dabei ein Mitglied hinzufügen. So können du und dein Partner eine echte Woche testen, bevor ihr entscheidet."
+        },
+        "leaving": {
+          "q": "Was, wenn wir aufhören?",
+          "a": "Exportiere jederzeit alles als eine Datei aus deinem Profil und lösche das Konto selbst. tududi ist Open Source, also öffnet sich der Export auch in einer selbst gehosteten Kopie, falls du es lieber zu Hause betreibst."
+        }
+      }
+    },
+    "closing": {
+      "title": "Leg es ab. Jemand anderes hat es jetzt.",
+      "sub": "Richte den Haushalt an einem Abend ein. Wir kümmern uns um den Server, die Updates und die Backups.",
+      "primary": "Loslegen",
+      "primaryTrial": "Kostenlos testen",
+      "secondary": "Alles ansehen, was tududi kann"
+    }
   }
 }
