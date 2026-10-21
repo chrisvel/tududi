@@ -311,6 +311,16 @@ callback is built from it. On the consent screen, publish the app (a client
 left in testing admits only its listed test users) and link the landing
 page's `/privacy` and `/terms`.
 
+## Apple sign-in
+
+Sign in with Apple is set with the four `APPLE_SIGN_IN_*` variables (see
+[OIDC/SSO](10-oidc-sso.md#apple)) and follows the same rules as Google: a
+first sign-in creates an account only while registration is enabled. Its
+Services ID needs the app host under **Domains** and
+`https://<app host>/api/oidc/callback/apple` under **Return URLs**. Register
+the address account email is sent from under **Sign in with Apple for Email
+Communication**, or mail to people who chose Hide My Email is dropped.
+
 ## Public demo
 
 `TUDUDI_DEMO_ENABLED=true` stands up a sandbox anyone can open without

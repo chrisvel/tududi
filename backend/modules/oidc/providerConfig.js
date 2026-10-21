@@ -160,6 +160,13 @@ async function resolveConfig() {
         };
     }
 
+    // Sign in with Apple has its own variables and is offered whenever they
+    // are set, whichever source the OIDC providers above came from.
+    const apple = require('./appleProvider').loadAppleProviderFromEnv();
+    if (apple && !value.providers.some((p) => p.slug === apple.slug)) {
+        value = { ...value, providers: [...value.providers, apple] };
+    }
+
     cache = { value, expires: Date.now() + CACHE_TTL_MS };
     return value;
 }

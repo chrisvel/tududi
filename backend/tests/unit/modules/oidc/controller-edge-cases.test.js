@@ -64,7 +64,14 @@ describe('OIDC controller edge cases', () => {
             await controller.listProviders({}, res);
 
             expect(res.json).toHaveBeenCalledWith({
-                providers: [{ slug: 'google', name: 'Google', type: 'oidc' }],
+                providers: [
+                    {
+                        slug: 'google',
+                        name: 'Google',
+                        type: 'oidc',
+                        brand: 'google',
+                    },
+                ],
             });
         });
 

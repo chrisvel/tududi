@@ -3,6 +3,7 @@ const provisioningService = require('./provisioningService');
 const oidcIdentityService = require('./oidcIdentityService');
 const providerConfig = require('./providerConfig');
 const auditService = require('./auditService');
+const appleProvider = require('./appleProvider');
 const { User } = require('../../models');
 const { OidcUserError, toUserMessage } = require('./errors');
 
@@ -55,10 +56,16 @@ async function listProviders(req, res) {
     try {
         const providers = await providerConfig.getAllProviders();
 
+        // brand picks the button style the provider's guidelines ask for.
         const publicProviders = providers.map((p) => ({
             slug: p.slug,
             name: p.name,
             type: 'oidc',
+            brand: appleProvider.isAppleProvider(p)
+                ? 'apple'
+                : p.slug === 'google'
+                  ? 'google'
+                  : null,
         }));
 
         res.json({ providers: publicProviders });
@@ -190,6 +197,36 @@ async function handleCallback(req, res) {
     }
 }
 
+// A provider using response_mode=form_post (Apple) sends the browser back
+// with a cross-site POST, which carries neither the SameSite=Lax binding
+// cookie nor the session cookie. Answering with a redirect to the GET callback
+// turns it into a top-level navigation that carries both, so the flow above
+// runs unchanged. Only the OAuth fields go along, and from Apple's one-time
+// `user` field only the name: its email is in the ID token.
+function handleFormPostCallback(req, res) {
+    const body = req.body || {};
+    const params = new URLSearchParams();
+    for (const key of ['code', 'state', 'error', 'error_description']) {
+        if (typeof body[key] === 'string') params.set(key, body[key]);
+    }
+
+    const names = appleProvider.namesFromUserParam(body.user);
+    if (names.given_name || names.family_name) {
+        params.set(
+            'user',
+            JSON.stringify({
+                name: {
+                    firstName: names.given_name,
+                    lastName: names.family_name,
+                },
+            })
+        );
+    }
+
+    const slug = encodeURIComponent(req.params.slug);
+    res.redirect(303, `${req.baseUrl}/callback/${slug}?${params.toString()}`);
+}
+
 async function initiateLink(req, res) {
     try {
         if (!req.currentUser) {
@@ -293,6 +330,7 @@ module.exports = {
     listProviders,
     initiateAuth,
     handleCallback,
+    handleFormPostCallback,
     initiateLink,
     unlinkIdentity,
     getUserIdentities,

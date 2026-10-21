@@ -4,6 +4,7 @@ import { getCsrfToken } from './csrfService';
 export interface OIDCProvider {
     slug: string;
     name: string;
+    brand?: 'google' | 'apple' | null;
 }
 
 export interface OIDCIdentity {
@@ -39,9 +40,7 @@ export async function fetchOIDCIdentities(): Promise<OIDCIdentity[]> {
     const response = await fetch(getApiPath('oidc/identities'), {
         credentials: 'include',
     });
-    const data = await handleResponse<{ identities: OIDCIdentity[] }>(
-        response
-    );
+    const data = await handleResponse<{ identities: OIDCIdentity[] }>(response);
     return data.identities;
 }
 
@@ -71,7 +70,8 @@ export async function initiateOIDCLink(providerSlug: string): Promise<void> {
 
     if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
-        const message = errorBody?.error || 'Failed to initiate account linking';
+        const message =
+            errorBody?.error || 'Failed to initiate account linking';
         throw new Error(message);
     }
 
