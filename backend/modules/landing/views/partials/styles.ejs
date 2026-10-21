@@ -580,6 +580,17 @@
            Text and screenshot side by side, alternating sides, stacked on
            phones with the text first. */
         .plan-day { background: #f7f6f3; }
+        .families-band { background: #fbf8f3; padding: 72px 16px; }
+        .families-band-inner { display: flex; align-items: center; gap: 40px; }
+        .families-band-text { flex: 1; min-width: 0; }
+        .families-band .section-title { font-size: 32px; margin-bottom: 14px; }
+        .families-band .section-sub { font-size: 17px; }
+        .families-band .btn-primary { flex-shrink: 0; }
+        .families-band-arrow { font-size: 13px; }
+        [dir="rtl"] .families-band-arrow { transform: scaleX(-1); }
+        @media (max-width: 768px) {
+            .families-band-inner { flex-direction: column; align-items: stretch; gap: 24px; }
+        }
         .plan-step { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
         .plan-step + .plan-step { margin-top: 96px; }
         .plan-step-flip .plan-step-text { order: 2; }

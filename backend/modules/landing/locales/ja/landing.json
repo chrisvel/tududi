@@ -14,7 +14,8 @@
     "blog": "ブログ",
     "signIn": "ログイン",
     "toggle": "メニューを開く",
-    "plan": "1日を計画"
+    "plan": "1日を計画",
+    "families": "家族向け"
   },
   "hero": {
     "badgeStars": "GitHubスター",

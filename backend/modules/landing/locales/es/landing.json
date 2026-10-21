@@ -14,7 +14,8 @@
     "blog": "Blog",
     "signIn": "Iniciar sesión",
     "toggle": "Abrir el menú",
-    "plan": "Planifica tu día"
+    "plan": "Planifica tu día",
+    "families": "Familias"
   },
   "hero": {
     "badgeStars": "estrellas en GitHub",

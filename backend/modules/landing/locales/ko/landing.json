@@ -14,7 +14,8 @@
     "blog": "블로그",
     "signIn": "로그인",
     "toggle": "메뉴 열기",
-    "plan": "하루 계획"
+    "plan": "하루 계획",
+    "families": "가족"
   },
   "hero": {
     "badgeStars": "GitHub 스타",
