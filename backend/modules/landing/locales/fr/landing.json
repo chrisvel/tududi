@@ -18,9 +18,6 @@
     "families": "Familles"
   },
   "hero": {
-    "badgeStars": "étoiles sur GitHub",
-    "badgeMcp": "Serveur MCP intégré",
-    "badgeCloudOpen": "tududi Cloud est ouvert",
     "ctaDemo": "Essayer la démo en direct",
     "demoNote": "Une véritable instance hébergée, remplie de données d'exemple, partagée et réinitialisée régulièrement",
     "screenshotAlt": "L'interface de tududi, affichant la vue Aujourd'hui et ses tâches planifiées",
@@ -34,7 +31,6 @@
   },
   "proof": {
     "stars": "étoiles sur GitHub",
-    "mcp": "Serveur MCP, {{tools}} outils",
     "languages": "{{count}} langues",
     "dockerPulls": "téléchargements Docker",
     "discord": "membres sur Discord",
@@ -218,10 +214,6 @@
         "title": "Support multilingue",
         "body": "Disponible en {{count}} langues avec une localisation complète."
       },
-      "telegram": {
-        "title": "Intégration Telegram",
-        "body": "Envoyez un message pour capturer une tâche instantanément, recevez un résumé quotidien et gérez votre liste en déplacement."
-      },
       "caldav": {
         "title": "Synchronisation CalDAV",
         "body": "Synchronisation bidirectionnelle avec Apple Rappels, tasks.org, Thunderbird et toute application compatible CalDAV."
@@ -248,18 +240,6 @@
     "earlyBird": "LANCEMENT",
     "perYear": "/an par personne",
     "plans": {
-      "selfHosted": {
-        "action": "Lire le guide d'auto-hébergement →",
-        "features": [
-          "Vous provisionnez un serveur ou un NAS",
-          "Vous gérez Docker, les mises à jour et les migrations",
-          "Vous configurez un reverse proxy et TLS",
-          "Les sauvegardes vous appartiennent",
-          "Toutes les fonctionnalités, sans limite de sièges, données sur votre matériel"
-        ],
-        "name": "Auto-hébergement (avancé)",
-        "priceNote": "Gratuit, si vous faites tourner le serveur vous-même"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "ou",
@@ -298,7 +278,6 @@
       "kanban": "Tableaux Kanban",
       "views": "Vues intelligentes enregistrées",
       "people": "Assigner des tâches à des personnes",
-      "telegram": "Capture depuis Telegram",
       "caldav": "Synchronisation des tâches via CalDAV",
       "mcp": "Serveur MCP pour agents IA"
     },
@@ -374,10 +353,6 @@
         "a": "Oui, et vous n'avez rien à acheter au préalable. La licence MIT autorise l'usage commercial, y compris dans une entreprise et dans un produit commercial, sans seuil de revenu et sans rien à déclarer. Si votre service comptable a besoin d'une facture, un abonnement Cloud est facturé via notre prestataire de paiement et en produit une. Rien sur cette page ne vend une permission, parce que cette permission est déjà la vôtre.",
         "q": "Puis-je utiliser tududi au travail, ou dans mon entreprise ?"
       },
-      "licence": {
-        "a": "L'application est open source sous licence MIT, vous pouvez donc la faire tourner sur votre propre serveur gratuitement, la modifier et construire dessus sans payer personne. Il n'y a ni nombre de sièges ni fonctionnalités retenues : la version auto-hébergée est le produit complet. tududi Cloud est un service payant, car l'hébergement, les sauvegardes et les e-mails coûtent de l'argent à faire tourner. Vous payez pour le travail d'exploitation, jamais pour l'accès au logiciel.",
-        "q": "tududi est-il vraiment gratuit ?"
-      },
       "maintained": {
         "a": "Oui. Il est développé principalement par un mainteneur, avec des contributions de la communauté, et les versions sortent régulièrement. Chaque version est listée sur la page des releases GitHub, accessible depuis le Changelog dans le menu ci-dessus, afin que vous puissiez juger du rythme par vous-même plutôt que sur parole. Le développement se fait en public : des tickets, une feuille de route publique, et un Discord où les questions trouvent réponse.",
         "linkLabel": "Voir toutes les versions",
@@ -390,10 +365,6 @@
       "shutdown": {
         "a": "L'application est sous licence MIT et le code source est public, elle ne peut donc pas vous être retirée. Chacun peut continuer à la faire tourner, et vous pouvez la forker. Sur tududi Cloud, vos données vivent dans une base tududi standard plutôt qu'un format propriétaire, donc si le service devait fermer un jour, vous récupéreriez vos données et un guide pour les faire migrer sur votre propre serveur.",
         "q": "Qu'advient-il de mes données si tududi disparaît ?"
-      },
-      "whyManaged": {
-        "a": "Vous payez pour ne pas gérer l'infrastructure. tududi Cloud vous offre le même système avec le serveur, les mises à jour, les sauvegardes et les e-mails pris en charge pour vous, ce qui est la moitié fastidieuse et peu glorieuse de l'auto-hébergement. Cloud est la voie que nous recommandons. L'auto-hébergement n'est le meilleur choix que si vous faites déjà tourner Docker et un reverse proxy et que vous voulez activement gérer la pile.",
-        "q": "Pourquoi payer pour Cloud alors que l'auto-hébergement est gratuit ?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +422,6 @@
         "title": "Mises à jour appliquées pour vous"
       }
     },
-    "selfHostLine": "Vous préférez héberger le serveur vous-même ? C'est gratuit, et c'est la même application.",
     "title": "Pourquoi utiliser tududi Cloud ?",
     "whyEyebrow": "Cloud",
     "whySub": "Pas des fonctionnalités. Chaque fonctionnalité est aussi dans la version auto-hébergée.",
@@ -462,7 +432,6 @@
   "finalCta": {
     "primary": "Commencer",
     "secondary": "Voir les prix",
-    "selfHostLink": "Lire le guide.",
     "sub": "Nous gérons le serveur, les mises à jour et les sauvegardes. Vous avez le système, et une garantie de remboursement de 14 jours si cela ne vous convient pas.",
     "title": "Organisez-vous en une minute",
     "subTrial": "Nous gérons le serveur, les mises à jour et les sauvegardes. Essayez gratuitement pendant {{days}} jours, sans carte.",

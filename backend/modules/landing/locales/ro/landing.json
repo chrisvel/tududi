@@ -18,9 +18,6 @@
     "families": "Familii"
   },
   "hero": {
-    "badgeStars": "stele pe GitHub",
-    "badgeMcp": "Server MCP integrat",
-    "badgeCloudOpen": "tududi Cloud este acum deschis",
     "ctaDemo": "Încearcă demo-ul live",
     "demoNote": "O instanță găzduită reală, cu date de exemplu, partajată și resetată periodic",
     "screenshotAlt": "Interfața tududi, cu vizualizarea Astăzi și sarcinile planificate",
@@ -34,7 +31,6 @@
   },
   "proof": {
     "stars": "stele pe GitHub",
-    "mcp": "Server MCP, {{tools}} instrumente",
     "languages": "{{count}} limbi",
     "dockerPulls": "descărcări Docker",
     "discord": "membri pe Discord",
@@ -218,10 +214,6 @@
         "title": "Suport pentru mai multe limbi",
         "body": "Disponibil în {{count}} limbi, cu localizare completă."
       },
-      "telegram": {
-        "title": "Integrare cu Telegram",
-        "body": "Trimite un mesaj ca să notezi sarcini pe loc, primește rezumate zilnice și îți gestionezi lista din mers."
-      },
       "caldav": {
         "title": "Sincronizare CalDAV",
         "body": "Sincronizare bidirecțională a sarcinilor cu Apple Memento-uri, tasks.org, Thunderbird și orice aplicație compatibilă CalDAV."
@@ -248,18 +240,6 @@
     "earlyBird": "PREȚ DE LANSARE",
     "perYear": "/an de persoană",
     "plans": {
-      "selfHosted": {
-        "action": "Citește ghidul de auto-hostare →",
-        "features": [
-          "Îți asiguri singur un server sau un NAS",
-          "Te ocupi de Docker, actualizări și migrări",
-          "Configurezi un reverse proxy și TLS",
-          "Backupurile sunt ale tale",
-          "Set complet de funcții, fără limită de locuri, date pe propriul tău hardware"
-        ],
-        "name": "Auto-hostat (avansat)",
-        "priceNote": "Gratuit, dacă rulezi tu însuți serverul"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "sau",
@@ -298,7 +278,6 @@
       "kanban": "Panouri Kanban",
       "views": "Vizualizări inteligente salvate",
       "people": "Atribuirea sarcinilor persoanelor",
-      "telegram": "Captură din Telegram",
       "caldav": "Sincronizare sarcini prin CalDAV",
       "mcp": "Server MCP pentru agenți AI"
     },
@@ -374,10 +353,6 @@
         "a": "Da, și nu trebuie să cumperi nimic în prealabil. Licența MIT permite utilizarea comercială, inclusiv în interiorul unei companii și într-un produs comercial, fără prag de venituri și fără nimic de raportat. Dacă departamentul tău financiar are nevoie de o factură, un abonament Cloud este facturat prin furnizorul nostru de plăți și produce una. Nimic pe această pagină nu vinde o permisiune, pentru că permisiunea aceea e deja a ta.",
         "q": "Pot folosi tududi la muncă, sau în firma mea?"
       },
-      "licence": {
-        "a": "Aplicația e open source sub licența MIT, așa că poți s-o rulezi pe propriul tău server gratuit, s-o modifici și să construiești pe ea fără să plătești pe nimeni. Nu există limite de locuri și nici funcții reținute: versiunea auto-hostată e produsul complet. tududi Cloud e un serviciu plătit, pentru că găzduirea, backupurile și e-mailul costă bani de întreținut. Plătești pentru munca operațională, niciodată pentru accesul la software.",
-        "q": "Este tududi cu adevărat gratuit?"
-      },
       "maintained": {
         "a": "Da. Este dezvoltat în principal de un întreținător, cu contribuții din comunitate, și scoate versiuni frecvent. Fiecare versiune e listată pe pagina de release-uri GitHub, legată din Istoricul modificărilor din meniul de mai sus, așa că poți judeca singur ritmul, nu doar să ne crezi pe cuvânt. Dezvoltarea se face public: probleme, o foaie de parcurs publică, și un Discord unde întrebările primesc răspuns.",
         "linkLabel": "Vezi toate release-urile",
@@ -390,10 +365,6 @@
       "shutdown": {
         "a": "Aplicația e licențiată MIT și codul sursă e public, așa că nu îți poate fi retrasă. Oricine poate continua să o ruleze, și poți face un fork. Pe tududi Cloud datele tale trăiesc într-o bază de date tududi standard, nu într-un format proprietar, așa că, dacă serviciul s-ar închide vreodată, ai primi datele tale și un ghid pentru a le muta pe propriul tău server.",
         "q": "Ce se întâmplă cu datele mele dacă tududi dispare?"
-      },
-      "whyManaged": {
-        "a": "Plătești pentru a nu administra infrastructura. tududi Cloud îți dă același sistem cu serverul, actualizările, backupurile și e-mailul gestionate pentru tine, ceea ce e jumătatea complicată și fără farmec a auto-hostării. Cloud e drumul pe care îl recomandăm. Auto-hostarea e alegerea mai bună doar dacă rulezi deja Docker și un reverse proxy și vrei într-adevăr să operezi stiva.",
-        "q": "De ce să plătesc pentru Cloud când auto-hostarea e gratuită?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +422,6 @@
         "title": "Actualizări aplicate pentru tine"
       }
     },
-    "selfHostLine": "Preferi să administrezi serverul singur? Este gratuit, și este aceeași aplicație.",
     "title": "De ce să folosești tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Nu funcții. Fiecare funcție este și în versiunea auto-hostată.",
@@ -462,7 +432,6 @@
   "finalCta": {
     "primary": "Începe",
     "secondary": "Vezi prețurile",
-    "selfHostLink": "Citește ghidul.",
     "sub": "Noi administrăm serverul, actualizările și backupurile. Tu ai sistemul, și o garanție de rambursare de 14 de zile dacă nu e pentru tine.",
     "title": "Organizează-te într-un minut",
     "subTrial": "Noi ne ocupăm de server, actualizări și copii de rezervă. Încearcă gratuit {{days}} zile, fără card.",

@@ -284,7 +284,7 @@
         /* ---------- Hero ---------- */
         .hero {
             padding: 180px 16px 100px;
-            background: #fbf8f3;
+            background: #f5f6f8;
             position: relative;
             overflow: hidden;
         }
@@ -497,7 +497,7 @@
            Sits between the self-host block and pricing: the visitor has just
            been shown how to run it for free and is about to be shown a price,
            which is exactly where "is this thing real" needs answering. */
-        .press { background: #fbf8f3; }
+        .press { background: #f5f6f8; }
         .press-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
         .press-card {
             background: #fff;
@@ -579,8 +579,8 @@
         /* ---------- Plan your day ----------
            Text and screenshot side by side, alternating sides, stacked on
            phones with the text first. */
-        .plan-day { background: #f7f6f3; }
-        .families-band { background: #fbf8f3; padding: 72px 16px; }
+        .plan-day { background: #f3f4f6; }
+        .families-band { background: #f5f6f8; padding: 72px 16px; }
         .families-band-inner { display: flex; align-items: center; gap: 40px; }
         .families-band-text { flex: 1; min-width: 0; }
         .families-band .section-title { font-size: 32px; margin-bottom: 14px; }
@@ -912,14 +912,14 @@
             margin: 0 auto;
             align-items: stretch;
         }
-        /* Two cards. auto-fit would hand each one half of 1180px, which makes a
-           five-bullet card look padded out rather than confident. 760 keeps them
-           at the ~378px they were as thirds, centred as a pair. */
+        /* One card. auto-fit would stretch it across 1180px, which makes a
+           six-bullet card look padded out rather than confident; 520 is the
+           width it had as one of three, centred on its own. */
         /* Both selectors are two-class on purpose: .plan-notes sets its own
            max-width further down the sheet and would otherwise win on order,
-           leaving the fineprint 1180px wide under a 760px pair of cards. */
-        .plan-grid.plan-grid-duo,
-        .plan-notes.plan-grid-duo { max-width: 760px; }
+           leaving the fineprint 1180px wide under a 520px card. */
+        .plan-grid.plan-grid-solo,
+        .plan-notes.plan-grid-solo { max-width: 520px; grid-template-columns: minmax(0, 1fr); }
         .plan {
             background: #fcfbf9;
             border-radius: 24px;
@@ -1046,8 +1046,6 @@
            Quieter than a plain .plan, and its bullets are wrenches rather than
            ticks, because they are work the reader takes on rather than things
            they get. */
-        .plan-utility { background: #fbfbfa; }
-        .plan-features-work i { color: #9ca3af; }
         .plan-featured .plan-features { color: #d1d5db; }
         .plan-featured .plan-features i { color: #60bffa; }
         .plan-action {
@@ -1086,9 +1084,23 @@
            spanning all three cards instead of sitting under the Managed one.
            Empty cells cost nothing visually; they only hold the column. */
         .plan-fineprint { font-size: 13px; color: #9ca3af; line-height: 1.65; margin: 0; padding: 0 4px; }
+        /* The one place on the homepage that mentions self-hosting: the same
+           quiet type as the fine print, so a developer finds it and nobody
+           else reads it as a second offer. */
+        .plan-selfhost-note { margin-top: 10px; }
+        .plan-selfhost-link { color: #6b7280; text-decoration: underline; text-underline-offset: 2px; }
+        .plan-selfhost-link:hover { color: #111827; }
+
+        /* ---------- The mental load (homepage and /families) ---------- */
+        .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        .pain-card { background: #fff; border-radius: 14px; padding: 28px 24px; box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04); }
+        .pain-card i { color: #e0645c; font-size: 20px; margin-bottom: 14px; }
+        .pain-card h3 { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+        .pain-card p { color: #4b5563; font-size: 15.5px; line-height: 1.6; }
+        .pain-turn { text-align: center; font-family: 'Manrope', 'Inter', sans-serif; font-size: clamp(20px, 2.6vw, 26px); font-weight: 700; color: #111827; margin-top: 48px; }
 
         /* ---------- Features ---------- */
-        .features { background: #f7f6f3; }
+        .features { background: #f3f4f6; }
         .feature-group { margin-bottom: 60px; }
         .feature-group:last-child { margin-bottom: 0; }
         .feature-group-label { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 24px; }
@@ -1194,7 +1206,7 @@
         #feature-rest { margin-top: 60px; }
 
         /* ---------- FAQ ----------
-           White, sitting between the #f7f6f3 comparison table and the #fbf8f3
+           White, sitting between the #f3f4f6 comparison table and the #f5f6f8
            waitlist, so the three bands below the price do not run together.
            Deliberately not a .section-dark: the borders and tints below are
            light-palette values, and a fourth band colour is one too many. */
@@ -1421,14 +1433,14 @@
             pointer-events: none;
             opacity: 0;
             transition: opacity .2s;
-            background: linear-gradient(to left, #f7f6f3, rgba(247, 246, 243, 0));
+            background: linear-gradient(to left, #f3f4f6, rgba(243, 244, 246, 0));
         }
-        [dir="rtl"] .compare-scroll-wrap::after { background: linear-gradient(to right, #f7f6f3, rgba(247, 246, 243, 0)); }
+        [dir="rtl"] .compare-scroll-wrap::after { background: linear-gradient(to right, #f3f4f6, rgba(243, 244, 246, 0)); }
         .compare-scroll-wrap.has-more::after { opacity: 1; }
         .compare { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid #ececee; }
         .compare-row { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 1fr)); background: #ececee; gap: 1px; }
         .compare-row > div { background: #fff; padding: 16px; }
-        .compare-head > div { background: #f7f6f3; text-align: center; font-weight: 700; color: #111827; font-size: 14.5px; }
+        .compare-head > div { background: #f3f4f6; text-align: center; font-weight: 700; color: #111827; font-size: 14.5px; }
         .compare-head > div:first-child { text-align: left; }
         .compare-label { color: #374151; font-size: 14.5px; }
         .compare-cell { text-align: center; }
@@ -1450,7 +1462,7 @@
            while scanning rather than one column among five. */
         .vs-row { display: grid; grid-template-columns: minmax(0, 1.3fr) repeat(5, minmax(0, 1fr)); background: #ececee; gap: 1px; }
         .vs-row > div { background: #fff; padding: 16px; }
-        .vs-head > div { background: #f7f6f3; text-align: center; font-weight: 700; color: #111827; font-size: 14.5px; }
+        .vs-head > div { background: #f3f4f6; text-align: center; font-weight: 700; color: #111827; font-size: 14.5px; }
         .vs-head > div:first-child { text-align: left; }
         .vs-row > .vs-highlight { background: #eef6ff; }
         .vs-head > .vs-highlight { color: #1e86e5; }
@@ -1461,9 +1473,6 @@
         .closing { text-align: center; margin-top: 44px; }
         .closing p { margin: 0 0 22px; color: #5b6472; font-size: 16.5px; }
         .closing-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
-        .closing-selfhost { margin: 24px 0 0; font-size: 14.5px; color: #9ca3af; }
-        .closing-selfhost a { color: #6b7280; text-decoration: underline; text-underline-offset: 3px; }
-        .closing-selfhost a:hover { color: #111827; }
 
         /* ---------- Waitlist ---------- */
         /* Honeypot fields. Clipped in place rather than pushed off to the left,
@@ -1478,7 +1487,7 @@
             opacity: 0;
             pointer-events: none;
         }
-        .waitlist { background: #fbf8f3; padding: 80px 16px; border-top: 1px solid #f0eae1; }
+        .waitlist { background: #f5f6f8; padding: 80px 16px; border-top: 1px solid #f0eae1; }
         .waitlist-inner { max-width: 620px; margin: 0 auto; text-align: center; }
         .waitlist-form {
             display: flex;
@@ -1554,7 +1563,7 @@
         }
 
         /* ---------- Community ---------- */
-        .community { background: #f7f6f3; padding: 80px 16px; }
+        .community { background: #f3f4f6; padding: 80px 16px; }
         .community-inner { max-width: 800px; margin: 0 auto; text-align: center; }
         .community-badges { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
         .community-badge {

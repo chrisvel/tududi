@@ -18,9 +18,6 @@
     "families": "Keluarga"
   },
   "hero": {
-    "badgeStars": "bintang di GitHub",
-    "badgeMcp": "Server MCP bawaan",
-    "badgeCloudOpen": "tududi Cloud kini dibuka",
     "ctaDemo": "Coba demo langsung",
     "demoNote": "Instance terkelola sungguhan dengan data contoh, dipakai bersama dan direset secara berkala",
     "screenshotAlt": "Antarmuka tududi, menampilkan tampilan Hari Ini dengan tugas yang direncanakan",
@@ -34,7 +31,6 @@
   },
   "proof": {
     "stars": "bintang di GitHub",
-    "mcp": "Server MCP, {{tools}} alat",
     "languages": "{{count}} bahasa",
     "dockerPulls": "unduhan Docker",
     "discord": "anggota Discord",
@@ -218,10 +214,6 @@
         "title": "Dukungan multibahasa",
         "body": "Tersedia dalam {{count}} bahasa dengan pelokalan lengkap."
       },
-      "telegram": {
-        "title": "Integrasi Telegram",
-        "body": "Kirim pesan untuk mencatat tugas seketika, terima ringkasan harian, dan kelola daftar Anda saat bepergian."
-      },
       "caldav": {
         "title": "Sinkronisasi CalDAV",
         "body": "Sinkronisasi tugas dua arah dengan Apple Pengingat, tasks.org, Thunderbird, dan aplikasi apa pun yang mendukung CalDAV."
@@ -248,18 +240,6 @@
     "earlyBird": "HARGA PERDANA",
     "perYear": "/tahun per orang",
     "plans": {
-      "selfHosted": {
-        "action": "Baca panduan hosting sendiri →",
-        "features": [
-          "Anda menyediakan server atau NAS",
-          "Anda menangani Docker, pembaruan, dan migrasi",
-          "Anda mengonfigurasi reverse proxy dan TLS",
-          "Cadangan menjadi milik Anda",
-          "Set fitur lengkap, tanpa batas kursi, data di perangkat keras Anda sendiri"
-        ],
-        "name": "Hosting sendiri (lanjutan)",
-        "priceNote": "Gratis, jika Anda menjalankan server sendiri"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "atau",
@@ -298,7 +278,6 @@
       "kanban": "Papan Kanban",
       "views": "Tampilan pintar tersimpan",
       "people": "Tugaskan ke orang lain",
-      "telegram": "Tangkap dari Telegram",
       "caldav": "Sinkronisasi tugas CalDAV",
       "mcp": "Server MCP untuk agen AI"
     },
@@ -374,10 +353,6 @@
         "a": "Ya, dan Anda tidak perlu membeli apa pun terlebih dahulu. Lisensi MIT mengizinkan penggunaan komersial, termasuk di dalam perusahaan dan dalam produk komersial, tanpa ambang batas pendapatan dan tanpa apa pun yang harus dilaporkan. Jika tim keuangan Anda membutuhkan faktur, langganan Cloud ditagih melalui penyedia pembayaran kami dan menghasilkan faktur. Tidak ada apa pun di halaman ini yang menjual izin, karena izin itu sudah milik Anda.",
         "q": "Bisakah saya menggunakan tududi di tempat kerja, atau di perusahaan saya?"
       },
-      "licence": {
-        "a": "Aplikasi ini adalah sumber terbuka di bawah lisensi MIT, jadi Anda dapat menjalankannya di server Anda sendiri secara gratis, mengubahnya, dan membangun di atasnya tanpa membayar siapa pun. Tidak ada batas jumlah kursi dan tidak ada fitur yang ditahan: build hosting sendiri adalah produk lengkap. tududi Cloud adalah layanan berbayar, karena hosting, cadangan, dan email membutuhkan biaya untuk dijalankan. Anda membayar untuk pekerjaan operasional, bukan untuk akses ke perangkat lunak.",
-        "q": "Apakah tududi benar-benar gratis?"
-      },
       "maintained": {
         "a": "Ya. Ini dikembangkan terutama oleh satu maintainer, dengan kontribusi dari komunitas, dan sering merilis versi baru. Setiap versi terdaftar di halaman rilis GitHub, yang tertaut dari Changelog di menu di atas, sehingga Anda dapat menilai sendiri kecepatannya daripada hanya mempercayai kata-kata kami. Pengembangan dilakukan secara terbuka: isu, peta jalan publik, dan Discord tempat pertanyaan dijawab.",
         "linkLabel": "Lihat semua rilis",
@@ -390,10 +365,6 @@
       "shutdown": {
         "a": "Aplikasi ini berlisensi MIT, dan kode sumbernya publik, sehingga tidak dapat diambil dari Anda. Siapa pun dapat terus menjalankannya, dan Anda bisa mem-fork-nya. Di tududi Cloud data Anda hidup dalam basis data tududi standar bukan format proprietary, sehingga jika layanan suatu saat ditutup, Anda akan mendapatkan data Anda dan panduan untuk memindahkannya ke server Anda sendiri.",
         "q": "Apa yang terjadi pada data saya jika tududi menghilang?"
-      },
-      "whyManaged": {
-        "a": "Anda membayar agar tidak perlu menjalankan infrastruktur. tududi Cloud memberi Anda sistem yang sama dengan server, pembaruan, cadangan, dan email yang diurus untuk Anda, yang merupakan separuh hosting sendiri yang merepotkan dan kurang menarik. Cloud adalah jalur yang kami rekomendasikan. Hosting sendiri hanya menjadi pilihan yang lebih baik jika Anda sudah menjalankan Docker dan reverse proxy dan benar-benar ingin mengoperasikan stack tersebut.",
-        "q": "Mengapa membayar untuk Cloud padahal hosting sendiri gratis?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +422,6 @@
         "title": "Pembaruan diterapkan untuk Anda"
       }
     },
-    "selfHostLine": "Lebih suka menjalankan server sendiri? Itu gratis, dan itu aplikasi yang sama.",
     "title": "Mengapa menggunakan tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Bukan fitur. Setiap fitur juga ada di build hosting sendiri.",
@@ -462,7 +432,6 @@
   "finalCta": {
     "primary": "Mulai",
     "secondary": "Lihat harga",
-    "selfHostLink": "Baca panduannya.",
     "sub": "Kami menjalankan server, pembaruan, dan cadangan. Anda mendapatkan sistemnya, dan garansi uang kembali 14 hari jika tidak cocok untuk Anda.",
     "title": "Terorganisir dalam satu menit",
     "subTrial": "Kami menjalankan server, pembaruan, dan cadangan. Coba gratis selama {{days}} hari, tanpa kartu.",

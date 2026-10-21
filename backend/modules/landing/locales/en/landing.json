@@ -1,14 +1,14 @@
 {
   "meta": {
-    "title": "tududi: task manager and life management system, with MCP for AI agents",
-    "description": "Capture anything, plan your day with AI around your calendar, and keep areas, goals, projects, notes and habits in one system. An MCP server exposing {{tools}} tools lets AI agents work your list. Set up a tududi Cloud account in a minute.",
+    "title": "tududi: get everything out of your head, into one calm place",
+    "description": "Work, home, family, health. Put it all in one calm place, sorted by the parts of your life, and see only what matters today. Try tududi Cloud free, no card needed.",
     "langSwitcherLabel": "Change language",
     "langSwitcherCurrent": "Language: {{name}}"
   },
   "nav": {
     "demo": "Live demo",
     "features": "Features",
-    "ai": "AI & MCP",
+    "ai": "AI",
     "pricing": "Pricing",
     "faq": "FAQ",
     "blog": "Blog",
@@ -18,27 +18,45 @@
     "families": "Families"
   },
   "hero": {
-    "badgeStars": "stars on GitHub",
-    "badgeMcp": "MCP server built in",
-    "badgeCloudOpen": "tududi Cloud is now open",
-    "titleLine1": "Productivity made simple",
+    "badge": "For busy people, nothing to install",
+    "titleLine1": "Get it all out of your head.",
     "titleLine2": "",
-    "lede": "Capture anything, plan your day with AI around your calendar, and keep areas, goals, projects, notes and habits in one system. Create a Cloud account in a minute.",
+    "lede": "Work, home, family, health. The dentist, the renewal, the thing you promised someone. Put it all in one calm place, sorted by the parts of your life, and see only what matters today.",
     "ctaPrimary": "Start now",
     "ctaDemo": "Try the live demo",
     "demoNote": "A real hosted instance, seeded with sample data, shared and reset regularly",
     "screenshotAlt": "The tududi interface, showing the Today view with planned tasks",
     "cloudNote": "No server to set up. Monthly or yearly, and you can cancel any time.",
-    "ctaTrial": "Start your free {{days}}-day trial",
-    "cloudNoteTrial": "Free for {{days}} days, no card needed. Then monthly or yearly, cancel any time."
+    "ctaTrial": "Start free",
+    "cloudNoteTrial": "Free for {{days}} days, no card needed. Then {{monthly}} a month, cancel any time."
+  },
+  "pains": {
+    "eyebrow": "The mental load",
+    "title": "Organising is not the hard part. Remembering is.",
+    "sub": "Most apps give you another place to type things. The problem was never typing. It is carrying all of it in your head.",
+    "items": {
+      "oneHead": {
+        "title": "Everything lives in your head",
+        "body": "The dentist, the car insurance, the present, the form that was due on Friday. It is all in there, and none of it ever gets put down."
+      },
+      "notesApp": {
+        "title": "A notes app is not a system",
+        "body": "A line typed at midnight is read by nobody, including you. It scrolls away and the worry comes back a week later."
+      },
+      "tooManyApps": {
+        "title": "An app for every corner",
+        "body": "A calendar here, a list there, reminders on the phone, a spreadsheet for the move. Five places to look, and the one you need is never the one open."
+      }
+    },
+    "turn": "Write it once. Give it a place. Let it leave your head."
   },
   "proof": {
     "stars": "stars on GitHub",
-    "mcp": "MCP server, {{tools}} tools",
     "languages": "{{count}} languages",
     "dockerPulls": "Docker pulls",
     "discord": "Discord members",
-    "minute": "Set up in a minute"
+    "minute": "Set up in a minute",
+    "guarantee": "14-day money-back guarantee"
   },
   "press": {
     "featuredIn": "Featured in",
@@ -51,7 +69,7 @@
     "kicker": "AI & MCP",
     "titleLine1": "A real system",
     "titleLine2": "your AI agent can actually use",
-    "ledeHtml": "tududi ships an MCP server exposing <strong>{{tools}} tools</strong>, covering tasks, projects, areas, goals, habits, notes, people, tags, views, inbox, search and metrics. Connect Claude or any MCP-compatible agent straight to your own instance, whether that is your Cloud account or a server you run yourself. The connection goes to your instance rather than through a relay in between, which is a structural difference Todoist and Notion cannot offer, no matter what they promise.",
+    "ledeHtml": "tududi ships an MCP server exposing <strong>{{tools}} tools</strong>, covering tasks, projects, areas, goals, habits, notes, people, tags, views, inbox, search and metrics. Connect Claude or any MCP-compatible agent straight to your own account. The connection goes to your instance rather than through a relay in between, which is a structural difference Todoist and Notion cannot offer, no matter what they promise.",
     "demo": {
       "windowTitle": "Claude Desktop",
       "badge": "tududi MCP",
@@ -85,7 +103,7 @@
       },
       "dataStays": {
         "title": "It talks to your instance",
-        "body": "The MCP connection goes straight to your own tududi, on Cloud or on your own server. Nothing routes through a third party."
+        "body": "The MCP connection goes straight to your own tududi account. Nothing routes through a third party."
       },
       "openProtocol": {
         "title": "Open protocol, no lock-in",
@@ -94,9 +112,9 @@
     },
     "footnoteClients": "The same works with Cursor, Windsurf, Cline, and any other MCP client.",
     "footnoteDocsLink": "Read the MCP docs →",
-    "footnoteIncluded": "MCP comes with tududi Cloud, and with every self-hosted instance.",
+    "footnoteIncluded": "MCP is included with tududi Cloud.",
     "assistantTitle": "AI Assistant",
-    "assistantLede": "A separate, optional layer that reads your data and writes back plain-language summaries. Works with any OpenAI-compatible provider, including self-hosted ones like Ollama.",
+    "assistantLede": "A separate, optional layer that reads your data and writes back plain-language summaries. Off until you switch it on.",
     "assistantCards": {
       "task": {
         "title": "Task Insights",
@@ -119,7 +137,7 @@
   "features": {
     "eyebrow": "Features",
     "title": "A complete system for organized living",
-    "sub": "tududi combines goals, projects, tasks, notes, and smart views into one calm, focused system. Let us run it for you, or run it yourself if you prefer.",
+    "sub": "tududi combines goals, projects, tasks, notes, and smart views into one calm, focused system. We run it, so you never have to.",
     "showAll": "Show all {{count}} features",
     "preview": "Preview",
     "closePreview": "Close preview",
@@ -219,10 +237,6 @@
         "title": "Multi-Language Support",
         "body": "Available in {{count}} languages with full localization support."
       },
-      "telegram": {
-        "title": "Telegram Integration",
-        "body": "Send a message to capture tasks instantly, get daily digests, and manage your list on the go."
-      },
       "caldav": {
         "title": "CalDAV Sync",
         "body": "Bidirectional task sync with Apple Reminders, tasks.org, Thunderbird, and any CalDAV-compatible app."
@@ -233,7 +247,7 @@
       },
       "privacy": {
         "title": "Privacy and Control",
-        "body": "Keep your data private. Self-host for full control, or use a Managed instance with encrypted backups."
+        "body": "Your data is yours. Encrypted backups, export everything as one file whenever you like, and delete your account yourself."
       },
       "collab": {
         "title": "Project Collaboration",
@@ -243,24 +257,12 @@
   },
   "pricing": {
     "eyebrow": "Pricing",
-    "title": "Choose how to use tududi",
-    "sub": "One hosted plan, or run it yourself if you would rather do the ops.",
+    "title": "One plan, everything in it",
+    "sub": "No tiers, no add-ons, no features held back. Try it free, then one price.",
     "mostPopular": "MOST POPULAR",
     "earlyBird": "EARLY BIRD",
-    "perYear": "/year per person",
+    "perYear": "/year",
     "plans": {
-      "selfHosted": {
-        "name": "Self-host (advanced)",
-        "priceNote": "Free, if you run the server yourself",
-        "features": [
-          "You provision a server or a NAS",
-          "You handle Docker, updates and migrations",
-          "You configure a reverse proxy and TLS",
-          "The backups are yours to own",
-          "Full feature set, no seat limits, data on your hardware"
-        ],
-        "action": "Read the self-host guide →"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "or",
@@ -270,7 +272,7 @@
           "Running in a minute, with no server to set up",
           "Unlimited tasks, projects and notes, plus attachments",
           "Add family members or teammates, each a seat at the same price",
-          "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
+          "AI day planning, calendar feeds and CalDAV sync",
           "Updates and daily backups handled for you, with {{proStorageGb}} GB of storage",
           "Export everything any time, delete your account yourself"
         ],
@@ -280,8 +282,10 @@
         "trialNote": "The trial includes the AI assistant with a smaller allowance and one member you can add. Public note links open once you subscribe."
       }
     },
-    "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a self-host migration guide. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
-    "perMonth": "/month per person"
+    "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a guide to keep running it. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
+    "selfHostNote": "Developers: tududi is open source and can be run on your own server.",
+    "selfHostLink": "Read the guide",
+    "perMonth": "/month"
   },
   "compare": {
     "title": "Quick Comparison",
@@ -298,7 +302,6 @@
       "kanban": "Kanban boards",
       "views": "Saved smart views",
       "people": "Assign tasks to people",
-      "telegram": "Capture from Telegram",
       "caldav": "CalDAV task sync",
       "mcp": "MCP server for AI agents"
     },
@@ -312,20 +315,20 @@
   "faq": {
     "eyebrow": "FAQ",
     "title": "Questions worth answering before you commit",
-    "sub": "The licence, the AI, and what happens to your data. If something is missing, ask in Discord.",
+    "sub": "Your data, the AI, and billing. If something is missing, ask in Discord.",
     "permalink": "Link to this answer",
     "groups": {
-      "project": "Licence & project",
-      "managed": "AI, MCP & Cloud"
+      "project": "Trust & your data",
+      "managed": "Cloud, AI & billing"
     },
     "items": {
-      "licence": {
-        "q": "Is tududi really free?",
-        "a": "The application is open source under the MIT licence, so you can run it on your own server for nothing, modify it, and build on it without paying anyone. There are no seat counts and no features held back: the self-hosted build is the whole product. tududi Cloud is a paid service, because hosting, backups and email cost money to run. You are paying for the operating work, never for access to the software."
+      "trust": {
+        "q": "Can I trust you with my data?",
+        "a": "You do not have to take our word for it. tududi is open source, so anyone can read exactly how it handles your data. On Cloud, everything you put in stays yours: export it as a single file at any time, delete your account yourself, and there is a 14-day money-back guarantee if it turns out not to suit you."
       },
       "commercialUse": {
         "q": "Can I use tududi at work, or in my company?",
-        "a": "Yes, and you do not need to buy anything first. The MIT licence permits commercial use, including inside a business and inside a commercial product, with no revenue threshold and nothing to report. If your finance team needs an invoice, a Cloud subscription is billed through our payment provider and produces one. Nothing on this page sells permission, because permission is already yours."
+        "a": "Yes. Use it for work, for home, or both. A Cloud subscription is billed through our payment provider and produces an invoice your finance team can file. The MIT licence permits commercial use, with no revenue threshold and nothing to report."
       },
       "maintained": {
         "q": "Is tududi actively maintained?",
@@ -346,20 +349,16 @@
       },
       "mcp": {
         "q": "What is MCP, and what can an agent actually do?",
-        "a": "MCP is the Model Context Protocol, an open standard for connecting AI agents to real systems. tududi ships an MCP server exposing {{tools}} tools spanning tasks, projects, areas, goals, habits, notes, people, tags, views, inbox, search and metrics, so an agent can capture, find, update and finish work rather than just talk about it. It is opt-in, it comes with Cloud and with every self-hosted instance, and it works with Claude Desktop, Cursor, Windsurf, Cline, or any other MCP client."
-      },
-      "whyManaged": {
-        "q": "Why pay for Cloud when self-hosting is free?",
-        "a": "You are paying to not run infrastructure. tududi Cloud gives you the same system with the server, updates, backups and email handled for you, which is the fiddly, unglamorous half of self-hosting. Cloud is the path we recommend. Self-hosting is the better deal only if you already run Docker and a reverse proxy and actively want to operate the stack."
+        "a": "MCP is the Model Context Protocol, an open standard for connecting AI agents to real systems. tududi ships an MCP server exposing {{tools}} tools spanning tasks, projects, areas, goals, habits, notes, people, tags, views, inbox, search and metrics, so an agent can capture, find, update and finish work rather than just talk about it. It is opt-in, included with Cloud, and it works with Claude Desktop, Cursor, Windsurf, Cline, or any other MCP client."
       },
       "freePlan": {
         "q": "Is there a free plan or a trial on tududi Cloud?",
-        "a": "No. Cloud is {{monthly}} a month or {{price}} a year per person, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first. The free way to use tududi is to run it on your own server, which is the same application.",
-        "aTrial": "There is no free plan, but every new account gets a {{days}}-day free trial, no card needed. The trial includes the AI assistant with a smaller allowance and one member you can add. Public note links open once you subscribe. If you do not subscribe, the account turns read-only for 30 days so you can export your data, and is then deleted. After the trial, Cloud is {{monthly}} a month or {{price}} a year per person. The free way to use tududi is to run it on your own server, which is the same application."
+        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first.",
+        "aTrial": "There is no free plan, but every new account gets a {{days}}-day free trial, no card needed. The trial includes the AI assistant with a smaller allowance and one member you can add. Public note links open once you subscribe. If you do not subscribe, the account turns read-only for 30 days so you can export your data, and is then deleted. After the trial, Cloud is {{monthly}} a month or {{price}} a year."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",
-        "a": "Yes, at any time. Export everything as a single file from your profile and import it into a self-hosted tududi, which reads the same format. Deleting your account removes your data, attachments and backups from our servers and cancels any subscription."
+        "a": "Yes, at any time. Export everything as a single file from your profile; it is a plain file you keep. Deleting your account removes your data, attachments and backups from our servers and cancels any subscription."
       }
     }
   },
@@ -450,21 +449,19 @@
       "Unlimited tasks, projects and notes",
       "Add family members or teammates, each a seat at the same price",
       "Attachments and file uploads",
-      "AI day planning, MCP, calendar feeds, CalDAV and the Telegram bot",
+      "AI day planning, calendar feeds and CalDAV sync",
       "Daily backups and managed updates",
       "Support by email",
       "Export everything at any time"
     ],
-    "selfHostLine": "Would you rather run the server yourself? That is free, and it is the same application.",
     "ctaTrial": "Start free trial",
     "pricingSubTrial": "Try it free for {{days}} days, no card needed. Everything is included after that, cancel whenever you like."
   },
   "finalCta": {
-    "title": "Get organized in a minute",
+    "title": "Put it all down, tonight.",
     "sub": "We run the server, the updates and the backups. You get the system, and a 14-day money-back guarantee if it is not for you.",
     "primary": "Get started",
     "secondary": "See pricing",
-    "selfHostLink": "Read the guide.",
     "subTrial": "We run the server, the updates and the backups. Try it free for {{days}} days, no card needed.",
     "primaryTrial": "Start free trial"
   },

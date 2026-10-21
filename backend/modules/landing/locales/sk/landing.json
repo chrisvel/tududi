@@ -18,9 +18,6 @@
     "families": "Rodiny"
   },
   "hero": {
-    "badgeStars": "hviezdičiek na GitHube",
-    "badgeMcp": "Vstavaný MCP server",
-    "badgeCloudOpen": "tududi Cloud je už otvorený",
     "starsLoading": "Načítava sa počet hviezdičiek",
     "titleLine1": "Produktivita jednoducho",
     "titleLine2": "",
@@ -35,7 +32,6 @@
   },
   "proof": {
     "stars": "hviezdičiek na GitHube",
-    "mcp": "MCP server, {{tools}} nástrojov",
     "languages": "{{count}} jazykov",
     "dockerPulls": "stiahnutí z Dockeru",
     "discord": "členov na Discorde",
@@ -221,10 +217,6 @@
         "title": "Podpora viacerých jazykov",
         "body": "Dostupné v {{count}} jazykoch s plnou podporou lokalizácie."
       },
-      "telegram": {
-        "title": "Integrácia s Telegramom",
-        "body": "Pošlite správu a úloha je okamžite zachytená, dostávajte denné súhrny a spravujte svoj zoznam na cestách."
-      },
       "caldav": {
         "title": "Synchronizácia CalDAV",
         "body": "Obojsmerná synchronizácia úloh s Apple Reminders, tasks.org, Thunderbirdom a akoukoľvek aplikáciou kompatibilnou s CalDAV."
@@ -251,18 +243,6 @@
     "earlyBird": "ZAVÁDZACIA CENA",
     "perYear": "/rok",
     "plans": {
-      "selfHosted": {
-        "name": "Vlastný server (pre pokročilých)",
-        "priceNote": "Zadarmo, ak si server prevádzkujete sami",
-        "features": [
-          "Server alebo NAS si zabezpečíte sami",
-          "O Docker, aktualizácie a migrácie sa staráte vy",
-          "Reverzné proxy a TLS si nastavíte sami",
-          "Zálohy máte vo vlastných rukách",
-          "Všetky funkcie, bez limitu používateľov, dáta na vašom hardvéri"
-        ],
-        "action": "Prečítajte si návod na vlastný server →"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "alebo",
@@ -300,7 +280,6 @@
       "kanban": "Kanban tabule",
       "views": "Uložené inteligentné zobrazenia",
       "people": "Prideľovanie úloh ľuďom",
-      "telegram": "Zachytávanie z Telegramu",
       "caldav": "Synchronizácia úloh cez CalDAV",
       "mcp": "MCP server pre AI agentov"
     },
@@ -321,10 +300,6 @@
       "managed": "AI, MCP a Cloud"
     },
     "items": {
-      "licence": {
-        "q": "Je tududi naozaj zadarmo?",
-        "a": "Aplikácia je open source pod licenciou MIT, takže ju môžete bezplatne prevádzkovať na vlastnom serveri, upravovať ju a stavať na nej bez toho, aby ste niekomu platili. Neexistujú žiadne limity používateľov ani zadržiavané funkcie: verzia na vlastný server je celý produkt. tududi Cloud je platená služba, pretože hosting, zálohy a e-maily stoja peniaze. Platíte za prevádzku, nikdy nie za prístup k softvéru."
-      },
       "commercialUse": {
         "q": "Môžem tududi používať v práci alebo vo svojej firme?",
         "a": "Áno a nemusíte si nič vopred kupovať. Licencia MIT povoľuje komerčné použitie vrátane použitia vo firme a v komerčnom produkte, bez hranice obratu a bez akéhokoľvek nahlasovania. Ak vaše účtovné oddelenie potrebuje faktúru, predplatné Cloudu sa účtuje cez nášho platobného poskytovateľa, ktorý ju vystaví. Nič na tejto stránke nepredáva povolenie, pretože povolenie už máte."
@@ -349,10 +324,6 @@
       "mcp": {
         "q": "Čo je MCP a čo vlastne agent dokáže?",
         "a": "MCP je Model Context Protocol, otvorený štandard na prepojenie AI agentov so skutočnými systémami. tududi obsahuje MCP server so {{tools}} nástrojmi pre úlohy, projekty, oblasti, ciele, návyky, poznámky, ľudí, štítky, zobrazenia, Schránku, vyhľadávanie a metriky, takže agent dokáže prácu zachytiť, nájsť, upraviť a dokončiť, nielen o nej hovoriť. Je voliteľný, je súčasťou Cloudu aj každej inštancie na vlastnom serveri a funguje s Claude Desktop, Cursorom, Windsurfom, Clineom alebo akýmkoľvek iným MCP klientom."
-      },
-      "whyManaged": {
-        "q": "Prečo platiť za Cloud, keď je vlastný server zadarmo?",
-        "a": "Platíte za to, že nemusíte prevádzkovať infraštruktúru. tududi Cloud vám dá rovnaký systém, pričom o server, aktualizácie, zálohy a e-maily sa postaráme my – teda o tú piplavú a nevďačnú polovicu vlastného hostingu. Cloud je cesta, ktorú odporúčame. Vlastný server sa oplatí viac iba vtedy, ak už prevádzkujete Docker a reverzné proxy a naozaj chcete celú infraštruktúru spravovať sami."
       },
       "freePlan": {
         "q": "Existuje v tududi Cloud bezplatný plán alebo skúšobná verzia?",
@@ -451,7 +422,6 @@
       "Podpora e-mailom",
       "Export všetkého kedykoľvek"
     ],
-    "selfHostLine": "Chcete si server radšej prevádzkovať sami? Je to zadarmo a je to tá istá aplikácia.",
     "ctaTrial": "Vyskúšať zadarmo"
   },
   "finalCta": {
@@ -460,8 +430,7 @@
     "subTrial": "Server, aktualizácie a zálohy prevádzkujeme my. Vyskúšajte {{days}} dní zadarmo, bez platobnej karty.",
     "primary": "Začať",
     "primaryTrial": "Vyskúšať zadarmo",
-    "secondary": "Pozrieť cenník",
-    "selfHostLink": "Prečítajte si návod."
+    "secondary": "Pozrieť cenník"
   },
   "contact": {
     "title": "Kontaktujte nás",

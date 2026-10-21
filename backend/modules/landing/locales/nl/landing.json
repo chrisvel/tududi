@@ -18,9 +18,6 @@
     "families": "Gezinnen"
   },
   "hero": {
-    "badgeStars": "sterren op GitHub",
-    "badgeMcp": "MCP-server ingebouwd",
-    "badgeCloudOpen": "tududi Cloud is nu open",
     "ctaDemo": "Probeer de live demo",
     "demoNote": "Een echte gehoste instantie met voorbeeldgegevens, gedeeld en regelmatig gereset",
     "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken",
@@ -34,7 +31,6 @@
   },
   "proof": {
     "stars": "sterren op GitHub",
-    "mcp": "MCP-server, {{tools}} tools",
     "languages": "{{count}} talen",
     "dockerPulls": "Docker-pulls",
     "discord": "Discord-leden",
@@ -218,10 +214,6 @@
         "title": "Meertalige ondersteuning",
         "body": "Beschikbaar in {{count}} talen met volledige lokalisatie."
       },
-      "telegram": {
-        "title": "Telegram-integratie",
-        "body": "Stuur een bericht om taken direct vast te leggen, ontvang dagelijkse overzichten en beheer je lijst onderweg."
-      },
       "caldav": {
         "title": "CalDAV-synchronisatie",
         "body": "Tweerichtingssynchronisatie van taken met Apple Herinneringen, tasks.org, Thunderbird en elke CalDAV-compatibele app."
@@ -248,18 +240,6 @@
     "earlyBird": "VROEGBOEK",
     "perYear": "/jaar per persoon",
     "plans": {
-      "selfHosted": {
-        "action": "Lees de zelfhostgids →",
-        "features": [
-          "Jij zet een server of NAS op",
-          "Jij regelt Docker, updates en migraties",
-          "Jij configureert een reverse proxy en TLS",
-          "De backups zijn van jou",
-          "Volledige functieset, geen plaatsenlimiet, gegevens op je eigen hardware"
-        ],
-        "name": "Zelfhosten (geavanceerd)",
-        "priceNote": "Gratis, als je de server zelf draait"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "of",
@@ -298,7 +278,6 @@
       "kanban": "Kanbanborden",
       "views": "Opgeslagen slimme weergaven",
       "people": "Taken toewijzen aan personen",
-      "telegram": "Vastleggen via Telegram",
       "caldav": "Taaksynchronisatie via CalDAV",
       "mcp": "MCP-server voor AI-agents"
     },
@@ -374,10 +353,6 @@
         "a": "Ja, en je hoeft daarvoor niets te kopen. De MIT-licentie staat commercieel gebruik toe, ook binnen een bedrijf en in een commercieel product, zonder omzetgrens en zonder iets te melden. Als je financiële afdeling een factuur nodig heeft: een Cloud-abonnement wordt via onze betalingsprovider gefactureerd en levert er een. Niets op deze pagina verkoopt toestemming, want die toestemming heb je al.",
         "q": "Mag ik tududi op het werk, of in mijn bedrijf, gebruiken?"
       },
-      "licence": {
-        "a": "De applicatie is open source onder de MIT-licentie, dus je kunt hem gratis op je eigen server draaien, aanpassen en erop bouwen zonder iemand te betalen. Er is geen plaatsenlimiet en geen achtergehouden functies: de zelfgehoste build is het volledige product. tududi Cloud is een betaalde dienst, omdat hosting, backups en e-mail geld kosten om te draaien. Je betaalt voor het operationele werk, nooit voor toegang tot de software.",
-        "q": "Is tududi echt gratis?"
-      },
       "maintained": {
         "a": "Ja. Het wordt vooral ontwikkeld door één maintainer, met bijdragen van de community, en er komen vaak releases uit. Elke versie staat op de GitHub-releasepagina, gelinkt vanuit de Changelog in het menu hierboven, zodat je het tempo zelf kunt beoordelen in plaats van ons op ons woord te geloven. De ontwikkeling gebeurt in het openbaar: issues, een openbare roadmap, en een Discord waar vragen worden beantwoord.",
         "linkLabel": "Bekijk alle releases",
@@ -390,10 +365,6 @@
       "shutdown": {
         "a": "De app is MIT-gelicentieerd en de broncode is openbaar, dus die kan niet van je worden afgenomen. Iedereen kan hem blijven draaien, en jij kunt hem forken. Bij tududi Cloud leven je gegevens in een standaard tududi-database in plaats van een eigen formaat, dus als de dienst ooit zou stoppen, krijg je je gegevens en een gids om ze naar je eigen server te verhuizen.",
         "q": "Wat gebeurt er met mijn gegevens als tududi verdwijnt?"
-      },
-      "whyManaged": {
-        "a": "Je betaalt om geen infrastructuur te beheren. tududi Cloud geeft je hetzelfde systeem met de server, updates, backups en e-mail voor je verzorgd, wat de vervelende, weinig glamoureuze helft van zelfhosten is. Cloud is het pad dat we aanraden. Zelfhosten is alleen de betere deal als je al Docker en een reverse proxy draait en de stack actief wilt beheren.",
-        "q": "Waarom betalen voor Cloud als zelfhosten gratis is?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +422,6 @@
         "title": "Updates voor je toegepast"
       }
     },
-    "selfHostLine": "Wil je liever de server zelf draaien? Dat is gratis, en het is dezelfde applicatie.",
     "title": "Waarom tududi Cloud gebruiken?",
     "whyEyebrow": "Cloud",
     "whySub": "Geen functies. Elke functie zit ook in de zelfgehoste build.",
@@ -462,7 +432,6 @@
   "finalCta": {
     "primary": "Aan de slag",
     "secondary": "Bekijk prijzen",
-    "selfHostLink": "Lees de gids.",
     "sub": "Wij beheren de server, de updates en de backups. Jij krijgt het systeem, en een geld-terug-garantie van 14 dagen als het niet voor jou is.",
     "title": "Organiseer jezelf in een minuut",
     "subTrial": "Wij draaien de server, de updates en de back-ups. Probeer het {{days}} dagen gratis, zonder kaart.",

@@ -18,9 +18,6 @@
     "families": "Famiglie"
   },
   "hero": {
-    "badgeStars": "stelle su GitHub",
-    "badgeMcp": "Server MCP integrato",
-    "badgeCloudOpen": "tududi Cloud è aperto",
     "ctaDemo": "Prova la demo dal vivo",
     "demoNote": "Un'istanza ospitata reale, con dati di esempio, condivisa e reimpostata regolarmente",
     "screenshotAlt": "L'interfaccia di tududi, con la vista Oggi e le attività pianificate",
@@ -34,7 +31,6 @@
   },
   "proof": {
     "stars": "stelle su GitHub",
-    "mcp": "Server MCP, {{tools}} strumenti",
     "languages": "{{count}} lingue",
     "dockerPulls": "download Docker",
     "discord": "membri su Discord",
@@ -218,10 +214,6 @@
         "title": "Supporto multilingua",
         "body": "Disponibile in {{count}} lingue con localizzazione completa."
       },
-      "telegram": {
-        "title": "Integrazione con Telegram",
-        "body": "Manda un messaggio per registrare subito un'attività, ricevi riepiloghi giornalieri e gestisci la lista ovunque tu sia."
-      },
       "caldav": {
         "title": "Sincronizzazione CalDAV",
         "body": "Sincronizzazione bidirezionale delle attività con Apple Promemoria, tasks.org, Thunderbird e qualsiasi app compatibile con CalDAV."
@@ -248,18 +240,6 @@
     "earlyBird": "OFFERTA LANCIO",
     "perYear": "/anno a persona",
     "plans": {
-      "selfHosted": {
-        "action": "Leggi la guida al self-hosting →",
-        "features": [
-          "Fornisci tu un server o un NAS",
-          "Gestisci tu Docker, aggiornamenti e migrazioni",
-          "Configuri tu un reverse proxy e TLS",
-          "I backup sono tuoi",
-          "Tutte le funzioni, nessun limite di posti, dati sul tuo hardware"
-        ],
-        "name": "Self-hosted (avanzato)",
-        "priceNote": "Gratis, se gestisci tu il server"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "oppure",
@@ -298,7 +278,6 @@
       "kanban": "Bacheche Kanban",
       "views": "Viste intelligenti salvate",
       "people": "Assegna attività alle persone",
-      "telegram": "Acquisizione da Telegram",
       "caldav": "Sincronizzazione attività via CalDAV",
       "mcp": "Server MCP per agenti IA"
     },
@@ -374,10 +353,6 @@
         "a": "Sì, e non devi comprare nulla prima. La licenza MIT permette l'uso commerciale, anche all'interno di un'azienda e in un prodotto commerciale, senza soglia di fatturato e senza nulla da dichiarare. Se il tuo ufficio contabilità ha bisogno di una fattura, un abbonamento Cloud viene fatturato tramite il nostro fornitore di pagamenti e ne produce una. Niente in questa pagina vende un permesso, perché quel permesso è già tuo.",
         "q": "Posso usare tududi al lavoro, o nella mia azienda?"
       },
-      "licence": {
-        "a": "L'applicazione è open source con licenza MIT, quindi puoi farla funzionare sul tuo server gratis, modificarla e costruirci sopra senza pagare nessuno. Non ci sono limiti di posti né funzioni tenute indietro: la versione self-hosted è il prodotto completo. tududi Cloud è un servizio a pagamento, perché hosting, backup ed email costano soldi da gestire. Paghi il lavoro operativo, mai l'accesso al software.",
-        "q": "tududi è davvero gratuito?"
-      },
       "maintained": {
         "a": "Sì. È sviluppato principalmente da un maintainer, con contributi dalla community, ed esce spesso. Ogni versione è elencata nella pagina delle release su GitHub, collegata dal Changelog nel menu qui sopra, così puoi giudicare il ritmo da solo invece di fidarti sulla parola. Lo sviluppo avviene in pubblico: issue, una roadmap pubblica e un Discord dove le domande trovano risposta.",
         "linkLabel": "Vedi tutte le release",
@@ -390,10 +365,6 @@
       "shutdown": {
         "a": "L'app ha licenza MIT e il codice sorgente è pubblico, quindi non può esserti tolta. Chiunque può continuare a farla funzionare, e puoi forkarla. Su tududi Cloud i tuoi dati vivono in un database tududi standard invece di un formato proprietario, quindi se il servizio dovesse mai chiudere, otterresti i tuoi dati e una guida per trasferirli sul tuo server.",
         "q": "Cosa succede ai miei dati se tududi scompare?"
-      },
-      "whyManaged": {
-        "a": "Paghi per non gestire l'infrastruttura. tududi Cloud ti dà lo stesso sistema con server, aggiornamenti, backup ed email gestiti per te, che è la metà noiosa e poco affascinante del self-hosting. Cloud è la strada che raccomandiamo. Il self-hosting è la scelta migliore solo se già gestisci Docker e un reverse proxy e vuoi davvero occuparti dello stack.",
-        "q": "Perché pagare per Cloud quando il self-hosting è gratis?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +422,6 @@
         "title": "Aggiornamenti applicati per te"
       }
     },
-    "selfHostLine": "Preferisci gestire il server tu stesso? È gratis, ed è la stessa applicazione.",
     "title": "Perché usare tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Non funzioni. Ogni funzione è anche nella versione self-hosted.",
@@ -462,7 +432,6 @@
   "finalCta": {
     "primary": "Inizia",
     "secondary": "Vedi i prezzi",
-    "selfHostLink": "Leggi la guida.",
     "sub": "Gestiamo noi il server, gli aggiornamenti e i backup. Tu hai il sistema, e una garanzia di rimborso di 14 giorni se non è per te.",
     "title": "Organizzati in un minuto",
     "subTrial": "Gestiamo noi il server, gli aggiornamenti e i backup. Provalo gratis per {{days}} giorni, senza carta.",

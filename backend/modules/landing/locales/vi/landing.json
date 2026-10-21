@@ -18,9 +18,6 @@
     "families": "Gia đình"
   },
   "hero": {
-    "badgeStars": "sao trên GitHub",
-    "badgeMcp": "Tích hợp sẵn máy chủ MCP",
-    "badgeCloudOpen": "tududi Cloud đã mở",
     "ctaDemo": "Dùng thử bản demo trực tiếp",
     "demoNote": "Một phiên bản lưu trữ thật với dữ liệu mẫu, dùng chung và được đặt lại thường xuyên",
     "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch",
@@ -34,7 +31,6 @@
   },
   "proof": {
     "stars": "sao trên GitHub",
-    "mcp": "Máy chủ MCP, {{tools}} công cụ",
     "languages": "{{count}} ngôn ngữ",
     "dockerPulls": "lượt tải Docker",
     "discord": "thành viên Discord",
@@ -218,10 +214,6 @@
         "title": "Hỗ trợ đa ngôn ngữ",
         "body": "Có sẵn bằng {{count}} ngôn ngữ với bản địa hóa đầy đủ."
       },
-      "telegram": {
-        "title": "Tích hợp Telegram",
-        "body": "Gửi một tin nhắn để ghi việc ngay lập tức, nhận bản tóm tắt hằng ngày và quản lý danh sách khi đang di chuyển."
-      },
       "caldav": {
         "title": "Đồng bộ CalDAV",
         "body": "Đồng bộ công việc hai chiều với Apple Lời nhắc, tasks.org, Thunderbird và mọi ứng dụng hỗ trợ CalDAV."
@@ -248,18 +240,6 @@
     "earlyBird": "ƯU ĐÃI SỚM",
     "perYear": "/năm mỗi người",
     "plans": {
-      "selfHosted": {
-        "action": "Đọc hướng dẫn tự lưu trữ →",
-        "features": [
-          "Bạn tự cung cấp một máy chủ hoặc NAS",
-          "Bạn xử lý Docker, các bản cập nhật và migration",
-          "Bạn cấu hình một reverse proxy và TLS",
-          "Bản sao lưu thuộc về bạn",
-          "Bộ tính năng đầy đủ, không giới hạn số ghế, dữ liệu trên phần cứng riêng của bạn"
-        ],
-        "name": "Tự lưu trữ (nâng cao)",
-        "priceNote": "Miễn phí, nếu bạn tự chạy máy chủ"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "hoặc",
@@ -298,7 +278,6 @@
       "kanban": "Bảng Kanban",
       "views": "Chế độ xem thông minh đã lưu",
       "people": "Giao việc cho người khác",
-      "telegram": "Ghi nhanh từ Telegram",
       "caldav": "Đồng bộ công việc qua CalDAV",
       "mcp": "Máy chủ MCP cho tác tử AI"
     },
@@ -374,10 +353,6 @@
         "a": "Có, và bạn không cần mua gì trước. Bản quyền MIT cho phép sử dụng thương mại, bao gồm cả trong một công ty và trong một sản phẩm thương mại, không có ngưỡng doanh thu và không có gì phải báo cáo. Nếu bộ phận tài chính của bạn cần hóa đơn, một gói đăng ký Cloud được lập hóa đơn qua nhà cung cấp thanh toán của chúng tôi và tạo ra một hóa đơn. Không có gì trên trang này bán sự cho phép, vì sự cho phép đó đã là của bạn rồi.",
         "q": "Tôi có thể dùng tududi tại nơi làm việc, hoặc trong công ty của mình không?"
       },
-      "licence": {
-        "a": "Ứng dụng này là mã nguồn mở theo bản quyền MIT, vì vậy bạn có thể chạy nó trên máy chủ riêng của mình miễn phí, chỉnh sửa nó, và xây dựng dựa trên nó mà không phải trả tiền cho ai. Không có giới hạn số ghế và không có tính năng bị giữ lại: bản tự lưu trữ là sản phẩm hoàn chỉnh. tududi Cloud là một dịch vụ có phí, vì lưu trữ, sao lưu và email tốn tiền để vận hành. Bạn trả tiền cho công việc vận hành, không bao giờ cho quyền truy cập vào phần mềm.",
-        "q": "tududi có thực sự miễn phí không?"
-      },
       "maintained": {
         "a": "Có. Nó được phát triển chủ yếu bởi một người duy trì, với sự đóng góp từ cộng đồng, và phát hành thường xuyên. Mỗi phiên bản được liệt kê trên trang phát hành GitHub, được liên kết từ Changelog trong menu ở trên, để bạn có thể tự đánh giá tốc độ chứ không chỉ dựa vào lời chúng tôi nói. Việc phát triển diễn ra công khai: các vấn đề, một lộ trình công khai, và một Discord nơi các câu hỏi được trả lời.",
         "linkLabel": "Xem tất cả các phiên bản",
@@ -390,10 +365,6 @@
       "shutdown": {
         "a": "Ứng dụng có bản quyền MIT, và mã nguồn là công khai, vì vậy nó không thể bị lấy đi từ bạn. Bất kỳ ai cũng có thể tiếp tục chạy nó, và bạn có thể fork nó. Trên tududi Cloud, dữ liệu của bạn sống trong một cơ sở dữ liệu tududi chuẩn thay vì một định dạng độc quyền, vì vậy nếu dịch vụ có bao giờ đóng lại, bạn sẽ nhận được dữ liệu của mình và một hướng dẫn để chuyển nó sang máy chủ riêng của bạn.",
         "q": "Điều gì sẽ xảy ra với dữ liệu của tôi nếu tududi biến mất?"
-      },
-      "whyManaged": {
-        "a": "Bạn trả tiền để không phải vận hành hạ tầng. tududi Cloud cho bạn cùng một hệ thống với máy chủ, các bản cập nhật, sao lưu và email được xử lý cho bạn, đó là nửa phần phiền phức, kém hào nhoáng của tự lưu trữ. Cloud là con đường chúng tôi đề xuất. Tự lưu trữ chỉ là lựa chọn tốt hơn nếu bạn đã chạy Docker và reverse proxy và thực sự muốn vận hành cả bộ công cụ đó.",
-        "q": "Vì sao phải trả tiền cho Cloud khi tự lưu trữ là miễn phí?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +422,6 @@
         "title": "Cập nhật được áp dụng cho bạn"
       }
     },
-    "selfHostLine": "Bạn thích tự điều hành máy chủ hơn? Điều đó là miễn phí, và đó là cùng một ứng dụng.",
     "title": "Vì sao nên dùng tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Không phải là tính năng. Mọi tính năng đều có trong bản tự lưu trữ.",
@@ -462,7 +432,6 @@
   "finalCta": {
     "primary": "Bắt đầu",
     "secondary": "Xem giá",
-    "selfHostLink": "Đọc hướng dẫn.",
     "sub": "Chúng tôi vận hành máy chủ, các bản cập nhật và bản sao lưu. Bạn có được hệ thống, và một bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn.",
     "title": "Tổ chức mọi thứ trong một phút",
     "subTrial": "Chúng tôi vận hành máy chủ, cập nhật và sao lưu. Dùng thử miễn phí {{days}} ngày, không cần thẻ.",
