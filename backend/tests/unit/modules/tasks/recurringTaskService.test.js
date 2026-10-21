@@ -471,7 +471,9 @@ describe('RecurringTaskService - UTC Consistency', () => {
             const moment = require('moment-timezone');
             // 2026-10-24 09:00 Europe/Berlin is still CEST (UTC+2) → 07:00Z
             // 2026-10-25 is the first day after the clocks fall back (CET UTC+1).
-            const start = moment.tz('2026-10-24 09:00:00', 'Europe/Berlin').toDate();
+            const start = moment
+                .tz('2026-10-24 09:00:00', 'Europe/Berlin')
+                .toDate();
             const task = {
                 due_date: start,
                 due_has_time: true,
@@ -488,7 +490,9 @@ describe('RecurringTaskService - UTC Consistency', () => {
 
             expect(occurrences).toHaveLength(4);
             const localHours = occurrences.map((o) =>
-                moment(o.due_date).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm')
+                moment(o.due_date)
+                    .tz('Europe/Berlin')
+                    .format('YYYY-MM-DD HH:mm')
             );
             expect(localHours).toEqual([
                 '2026-10-24 09:00',

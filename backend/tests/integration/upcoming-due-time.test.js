@@ -229,5 +229,4 @@ describe('Upcoming due time (#1932)', () => {
             expect(byDate['2026-10-27']).toBe('09:00');
         });
     });
-
 });
