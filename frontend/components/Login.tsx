@@ -4,6 +4,7 @@ import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { getApiPath, getAssetPath } from '../config/paths';
 import OIDCProviderButtons from './Auth/OIDCProviderButtons';
+import type { OIDCProvider } from '../utils/oidcService';
 import CaptchaWidget from './Auth/CaptchaWidget';
 import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
 import { clearCsrfToken } from '../utils/csrfService';
@@ -19,9 +20,7 @@ const Login: React.FC = () => {
     const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
-    const [oidcProviders, setOidcProviders] = useState<
-        Array<{ slug: string; name: string }>
-    >([]);
+    const [oidcProviders, setOidcProviders] = useState<OIDCProvider[]>([]);
     const navigate = useNavigate();
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();

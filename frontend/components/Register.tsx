@@ -5,6 +5,7 @@ import { getApiPath, getAssetPath } from '../config/paths';
 import { PASSWORD_MIN_LENGTH } from '../utils/passwordPolicy';
 import CaptchaWidget from './Auth/CaptchaWidget';
 import OIDCProviderButtons from './Auth/OIDCProviderButtons';
+import type { OIDCProvider } from '../utils/oidcService';
 import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
 
 const Register: React.FC = () => {
@@ -19,9 +20,7 @@ const Register: React.FC = () => {
     const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [captchaReset, setCaptchaReset] = useState(0);
-    const [oidcProviders, setOidcProviders] = useState<
-        { slug: string; name: string }[]
-    >([]);
+    const [oidcProviders, setOidcProviders] = useState<OIDCProvider[]>([]);
 
     useEffect(() => {
         fetchCaptchaConfig().then(setCaptcha);

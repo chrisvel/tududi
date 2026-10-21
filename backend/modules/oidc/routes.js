@@ -13,6 +13,8 @@ router.get('/auth/:slug', oidcLimiter, controller.initiateAuth);
 
 router.get('/callback/:slug', oidcLimiter, controller.handleCallback);
 
+router.post('/callback/:slug', oidcLimiter, controller.handleFormPostCallback);
+
 router.post(
     '/link/:slug',
     requireAuth,

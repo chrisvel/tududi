@@ -1,6 +1,7 @@
 const { Issuer, generators } = require('openid-client');
 const { createRemoteJWKSet, jwtVerify } = require('jose');
 const providerConfig = require('./providerConfig');
+const appleProvider = require('./appleProvider');
 const stateManager = require('./stateManager');
 const { OidcUserError } = require('./errors');
 
@@ -41,6 +42,23 @@ async function discoverProvider(config) {
     }
 }
 
+// Apple takes its signed client secret in the request body only.
+async function buildClient(issuer, config, redirectUri) {
+    const apple = appleProvider.isAppleProvider(config);
+    const metadata = {
+        client_id: config.clientId,
+        client_secret: apple
+            ? await appleProvider.getClientSecret(config)
+            : config.clientSecret,
+    };
+    if (apple) metadata.token_endpoint_auth_method = 'client_secret_post';
+    if (redirectUri) {
+        metadata.redirect_uris = [redirectUri];
+        metadata.response_types = ['code'];
+    }
+    return new issuer.Client(metadata);
+}
+
 function getRedirectUri(providerSlug, baseUrl) {
     const base = baseUrl || process.env.BASE_URL || 'http://localhost:3002';
     return `${base}/api/oidc/callback/${providerSlug}`;
@@ -57,15 +75,16 @@ async function initiateAuthFlow(providerSlug, linkMode = false, userId = null) {
     }
 
     const issuer = await discoverProvider(config);
+    const client = await buildClient(
+        issuer,
+        config,
+        getRedirectUri(providerSlug)
+    );
+    const apple = appleProvider.isAppleProvider(config);
 
-    const client = new issuer.Client({
-        client_id: config.clientId,
-        client_secret: config.clientSecret,
-        redirect_uris: [getRedirectUri(providerSlug)],
-        response_types: ['code'],
-    });
-
-    const codeVerifier = generators.codeVerifier();
+    // Apple does not advertise PKCE, so its flow relies on the state, the
+    // nonce and the browser binding alone.
+    const codeVerifier = apple ? null : generators.codeVerifier();
 
     const { state, nonce, bindingToken } = await stateManager.createState(
         providerSlug,
@@ -73,13 +92,15 @@ async function initiateAuthFlow(providerSlug, linkMode = false, userId = null) {
         { userId: linkMode ? userId : null, codeVerifier }
     );
 
-    const authUrl = client.authorizationUrl({
-        scope: config.scope,
-        state,
-        nonce,
-        code_challenge: generators.codeChallenge(codeVerifier),
-        code_challenge_method: 'S256',
-    });
+    const authParams = { scope: config.scope, state, nonce };
+    if (codeVerifier) {
+        authParams.code_challenge = generators.codeChallenge(codeVerifier);
+        authParams.code_challenge_method = 'S256';
+    }
+    // Apple requires a form POST callback when name or email is requested.
+    if (apple) authParams.response_mode = 'form_post';
+
+    const authUrl = client.authorizationUrl(authParams);
 
     return { authUrl, state, nonce, bindingToken };
 }
@@ -110,17 +131,19 @@ async function handleCallback(providerSlug, callbackParams, bindingToken) {
     }
 
     const issuer = await discoverProvider(config);
+    const client = await buildClient(
+        issuer,
+        config,
+        getRedirectUri(providerSlug)
+    );
+    const apple = appleProvider.isAppleProvider(config);
 
-    const client = new issuer.Client({
-        client_id: config.clientId,
-        client_secret: config.clientSecret,
-        redirect_uris: [getRedirectUri(providerSlug)],
-        response_types: ['code'],
-    });
+    // Apple's one-time `user` field is not an OAuth parameter.
+    const { user: appleUser, ...oauthParams } = callbackParams;
 
     const tokenSet = await client.callback(
         getRedirectUri(providerSlug),
-        callbackParams,
+        oauthParams,
         {
             nonce: stateData.nonce,
             state: callbackParams.state,
@@ -131,7 +154,11 @@ async function handleCallback(providerSlug, callbackParams, bindingToken) {
     const idTokenClaims = tokenSet.claims();
 
     let claims = { ...idTokenClaims };
-    if (tokenSet.access_token) {
+    if (apple) {
+        claims = { ...appleProvider.namesFromUserParam(appleUser), ...claims };
+    }
+    // Apple has no UserInfo endpoint: everything is in the ID token.
+    if (tokenSet.access_token && !apple) {
         try {
             const userInfoClaims = await client.userinfo(tokenSet.access_token);
             // UserInfo supplements missing claims; ID token claims take precedence
@@ -162,11 +189,7 @@ async function validateIdToken(idToken, nonce, providerSlug) {
     }
 
     const issuer = await discoverProvider(config);
-
-    const client = new issuer.Client({
-        client_id: config.clientId,
-        client_secret: config.clientSecret,
-    });
+    const client = await buildClient(issuer, config);
 
     const tokenSet = await client.validateIdToken({ id_token: idToken }, nonce);
     return tokenSet.claims();
@@ -179,11 +202,7 @@ async function refreshAccessToken(providerSlug, refreshToken) {
     }
 
     const issuer = await discoverProvider(config);
-
-    const client = new issuer.Client({
-        client_id: config.clientId,
-        client_secret: config.clientSecret,
-    });
+    const client = await buildClient(issuer, config);
 
     const tokenSet = await client.refresh(refreshToken);
 

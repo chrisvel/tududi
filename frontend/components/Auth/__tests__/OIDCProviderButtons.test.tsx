@@ -17,6 +17,7 @@ jest.mock('react-i18next', () => ({
 
 const google = { slug: 'google', name: 'Google' };
 const okta = { slug: 'okta', name: 'Company SSO' };
+const apple = { slug: 'apple', name: 'Apple', brand: 'apple' as const };
 
 describe('OIDCProviderButtons', () => {
     it('renders nothing without providers', () => {
@@ -40,5 +41,19 @@ describe('OIDCProviderButtons', () => {
         expect(screen.getByTestId('oidc-google')).toHaveTextContent(
             'Sign up with Google'
         );
+    });
+
+    it('gives Apple its mark and a solid button, wherever it sits', () => {
+        render(
+            <OIDCProviderButtons
+                providers={[{ ...apple, slug: 'siwa' }, okta]}
+                mode="signUp"
+            />
+        );
+        const button = screen.getByTestId('oidc-siwa');
+        expect(button).toHaveTextContent('Sign up with Apple');
+        expect(button).toHaveClass('bg-black');
+        expect(screen.getAllByTestId('oidc-apple-mark')).toHaveLength(1);
+        expect(screen.getByTestId('oidc-okta')).not.toHaveClass('bg-black');
     });
 });

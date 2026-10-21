@@ -5,6 +5,11 @@ Notable changes to tududi. Versions match the git tags and the
 
 ## Unreleased
 
+### Added
+
+- Sign in and sign up with Apple. Set the four `APPLE_SIGN_IN_*` variables
+  and the login and register pages show an Apple button next to Google.
+
 ## 1.6.0
 
 ### Changed

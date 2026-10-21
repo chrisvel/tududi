@@ -18,6 +18,7 @@ This guide explains how to configure and use OpenID Connect (OIDC) Single Sign-O
   - [Admin UI Configuration](#admin-ui-configuration)
 - [Provider Setup Guides](#provider-setup-guides)
   - [Google](#google)
+  - [Apple](#apple)
   - [Okta](#okta)
   - [Keycloak](#keycloak)
   - [Authentik](#authentik)
@@ -276,6 +277,58 @@ OIDC_AUTO_PROVISION=true
 - Click "Sign in with Google"
 - Approve permissions
 - You should be logged in!
+
+---
+
+### Apple
+
+Sign in with Apple has its own variables instead of the `OIDC_*` ones: its
+client secret is a short-lived JWT that tududi signs with a key from your
+Apple developer account, so there is no fixed secret to paste. It is offered
+whenever these variables are set, whether or not `OIDC_ENABLED` is on, and
+the admin OIDC/SSO panel neither shows it nor replaces it.
+
+**1. Create the identifiers and key** (needs a paid Apple Developer account)
+
+In [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list):
+
+1. **Identifiers** > **App IDs**: create or pick an App ID and enable
+   **Sign in with Apple** on it.
+2. **Identifiers** > **Services IDs**: create one (for example
+   `com.example.tududi.web`). This is the client ID. Enable **Sign in with
+   Apple**, click **Configure**, choose the App ID above, and add:
+   - **Domains**: `your-domain.com`
+   - **Return URLs**: `https://your-domain.com/api/oidc/callback/apple`
+
+   Apple only accepts HTTPS return URLs on a real domain, so `localhost`
+   cannot be used; test through a tunnel or a staging host.
+3. **Keys**: create a key with **Sign in with Apple** enabled, linked to the
+   App ID. Download the `.p8` file (Apple only lets you do this once) and
+   note the **Key ID**.
+4. Your **Team ID** is shown at the top right of the developer portal.
+
+**2. Configure Tududi**
+
+```bash
+BASE_URL=https://your-domain.com
+APPLE_SIGN_IN_CLIENT_ID=com.example.tududi.web
+APPLE_SIGN_IN_TEAM_ID=ABCDE12345
+APPLE_SIGN_IN_KEY_ID=XYZ987WVUT
+# The contents of the .p8 file. Line breaks may be written as \n.
+APPLE_SIGN_IN_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIGT...\n-----END PRIVATE KEY-----"
+```
+
+**3. How it differs from other providers**
+
+- Apple sends the person's name once, on their first sign-in, outside the
+  signed ID token. tududi uses it only to name a new account; the email
+  always comes from the ID token.
+- People can choose **Hide My Email**, which gives tududi an
+  `@privaterelay.appleid.com` address. To deliver mail there (verification,
+  reminders, digests), register your sending domain or address under
+  **Sign in with Apple for Email Communication** in the developer portal.
+- Apple returns to tududi with a form POST, which `/api/oidc/callback/apple`
+  hands straight on to the usual callback.
 
 ---
 
