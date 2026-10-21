@@ -336,7 +336,7 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                                     <CheckIcon className="w-4 h-4 mr-2 text-green-500" />
                                     {t(
                                         'billing.perkFeatures',
-                                        'AI assistant, MCP, CalDAV sync, Telegram bot, backup import'
+                                        'AI assistant, MCP, CalDAV sync, backup import'
                                     )}
                                 </li>
                             </ul>

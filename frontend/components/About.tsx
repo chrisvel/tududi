@@ -70,7 +70,7 @@ const About: React.FC<AboutProps> = ({ isDarkMode = false }) => {
                         <p className="text-gray-700 dark:text-gray-300 text-center leading-relaxed">
                             {t(
                                 'about.description',
-                                'Self-hosted task management with hierarchical organization, multi-language support, and Telegram integration. Built with love for productivity enthusiasts.'
+                                'Self-hosted task management with hierarchical organization and multi-language support. Built with love for productivity enthusiasts.'
                             )}
                         </p>
                     </div>

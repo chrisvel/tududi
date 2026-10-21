@@ -161,7 +161,7 @@ const SubscriptionRequired: React.FC = () => {
         t('subscription.perkStorage', 'Attachments and file uploads'),
         t(
             'subscription.perkFeatures',
-            'AI assistant, MCP, CalDAV sync and the Telegram bot'
+            'AI assistant, MCP and CalDAV sync'
         ),
         t('subscription.perkBackups', 'Daily backups and managed updates'),
         t('subscription.perkExport', 'Export everything at any time'),
