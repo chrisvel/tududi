@@ -92,7 +92,7 @@ export const Tile: React.FC<{
         className={`rounded-lg p-4 ${
             tone === 'warn'
                 ? 'bg-amber-50 dark:bg-amber-500/10'
-                : 'bg-gray-50 dark:bg-gray-900/40'
+                : 'bg-gray-50 dark:bg-gray-800'
         }`}
         data-testid={testId}
     >
@@ -198,7 +198,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
 
     return (
         <section
-            className="bg-white dark:bg-gray-800 rounded-lg p-5 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-lg p-5 mb-8"
             data-testid="admin-trends"
         >
             <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">

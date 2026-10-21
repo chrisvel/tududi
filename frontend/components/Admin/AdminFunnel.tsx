@@ -126,7 +126,7 @@ const AdminFunnel: React.FC<{ funnel: Funnel }> = ({ funnel }) => {
 
     return (
         <section
-            className="bg-white dark:bg-gray-800 rounded-lg p-5 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-lg p-5 mb-8"
             data-testid="admin-funnel"
         >
             <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
@@ -158,7 +158,7 @@ const AdminFunnel: React.FC<{ funnel: Funnel }> = ({ funnel }) => {
                     return (
                         <li
                             key={step.key}
-                            className="rounded-lg p-4 bg-gray-50 dark:bg-gray-900/40"
+                            className="rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
                             data-testid={`admin-funnel-${step.key}`}
                         >
                             <p className="text-xs text-gray-500 dark:text-gray-400">

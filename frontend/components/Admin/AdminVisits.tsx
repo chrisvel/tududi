@@ -53,7 +53,7 @@ const AdminVisits: React.FC<{ visits: Visits }> = ({ visits }) => {
     };
     return (
         <section
-            className="bg-white dark:bg-gray-800 rounded-lg p-5 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-lg p-5 mb-8"
             data-testid="admin-visits"
         >
             <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">
