@@ -14,13 +14,9 @@
     "blog": "Blog",
     "signIn": "Accedi",
     "toggle": "Apri il menu",
-    "plan": "Pianifica la giornata",
-    "families": "Famiglie"
+    "plan": "Pianifica la giornata"
   },
   "hero": {
-    "badgeStars": "stelle su GitHub",
-    "badgeMcp": "Server MCP integrato",
-    "badgeCloudOpen": "tududi Cloud è aperto",
     "ctaDemo": "Prova la demo dal vivo",
     "demoNote": "Un'istanza ospitata reale, con dati di esempio, condivisa e reimpostata regolarmente",
     "screenshotAlt": "L'interfaccia di tududi, con la vista Oggi e le attività pianificate",
@@ -34,7 +30,6 @@
   },
   "proof": {
     "stars": "stelle su GitHub",
-    "mcp": "Server MCP, {{tools}} strumenti",
     "languages": "{{count}} lingue",
     "dockerPulls": "download Docker",
     "discord": "membri su Discord",
@@ -218,10 +213,6 @@
         "title": "Supporto multilingua",
         "body": "Disponibile in {{count}} lingue con localizzazione completa."
       },
-      "telegram": {
-        "title": "Integrazione con Telegram",
-        "body": "Manda un messaggio per registrare subito un'attività, ricevi riepiloghi giornalieri e gestisci la lista ovunque tu sia."
-      },
       "caldav": {
         "title": "Sincronizzazione CalDAV",
         "body": "Sincronizzazione bidirezionale delle attività con Apple Promemoria, tasks.org, Thunderbird e qualsiasi app compatibile con CalDAV."
@@ -248,18 +239,6 @@
     "earlyBird": "OFFERTA LANCIO",
     "perYear": "/anno a persona",
     "plans": {
-      "selfHosted": {
-        "action": "Leggi la guida al self-hosting →",
-        "features": [
-          "Fornisci tu un server o un NAS",
-          "Gestisci tu Docker, aggiornamenti e migrazioni",
-          "Configuri tu un reverse proxy e TLS",
-          "I backup sono tuoi",
-          "Tutte le funzioni, nessun limite di posti, dati sul tuo hardware"
-        ],
-        "name": "Self-hosted (avanzato)",
-        "priceNote": "Gratis, se gestisci tu il server"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "oppure",
@@ -298,7 +277,6 @@
       "kanban": "Bacheche Kanban",
       "views": "Viste intelligenti salvate",
       "people": "Assegna attività alle persone",
-      "telegram": "Acquisizione da Telegram",
       "caldav": "Sincronizzazione attività via CalDAV",
       "mcp": "Server MCP per agenti IA"
     },
@@ -374,10 +352,6 @@
         "a": "Sì, e non devi comprare nulla prima. La licenza MIT permette l'uso commerciale, anche all'interno di un'azienda e in un prodotto commerciale, senza soglia di fatturato e senza nulla da dichiarare. Se il tuo ufficio contabilità ha bisogno di una fattura, un abbonamento Cloud viene fatturato tramite il nostro fornitore di pagamenti e ne produce una. Niente in questa pagina vende un permesso, perché quel permesso è già tuo.",
         "q": "Posso usare tududi al lavoro, o nella mia azienda?"
       },
-      "licence": {
-        "a": "L'applicazione è open source con licenza MIT, quindi puoi farla funzionare sul tuo server gratis, modificarla e costruirci sopra senza pagare nessuno. Non ci sono limiti di posti né funzioni tenute indietro: la versione self-hosted è il prodotto completo. tududi Cloud è un servizio a pagamento, perché hosting, backup ed email costano soldi da gestire. Paghi il lavoro operativo, mai l'accesso al software.",
-        "q": "tududi è davvero gratuito?"
-      },
       "maintained": {
         "a": "Sì. È sviluppato principalmente da un maintainer, con contributi dalla community, ed esce spesso. Ogni versione è elencata nella pagina delle release su GitHub, collegata dal Changelog nel menu qui sopra, così puoi giudicare il ritmo da solo invece di fidarti sulla parola. Lo sviluppo avviene in pubblico: issue, una roadmap pubblica e un Discord dove le domande trovano risposta.",
         "linkLabel": "Vedi tutte le release",
@@ -390,10 +364,6 @@
       "shutdown": {
         "a": "L'app ha licenza MIT e il codice sorgente è pubblico, quindi non può esserti tolta. Chiunque può continuare a farla funzionare, e puoi forkarla. Su tududi Cloud i tuoi dati vivono in un database tududi standard invece di un formato proprietario, quindi se il servizio dovesse mai chiudere, otterresti i tuoi dati e una guida per trasferirli sul tuo server.",
         "q": "Cosa succede ai miei dati se tududi scompare?"
-      },
-      "whyManaged": {
-        "a": "Paghi per non gestire l'infrastruttura. tududi Cloud ti dà lo stesso sistema con server, aggiornamenti, backup ed email gestiti per te, che è la metà noiosa e poco affascinante del self-hosting. Cloud è la strada che raccomandiamo. Il self-hosting è la scelta migliore solo se già gestisci Docker e un reverse proxy e vuoi davvero occuparti dello stack.",
-        "q": "Perché pagare per Cloud quando il self-hosting è gratis?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +421,6 @@
         "title": "Aggiornamenti applicati per te"
       }
     },
-    "selfHostLine": "Preferisci gestire il server tu stesso? È gratis, ed è la stessa applicazione.",
     "title": "Perché usare tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Non funzioni. Ogni funzione è anche nella versione self-hosted.",
@@ -462,7 +431,6 @@
   "finalCta": {
     "primary": "Inizia",
     "secondary": "Vedi i prezzi",
-    "selfHostLink": "Leggi la guida.",
     "sub": "Gestiamo noi il server, gli aggiornamenti e i backup. Tu hai il sistema, e una garanzia di rimborso di 14 giorni se non è per te.",
     "title": "Organizzati in un minuto",
     "subTrial": "Gestiamo noi il server, gli aggiornamenti e i backup. Provalo gratis per {{days}} giorni, senza carta.",
@@ -515,196 +483,6 @@
         ],
         "alt": "Oggi con la prossima attività, l’agenda e le riunioni di due calendari"
       }
-    }
-  },
-  "families": {
-    "metaTitle": "tududi per le famiglie · Un solo piano per tutta la casa",
-    "metaDescription": "Faccende, accompagnamenti a scuola, appuntamenti e la lista della spesa in un unico posto condiviso. Aggiungi il tuo partner e i bambini, guarda chi fa cosa e smetti di essere l'unica memoria della famiglia.",
-    "hero": {
-      "badge": "Per famiglie sempre di corsa",
-      "titleLine1": "La casa si regge su una sola testa.",
-      "titleLine2": "Non dovrebbe.",
-      "lede": "Faccende, accompagnamenti a scuola, appuntamenti e la lista della spesa in un unico posto condiviso. Aggiungi il tuo partner e i bambini, guarda chi fa cosa e smetti di essere l'unica memoria della famiglia.",
-      "ctaPrimary": "Inizia ora",
-      "ctaTrial": "Inizia la prova gratuita di {{days}} giorni",
-      "ctaSecondary": "Guarda una settimana in famiglia",
-      "note": "Nessun server da configurare. Mensile o annuale, e puoi cancellare in qualsiasi momento.",
-      "noteTrial": "Gratis per {{days}} giorni, senza carta. Aggiungi il tuo partner già durante la prova.",
-      "screenshotAlt": "L'interfaccia di tududi, con la vista Oggi e le attività pianificate"
-    },
-    "pains": {
-      "eyebrow": "Il carico mentale",
-      "title": "Organizzare non è la parte difficile. Ricordare sì.",
-      "sub": "La maggior parte delle app per famiglie ti dà solo un altro posto dove scrivere. Il problema non è mai stato scrivere. È che solo una persona sa dove si trova tutto.",
-      "turn": "Scrivilo una volta. Affidalo a qualcuno. Toglitelo dalla testa.",
-      "items": {
-        "oneHead": {
-          "title": "Una sola testa regge tutta la casa",
-          "body": "Il dentista, l'autorizzazione per la gita, la revisione della caldaia, il regalo di compleanno per un bambino che hai visto due volte. Tutto sta in una persona, e quella persona non riesce mai a posarlo."
-        },
-        "groupChat": {
-          "title": "La chat di gruppo non è un sistema",
-          "body": "Un messaggio che dice \"qualcuno può prendere il latte?\" lo leggono in tre e non lo compra nessuno. Scorre via prima che qualcuno faccia qualcosa."
-        },
-        "tooManyApps": {
-          "title": "Un'app per ogni angolo",
-          "body": "Un calendario qui, una lista della spesa là, una tabella delle faccende sul frigo, appunti nel telefono di qualcuno. Cinque posti dove guardare, e quello che ti serve non è mai quello aperto."
-        }
-      }
-    },
-    "week": {
-      "eyebrow": "Una settimana in famiglia",
-      "title": "Annotalo, pianificalo, affidalo",
-      "sub": "Lo stesso ciclo ogni settimana: la cosa arriva, riceve un giorno e un responsabile, e viene fatta senza che tu debba ricordarla a nessuno.",
-      "stepLabel": "Passo {{n}}",
-      "steps": {
-        "capture": {
-          "title": "Annotalo nel momento in cui succede",
-          "body": "Scrivilo come lo diresti. tududi riconosce la data, i tag e la persona, e lo mette al suo posto.",
-          "points": [
-            "\"Dentista per Emma giovedì prossimo alle 17\" diventa un'attività con data",
-            "Menziona @Maria ed è sua, non di tutti",
-            "Mandalo da Telegram mentre sei ancora nel parcheggio"
-          ],
-          "alt": "La casella di inserimento che trasforma una riga scritta in un'attività con data"
-        },
-        "plan": {
-          "title": "Pianifica la giornata attorno al calendario scolastico",
-          "body": "Porta dentro i calendari della scuola, del lavoro e della famiglia come feed in sola lettura, e pianifica la giornata attorno a ciò che è già fissato.",
-          "points": [
-            "Google, Outlook o qualsiasi indirizzo iCal, in privato",
-            "Le faccende ricorrenti cadono nel giorno giusto senza doverle reinserire",
-            "Il pianificatore con IA prepara una bozza della giornata se vuoi, e resta spento se non vuoi"
-          ],
-          "alt": "Il pianificatore della giornata con eventi del calendario e attività su una linea temporale"
-        },
-        "today": {
-          "title": "Ognuno vede la propria lista",
-          "body": "Ogni persona accede al proprio Oggi. Nessuno deve chiedere cosa deve fare, e a nessuno bisogna dirlo.",
-          "points": [
-            "La bacheca Tutti mostra chi ha cosa, a colpo d'occhio",
-            "Promemoria su ogni telefono, non solo sul tuo",
-            "Quello che è spuntato è spuntato, per tutta la famiglia"
-          ],
-          "alt": "La vista Oggi con le attività pianificate per la giornata"
-        }
-      }
-    },
-    "features": {
-      "eyebrow": "Pensato per una casa",
-      "title": "Un solo posto, tutti dentro",
-      "sub": "Non una tabella delle faccende in abbonamento. Lo stesso sistema che le persone usano per gestire il lavoro, preparato per chi vive con te.",
-      "cards": {
-        "partner": {
-          "title": "Aggiungi il tuo partner",
-          "body": "Un secondo adulto con il suo accesso, la sua lista e gli stessi progetti condivisi. Non una password condivisa."
-        },
-        "kids": {
-          "title": "Bambini senza email",
-          "body": "Aggiungi un figlio solo con il nome. Crei un link di accesso, lo mandi al suo tablet ed è dentro per 30 giorni."
-        },
-        "everyone": {
-          "title": "La bacheca Tutti",
-          "body": "Una pagina con ogni persona e ciò che le è assegnato. Il modo più rapido per vedere che il carico non è condiviso."
-        },
-        "chores": {
-          "title": "Faccende che tornano",
-          "body": "La spazzatura il martedì, le piante ogni tre giorni, il tagliando dell'auto ogni anno. Impostalo una volta e torna da solo."
-        },
-        "habits": {
-          "title": "Abitudini per i più piccoli",
-          "body": "Esercizi al pianoforte, leggere prima di dormire, denti due volte al giorno. Serie che possono vedere, senza tabella degli adesivi."
-        },
-        "lists": {
-          "title": "Liste da spuntare",
-          "body": "La spesa, la valigia, la checklist delle vacanze. Una nota con caselle che chiunque in famiglia può aprire e spuntare."
-        },
-        "calendars": {
-          "title": "Calendari, integrati",
-          "body": "I periodi scolastici, i turni di lavoro e le partite di calcio stanno accanto alle tue attività, così il piano ne tiene conto."
-        },
-        "projects": {
-          "title": "Progetti condivisi",
-          "body": "Le vacanze estive, la ristrutturazione della cucina, il trasloco. Condividi un progetto con chi ne fa parte, e solo con loro."
-        },
-        "phones": {
-          "title": "Su ogni telefono",
-          "body": "Installalo nella schermata Home di iPhone o Android. I promemoria arrivano dove ognuno guarda davvero."
-        }
-      }
-    },
-    "ai": {
-      "kicker": "IA facoltativa",
-      "titleLine1": "Dieci minuti di pianificazione,",
-      "titleLine2": "fatti in uno.",
-      "lede": "Chiedi un piano e l'assistente prepara una bozza della giornata attorno all'uscita da scuola, alle riunioni e a ciò che è in ritardo. È spento finché non lo accendi, e tududi è completo anche senza.",
-      "cards": {
-        "fixedTimes": {
-          "title": "Pianifica attorno agli orari fissi",
-          "body": "Il ritiro alle tre non si discute. La bozza mette le attività negli spazi liberi, non sopra."
-        },
-        "brief": {
-          "title": "Un riepilogo al mattino",
-          "body": "Cosa scade, cosa è slittato, cosa arriva questa settimana. Leggilo con il primo caffè."
-        },
-        "wrapUp": {
-          "title": "Un bilancio la sera",
-          "body": "Cosa è stato fatto e cosa passa a domani, così niente sparisce dalla lista in silenzio."
-        }
-      }
-    },
-    "pricing": {
-      "eyebrow": "Prezzi",
-      "title": "Prezzo a persona, paga uno solo",
-      "sub": "Paghi per te e per ogni familiare che ha il suo accesso. Stesso prezzo per tutti, in un'unica fattura.",
-      "or": "oppure",
-      "priceNote": "Tutto incluso. Disdici quando vuoi.",
-      "priceNoteTrial": "{{days}} giorni gratis, senza carta. Disdici quando vuoi.",
-      "features": [
-        "Il tuo account, più un posto per ogni familiare",
-        "I bambini accedono con un link, senza email",
-        "Progetti condivisi, liste e la bacheca Tutti",
-        "Calendari, promemoria su ogni telefono, il bot Telegram",
-        "Aggiornamenti e backup giornalieri gestiti, {{proStorageGb}} GB di spazio",
-        "Esporta tutto quando vuoi, elimina l'account da solo"
-      ],
-      "action": "Inizia →",
-      "actionTrial": "Inizia la prova gratuita →",
-      "twoParents": "Due genitori: {{monthly}} al mese, o {{yearly}} all'anno."
-    },
-    "faq": {
-      "eyebrow": "Domande",
-      "title": "Cosa chiedono prima le famiglie",
-      "items": {
-        "kidsEmail": {
-          "q": "I bambini hanno bisogno di un indirizzo email?",
-          "a": "No. Aggiungi un figlio solo con il nome, poi crea un link di accesso dalla pagina Persone e mandaglielo come preferisci: un messaggio, un biglietto vicino al tablet, di persona. Il link lo tiene connesso per 30 giorni e puoi revocarlo in qualsiasi momento."
-        },
-        "whoPays": {
-          "q": "Pagano tutti in famiglia?",
-          "a": "Paga una persona. Ogni membro con il suo accesso è un posto allo stesso prezzo del tuo, addebitato al titolare dell'account. I membri non possono aggiungere altri membri, così la fattura resta in un unico posto."
-        },
-        "privacy": {
-          "q": "Il mio partner può vedere tutto quello che scrivo?",
-          "a": "No. Ogni persona ha le proprie attività e note. Gli altri vedono solo ciò che condividi con loro o assegni a loro, progetto per progetto."
-        },
-        "trial": {
-          "q": "Possiamo provarlo prima in famiglia?",
-          "a": "C'è una garanzia soddisfatti o rimborsati di 14 giorni, così puoi vivere una settimana vera con la tua famiglia e riavere i soldi se non fa per voi.",
-          "aTrial": "Sì. Ogni nuovo account ha una prova gratuita di {{days}} giorni senza carta, e durante la prova puoi aggiungere un membro, così tu e il tuo partner potete vivere una settimana vera prima di decidere."
-        },
-        "leaving": {
-          "q": "E se smettiamo di usarlo?",
-          "a": "Esporta tutto in un unico file dal tuo profilo quando vuoi, ed elimina l'account da solo. tududi è open source, quindi l'esportazione si apre anche in una copia self-hosted se preferisci tenerlo a casa."
-        }
-      }
-    },
-    "closing": {
-      "title": "Posalo. Adesso ce l'ha qualcun altro.",
-      "sub": "Organizza la casa in una serata. Al server, agli aggiornamenti e ai backup pensiamo noi.",
-      "primary": "Inizia",
-      "primaryTrial": "Inizia la prova gratuita",
-      "secondary": "Scopri tutto ciò che fa tududi"
     }
   }
 }

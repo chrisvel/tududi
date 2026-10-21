@@ -429,24 +429,6 @@ function createLandingRouter(landing) {
     });
     router.get('/en/cloud', (req, res) => res.redirect(301, '/cloud'));
 
-    // The page for busy families, in every language the homepage has.
-    // Literal paths for the same reason the cloud ones are literal.
-    const familiesPaths = [
-        '/families',
-        ...LOCALE_CODES.filter((c) => c !== DEFAULT_LOCALE).map(
-            (c) => `/${c}/families`
-        ),
-    ];
-    router.get(familiesPaths, (req, res, next) => {
-        const segments = req.path.split('/').filter(Boolean);
-        const locale = segments.length > 1 ? segments[0] : DEFAULT_LOCALE;
-        renderPage(req, res, locale, 'families.ejs', {
-            canonicalUrl: pageUrl(locale, '/families'),
-        }).catch(next);
-    });
-    router.get('/en/families', (req, res) => res.redirect(301, '/families'));
-    router.get('/family', (req, res) => res.redirect(301, '/families'));
-
     // Terms, privacy and refunds. English only and one URL each, so there is
     // never a question of which language version is binding. The chrome
     // follows the visitor's remembered language, but the cookie is only

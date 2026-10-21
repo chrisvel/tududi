@@ -14,13 +14,9 @@
     "blog": "Blog",
     "signIn": "Inloggen",
     "toggle": "Menu openen",
-    "plan": "Plan je dag",
-    "families": "Gezinnen"
+    "plan": "Plan je dag"
   },
   "hero": {
-    "badgeStars": "sterren op GitHub",
-    "badgeMcp": "MCP-server ingebouwd",
-    "badgeCloudOpen": "tududi Cloud is nu open",
     "ctaDemo": "Probeer de live demo",
     "demoNote": "Een echte gehoste instantie met voorbeeldgegevens, gedeeld en regelmatig gereset",
     "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken",
@@ -34,7 +30,6 @@
   },
   "proof": {
     "stars": "sterren op GitHub",
-    "mcp": "MCP-server, {{tools}} tools",
     "languages": "{{count}} talen",
     "dockerPulls": "Docker-pulls",
     "discord": "Discord-leden",
@@ -218,10 +213,6 @@
         "title": "Meertalige ondersteuning",
         "body": "Beschikbaar in {{count}} talen met volledige lokalisatie."
       },
-      "telegram": {
-        "title": "Telegram-integratie",
-        "body": "Stuur een bericht om taken direct vast te leggen, ontvang dagelijkse overzichten en beheer je lijst onderweg."
-      },
       "caldav": {
         "title": "CalDAV-synchronisatie",
         "body": "Tweerichtingssynchronisatie van taken met Apple Herinneringen, tasks.org, Thunderbird en elke CalDAV-compatibele app."
@@ -248,18 +239,6 @@
     "earlyBird": "VROEGBOEK",
     "perYear": "/jaar per persoon",
     "plans": {
-      "selfHosted": {
-        "action": "Lees de zelfhostgids →",
-        "features": [
-          "Jij zet een server of NAS op",
-          "Jij regelt Docker, updates en migraties",
-          "Jij configureert een reverse proxy en TLS",
-          "De backups zijn van jou",
-          "Volledige functieset, geen plaatsenlimiet, gegevens op je eigen hardware"
-        ],
-        "name": "Zelfhosten (geavanceerd)",
-        "priceNote": "Gratis, als je de server zelf draait"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "of",
@@ -298,7 +277,6 @@
       "kanban": "Kanbanborden",
       "views": "Opgeslagen slimme weergaven",
       "people": "Taken toewijzen aan personen",
-      "telegram": "Vastleggen via Telegram",
       "caldav": "Taaksynchronisatie via CalDAV",
       "mcp": "MCP-server voor AI-agents"
     },
@@ -374,10 +352,6 @@
         "a": "Ja, en je hoeft daarvoor niets te kopen. De MIT-licentie staat commercieel gebruik toe, ook binnen een bedrijf en in een commercieel product, zonder omzetgrens en zonder iets te melden. Als je financiële afdeling een factuur nodig heeft: een Cloud-abonnement wordt via onze betalingsprovider gefactureerd en levert er een. Niets op deze pagina verkoopt toestemming, want die toestemming heb je al.",
         "q": "Mag ik tududi op het werk, of in mijn bedrijf, gebruiken?"
       },
-      "licence": {
-        "a": "De applicatie is open source onder de MIT-licentie, dus je kunt hem gratis op je eigen server draaien, aanpassen en erop bouwen zonder iemand te betalen. Er is geen plaatsenlimiet en geen achtergehouden functies: de zelfgehoste build is het volledige product. tududi Cloud is een betaalde dienst, omdat hosting, backups en e-mail geld kosten om te draaien. Je betaalt voor het operationele werk, nooit voor toegang tot de software.",
-        "q": "Is tududi echt gratis?"
-      },
       "maintained": {
         "a": "Ja. Het wordt vooral ontwikkeld door één maintainer, met bijdragen van de community, en er komen vaak releases uit. Elke versie staat op de GitHub-releasepagina, gelinkt vanuit de Changelog in het menu hierboven, zodat je het tempo zelf kunt beoordelen in plaats van ons op ons woord te geloven. De ontwikkeling gebeurt in het openbaar: issues, een openbare roadmap, en een Discord waar vragen worden beantwoord.",
         "linkLabel": "Bekijk alle releases",
@@ -390,10 +364,6 @@
       "shutdown": {
         "a": "De app is MIT-gelicentieerd en de broncode is openbaar, dus die kan niet van je worden afgenomen. Iedereen kan hem blijven draaien, en jij kunt hem forken. Bij tududi Cloud leven je gegevens in een standaard tududi-database in plaats van een eigen formaat, dus als de dienst ooit zou stoppen, krijg je je gegevens en een gids om ze naar je eigen server te verhuizen.",
         "q": "Wat gebeurt er met mijn gegevens als tududi verdwijnt?"
-      },
-      "whyManaged": {
-        "a": "Je betaalt om geen infrastructuur te beheren. tududi Cloud geeft je hetzelfde systeem met de server, updates, backups en e-mail voor je verzorgd, wat de vervelende, weinig glamoureuze helft van zelfhosten is. Cloud is het pad dat we aanraden. Zelfhosten is alleen de betere deal als je al Docker en een reverse proxy draait en de stack actief wilt beheren.",
-        "q": "Waarom betalen voor Cloud als zelfhosten gratis is?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +421,6 @@
         "title": "Updates voor je toegepast"
       }
     },
-    "selfHostLine": "Wil je liever de server zelf draaien? Dat is gratis, en het is dezelfde applicatie.",
     "title": "Waarom tududi Cloud gebruiken?",
     "whyEyebrow": "Cloud",
     "whySub": "Geen functies. Elke functie zit ook in de zelfgehoste build.",
@@ -462,7 +431,6 @@
   "finalCta": {
     "primary": "Aan de slag",
     "secondary": "Bekijk prijzen",
-    "selfHostLink": "Lees de gids.",
     "sub": "Wij beheren de server, de updates en de backups. Jij krijgt het systeem, en een geld-terug-garantie van 14 dagen als het niet voor jou is.",
     "title": "Organiseer jezelf in een minuut",
     "subTrial": "Wij draaien de server, de updates en de back-ups. Probeer het {{days}} dagen gratis, zonder kaart.",
@@ -515,196 +483,6 @@
         ],
         "alt": "Vandaag met de volgende taak, de agenda en afspraken uit twee agenda’s"
       }
-    }
-  },
-  "families": {
-    "metaTitle": "tududi voor gezinnen · Eén plan voor het hele huishouden",
-    "metaDescription": "Klusjes, schoolritjes, afspraken en het boodschappenlijstje op één gedeelde plek. Voeg je partner en de kinderen toe, zie wie wat doet en wees niet langer het enige geheugen van het gezin.",
-    "hero": {
-      "badge": "Voor drukke gezinnen",
-      "titleLine1": "Het huishouden draait op één hoofd.",
-      "titleLine2": "Dat hoeft niet.",
-      "lede": "Klusjes, schoolritjes, afspraken en het boodschappenlijstje op één gedeelde plek. Voeg je partner en de kinderen toe, zie wie wat doet en wees niet langer het enige geheugen van het gezin.",
-      "ctaPrimary": "Begin nu",
-      "ctaTrial": "Start je gratis proefperiode van {{days}} dagen",
-      "ctaSecondary": "Bekijk een gezinsweek",
-      "note": "Geen server om op te zetten. Maandelijks of jaarlijks, en je kunt op elk moment opzeggen.",
-      "noteTrial": "{{days}} dagen gratis, geen creditcard nodig. Voeg je partner toe tijdens de proefperiode.",
-      "screenshotAlt": "De interface van tududi, met de Vandaag-weergave en de geplande taken"
-    },
-    "pains": {
-      "eyebrow": "De mentale last",
-      "title": "Organiseren is niet het moeilijke deel. Onthouden wel.",
-      "sub": "De meeste gezinsapps geven je nog een plek om dingen in te typen. Typen was nooit het probleem. Het probleem is dat maar één persoon weet waar alles is.",
-      "turn": "Schrijf het één keer op. Geef het aan iemand. Laat het je hoofd uit.",
-      "items": {
-        "oneHead": {
-          "title": "Eén hoofd draagt het hele huis",
-          "body": "De tandarts, het toestemmingsformulier, het onderhoud van de cv-ketel, het verjaardagscadeau voor een kind dat je twee keer hebt ontmoet. Het zit allemaal bij één persoon, en die kan het nooit even neerleggen."
-        },
-        "groupChat": {
-          "title": "De groepsapp is geen systeem",
-          "body": "Een bericht als \"kan iemand melk halen\" wordt door drie mensen gelezen en door niemand gekocht. Het scrolt weg voordat iemand er iets mee doet."
-        },
-        "tooManyApps": {
-          "title": "Een app voor elk hoekje",
-          "body": "Hier een agenda, daar een boodschappenlijst, een klusjesschema op de koelkast, notities in iemands telefoon. Vijf plekken om te kijken, en de plek die je nodig hebt staat nooit open."
-        }
-      }
-    },
-    "week": {
-      "eyebrow": "Een gezinsweek",
-      "title": "Vastleggen, plannen, overdragen",
-      "sub": "Elke week hetzelfde rondje: er komt iets binnen, het krijgt een dag en een eigenaar, en het wordt gedaan zonder dat jij eraan hoeft te herinneren.",
-      "stepLabel": "Stap {{n}}",
-      "steps": {
-        "capture": {
-          "title": "Schrijf het op zodra het gebeurt",
-          "body": "Typ het zoals je het zou zeggen. tududi leest de datum, de tags en de persoon, en zet het op de juiste plek.",
-          "points": [
-            "\"Tandarts Emma volgende donderdag 17:00\" wordt een taak met een datum",
-            "Noem @Maria en het is van haar, niet van iedereen",
-            "Stuur het via Telegram terwijl je nog op de parkeerplaats staat"
-          ],
-          "alt": "Het invoervak dat een getypte regel omzet in een taak met een datum"
-        },
-        "plan": {
-          "title": "Plan de dag rond de schoolagenda",
-          "body": "Haal de agenda's van school, werk en gezin binnen als alleen-lezen feeds, en plan de dag rond wat al vaststaat.",
-          "points": [
-            "Google, Outlook of elk iCal-adres, privé gehouden",
-            "Terugkerende klusjes komen op de juiste dag zonder dat je ze opnieuw invoert",
-            "De AI-planner maakt een opzet voor de dag als je dat wilt, en blijft uit als je dat niet wilt"
-          ],
-          "alt": "De dagplanner met agenda-items en taken op een tijdlijn"
-        },
-        "today": {
-          "title": "Iedereen ziet zijn eigen lijst",
-          "body": "Iedereen logt in op een eigen Vandaag. Niemand hoeft te vragen wat er van hem verwacht wordt, en niemand hoeft het gevraagd te worden.",
-          "points": [
-            "Het Iedereen-bord laat in één oogopslag zien wie wat heeft",
-            "Herinneringen op ieders telefoon, niet alleen op die van jou",
-            "Afgevinkt is afgevinkt, voor het hele gezin"
-          ],
-          "alt": "De Vandaag-weergave met de taken die voor vandaag gepland zijn"
-        }
-      }
-    },
-    "features": {
-      "eyebrow": "Gemaakt voor een huishouden",
-      "title": "Eén plek, iedereen erin",
-      "sub": "Geen klusjesschema met een abonnement. Hetzelfde systeem waarmee mensen hun werk regelen, ingericht voor de mensen met wie je samenwoont.",
-      "cards": {
-        "partner": {
-          "title": "Voeg je partner toe",
-          "body": "Een tweede volwassene met een eigen login, een eigen lijst en dezelfde gedeelde projecten. Geen gedeeld wachtwoord."
-        },
-        "kids": {
-          "title": "Kinderen zonder e-mail",
-          "body": "Voeg een kind toe met alleen een naam. Je maakt een inloglink, stuurt die naar hun tablet, en ze zijn 30 dagen ingelogd."
-        },
-        "everyone": {
-          "title": "Het Iedereen-bord",
-          "body": "Eén pagina met iedere persoon en wat er aan hen is toegewezen. De snelste manier om te zien dat de last niet gedeeld wordt."
-        },
-        "chores": {
-          "title": "Klusjes die terugkomen",
-          "body": "De kliko op dinsdag, de planten om de drie dagen, de auto elk jaar naar de garage. Stel het één keer in en het komt vanzelf terug."
-        },
-        "habits": {
-          "title": "Gewoonten voor de kleintjes",
-          "body": "Piano oefenen, lezen voor het slapen, twee keer per dag tandenpoetsen. Reeksen die ze zelf zien, zonder stickerkaart."
-        },
-        "lists": {
-          "title": "Lijsten om af te vinken",
-          "body": "Boodschappen, inpakken, de vakantiechecklist. Een notitie met vinkjes die iedereen in het gezin kan openen en afvinken."
-        },
-        "calendars": {
-          "title": "Agenda's, ingelezen",
-          "body": "Schoolvakanties, werkdiensten en het voetbalschema staan naast je taken, zodat de planning er rekening mee houdt."
-        },
-        "projects": {
-          "title": "Gedeelde projecten",
-          "body": "De zomervakantie, de nieuwe keuken, de verhuizing. Deel een project met wie erbij betrokken is, en alleen met hen."
-        },
-        "phones": {
-          "title": "Op elke telefoon",
-          "body": "Installeer het op het beginscherm van iPhone of Android. Pushmeldingen komen aan waar iedereen echt kijkt."
-        }
-      }
-    },
-    "ai": {
-      "kicker": "Optionele AI",
-      "titleLine1": "Tien minuten plannen,",
-      "titleLine2": "klaar in één.",
-      "lede": "Vraag om een planning en de assistent maakt een opzet voor de dag rond het schoolritje, de vergaderingen en wat over tijd is. Hij staat uit tot je hem aanzet, en tududi is compleet zonder.",
-      "cards": {
-        "fixedTimes": {
-          "title": "Plant rond vaste tijden",
-          "body": "Ophalen om drie uur staat vast. De opzet zet taken in de gaten, niet eroverheen."
-        },
-        "brief": {
-          "title": "Een ochtendoverzicht",
-          "body": "Wat moet, wat is blijven liggen, wat er deze week aankomt. Lees het bij de eerste koffie."
-        },
-        "wrapUp": {
-          "title": "Een afsluiting in de avond",
-          "body": "Wat er gedaan is en wat naar morgen schuift, zodat er niets stilletjes van de lijst valt."
-        }
-      }
-    },
-    "pricing": {
-      "eyebrow": "Prijs",
-      "title": "Prijs per persoon, betaald door één",
-      "sub": "Je betaalt voor jezelf en voor elk gezinslid met een eigen login. Dezelfde prijs voor iedereen, op één rekening.",
-      "or": "of",
-      "priceNote": "Alles inbegrepen. Altijd opzegbaar.",
-      "priceNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Altijd opzegbaar.",
-      "features": [
-        "Je eigen account, plus een plek voor elk gezinslid",
-        "Kinderen loggen in met een link, geen e-mail nodig",
-        "Gedeelde projecten, lijsten en het Iedereen-bord",
-        "Agendafeeds, herinneringen op elke telefoon, de Telegram-bot",
-        "Updates en dagelijkse backups geregeld, {{proStorageGb}} GB opslag",
-        "Exporteer alles wanneer je wilt, verwijder je account zelf"
-      ],
-      "action": "Aan de slag →",
-      "actionTrial": "Start gratis proefperiode →",
-      "twoParents": "Twee ouders: {{monthly}} per maand, of {{yearly}} per jaar."
-    },
-    "faq": {
-      "eyebrow": "Vragen",
-      "title": "Wat gezinnen als eerste vragen",
-      "items": {
-        "kidsEmail": {
-          "q": "Hebben de kinderen een e-mailadres nodig?",
-          "a": "Nee. Voeg een kind toe met alleen een naam, maak dan een inloglink op de pagina Personen en geef die door zoals je wilt: in een bericht, als notitie op de tablet, of persoonlijk. Met de link zijn ze 30 dagen ingelogd, en je kunt hem op elk moment intrekken."
-        },
-        "whoPays": {
-          "q": "Betaalt iedereen in het gezin?",
-          "a": "Eén persoon betaalt. Elk lid met een eigen login is een plek tegen dezelfde prijs als die van jou, gefactureerd aan de eigenaar van het account. Leden kunnen zelf geen leden toevoegen, dus de rekening blijft op één plek."
-        },
-        "privacy": {
-          "q": "Kan mijn partner alles zien wat ik schrijf?",
-          "a": "Nee. Iedereen heeft eigen taken en notities. Anderen zien alleen wat je met hen deelt of aan hen toewijst, per project."
-        },
-        "trial": {
-          "q": "Kunnen we het eerst als gezin proberen?",
-          "a": "Er is een geld-terug-garantie van 14 dagen, dus je kunt een echte week met je gezin draaien en je geld terugkrijgen als het niet past.",
-          "aTrial": "Ja. Elk nieuw account krijgt een gratis proefperiode van {{days}} dagen zonder creditcard, en je kunt in die tijd één lid toevoegen. Zo kunnen jij en je partner een echte week draaien voordat je beslist."
-        },
-        "leaving": {
-          "q": "En als we ermee stoppen?",
-          "a": "Exporteer alles op elk moment als één bestand vanuit je profiel, en verwijder het account zelf. tududi is open source, dus de export opent ook in een zelfgehoste kopie als je het liever thuis draait."
-        }
-      }
-    },
-    "closing": {
-      "title": "Leg het neer. Iemand anders heeft het nu.",
-      "sub": "Richt het huishouden in op één avond. Wij regelen de server, de updates en de backups.",
-      "primary": "Aan de slag",
-      "primaryTrial": "Start gratis proefperiode",
-      "secondary": "Bekijk alles wat tududi doet"
     }
   }
 }

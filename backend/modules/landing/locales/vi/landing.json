@@ -14,13 +14,9 @@
     "blog": "Blog",
     "signIn": "Đăng nhập",
     "toggle": "Mở menu",
-    "plan": "Lên kế hoạch ngày",
-    "families": "Gia đình"
+    "plan": "Lên kế hoạch ngày"
   },
   "hero": {
-    "badgeStars": "sao trên GitHub",
-    "badgeMcp": "Tích hợp sẵn máy chủ MCP",
-    "badgeCloudOpen": "tududi Cloud đã mở",
     "ctaDemo": "Dùng thử bản demo trực tiếp",
     "demoNote": "Một phiên bản lưu trữ thật với dữ liệu mẫu, dùng chung và được đặt lại thường xuyên",
     "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch",
@@ -34,7 +30,6 @@
   },
   "proof": {
     "stars": "sao trên GitHub",
-    "mcp": "Máy chủ MCP, {{tools}} công cụ",
     "languages": "{{count}} ngôn ngữ",
     "dockerPulls": "lượt tải Docker",
     "discord": "thành viên Discord",
@@ -218,10 +213,6 @@
         "title": "Hỗ trợ đa ngôn ngữ",
         "body": "Có sẵn bằng {{count}} ngôn ngữ với bản địa hóa đầy đủ."
       },
-      "telegram": {
-        "title": "Tích hợp Telegram",
-        "body": "Gửi một tin nhắn để ghi việc ngay lập tức, nhận bản tóm tắt hằng ngày và quản lý danh sách khi đang di chuyển."
-      },
       "caldav": {
         "title": "Đồng bộ CalDAV",
         "body": "Đồng bộ công việc hai chiều với Apple Lời nhắc, tasks.org, Thunderbird và mọi ứng dụng hỗ trợ CalDAV."
@@ -248,18 +239,6 @@
     "earlyBird": "ƯU ĐÃI SỚM",
     "perYear": "/năm mỗi người",
     "plans": {
-      "selfHosted": {
-        "action": "Đọc hướng dẫn tự lưu trữ →",
-        "features": [
-          "Bạn tự cung cấp một máy chủ hoặc NAS",
-          "Bạn xử lý Docker, các bản cập nhật và migration",
-          "Bạn cấu hình một reverse proxy và TLS",
-          "Bản sao lưu thuộc về bạn",
-          "Bộ tính năng đầy đủ, không giới hạn số ghế, dữ liệu trên phần cứng riêng của bạn"
-        ],
-        "name": "Tự lưu trữ (nâng cao)",
-        "priceNote": "Miễn phí, nếu bạn tự chạy máy chủ"
-      },
       "cloud": {
         "name": "Cloud",
         "or": "hoặc",
@@ -298,7 +277,6 @@
       "kanban": "Bảng Kanban",
       "views": "Chế độ xem thông minh đã lưu",
       "people": "Giao việc cho người khác",
-      "telegram": "Ghi nhanh từ Telegram",
       "caldav": "Đồng bộ công việc qua CalDAV",
       "mcp": "Máy chủ MCP cho tác tử AI"
     },
@@ -374,10 +352,6 @@
         "a": "Có, và bạn không cần mua gì trước. Bản quyền MIT cho phép sử dụng thương mại, bao gồm cả trong một công ty và trong một sản phẩm thương mại, không có ngưỡng doanh thu và không có gì phải báo cáo. Nếu bộ phận tài chính của bạn cần hóa đơn, một gói đăng ký Cloud được lập hóa đơn qua nhà cung cấp thanh toán của chúng tôi và tạo ra một hóa đơn. Không có gì trên trang này bán sự cho phép, vì sự cho phép đó đã là của bạn rồi.",
         "q": "Tôi có thể dùng tududi tại nơi làm việc, hoặc trong công ty của mình không?"
       },
-      "licence": {
-        "a": "Ứng dụng này là mã nguồn mở theo bản quyền MIT, vì vậy bạn có thể chạy nó trên máy chủ riêng của mình miễn phí, chỉnh sửa nó, và xây dựng dựa trên nó mà không phải trả tiền cho ai. Không có giới hạn số ghế và không có tính năng bị giữ lại: bản tự lưu trữ là sản phẩm hoàn chỉnh. tududi Cloud là một dịch vụ có phí, vì lưu trữ, sao lưu và email tốn tiền để vận hành. Bạn trả tiền cho công việc vận hành, không bao giờ cho quyền truy cập vào phần mềm.",
-        "q": "tududi có thực sự miễn phí không?"
-      },
       "maintained": {
         "a": "Có. Nó được phát triển chủ yếu bởi một người duy trì, với sự đóng góp từ cộng đồng, và phát hành thường xuyên. Mỗi phiên bản được liệt kê trên trang phát hành GitHub, được liên kết từ Changelog trong menu ở trên, để bạn có thể tự đánh giá tốc độ chứ không chỉ dựa vào lời chúng tôi nói. Việc phát triển diễn ra công khai: các vấn đề, một lộ trình công khai, và một Discord nơi các câu hỏi được trả lời.",
         "linkLabel": "Xem tất cả các phiên bản",
@@ -390,10 +364,6 @@
       "shutdown": {
         "a": "Ứng dụng có bản quyền MIT, và mã nguồn là công khai, vì vậy nó không thể bị lấy đi từ bạn. Bất kỳ ai cũng có thể tiếp tục chạy nó, và bạn có thể fork nó. Trên tududi Cloud, dữ liệu của bạn sống trong một cơ sở dữ liệu tududi chuẩn thay vì một định dạng độc quyền, vì vậy nếu dịch vụ có bao giờ đóng lại, bạn sẽ nhận được dữ liệu của mình và một hướng dẫn để chuyển nó sang máy chủ riêng của bạn.",
         "q": "Điều gì sẽ xảy ra với dữ liệu của tôi nếu tududi biến mất?"
-      },
-      "whyManaged": {
-        "a": "Bạn trả tiền để không phải vận hành hạ tầng. tududi Cloud cho bạn cùng một hệ thống với máy chủ, các bản cập nhật, sao lưu và email được xử lý cho bạn, đó là nửa phần phiền phức, kém hào nhoáng của tự lưu trữ. Cloud là con đường chúng tôi đề xuất. Tự lưu trữ chỉ là lựa chọn tốt hơn nếu bạn đã chạy Docker và reverse proxy và thực sự muốn vận hành cả bộ công cụ đó.",
-        "q": "Vì sao phải trả tiền cho Cloud khi tự lưu trữ là miễn phí?"
       }
     },
     "eyebrow": "FAQ",
@@ -451,7 +421,6 @@
         "title": "Cập nhật được áp dụng cho bạn"
       }
     },
-    "selfHostLine": "Bạn thích tự điều hành máy chủ hơn? Điều đó là miễn phí, và đó là cùng một ứng dụng.",
     "title": "Vì sao nên dùng tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Không phải là tính năng. Mọi tính năng đều có trong bản tự lưu trữ.",
@@ -462,7 +431,6 @@
   "finalCta": {
     "primary": "Bắt đầu",
     "secondary": "Xem giá",
-    "selfHostLink": "Đọc hướng dẫn.",
     "sub": "Chúng tôi vận hành máy chủ, các bản cập nhật và bản sao lưu. Bạn có được hệ thống, và một bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn.",
     "title": "Tổ chức mọi thứ trong một phút",
     "subTrial": "Chúng tôi vận hành máy chủ, cập nhật và sao lưu. Dùng thử miễn phí {{days}} ngày, không cần thẻ.",
@@ -515,196 +483,6 @@
         ],
         "alt": "Hôm nay với việc tiếp theo, lịch trình và cuộc họp từ hai lịch"
       }
-    }
-  },
-  "families": {
-    "metaTitle": "tududi cho gia đình · Một kế hoạch cho cả nhà",
-    "metaDescription": "Việc nhà, đưa đón con, lịch hẹn và danh sách đi chợ ở cùng một chỗ chung. Thêm vợ hoặc chồng và các con, xem ai đang làm gì, và thôi làm bộ nhớ duy nhất của cả nhà.",
-    "hero": {
-      "badge": "Cho những gia đình bận rộn",
-      "titleLine1": "Cả nhà đang dựa vào một cái đầu.",
-      "titleLine2": "Không nên như vậy.",
-      "lede": "Việc nhà, đưa đón con, lịch hẹn và danh sách đi chợ ở cùng một chỗ chung. Thêm vợ hoặc chồng và các con, xem ai đang làm gì, và thôi làm bộ nhớ duy nhất của cả nhà.",
-      "ctaPrimary": "Bắt đầu ngay",
-      "ctaTrial": "Bắt đầu dùng thử miễn phí {{days}} ngày",
-      "ctaSecondary": "Xem một tuần của gia đình",
-      "note": "Không có máy chủ nào cần thiết lập. Hàng tháng hoặc hàng năm, và bạn có thể hủy bất cứ lúc nào.",
-      "noteTrial": "Miễn phí {{days}} ngày, không cần thẻ. Thêm người bạn đời ngay trong thời gian dùng thử.",
-      "screenshotAlt": "Giao diện tududi với chế độ xem Hôm nay và các công việc đã lên kế hoạch"
-    },
-    "pains": {
-      "eyebrow": "Gánh nặng tinh thần",
-      "title": "Sắp xếp không phải phần khó. Nhớ mới là phần khó.",
-      "sub": "Phần lớn ứng dụng gia đình chỉ cho bạn thêm một chỗ để gõ. Vấn đề chưa bao giờ là gõ. Vấn đề là chỉ một người biết mọi thứ nằm ở đâu.",
-      "turn": "Viết ra một lần. Giao cho ai đó. Để nó rời khỏi đầu bạn.",
-      "items": {
-        "oneHead": {
-          "title": "Một cái đầu gánh cả căn nhà",
-          "body": "Lịch nha sĩ, giấy đồng ý của trường, bảo dưỡng bình nóng lạnh, quà sinh nhật cho một đứa trẻ bạn mới gặp hai lần. Tất cả nằm trong một người, và người đó không bao giờ được đặt nó xuống."
-        },
-        "groupChat": {
-          "title": "Nhóm chat không phải là một hệ thống",
-          "body": "Tin nhắn “ai mua giúp hộp sữa với” có ba người đọc và không ai mua. Nó trôi mất trước khi có ai làm gì."
-        },
-        "tooManyApps": {
-          "title": "Mỗi góc một ứng dụng",
-          "body": "Lịch ở đây, danh sách đi chợ ở kia, bảng phân việc dán tủ lạnh, ghi chú trong điện thoại của ai đó. Năm chỗ để tìm, và chỗ bạn cần không bao giờ là chỗ đang mở."
-        }
-      }
-    },
-    "week": {
-      "eyebrow": "Một tuần của gia đình",
-      "title": "Ghi lại, lên kế hoạch, giao đi",
-      "sub": "Tuần nào cũng cùng một vòng: việc xuất hiện, được gắn một ngày và một người phụ trách, rồi được làm xong mà bạn không cần nhắc.",
-      "stepLabel": "Bước {{n}}",
-      "steps": {
-        "capture": {
-          "title": "Ghi lại ngay khi nó xảy ra",
-          "body": "Gõ như cách bạn vẫn nói. tududi đọc ngày, thẻ và người, rồi xếp vào đúng chỗ.",
-          "points": [
-            "“Emma đi nha sĩ thứ Năm tuần sau 5 giờ chiều” trở thành một công việc có ngày",
-            "Nhắc @Maria và việc đó là của cô ấy, không phải của mọi người",
-            "Gửi từ Telegram khi bạn vẫn còn ngồi trong xe ở bãi đỗ"
-          ],
-          "alt": "Ô nhập liệu biến một dòng vừa gõ thành công việc có ngày"
-        },
-        "plan": {
-          "title": "Lên kế hoạch ngày theo lịch của trường",
-          "body": "Đưa lịch của trường, công ty và gia đình vào dưới dạng nguồn chỉ đọc, rồi lên kế hoạch ngày quanh những gì đã cố định.",
-          "points": [
-            "Google, Outlook hoặc bất kỳ địa chỉ iCal nào, được giữ riêng tư",
-            "Việc nhà định kỳ tự rơi vào đúng ngày mà không cần nhập lại",
-            "Trợ lý AI soạn nháp một ngày nếu bạn muốn, và để yên nếu bạn không muốn"
-          ],
-          "alt": "Trình lập kế hoạch ngày với sự kiện lịch và công việc trên dòng thời gian"
-        },
-        "today": {
-          "title": "Ai cũng thấy danh sách của riêng mình",
-          "body": "Mỗi người đăng nhập vào Hôm nay của riêng mình. Không ai phải hỏi mình cần làm gì, và cũng không ai phải bị hỏi.",
-          "points": [
-            "Bảng Mọi người cho thấy ai đang giữ việc gì, chỉ trong một cái nhìn",
-            "Nhắc nhở trên điện thoại của từng người, không chỉ của bạn",
-            "Đã đánh dấu là đã xong, cho cả nhà"
-          ],
-          "alt": "Chế độ xem Hôm nay với các công việc đã lên kế hoạch trong ngày"
-        }
-      }
-    },
-    "features": {
-      "eyebrow": "Làm cho một gia đình",
-      "title": "Một chỗ, có tất cả mọi người",
-      "sub": "Không phải bảng phân việc có thu phí hàng tháng. Đây là chính hệ thống mọi người dùng để điều hành công việc, được thiết lập cho những người sống cùng bạn.",
-      "cards": {
-        "partner": {
-          "title": "Thêm người bạn đời",
-          "body": "Một người lớn thứ hai với tài khoản đăng nhập riêng, danh sách riêng và cùng các dự án chung. Không phải dùng chung mật khẩu."
-        },
-        "kids": {
-          "title": "Con không cần email",
-          "body": "Thêm con chỉ bằng tên. Bạn tạo một liên kết đăng nhập, gửi vào máy tính bảng của con, và con được vào trong 30 ngày."
-        },
-        "everyone": {
-          "title": "Bảng Mọi người",
-          "body": "Một trang có từng người và những việc được giao cho họ. Cách nhanh nhất để thấy việc nhà đang không được chia đều."
-        },
-        "chores": {
-          "title": "Việc nhà tự quay lại",
-          "body": "Đổ rác thứ Ba, tưới cây ba ngày một lần, bảo dưỡng xe mỗi năm. Đặt một lần là nó tự quay lại."
-        },
-        "habits": {
-          "title": "Thói quen cho các con",
-          "body": "Tập đàn, đọc sách trước khi ngủ, đánh răng ngày hai lần. Chuỗi ngày mà con nhìn thấy được, không cần bảng dán sticker."
-        },
-        "lists": {
-          "title": "Danh sách để đánh dấu",
-          "body": "Đi chợ, xếp đồ, danh sách chuẩn bị đi nghỉ. Một ghi chú có ô đánh dấu mà ai trong nhà cũng mở và đánh dấu được."
-        },
-        "calendars": {
-          "title": "Lịch được đưa vào",
-          "body": "Lịch học, ca làm và lịch đá bóng nằm cạnh công việc của bạn, để kế hoạch tôn trọng chúng."
-        },
-        "projects": {
-          "title": "Dự án chung",
-          "body": "Kỳ nghỉ hè, sửa bếp, chuyển nhà. Chia sẻ một dự án với những người tham gia, và chỉ với họ."
-        },
-        "phones": {
-          "title": "Trên mọi điện thoại",
-          "body": "Cài lên màn hình chính trên iPhone hoặc Android. Nhắc nhở đẩy đến đúng nơi mỗi người thật sự nhìn vào."
-        }
-      }
-    },
-    "ai": {
-      "kicker": "AI tùy chọn",
-      "titleLine1": "Mười phút lên kế hoạch,",
-      "titleLine2": "xong trong một phút.",
-      "lede": "Hãy yêu cầu một kế hoạch và trợ lý sẽ soạn nháp ngày của bạn quanh giờ đưa đón con, các cuộc họp và những việc quá hạn. AI tắt cho đến khi bạn bật lên, và tududi vẫn đầy đủ khi không có nó.",
-      "cards": {
-        "fixedTimes": {
-          "title": "Lên kế hoạch quanh giờ cố định",
-          "body": "Đón con lúc ba giờ là không thể dời. Bản nháp đặt công việc vào các khoảng trống, không chồng lên đó."
-        },
-        "brief": {
-          "title": "Bản tóm tắt buổi sáng",
-          "body": "Việc gì đến hạn, việc gì bị trễ, tuần này có gì. Đọc cùng ly cà phê đầu tiên."
-        },
-        "wrapUp": {
-          "title": "Tổng kết buổi tối",
-          "body": "Việc gì đã xong và việc gì dời sang mai, để không có gì lặng lẽ rơi khỏi danh sách."
-        }
-      }
-    },
-    "pricing": {
-      "eyebrow": "Giá",
-      "title": "Tính giá theo người, một người trả",
-      "sub": "Bạn trả cho chính mình và cho mỗi thành viên gia đình có tài khoản đăng nhập riêng. Cùng một mức giá cho tất cả, trên một hóa đơn.",
-      "or": "hoặc",
-      "priceNote": "Bao gồm mọi thứ. Hủy bất cứ lúc nào.",
-      "priceNoteTrial": "Miễn phí {{days}} ngày, không cần thẻ. Hủy bất cứ lúc nào.",
-      "features": [
-        "Tài khoản của riêng bạn, cộng một chỗ cho mỗi thành viên gia đình",
-        "Các con đăng nhập bằng liên kết, không cần email",
-        "Dự án chung, danh sách và bảng Mọi người",
-        "Nguồn lịch, nhắc nhở trên mọi điện thoại, bot Telegram",
-        "Cập nhật và sao lưu hàng ngày đã được lo, {{proStorageGb}} GB dung lượng",
-        "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản của bạn"
-      ],
-      "action": "Bắt đầu →",
-      "actionTrial": "Bắt đầu dùng thử miễn phí →",
-      "twoParents": "Hai bố mẹ: {{monthly}} mỗi tháng, hoặc {{yearly}} mỗi năm."
-    },
-    "faq": {
-      "eyebrow": "Câu hỏi",
-      "title": "Những điều các gia đình hỏi đầu tiên",
-      "items": {
-        "kidsEmail": {
-          "q": "Các con có cần địa chỉ email không?",
-          "a": "Không. Thêm con chỉ bằng tên, rồi tạo một liên kết đăng nhập từ trang Mọi người và gửi cho con theo cách bạn muốn: một tin nhắn, một tờ giấy cạnh máy tính bảng, hoặc nói trực tiếp. Liên kết giữ con đăng nhập trong 30 ngày và bạn có thể thu hồi bất cứ lúc nào."
-        },
-        "whoPays": {
-          "q": "Mọi người trong nhà đều phải trả tiền à?",
-          "a": "Một người trả. Mỗi thành viên có tài khoản đăng nhập riêng là một chỗ với cùng mức giá như của bạn, tính vào chủ tài khoản. Thành viên không thể thêm thành viên khác, nên hóa đơn luôn nằm ở một nơi."
-        },
-        "privacy": {
-          "q": "Người bạn đời của tôi có thấy mọi thứ tôi viết không?",
-          "a": "Không. Mỗi người có công việc và ghi chú riêng. Người khác chỉ thấy những gì bạn chia sẻ hoặc giao cho họ, theo từng dự án."
-        },
-        "trial": {
-          "q": "Cả nhà có thể dùng thử trước không?",
-          "a": "Có bảo đảm hoàn tiền trong 14 ngày, nên bạn có thể chạy thử một tuần thật với gia đình và lấy lại tiền nếu không hợp.",
-          "aTrial": "Có. Mỗi tài khoản mới được dùng thử miễn phí {{days}} ngày không cần thẻ, và bạn có thể thêm một thành viên trong thời gian đó, để bạn và người bạn đời chạy thử một tuần thật trước khi quyết định."
-        },
-        "leaving": {
-          "q": "Nếu chúng tôi ngừng dùng thì sao?",
-          "a": "Xuất mọi thứ thành một tệp từ hồ sơ của bạn bất cứ lúc nào, và tự xóa tài khoản. tududi là mã nguồn mở, nên tệp xuất cũng mở được trong một bản tự lưu trữ nếu bạn muốn chạy nó ở nhà."
-        }
-      }
-    },
-    "closing": {
-      "title": "Đặt nó xuống. Giờ đã có người khác giữ.",
-      "sub": "Thiết lập cả nhà trong một buổi tối. Chúng tôi lo máy chủ, cập nhật và sao lưu.",
-      "primary": "Bắt đầu",
-      "primaryTrial": "Bắt đầu dùng thử miễn phí",
-      "secondary": "Xem mọi thứ tududi làm được"
     }
   }
 }

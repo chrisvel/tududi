@@ -68,7 +68,7 @@
     </section>
 
     <!-- Pricing: one paid plan, monthly or annual. -->
-    <section id="cloud-pricing" class="section" style="background:#f7f6f3;">
+    <section id="cloud-pricing" class="section" style="background:#f3f4f6;">
         <div class="container-sm">
             <div class="section-head">
                 <span class="eyebrow"><%= t('pricing.eyebrow') %></span>
@@ -112,11 +112,11 @@
                 </div>
             </div>
 
-            <%# A text link, not a Docker button. This page exists to explain
-                why somebody would let us run it; closing it with a big button
-                pointing the other way was arguing against itself. %>
+            <%# The same quiet self-host footnote as the homepage pricing card.
+                This page exists to explain why somebody would let us run it;
+                anything louder than fine print is arguing against itself. %>
             <div class="closing">
-                <p class="closing-selfhost"><%= t('cloud.selfHostLine') %> <a href="https://github.com/chrisvel/tududi"><%= t('finalCta.selfHostLink') %></a></p>
+                <p class="plan-fineprint plan-selfhost-note" style="text-align:center;"><%= t('pricing.selfHostNote') %> <a href="https://github.com/chrisvel/tududi" class="plan-selfhost-link"><%= t('pricing.selfHostLink') %> &rarr;</a></p>
             </div>
         </div>
     </section>

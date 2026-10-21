@@ -42,14 +42,13 @@
     // can break a URL.
     const faqGroups = [
         { id: 'project', items: [
-            { id: 'licence' },
+            { id: 'trust' },
             { id: 'commercialUse' },
             { id: 'maintained', link: { href: 'https://github.com/chrisvel/tududi/releases' } },
             { id: 'shutdown' },
         ]},
         { id: 'managed', items: [
             { id: 'freePlan', answer: trialDays > 0 ? 'aTrial' : 'a' },
-            { id: 'whyManaged' },
             { id: 'aiOptional' },
             { id: 'aiPrivacy' },
             { id: 'mcp' },
@@ -156,7 +155,6 @@
             { id: 'pwa',        icon: 'fas fa-mobile-alt', shot: true },
             { id: 'oidc',       icon: 'fas fa-id-badge' },
             { id: 'i18n',       icon: 'fas fa-language' },
-            { id: 'telegram',   icon: 'fas fa-paper-plane' },
             { id: 'caldav',     icon: 'fas fa-calendar-alt' },
             { id: 'api',        icon: 'fas fa-code' },
         ]},
@@ -177,10 +175,9 @@
         { name: 'XDA Developers',    url: 'https://www.xda-developers.com/free-open-source-to-do-list-tracker-has-changed-my-life/' },
         { name: 'GIGAZINE',          url: 'https://gigazine.net/gsc_news/en/20260429-tududi/' },
         { name: 'noted.lol',         url: 'https://noted.lol/tududi/' },
-        // Two hyphens between "management" and "to": the tag is "Task management
-        // & To-do lists", and the slug builder turns the "&" into its own empty
-        // segment. The single-hyphen spelling 404s.
-        { name: 'awesome-selfhosted', url: 'https://awesome-selfhosted.net/tags/task-management--to-do-lists.html' },
+        // awesome-selfhosted used to be listed here. The listing still exists;
+        // it is a directory for people who run servers, and this row is for
+        // people who do not.
         { name: 'AlternativeTo',     url: 'https://alternativeto.net/software/tududi' },
     ];
 
@@ -244,7 +241,6 @@
         { id: 'kanban',     cells: ['yes', 'yes', 'yes', 'yes'] },
         { id: 'views',      cells: ['yes', 'yes', 'yes', 'yes'] },
         { id: 'people',     cells: ['yes', 'yes', 'yes', 'yes'] },
-        { id: 'telegram',   cells: ['yes', 'no', 'no', 'no'] },
         { id: 'caldav',     cells: ['yes', 'no', 'no', 'no'] },
         { id: 'mcp',       cells: ['yes', 'yes', 'yes', 'yes'] },
     ];
@@ -256,21 +252,13 @@
         <div class="hero-glow"></div>
         <div class="hero-inner">
             <div class="hero-badges">
-                <a href="<%= localePath(i18n.locale, '/cloud') %>" class="hero-badge hero-badge-launch" data-testid="cloud-open-badge">
+                <%# One badge, and it says who the page is for. The GitHub star
+                    count and the MCP chip used to sit here too; both are proof
+                    for developers, and the first viewport is written for people
+                    who will never type docker. Stars stay in the footer. %>
+                <span class="hero-badge hero-badge-launch" data-testid="hero-badge">
                     <i class="fas fa-cloud"></i>
-                    <span><%= t('hero.badgeCloudOpen') %></span>
-                    <i class="fas fa-arrow-right hero-badge-arrow" aria-hidden="true"></i>
-                </a>
-                <% if (githubStars) { %>
-                <span class="hero-badge">
-                    <i class="fab fa-github"></i>
-                    <strong><%= githubStars.toLocaleString() %></strong>
-                    <span><%= t('hero.badgeStars') %></span>
-                </span>
-                <% } %>
-                <span class="hero-badge">
-                    <i class="fas fa-plug"></i>
-                    <span><%= t('hero.badgeMcp') %></span>
+                    <span><%= t('hero.badge') %></span>
                 </span>
             </div>
             <%# Split into two keys rather than one string with a <br> in it, so
@@ -296,7 +284,9 @@
                     demo.available is false while the container is being rebuilt
                     or if provisioning failed, and the whole button disappears
                     rather than linking somewhere that would 502 - the same rule
-                    the proof bar applies to the Docker pull count. %>
+                    the proof bar applies to the Docker pull count. The stars
+                    chip that used to sit above the headline is gone too: the
+                    first viewport is for someone who has never opened GitHub. %>
                 <% if (demo && demo.available) { %>
                 <a href="<%= appUrl %>/demo" class="btn-demo">
                     <span class="btn-demo-dot" aria-hidden="true"></span><%= t('hero.ctaDemo') %>
@@ -358,19 +348,46 @@
                 <% }); %>
             </div>
             <div class="proofbar-stats">
-                <% if (githubStars) { %>
-                <span class="proofbar-item">
-                    <i class="fab fa-github"></i>
-                    <strong><%= githubStars.toLocaleString() %></strong> <%= t('proof.stars') %>
-                </span>
-                <span class="proofbar-sep">&middot;</span>
-                <% } %>
-                <span class="proofbar-item"><%= t('proof.mcp', { tools: mcpToolCount }) %></span>
-                <span class="proofbar-sep">&middot;</span>
+                <%# Countable facts a non-developer can weigh. The star count
+                    and the MCP tool count were here and moved to the footer:
+                    both are arguments to developers, and this row backs up a
+                    headline written for everyone else. %>
                 <span class="proofbar-item"><%= t('proof.languages', { count: languageCount }) %></span>
                 <span class="proofbar-sep">&middot;</span>
                 <span class="proofbar-item"><%= t('proof.minute') %></span>
+                <span class="proofbar-sep">&middot;</span>
+                <span class="proofbar-item"><%= t('proof.guarantee') %></span>
             </div>
+        </div>
+    </section>
+
+    <!--
+        The mental load. Three cards naming the problem before any feature is
+        shown: pain first, product second. Structure only here; every string is under pains.* in the
+        locale, and the ids stay put so a translation pass cannot drop a card.
+    -->
+    <% const pains = [
+        { id: 'oneHead',     icon: 'fas fa-brain' },
+        { id: 'notesApp',    icon: 'fas fa-sticky-note' },
+        { id: 'tooManyApps', icon: 'fas fa-th' },
+    ]; %>
+    <section id="pains" class="section" style="background:#f3f4f6;">
+        <div class="container">
+            <div class="section-head">
+                <span class="eyebrow"><%= t('pains.eyebrow') %></span>
+                <h2 class="section-title"><%= t('pains.title') %></h2>
+                <p class="section-sub" style="max-width:720px; margin:0 auto;"><%= t('pains.sub') %></p>
+            </div>
+            <div class="pain-grid">
+                <% pains.forEach(function (pain) { %>
+                <div class="pain-card">
+                    <i class="<%= pain.icon %>" aria-hidden="true"></i>
+                    <h3><%= t('pains.items.' + pain.id + '.title') %></h3>
+                    <p><%= t('pains.items.' + pain.id + '.body') %></p>
+                </div>
+                <% }); %>
+            </div>
+            <p class="pain-turn"><%= t('pains.turn') %></p>
         </div>
     </section>
 
@@ -486,18 +503,6 @@
                 </div>
                 <img alt="" width="1120" height="700">
             </dialog>
-        </div>
-    </section>
-
-    <!-- Families: the household pitch lives on its own page; this points there. -->
-    <section class="families-band">
-        <div class="container-md families-band-inner">
-            <div class="families-band-text">
-                <span class="eyebrow"><i class="fas fa-house" aria-hidden="true"></i> <%= t('families.hero.badge') %></span>
-                <h2 class="section-title"><%= t('families.hero.titleLine1') %> <%= t('families.hero.titleLine2') %></h2>
-                <p class="section-sub"><%= t('families.hero.lede') %></p>
-            </div>
-            <a href="<%= localePath(i18n.locale, '/families') %>" class="btn-primary" data-testid="families-band-link"><%= t('families.hero.ctaSecondary') %><i class="fas fa-arrow-right families-band-arrow" aria-hidden="true"></i></a>
         </div>
     </section>
 
@@ -698,12 +703,13 @@
                 <p class="section-sub"><%= t('pricing.sub') %></p>
             </div>
 
-            <%# Two cards, not three, so the offer is simply first. The grid is
-                narrowed to keep each card the width it had as one of three:
-                auto-fit would otherwise stretch a five-bullet card to 580px. %>
-            <div class="plan-grid plan-grid-duo">
+            <%# One card. The self-host card that used to sit beside it was a
+                second offer on a page that has exactly one, and it told every
+                visitor there was a free version before they had tried this one.
+                Self-hosting is still real and still free; it is a footnote
+                under the fine print now, for the developer who came looking. %>
+            <div class="plan-grid plan-grid-solo">
                 <div class="plan plan-featured">
-                    <span class="plan-flag"><%= t('pricing.mostPopular') %></span>
                     <div class="plan-head">
                         <div class="plan-icon"><i class="fas fa-cloud"></i></div>
                         <h3><%= t('pricing.plans.cloud.name') %></h3>
@@ -741,49 +747,22 @@
                     </ul>
                     <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('pricing.plans.cloud.actionTrial', faqVars) : t('pricing.plans.cloud.action') %></a>
                 </div>
-
-                <%# Bullets here are work the visitor takes on, not benefits, so
-                    they get a wrench rather than a tick. The card is deliberately
-                    plain: self-hosting is a real option and stays on the page,
-                    but it is not the offer. %>
-                <div class="plan plan-utility">
-                    <div class="plan-head">
-                        <div class="plan-icon"><i class="fab fa-docker"></i></div>
-                        <h3><%= t('pricing.plans.selfHosted.name') %></h3>
-                    </div>
-                    <div class="plan-price">
-                        <%# The number, without the "/forever" flourish that used
-                            to sit beside it. It is still free; it is no longer the
-                            page's headline claim, and the note under it says what
-                            the zero actually costs. %>
-                        <div class="plan-amount"><span><%= money(0) %></span></div>
-                        <div class="plan-price-note"><%= t('pricing.plans.selfHosted.priceNote') %></div>
-                    </div>
-                    <ul class="plan-features plan-features-work">
-                        <% i18n.tList('pricing.plans.selfHosted.features').forEach(function (feature) { %>
-                        <li><i class="fas fa-wrench"></i><%= feature %></li>
-                        <% }); %>
-                    </ul>
-                    <a href="https://github.com/chrisvel/tududi" class="plan-action"><%= t('pricing.plans.selfHosted.action') %></a>
-                </div>
             </div>
 
-            <!-- Mirrors .plan-grid's template so this lands under the Cloud
-                 card without pulling that card out of the cards' shared row.
-                 Two cells now, note first, because Cloud is column one. -->
-            <div class="plan-notes plan-grid-duo">
-                <div>
-                    <p class="plan-fineprint">
-                        <%= t('pricing.fineprint') %>
-                    </p>
-                </div>
-                <div></div>
+            <div class="plan-notes plan-grid-solo">
+                <p class="plan-fineprint">
+                    <%= t('pricing.fineprint') %>
+                </p>
+                <p class="plan-fineprint plan-selfhost-note">
+                    <%= t('pricing.selfHostNote') %>
+                    <a href="https://github.com/chrisvel/tududi" class="plan-selfhost-link"><%= t('pricing.selfHostLink') %> &rarr;</a>
+                </p>
             </div>
         </div>
     </section>
 
     <!-- Comparison -->
-    <section style="padding:96px 16px; background:#f7f6f3;">
+    <section style="padding:96px 16px; background:#f3f4f6;">
         <div class="container-sm">
             <div class="section-head" style="margin-bottom:48px;">
                 <h2 class="section-title" style="font-size:32px; margin-bottom:16px;"><%= t('compare.title') %></h2>

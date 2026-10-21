@@ -209,11 +209,11 @@ describe('Landing page', () => {
             );
             // Crawlers need an absolute image URL; a relative one is ignored.
             expect(res.text).toContain(
-                '<meta property="og:image" content="https://tududi.com/landing-assets/og-1.png">'
+                '<meta property="og:image" content="https://tududi.com/landing-assets/og-2.png">'
             );
         }
         const image = await request(app)
-            .get('/landing-assets/og-1.png')
+            .get('/landing-assets/og-2.png')
             .set('Host', 'tududi.com');
         expect(image.status).toBe(200);
         expect(image.headers['content-type']).toBe('image/png');
@@ -243,61 +243,6 @@ describe('Landing page', () => {
         expect(alias.headers.location).toBe('/cloud');
     });
 
-    it('serves the families page, in English and in other locales', async () => {
-        const en = await request(app)
-            .get('/families')
-            .set('Host', 'tududi.com');
-        expect(en.status).toBe(200);
-        expect(en.text).toContain('<html lang="en"');
-        expect(en.text).toContain('For busy families');
-        expect(en.text).toContain('https://app.tududi.com/register');
-        expect(en.text).toContain(
-            'rel="canonical" href="https://tududi.com/families"'
-        );
-        expect(en.text).toContain(
-            'hreflang="fr" href="https://tududi.com/fr/families"'
-        );
-        // Every string resolved, none fell through to its key.
-        expect(en.text).not.toMatch(/families\.[a-z]+\.[A-Za-z.]+/);
-
-        const fr = await request(app)
-            .get('/fr/families')
-            .set('Host', 'tududi.com');
-        expect(fr.status).toBe(200);
-        expect(fr.text).toContain('<html lang="fr"');
-        expect(fr.text).not.toContain('For busy families');
-
-        for (const [from, to] of [
-            ['/en/families', '/families'],
-            ['/family', '/families'],
-        ]) {
-            const alias = await request(app)
-                .get(from)
-                .set('Host', 'tududi.com');
-            expect(alias.status).toBe(301);
-            expect(alias.headers.location).toBe(to);
-        }
-    });
-
-    it('links the families page from the homepage, nav and footer', async () => {
-        const en = await request(app).get('/').set('Host', 'tududi.com');
-        expect(en.status).toBe(200);
-        expect(en.text).toContain(
-            'href="/families" class="btn-primary" data-testid="families-band-link"'
-        );
-        // Desktop nav, mobile nav and footer.
-        expect(en.text.match(/href="\/families"[^>]*>Families</g)).toHaveLength(
-            3
-        );
-
-        const de = await request(app).get('/de').set('Host', 'tududi.com');
-        expect(de.status).toBe(200);
-        expect(de.text).toContain(
-            'href="/de/families" class="btn-primary" data-testid="families-band-link"'
-        );
-        expect(de.text).toContain('>Familien</a>');
-    });
-
     it('makes Cloud signup the only offer in the hero', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         const heroStart = res.text.indexOf('<section class="hero"');
@@ -311,11 +256,14 @@ describe('Landing page', () => {
 
         // Self-hosting and the repository are both near the foot of the page,
         // not peer buttons up here, and the first viewport does not sell the
-        // licence. The stars chip stays: it is proof, and it is not a link.
+        // licence. The stars and MCP chips went too: the first viewport is
+        // written for someone who has never opened GitHub.
         expect(hero).not.toContain('#self-host');
         expect(hero).not.toContain('github.com/chrisvel');
-        expect(hero).not.toMatch(/MIT|open source/i);
-        expect(hero).toContain('stars on GitHub');
+        expect(hero).not.toMatch(/MIT|open source|MCP/i);
+        expect(hero).not.toContain('stars on GitHub');
+        expect(hero).toContain('data-testid="hero-badge"');
+        expect(hero).toContain('Get it all out of your head.');
 
         // Still reachable further down, on the pricing card and in the footer.
         const belowHero = res.text.slice(
@@ -332,10 +280,43 @@ describe('Landing page', () => {
         expect(res.text).not.toContain('id="faq-requirements"');
         expect(res.text).not.toContain('Prefer to run it on your own server?');
 
+        // One quiet line under the fine print, not a card of its own.
         const pricing = res.text.slice(res.text.indexOf('id="pricing"'));
         expect(pricing).toMatch(
-            /href="https:\/\/github\.com\/chrisvel\/tududi" class="plan-action"/
+            /href="https:\/\/github\.com\/chrisvel\/tududi" class="plan-selfhost-link"/
         );
+        expect(pricing).toContain(
+            'tududi is open source and can be run on your own server'
+        );
+        expect(pricing).not.toContain('Self-host (advanced)');
+    });
+
+    it('names the problem before any feature', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const pains = res.text.indexOf('<section id="pains"');
+        expect(pains).toBeGreaterThan(-1);
+        expect(pains).toBeLessThan(res.text.indexOf('<section id="plan"'));
+        const section = res.text.slice(
+            pains,
+            res.text.indexOf('</section>', pains)
+        );
+        expect(section.match(/class="pain-card"/g)).toHaveLength(3);
+        expect(section).toContain(
+            'Organising is not the hard part. Remembering is.'
+        );
+    });
+
+    it('keeps self-hosting out of the FAQ', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.text).not.toContain('Is tududi really free?');
+        expect(res.text).not.toContain(
+            'Why pay for Cloud when self-hosting is free?'
+        );
+        expect(res.text).not.toContain(
+            'The free way to use tududi is to run it on your own server'
+        );
+        expect(res.text).toContain('id="faq-trust"');
+        expect(res.text).toContain('Can I trust you with my data?');
     });
 
     it('quotes a 14-day money-back guarantee and no AI credit count', async () => {
@@ -347,7 +328,9 @@ describe('Landing page', () => {
             res.text.indexOf('id="pricing"'),
             res.text.indexOf('class="compare')
         );
-        expect(pricing).toContain('AI day planning, MCP, calendar feeds');
+        expect(pricing).toContain(
+            'AI day planning, calendar feeds and CalDAV sync'
+        );
     });
 
     it('walks through capture, planning and Today before the feature grid', async () => {
@@ -468,11 +451,11 @@ describe('Landing page', () => {
             'Notion Plus',
         ].forEach((vendor) => expect(table).toContain(vendor));
         expect(table).not.toContain('Self-host');
-        [
-            'Eisenhower matrix',
-            'Capture from Telegram',
-            'CalDAV task sync',
-        ].forEach((row) => expect(table).toContain(row));
+        ['Eisenhower matrix', 'CalDAV task sync'].forEach((row) =>
+            expect(table).toContain(row)
+        );
+        // Telegram is opt-in and off by default, so it is not a selling point.
+        expect(table).not.toContain('Telegram');
         expect(res.text).toContain('from their public pricing pages');
     });
 
@@ -501,17 +484,12 @@ describe('Landing page', () => {
             res.text.indexOf('<section id="faq"')
         );
 
-        // The flag sits inside the card that owns the register link, and the
-        // self-host card - which is still $0 - no longer carries it.
-        const flagged = pricing.slice(pricing.indexOf('plan-flag'));
-        expect(flagged).toContain('https://app.tududi.com/register');
-        expect(pricing.match(/plan-flag/g)).toHaveLength(1);
-
-        // Two cards, Cloud first.
-        expect(pricing.match(/class="plan /g)).toHaveLength(2);
-        expect(pricing.indexOf('plan-featured')).toBeLessThan(
-            pricing.indexOf('plan-utility')
-        );
+        // One card, and it owns the register link. With no second card there
+        // is nothing to flag "most popular" against, so the flag is gone too.
+        expect(pricing).toContain('https://app.tududi.com/register');
+        expect(pricing).not.toContain('plan-flag');
+        expect(pricing.match(/class="plan /g)).toHaveLength(1);
+        expect(pricing).not.toContain('plan-utility');
     });
 
     it('offers the trial everywhere it sells Cloud once trials are on', async () => {
@@ -526,8 +504,10 @@ describe('Landing page', () => {
                 heroOpen,
                 res.text.indexOf('</section>', heroOpen)
             );
-            expect(hero).toContain('Start your free 7-day trial');
-            expect(hero).toContain('Free for 7 days, no card needed.');
+            expect(hero).toContain('Start free');
+            expect(hero).toContain(
+                'Free for 7 days, no card needed. Then €5 a month'
+            );
             expect(res.text).toContain('Start free trial →');
             expect(res.text).toContain('7-day free trial, no card needed');
             expect(res.text).not.toContain('no trial clock');
@@ -582,7 +562,7 @@ describe('Landing page', () => {
         const pricingOpen = res.text.indexOf('<section id="pricing"');
         const cloudCard = res.text.slice(
             pricingOpen,
-            res.text.indexOf('plan-utility', pricingOpen)
+            res.text.indexOf('plan-notes', pricingOpen)
         );
         [hero, cloudCard].forEach((region) => {
             expect(region).not.toMatch(/free (account|plan|tier|trial)/i);
@@ -596,8 +576,9 @@ describe('Landing page', () => {
         expect(res.text).not.toContain('The trial includes the AI assistant');
         expect(res.text).not.toContain('Start free trial');
 
-        // Self-hosting is still free, and the page still says so.
-        expect(res.text).toMatch(/free, if you run the server yourself/i);
+        // Self-hosting is still possible, and only the fine print says so.
+        expect(res.text).not.toMatch(/free, if you run the server yourself/i);
+        expect(res.text).toContain('can be run on your own server');
     });
 
     it('sells no Business Licence anywhere on the page', async () => {
@@ -942,14 +923,12 @@ describe('Landing page', () => {
     });
 
     describe('with Cloud open', () => {
-        it('announces it in the hero, linking to the Cloud page', async () => {
+        it('says who the hero is for, not that Cloud exists', async () => {
             const res = await request(app).get('/').set('Host', 'tududi.com');
-            expect(res.text).toContain('data-testid="cloud-open-badge"');
-            expect(res.text).toContain('tududi Cloud is now open');
-            const fr = await request(app).get('/fr').set('Host', 'tududi.com');
-            expect(fr.text).toMatch(
-                /href="\/fr\/cloud" class="hero-badge hero-badge-launch"/
-            );
+            expect(res.text).toContain('data-testid="hero-badge"');
+            expect(res.text).toContain('For busy people, nothing to install');
+            expect(res.text).not.toContain('tududi Cloud is now open');
+            expect(res.text).not.toContain('data-testid="cloud-open-badge"');
         });
 
         it('sends every Cloud call to action to registration', async () => {
@@ -1012,15 +991,6 @@ describe('Landing page', () => {
         const middleware = hostSwitch({ hosts: [] });
         middleware({ hostname: 'tududi.com', path: '/' }, {}, next);
         expect(next).toHaveBeenCalled();
-    });
-
-    it('translates every families page string in each language', () => {
-        const missing = preloadCatalogs();
-        LOCALE_CODES.forEach((code) => {
-            expect(
-                (missing[code] || []).filter((k) => k.startsWith('families.'))
-            ).toEqual([]);
-        });
     });
 
     it('loads every catalog and carries the Cloud plan in each language', () => {
