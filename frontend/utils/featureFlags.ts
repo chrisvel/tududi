@@ -23,7 +23,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
             return {
                 hosted: false,
                 billing: false,
-                telegram: true,
+                telegram: false,
             };
         }
 
@@ -31,7 +31,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
         const defaultFlags: FeatureFlags = {
             hosted: false,
             billing: false,
-            telegram: true,
+            telegram: false,
         };
         cachedFeatureFlags = {
             ...defaultFlags,
@@ -43,7 +43,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
         return {
             hosted: false,
             billing: false,
-            telegram: true,
+            telegram: false,
         };
     }
 };

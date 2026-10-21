@@ -97,6 +97,8 @@ See [PWA & Offline Support](15-pwa.md) for the manifest configuration and limita
 
 ### Telegram Integration
 
+Telegram is off by default. Set `TELEGRAM_ENABLED=true` on the server to turn it on; until then the Telegram settings tab and sidebar icon are hidden.
+
 Send messages to your tududi bot:
 - Each message creates an inbox item
 - Source is marked as `telegram`

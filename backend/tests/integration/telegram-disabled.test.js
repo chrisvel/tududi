@@ -10,7 +10,7 @@ const {
     isTelegramConfigured,
 } = require('../../modules/telegram/telegramNotificationService');
 
-describe('TELEGRAM_ENABLED=false', () => {
+describe('Telegram turned off (TELEGRAM_ENABLED unset)', () => {
     let user, agent;
 
     beforeEach(async () => {
@@ -65,5 +65,22 @@ describe('TELEGRAM_ENABLED=false', () => {
             false
         );
         expect(isTelegramConfigured(telegramUser)).toBe(false);
+    });
+});
+
+describe('TELEGRAM_ENABLED default', () => {
+    it('is off when the variable is unset', () => {
+        const saved = process.env.TELEGRAM_ENABLED;
+        delete process.env.TELEGRAM_ENABLED;
+        try {
+            jest.isolateModules(() => {
+                const {
+                    getConfig: freshConfig,
+                } = require('../../config/config');
+                expect(freshConfig().telegramEnabled).toBe(false);
+            });
+        } finally {
+            process.env.TELEGRAM_ENABLED = saved;
+        }
     });
 });

@@ -8,7 +8,7 @@ const { getConfig } = require('../../config/config');
  */
 function isTelegramConfigured(user) {
     return !!(
-        getConfig().telegramEnabled !== false &&
+        getConfig().telegramEnabled === true &&
         user &&
         user.telegram_bot_token &&
         user.telegram_chat_id

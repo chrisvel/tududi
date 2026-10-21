@@ -8,6 +8,11 @@
 
 const { testDatabaseName } = require('./test-db');
 
+// Telegram is off by default; the suite covers it switched on.
+if (process.env.TELEGRAM_ENABLED === undefined) {
+    process.env.TELEGRAM_ENABLED = 'true';
+}
+
 if (process.env.DATABASE_URL || process.env.DB_DIALECT) {
     const workerDb = testDatabaseName(process.env.JEST_WORKER_ID || '1');
     if (process.env.DATABASE_URL) {

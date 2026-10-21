@@ -6,9 +6,9 @@ const { requireFeature } = require('../../middleware/entitlements');
 const telegramController = require('./controller');
 const { getConfig } = require('../../config/config');
 
-// With TELEGRAM_ENABLED=false the whole API answers as if it did not exist.
+// Unless TELEGRAM_ENABLED=true the whole API answers as if it did not exist.
 router.use('/telegram', (req, res, next) => {
-    if (getConfig().telegramEnabled === false) {
+    if (getConfig().telegramEnabled !== true) {
         return res.status(404).json({ error: 'Telegram is turned off' });
     }
     next();

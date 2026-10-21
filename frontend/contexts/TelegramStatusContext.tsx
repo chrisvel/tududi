@@ -93,9 +93,10 @@ export const TelegramStatusProvider: React.FC<{
 
     // Listen for custom events to update status immediately
     useEffect(() => {
-        const handleTelegramStatusChange = (
+        const handleTelegramStatusChange = async (
             event: CustomEvent<{ status: TelegramStatus }>
         ) => {
+            if (!(await getFeatureFlags()).telegram) return;
             setStatus(event.detail.status);
         };
 

@@ -118,7 +118,7 @@ function shouldSendInAppNotification(user, notificationType) {
  * @returns {boolean} - True if Telegram notifications are enabled for this type
  */
 function shouldSendTelegramNotification(user, notificationType) {
-    if (getConfig().telegramEnabled === false) return false;
+    if (getConfig().telegramEnabled !== true) return false;
 
     // If no user or no preferences set, default to disabled for Telegram
     if (!user || !user.notification_preferences) {

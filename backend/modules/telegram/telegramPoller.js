@@ -2,7 +2,7 @@ const https = require('https');
 const { User, InboxItem } = require('../../models');
 const { getConfig } = require('../../config/config');
 
-const isTelegramEnabled = () => getConfig().telegramEnabled !== false;
+const isTelegramEnabled = () => getConfig().telegramEnabled === true;
 
 // Create poller state
 const createPollerState = () => ({

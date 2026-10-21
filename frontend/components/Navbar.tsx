@@ -63,7 +63,7 @@ const Navbar: React.FC<NavbarProps> = ({
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         hosted: false,
         billing: false,
-        telegram: true,
+        telegram: false,
     });
     const dropdownRef = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();

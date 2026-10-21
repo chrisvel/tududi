@@ -144,7 +144,7 @@ LLM_DISABLE_THINKING=false    # true to send chat_template_kwargs.enable_thinkin
 
 # Optional - Integrations
 DISABLE_TELEGRAM=false
-# TELEGRAM_ENABLED=true        # false turns Telegram off and hides it
+TELEGRAM_ENABLED=false        # true turns Telegram on and shows it
 # VAPID_PUBLIC_KEY=             # Web Push keys, generated and stored on
 # VAPID_PRIVATE_KEY=            # first use when unset (docs/15-pwa.md)
 # VAPID_SUBJECT=mailto:you@example.com
