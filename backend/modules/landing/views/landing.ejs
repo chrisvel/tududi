@@ -489,6 +489,18 @@
         </div>
     </section>
 
+    <!-- Families: the household pitch lives on its own page; this points there. -->
+    <section class="families-band">
+        <div class="container-md families-band-inner">
+            <div class="families-band-text">
+                <span class="eyebrow"><i class="fas fa-house" aria-hidden="true"></i> <%= t('families.hero.badge') %></span>
+                <h2 class="section-title"><%= t('families.hero.titleLine1') %> <%= t('families.hero.titleLine2') %></h2>
+                <p class="section-sub"><%= t('families.hero.lede') %></p>
+            </div>
+            <a href="<%= localePath(i18n.locale, '/families') %>" class="btn-primary" data-testid="families-band-link"><%= t('families.hero.ctaSecondary') %><i class="fas fa-arrow-right families-band-arrow" aria-hidden="true"></i></a>
+        </div>
+    </section>
+
     <!-- AI / MCP -->
     <section id="ai" class="section section-dark">
         <div class="container-md">

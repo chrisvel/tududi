@@ -14,7 +14,8 @@
     "blog": "Blogi",
     "signIn": "Kirjaudu sisään",
     "toggle": "Avaa valikko",
-    "plan": "Suunnittele päivä"
+    "plan": "Suunnittele päivä",
+    "families": "Perheet"
   },
   "hero": {
     "badgeStars": "tähteä GitHubissa",

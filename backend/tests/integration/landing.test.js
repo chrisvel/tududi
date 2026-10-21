@@ -279,6 +279,25 @@ describe('Landing page', () => {
         }
     });
 
+    it('links the families page from the homepage, nav and footer', async () => {
+        const en = await request(app).get('/').set('Host', 'tududi.com');
+        expect(en.status).toBe(200);
+        expect(en.text).toContain(
+            'href="/families" class="btn-primary" data-testid="families-band-link"'
+        );
+        // Desktop nav, mobile nav and footer.
+        expect(en.text.match(/href="\/families"[^>]*>Families</g)).toHaveLength(
+            3
+        );
+
+        const de = await request(app).get('/de').set('Host', 'tududi.com');
+        expect(de.status).toBe(200);
+        expect(de.text).toContain(
+            'href="/de/families" class="btn-primary" data-testid="families-band-link"'
+        );
+        expect(de.text).toContain('>Familien</a>');
+    });
+
     it('makes Cloud signup the only offer in the hero', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         const heroStart = res.text.indexOf('<section class="hero"');

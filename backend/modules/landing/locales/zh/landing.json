@@ -14,7 +14,8 @@
     "blog": "博客",
     "signIn": "登录",
     "toggle": "打开菜单",
-    "plan": "规划一天"
+    "plan": "规划一天",
+    "families": "家庭"
   },
   "hero": {
     "badgeStars": "GitHub 星标",
