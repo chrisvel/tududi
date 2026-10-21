@@ -1,5 +1,8 @@
 const https = require('https');
 const { User, InboxItem } = require('../../models');
+const { getConfig } = require('../../config/config');
+
+const isTelegramEnabled = () => getConfig().telegramEnabled !== false;
 
 // Create poller state
 const createPollerState = () => ({
@@ -234,6 +237,7 @@ const sendTelegramMessage = async (
     replyToMessageId = null,
     options = {}
 ) => {
+    if (!isTelegramEnabled()) return null;
     try {
         const messageParams = createMessageParams(
             chatId,
@@ -640,7 +644,7 @@ const stopPolling = () => {
 
 // Function to add user (contains side effects)
 const addUser = async (user) => {
-    if (!user || !user.telegram_bot_token) {
+    if (!isTelegramEnabled() || !user || !user.telegram_bot_token) {
         return false;
     }
 

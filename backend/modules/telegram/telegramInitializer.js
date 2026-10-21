@@ -4,7 +4,11 @@ const { setConfig, getConfig } = require('../../config/config');
 const config = getConfig();
 
 async function initializeTelegramPolling() {
-    if (config.environment === 'test' || config.disableTelegram) {
+    if (
+        config.environment === 'test' ||
+        config.disableTelegram ||
+        !config.telegramEnabled
+    ) {
         return;
     }
 

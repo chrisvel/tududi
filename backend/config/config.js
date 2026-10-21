@@ -138,6 +138,11 @@ const config = {
 
     disableTelegram: process.env.DISABLE_TELEGRAM === 'true',
 
+    // Turns Telegram off for the whole instance: no polling, no messages,
+    // no API, and the UI hides it. DISABLE_TELEGRAM above only stops this
+    // process from polling (web pods next to a worker).
+    telegramEnabled: process.env.TELEGRAM_ENABLED !== 'false',
+
     // Hosted mode: this instance serves unrelated members of the public, so
     // conveniences that assume a single owner (first user becomes admin,
     // bootstrap role assignment, SSO auto-provisioning past a closed

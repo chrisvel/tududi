@@ -3,6 +3,7 @@ import { getApiPath } from '../config/paths';
 export interface FeatureFlags {
     hosted: boolean;
     billing: boolean;
+    telegram: boolean;
 }
 
 let cachedFeatureFlags: FeatureFlags | null = null;
@@ -22,6 +23,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
             return {
                 hosted: false,
                 billing: false,
+                telegram: true,
             };
         }
 
@@ -29,6 +31,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
         const defaultFlags: FeatureFlags = {
             hosted: false,
             billing: false,
+            telegram: true,
         };
         cachedFeatureFlags = {
             ...defaultFlags,
@@ -40,6 +43,7 @@ export const getFeatureFlags = async (): Promise<FeatureFlags> => {
         return {
             hosted: false,
             billing: false,
+            telegram: true,
         };
     }
 };

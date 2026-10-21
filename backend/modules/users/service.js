@@ -255,13 +255,16 @@ class UsersService {
         // only be cleared here; any other value is ignored.
         if (avatar_image === null || avatar_image === '')
             allowedUpdates.avatar_image = null;
-        if (telegram_bot_token !== undefined) {
+        // With Telegram turned off the profile form still posts these
+        // fields; keep what is stored so turning it back on just works.
+        const telegramEnabled = getConfig().telegramEnabled !== false;
+        if (telegramEnabled && telegram_bot_token !== undefined) {
             if (telegram_bot_token) {
                 await entitlements.assertFeature(userId, 'telegram');
             }
             allowedUpdates.telegram_bot_token = telegram_bot_token;
         }
-        if (telegram_allowed_users !== undefined)
+        if (telegramEnabled && telegram_allowed_users !== undefined)
             allowedUpdates.telegram_allowed_users = telegram_allowed_users;
         if (features !== undefined) {
             let currentFeatures = user.features;

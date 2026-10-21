@@ -6,6 +6,7 @@ import React, {
     useEffect,
 } from 'react';
 import { getApiPath } from '../config/paths';
+import { getFeatureFlags } from '../utils/featureFlags';
 
 type TelegramStatus = 'healthy' | 'problem' | 'none';
 
@@ -27,6 +28,10 @@ export const TelegramStatusProvider: React.FC<{
     const fetchTelegramStatus =
         useCallback(async (): Promise<TelegramStatus> => {
             try {
+                if (!(await getFeatureFlags()).telegram) {
+                    return 'none';
+                }
+
                 // Check if user has telegram bot token
                 const profileResponse = await fetch(getApiPath('profile'), {
                     credentials: 'include',
