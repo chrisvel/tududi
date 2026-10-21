@@ -1,3 +1,4 @@
+const moment = require('moment-timezone');
 const {
     calculateNextDueDate,
     calculateDailyRecurrence,
@@ -372,6 +373,37 @@ describe('RecurringTaskService - UTC Consistency', () => {
             );
         });
 
+        it('keeps wall-clock due time across autumn DST transition in Europe/Berlin', () => {
+            const timezone = 'Europe/Berlin';
+            // 2026-10-24 09:00 CEST (UTC+2) is 2026-10-24T07:00:00.000Z
+            const task = {
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_has_time: true,
+                due_date: moment.tz('2026-10-24 09:00', timezone).toDate(),
+            };
+
+            const occurrences = calculateVirtualOccurrences(
+                task,
+                4,
+                null,
+                timezone
+            );
+
+            expect(occurrences).toHaveLength(4);
+            const formatted = occurrences.map((o) => ({
+                date: moment(o.due_date).tz(timezone).format('YYYY-MM-DD'),
+                time: moment(o.due_date).tz(timezone).format('HH:mm'),
+            }));
+
+            expect(formatted).toEqual([
+                { date: '2026-10-24', time: '09:00' },
+                { date: '2026-10-25', time: '09:00' },
+                { date: '2026-10-26', time: '09:00' },
+                { date: '2026-10-27', time: '09:00' },
+            ]);
+        });
+
         it('should respect end date limit', () => {
             const task = {
                 recurrence_type: 'daily',
@@ -433,6 +465,37 @@ describe('RecurringTaskService - UTC Consistency', () => {
             occurrences.forEach((occurrence) => {
                 expect(occurrence.is_virtual).toBe(true);
             });
+        });
+
+        it('keeps Europe/Berlin wall clock across autumn DST for daily timed virtual rows', () => {
+            const moment = require('moment-timezone');
+            // 2026-10-24 09:00 Europe/Berlin is still CEST (UTC+2) → 07:00Z
+            // 2026-10-25 is the first day after the clocks fall back (CET UTC+1).
+            const start = moment.tz('2026-10-24 09:00:00', 'Europe/Berlin').toDate();
+            const task = {
+                due_date: start,
+                due_has_time: true,
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+            };
+
+            const occurrences = calculateVirtualOccurrences(
+                task,
+                4,
+                start,
+                'Europe/Berlin'
+            );
+
+            expect(occurrences).toHaveLength(4);
+            const localHours = occurrences.map((o) =>
+                moment(o.due_date).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm')
+            );
+            expect(localHours).toEqual([
+                '2026-10-24 09:00',
+                '2026-10-25 09:00',
+                '2026-10-26 09:00',
+                '2026-10-27 09:00',
+            ]);
         });
 
         it('should respect MAX_ITERATIONS to prevent infinite loops', () => {

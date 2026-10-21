@@ -324,6 +324,28 @@ const calculateVirtualOccurrences = (
         currentDate = calculateNextDueDate(task, currentDate, userTimezone);
         if (!currentDate) break;
 
+        // UTC day/week arithmetic keeps the UTC clock, so a timed series
+        // drifts by one local hour across DST. Rebuild the next instant from
+        // the advanced calendar date in userTimezone plus the parent's local
+        // wall-clock time so Upcoming keeps e.g. 09:00 Europe/Berlin.
+        if (task.due_has_time) {
+            const parentInstant = task.due_date
+                ? moment.utc(task.due_date)
+                : moment.utc(startFrom || currentDate);
+            const parentLocal = parentInstant.tz(userTimezone);
+            const nextDateInUserTz = moment
+                .utc(currentDate)
+                .tz(userTimezone)
+                .format('YYYY-MM-DD');
+            currentDate = moment
+                .tz(
+                    `${nextDateInUserTz} ${parentLocal.format('HH:mm:ss.SSS')}`,
+                    'YYYY-MM-DD HH:mm:ss.SSS',
+                    userTimezone
+                )
+                .toDate();
+        }
+
         iterationCount++;
     }
 
