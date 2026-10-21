@@ -10,6 +10,7 @@ class FeatureFlagsService {
         return {
             hosted: hosted.enabled === true,
             billing: require('../billing/providers').isBillingConfigured(),
+            telegram: getConfig().telegramEnabled === true,
         };
     }
 }

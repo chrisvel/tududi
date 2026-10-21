@@ -176,6 +176,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     const [featureFlags, setFeatureFlags] = useState<FeatureFlags>({
         hosted: false,
         billing: false,
+        telegram: false,
     });
     const [isChangingLanguage, setIsChangingLanguage] = useState(false);
     const [isPolling, setIsPolling] = useState(false);
@@ -609,7 +610,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     },
                 });
 
-                if (data.telegram_bot_token) {
+                if (flags.telegram && data.telegram_bot_token) {
                     fetchPollingStatus();
                 }
             } catch (error) {
@@ -649,7 +650,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
     useEffect(() => {
         const fetchTelegramInfo = async () => {
-            if (profile?.telegram_bot_token) {
+            if (featureFlags.telegram && profile?.telegram_bot_token) {
                 try {
                     const setupResponse = await fetch(
                         getApiPath('telegram/setup'),
@@ -706,7 +707,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         };
 
         fetchTelegramInfo();
-    }, [profile?.telegram_bot_token]);
+    }, [featureFlags.telegram, profile?.telegram_bot_token]);
 
     useEffect(() => {}, [updateKey, i18n.language]);
 
@@ -924,7 +925,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.error || t('profile.sendSummaryFailed', 'Failed to send the summary.'));
+                throw new Error(
+                    data.error ||
+                        t(
+                            'profile.sendSummaryFailed',
+                            'Failed to send the summary.'
+                        )
+                );
             }
 
             const data = await response.json();
@@ -1421,6 +1428,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             id: 'telegram',
             name: t('profile.tabs.telegram', 'Telegram'),
             icon: <TelegramIcon className="w-5 h-5" />,
+            featureFlag: 'telegram',
         },
         {
             id: 'keyboard-shortcuts',
@@ -1814,6 +1822,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                                 <NotificationsTab
                                     isActive={activeTab === 'notifications'}
+                                    showTelegram={featureFlags.telegram}
                                     notificationPreferences={
                                         formData.notification_preferences
                                     }
@@ -1827,7 +1836,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                 />
 
                                 <TelegramTab
-                                    isActive={activeTab === 'telegram'}
+                                    isActive={
+                                        featureFlags.telegram &&
+                                        activeTab === 'telegram'
+                                    }
                                     formData={formData}
                                     profile={profile}
                                     telegramBotInfo={telegramBotInfo}

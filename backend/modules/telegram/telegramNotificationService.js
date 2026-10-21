@@ -1,4 +1,5 @@
 const { sendTelegramMessage } = require('./telegramPoller');
+const { getConfig } = require('../../config/config');
 
 /**
  * Check if user has Telegram properly configured
@@ -6,7 +7,12 @@ const { sendTelegramMessage } = require('./telegramPoller');
  * @returns {boolean} - True if user has both bot token and chat ID
  */
 function isTelegramConfigured(user) {
-    return !!(user && user.telegram_bot_token && user.telegram_chat_id);
+    return !!(
+        getConfig().telegramEnabled === true &&
+        user &&
+        user.telegram_bot_token &&
+        user.telegram_chat_id
+    );
 }
 
 /**

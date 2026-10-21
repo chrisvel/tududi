@@ -28,7 +28,7 @@ The catalog lives in `backend/config/plans.js`:
 | Attachment storage | 50 MB | 5 GB |
 | AI requests per month | 0 | 200 |
 | Members an owner may add, each a paid seat (`max_members`) | 0 | 10 |
-| AI assistant, MCP, CalDAV, Telegram, backup import | no | yes |
+| AI assistant, MCP, CalDAV, backup import | no | yes |
 
 `null` means unlimited. Override any number with `TUDUDI_PLANS_JSON`, a JSON
 object deep-merged over the defaults:
