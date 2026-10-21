@@ -363,8 +363,7 @@
 
     <!--
         The mental load. Three cards naming the problem before any feature is
-        shown, in the voice the families page already uses: pain first, product
-        second. Structure only here; every string is under pains.* in the
+        shown: pain first, product second. Structure only here; every string is under pains.* in the
         locale, and the ids stay put so a translation pass cannot drop a card.
     -->
     <% const pains = [
@@ -504,18 +503,6 @@
                 </div>
                 <img alt="" width="1120" height="700">
             </dialog>
-        </div>
-    </section>
-
-    <!-- Families: the household pitch lives on its own page; this points there. -->
-    <section class="families-band">
-        <div class="container-md families-band-inner">
-            <div class="families-band-text">
-                <span class="eyebrow"><i class="fas fa-house" aria-hidden="true"></i> <%= t('families.hero.badge') %></span>
-                <h2 class="section-title"><%= t('families.hero.titleLine1') %> <%= t('families.hero.titleLine2') %></h2>
-                <p class="section-sub"><%= t('families.hero.lede') %></p>
-            </div>
-            <a href="<%= localePath(i18n.locale, '/families') %>" class="btn-primary" data-testid="families-band-link"><%= t('families.hero.ctaSecondary') %><i class="fas fa-arrow-right families-band-arrow" aria-hidden="true"></i></a>
         </div>
     </section>
 

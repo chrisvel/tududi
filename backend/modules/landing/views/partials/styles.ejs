@@ -580,17 +580,6 @@
            Text and screenshot side by side, alternating sides, stacked on
            phones with the text first. */
         .plan-day { background: #f3f4f6; }
-        .families-band { background: #f5f6f8; padding: 72px 16px; }
-        .families-band-inner { display: flex; align-items: center; gap: 40px; }
-        .families-band-text { flex: 1; min-width: 0; }
-        .families-band .section-title { font-size: 32px; margin-bottom: 14px; }
-        .families-band .section-sub { font-size: 17px; }
-        .families-band .btn-primary { flex-shrink: 0; }
-        .families-band-arrow { font-size: 13px; }
-        [dir="rtl"] .families-band-arrow { transform: scaleX(-1); }
-        @media (max-width: 768px) {
-            .families-band-inner { flex-direction: column; align-items: stretch; gap: 24px; }
-        }
         .plan-step { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
         .plan-step + .plan-step { margin-top: 96px; }
         .plan-step-flip .plan-step-text { order: 2; }
@@ -1091,7 +1080,7 @@
         .plan-selfhost-link { color: #6b7280; text-decoration: underline; text-underline-offset: 2px; }
         .plan-selfhost-link:hover { color: #111827; }
 
-        /* ---------- The mental load (homepage and /families) ---------- */
+        /* ---------- The mental load (homepage) ---------- */
         .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
         .pain-card { background: #fff; border-radius: 14px; padding: 28px 24px; box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04); }
         .pain-card i { color: #e0645c; font-size: 20px; margin-bottom: 14px; }
