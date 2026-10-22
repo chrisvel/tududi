@@ -51,11 +51,12 @@ export interface BlogStatus {
     blog_url: string | null;
 }
 
-// The blog's name, in two lines, and as one sentence for the browser tab.
+// The blog's name and tagline, and the name for the browser tab.
 // The server repeats the tagline and full name in modules/blog/hostSwitch.js.
-export const BLOG_TITLE = 'Let’s take control…';
-export const BLOG_TAGLINE = '…before someone else does.';
-export const BLOG_NAME = 'Let’s take control… before someone else does.';
+export const BLOG_TITLE = 'Small things, sorted.';
+export const BLOG_TAGLINE =
+    'Ideas and stories for running a busy home with less in your head.';
+export const BLOG_NAME = 'Small things, sorted.';
 
 // null means there is nothing to show: no front page note is picked, it is
 // not shared, or the post is not on the blog.

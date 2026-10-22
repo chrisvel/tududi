@@ -105,10 +105,12 @@ describe('Blog front page', () => {
         renderAt('/blog');
 
         expect(screen.getByTestId('blog-title')).toHaveTextContent(
-            'Let’s take control…'
+            'Small things, sorted.'
         );
         expect(
-            screen.getByText('…before someone else does.')
+            screen.getByText(
+                'Ideas and stories for running a busy home with less in your head.'
+            )
         ).toBeInTheDocument();
 
         const cards = await screen.findAllByTestId('blog-post-card');
