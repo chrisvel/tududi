@@ -307,19 +307,76 @@ const calculateVirtualOccurrences = (
             break;
         }
 
-        // Convert UTC date to user timezone date string
+        // Date-only occurrences stay a calendar string. A timed occurrence
+        // must keep the real instant: a YYYY-MM-DD string is parsed as UTC
+        // midnight, so Upcoming would show that clock (00:00, or 12:00 in
+        // UTC+12) instead of the stored due time.
         const dateInUserTz = moment
             .utc(currentDate)
             .tz(userTimezone)
             .format('YYYY-MM-DD');
 
         occurrences.push({
-            due_date: dateInUserTz,
+            due_date: task.due_has_time ? new Date(currentDate) : dateInUserTz,
             is_virtual: true,
         });
 
-        currentDate = calculateNextDueDate(task, currentDate, userTimezone);
-        if (!currentDate) break;
+        if (task.due_has_time) {
+            // For timed recurrences, advance the calendar date using local
+            // calendar arithmetic in userTimezone so advancing days/weeks is
+            // immune to UTC hour shifts across DST (e.g. 00:30 on the autumn
+            // fall-back day). Then rebuild the next instant with the parent's
+            // local wall-clock time.
+            const currentLocal = moment.tz(currentDate, userTimezone);
+            let nextDateInUserTz;
+            if (task.recurrence_type === 'daily') {
+                nextDateInUserTz = currentLocal
+                    .add(task.recurrence_interval || 1, 'days')
+                    .format('YYYY-MM-DD');
+            } else if (
+                task.recurrence_type === 'weekly' &&
+                !task.recurrence_weekdays &&
+                (task.recurrence_weekday === null ||
+                    task.recurrence_weekday === undefined ||
+                    task.recurrence_weekday === currentLocal.day())
+            ) {
+                nextDateInUserTz = currentLocal
+                    .add(task.recurrence_interval || 1, 'weeks')
+                    .format('YYYY-MM-DD');
+            } else {
+                const localMidday = moment
+                    .tz(
+                        `${currentLocal.format('YYYY-MM-DD')} 12:00:00`,
+                        'YYYY-MM-DD HH:mm:ss',
+                        userTimezone
+                    )
+                    .toDate();
+                const nextMidday = calculateNextDueDate(
+                    task,
+                    localMidday,
+                    userTimezone
+                );
+                if (!nextMidday) break;
+                nextDateInUserTz = moment(nextMidday)
+                    .tz(userTimezone)
+                    .format('YYYY-MM-DD');
+            }
+
+            const parentInstant = task.due_date
+                ? moment.utc(task.due_date)
+                : moment.utc(startFrom || currentDate);
+            const parentLocal = parentInstant.tz(userTimezone);
+            currentDate = moment
+                .tz(
+                    `${nextDateInUserTz} ${parentLocal.format('HH:mm:ss.SSS')}`,
+                    'YYYY-MM-DD HH:mm:ss.SSS',
+                    userTimezone
+                )
+                .toDate();
+        } else {
+            currentDate = calculateNextDueDate(task, currentDate, userTimezone);
+            if (!currentDate) break;
+        }
 
         iterationCount++;
     }

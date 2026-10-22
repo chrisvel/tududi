@@ -1,3 +1,4 @@
+const moment = require('moment-timezone');
 const {
     calculateNextDueDate,
     calculateDailyRecurrence,
@@ -344,6 +345,65 @@ describe('RecurringTaskService - UTC Consistency', () => {
             expect(occurrences[6].due_date).toBe('2026-01-07');
         });
 
+        it('keeps the clock when the series has a due time', () => {
+            const task = {
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_has_time: true,
+            };
+            const startDate = new Date(Date.UTC(2026, 0, 1, 15, 30, 0, 0));
+
+            const occurrences = calculateVirtualOccurrences(
+                task,
+                3,
+                startDate,
+                'UTC'
+            );
+
+            expect(occurrences).toHaveLength(3);
+            expect(occurrences[0].due_date).toBeInstanceOf(Date);
+            expect(occurrences[0].due_date.toISOString()).toBe(
+                '2026-01-01T15:30:00.000Z'
+            );
+            expect(occurrences[1].due_date.toISOString()).toBe(
+                '2026-01-02T15:30:00.000Z'
+            );
+            expect(occurrences[2].due_date.toISOString()).toBe(
+                '2026-01-03T15:30:00.000Z'
+            );
+        });
+
+        it('keeps wall-clock due time across autumn DST transition in Europe/Berlin', () => {
+            const timezone = 'Europe/Berlin';
+            // 2026-10-24 09:00 CEST (UTC+2) is 2026-10-24T07:00:00.000Z
+            const task = {
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+                due_has_time: true,
+                due_date: moment.tz('2026-10-24 09:00', timezone).toDate(),
+            };
+
+            const occurrences = calculateVirtualOccurrences(
+                task,
+                4,
+                null,
+                timezone
+            );
+
+            expect(occurrences).toHaveLength(4);
+            const formatted = occurrences.map((o) => ({
+                date: moment(o.due_date).tz(timezone).format('YYYY-MM-DD'),
+                time: moment(o.due_date).tz(timezone).format('HH:mm'),
+            }));
+
+            expect(formatted).toEqual([
+                { date: '2026-10-24', time: '09:00' },
+                { date: '2026-10-25', time: '09:00' },
+                { date: '2026-10-26', time: '09:00' },
+                { date: '2026-10-27', time: '09:00' },
+            ]);
+        });
+
         it('should respect end date limit', () => {
             const task = {
                 recurrence_type: 'daily',
@@ -405,6 +465,172 @@ describe('RecurringTaskService - UTC Consistency', () => {
             occurrences.forEach((occurrence) => {
                 expect(occurrence.is_virtual).toBe(true);
             });
+        });
+
+        it('keeps Europe/Berlin wall clock across autumn DST for daily timed virtual rows', () => {
+            const moment = require('moment-timezone');
+            // 2026-10-24 09:00 Europe/Berlin is still CEST (UTC+2) → 07:00Z
+            // 2026-10-25 is the first day after the clocks fall back (CET UTC+1).
+            const start = moment
+                .tz('2026-10-24 09:00:00', 'Europe/Berlin')
+                .toDate();
+            const task = {
+                due_date: start,
+                due_has_time: true,
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+            };
+
+            const occurrences = calculateVirtualOccurrences(
+                task,
+                4,
+                start,
+                'Europe/Berlin'
+            );
+
+            expect(occurrences).toHaveLength(4);
+            const localHours = occurrences.map((o) =>
+                moment(o.due_date)
+                    .tz('Europe/Berlin')
+                    .format('YYYY-MM-DD HH:mm')
+            );
+            expect(localHours).toEqual([
+                '2026-10-24 09:00',
+                '2026-10-25 09:00',
+                '2026-10-26 09:00',
+                '2026-10-27 09:00',
+            ]);
+        });
+
+        it('advances daily 00:30 task across autumn DST without getting stuck', () => {
+            const moment = require('moment-timezone');
+            const start = moment
+                .tz('2026-10-24 00:30:00', 'Europe/Berlin')
+                .toDate();
+            const task = {
+                due_date: start,
+                due_has_time: true,
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+            };
+
+            const occurrences = calculateVirtualOccurrences(
+                task,
+                5,
+                start,
+                'Europe/Berlin'
+            );
+
+            expect(occurrences).toHaveLength(5);
+            const localFormatted = occurrences.map((o) =>
+                moment(o.due_date)
+                    .tz('Europe/Berlin')
+                    .format('YYYY-MM-DD HH:mm')
+            );
+            expect(localFormatted).toEqual([
+                '2026-10-24 00:30',
+                '2026-10-25 00:30',
+                '2026-10-26 00:30',
+                '2026-10-27 00:30',
+                '2026-10-28 00:30',
+            ]);
+        });
+
+        it('advances weekly 00:30 task across autumn DST to next Sunday without landing on Saturday', () => {
+            const moment = require('moment-timezone');
+            const start = moment
+                .tz('2026-10-18 00:30:00', 'Europe/Berlin')
+                .toDate();
+            const task = {
+                due_date: start,
+                due_has_time: true,
+                recurrence_type: 'weekly',
+                recurrence_interval: 1,
+                recurrence_weekday: 0,
+            };
+
+            const occurrences = calculateVirtualOccurrences(
+                task,
+                4,
+                start,
+                'Europe/Berlin'
+            );
+
+            expect(occurrences).toHaveLength(4);
+            const localFormatted = occurrences.map((o) =>
+                moment(o.due_date)
+                    .tz('Europe/Berlin')
+                    .format('YYYY-MM-DD HH:mm')
+            );
+            expect(localFormatted).toEqual([
+                '2026-10-18 00:30',
+                '2026-10-25 00:30',
+                '2026-11-01 00:30',
+                '2026-11-08 00:30',
+            ]);
+        });
+
+        it('advances daily 00:30 and 02:30 tasks across spring 2027 DST change', () => {
+            const moment = require('moment-timezone');
+            const start0030 = moment
+                .tz('2027-03-27 00:30:00', 'Europe/Berlin')
+                .toDate();
+            const task0030 = {
+                due_date: start0030,
+                due_has_time: true,
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+            };
+
+            const occurrences0030 = calculateVirtualOccurrences(
+                task0030,
+                4,
+                start0030,
+                'Europe/Berlin'
+            );
+
+            expect(occurrences0030).toHaveLength(4);
+            const formatted0030 = occurrences0030.map((o) =>
+                moment(o.due_date)
+                    .tz('Europe/Berlin')
+                    .format('YYYY-MM-DD HH:mm')
+            );
+            expect(formatted0030).toEqual([
+                '2027-03-27 00:30',
+                '2027-03-28 00:30',
+                '2027-03-29 00:30',
+                '2027-03-30 00:30',
+            ]);
+
+            const start0230 = moment
+                .tz('2027-03-27 02:30:00', 'Europe/Berlin')
+                .toDate();
+            const task0230 = {
+                due_date: start0230,
+                due_has_time: true,
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+            };
+
+            const occurrences0230 = calculateVirtualOccurrences(
+                task0230,
+                4,
+                start0230,
+                'Europe/Berlin'
+            );
+
+            expect(occurrences0230).toHaveLength(4);
+            const formatted0230 = occurrences0230.map((o) =>
+                moment(o.due_date)
+                    .tz('Europe/Berlin')
+                    .format('YYYY-MM-DD HH:mm')
+            );
+            expect(formatted0230).toEqual([
+                '2027-03-27 02:30',
+                '2027-03-28 03:30',
+                '2027-03-29 02:30',
+                '2027-03-30 02:30',
+            ]);
         });
 
         it('should respect MAX_ITERATIONS to prevent infinite loops', () => {
