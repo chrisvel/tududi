@@ -230,7 +230,7 @@ Create a new task.
 | `name` | string | Yes | Task name |
 | `note` | string | No | Task note (the same field REST calls `note`) |
 | `description` | string | No | Alias of `note`; `note` wins if both are sent |
-| `priority` | string | No | `low`, `medium`, or `high` (default: `medium`) |
+| `priority` | string | No | `none`, `low`, `medium`, or `high` (default: `medium`) |
 | `due_date` | string | No | ISO 8601 date |
 | `defer_until` | string | No | ISO 8601 date/time; task is hidden from view until this point |
 | `project_id` | number | No | Assign to a project |
@@ -283,7 +283,7 @@ Update an existing task.
 | `name` | string | No | New task name |
 | `note` | string | No | New note (the same field REST calls `note`) |
 | `description` | string | No | Alias of `note`; `note` wins if both are sent |
-| `priority` | string | No | `low`, `medium`, `high` |
+| `priority` | string | No | `none`, `low`, `medium`, `high` (none clears priority) |
 | `status` | string | No | `pending`, `in_progress`, `completed`, `archived` |
 | `due_date` | string | No | New due date (ISO 8601) |
 | `defer_until` | string | No | New defer until date/time (ISO 8601); pass `null` or `""` to clear it |
@@ -376,7 +376,7 @@ Add a subtask to a parent task.
 |-----------|------|----------|-------------|
 | `parent_id` | number/string | Yes | Parent task ID or UID |
 | `name` | string | Yes | Subtask name |
-| `priority` | string | No | `low`, `medium`, `high` |
+| `priority` | string | No | `none`, `low`, `medium`, `high` (default: `medium`) |
 | `due_date` | string | No | ISO 8601 date |
 
 **Example:**

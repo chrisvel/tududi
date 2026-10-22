@@ -444,6 +444,36 @@ describe('MCP Tools Integration', () => {
                 expect(content.task.priority).toBe(2); // high = 2
             });
 
+            it('should support none priority and preserve the default', async () => {
+                const noneResponse = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    { name: 'No Priority', priority: 'none' }
+                );
+
+                const noneResult = getToolContent(noneResponse);
+                expect(noneResult.isError).toBe(false);
+                expect(noneResult.content.task.priority).toBeNull();
+
+                const defaultResponse = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    { name: 'Default Priority' }
+                );
+
+                const defaultResult = getToolContent(defaultResponse);
+                expect(defaultResult.content.task.priority).toBe(1);
+
+                const nullResponse = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    { name: 'Null Priority', priority: null }
+                );
+
+                const nullResult = getToolContent(nullResponse);
+                expect(nullResult.content.task.priority).toBe(1);
+            });
+
             it('should create a task with description', async () => {
                 const response = await callMcpTool(
                     apiTokenValue,
@@ -1465,6 +1495,29 @@ describe('MCP Tools Integration', () => {
                 await task.reload();
                 expect(task.estimated_minutes).toBe(30);
             });
+
+            it('should clear priority using none', async () => {
+                const task = await Task.create({
+                    user_id: user.id,
+                    name: 'Priority Test',
+                    priority: 2,
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_task',
+                    { id: task.id, priority: 'none' }
+                );
+
+                const { content, isError } = getToolContent(response);
+
+                expect(isError).toBe(false);
+                expect(content.task.priority).toBeNull();
+
+                await task.reload();
+                expect(task.priority).toBeNull();
+            });
         });
 
         describe('direct area assignment', () => {
@@ -2081,6 +2134,29 @@ describe('MCP Tools Integration', () => {
                 expect(subtaskFromDb.due_date.toISOString()).toBe(
                     '2026-08-09T04:59:59.999Z'
                 );
+            });
+
+            it('should create a subtask with none priority', async () => {
+                const parent = await Task.create({
+                    user_id: user.id,
+                    name: 'Parent Task',
+                    status: 0,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'add_subtask',
+                    {
+                        parent_id: parent.id,
+                        name: 'No Priority Subtask',
+                        priority: 'none',
+                    }
+                );
+
+                const { content, isError } = getToolContent(response);
+
+                expect(isError).toBe(false);
+                expect(content.subtask.priority).toBeNull();
             });
         });
 
