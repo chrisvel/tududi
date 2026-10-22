@@ -21,6 +21,9 @@ export interface AdminUserStatus {
     created_at: string;
     email_verified: boolean;
     account_status: 'active' | 'invited' | 'no_sign_in';
+    // The single sign-on provider the account was created through, such as
+    // Google, or null for an email sign-up.
+    signup_provider: string | null;
     is_admin: boolean;
     member_of: { id: number; email: string | null } | null;
     // trial, subscription, grace, override, admin, member, free, or
@@ -371,10 +374,20 @@ const AdminUserStatusTable: React.FC = () => {
                                                                 'admin.status.invited',
                                                                 'Invitation pending'
                                                             )
-                                                          : t(
-                                                                'admin.userStatus.selfSignUp',
-                                                                'Signed up'
-                                                            )}
+                                                          : u.signup_provider
+                                                            ? t(
+                                                                  'admin.userStatus.signedUpWith',
+                                                                  {
+                                                                      defaultValue:
+                                                                          'With {{provider}}',
+                                                                      provider:
+                                                                          u.signup_provider,
+                                                                  }
+                                                              )
+                                                            : t(
+                                                                  'admin.userStatus.signedUpWithEmail',
+                                                                  'With email'
+                                                              )}
                                                 </div>
                                             </td>
                                             <td className={cell}>

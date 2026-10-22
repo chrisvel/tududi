@@ -26,6 +26,7 @@ const user = (overrides: Record<string, unknown>) => ({
     created_at: '2026-10-01T10:00:00.000Z',
     email_verified: true,
     account_status: 'active',
+    signup_provider: null,
     is_admin: false,
     member_of: null,
     access: 'free',
@@ -46,6 +47,7 @@ const users = [
         access: 'trial',
         trial_days_left: 9,
         created_at: '2026-10-03T10:00:00.000Z',
+        signup_provider: 'Google',
     }),
     user({
         id: 2,
@@ -186,4 +188,13 @@ it('sums the items each user created and opens the breakdown on click', async ()
 
     fireEvent.click(button);
     expect(screen.queryByTestId('admin-user-usage-2')).toBeNull();
+});
+
+it('shows whether each user signed up with Google or email', async () => {
+    render(<AdminUserStatusTable />);
+
+    const sso = await screen.findByTestId('admin-user-status-1');
+    expect(within(sso).getByText('With Google')).toBeInTheDocument();
+    const email = screen.getByTestId('admin-user-status-2');
+    expect(within(email).getByText('With email')).toBeInTheDocument();
 });

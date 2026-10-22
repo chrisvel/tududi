@@ -200,6 +200,17 @@ class AdminRepository {
         return new Set(rows.map((row) => row.user_id));
     }
 
+    // Every single sign-on link with its provider and when it was made, so
+    // the dashboard can tell which accounts were created through one.
+    async findIdentities() {
+        const { OIDCIdentity } = require('../../models');
+        return OIDCIdentity.findAll({
+            attributes: ['user_id', 'provider_slug', 'created_at'],
+            order: [['created_at', 'ASC']],
+            raw: true,
+        });
+    }
+
     /**
      * Find all roles.
      */

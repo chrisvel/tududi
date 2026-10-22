@@ -11,6 +11,8 @@ const {
     Person,
     DailyPlan,
     DailyPlanItem,
+    OIDCIdentity,
+    User,
     sequelize,
 } = require('../../models');
 const { getConfig } = require('../../config/config');
@@ -298,6 +300,42 @@ describe('Admin dashboard', () => {
             Object.assign(hosted, saved);
             entitlements.invalidate();
         }
+    });
+
+    it('tells single sign-on sign-ups apart from email ones', async () => {
+        const sso = await User.create({
+            email: `sso_${Date.now()}@example.com`,
+            password_digest: null,
+            email_verified: true,
+        });
+        await OIDCIdentity.create({
+            user_id: sso.id,
+            provider_slug: 'google',
+            subject: `sub_${Date.now()}`,
+        });
+        // Signed up with email, linked Google a day later.
+        await OIDCIdentity.create({
+            user_id: plain.id,
+            provider_slug: 'google',
+            subject: `sub_plain_${Date.now()}`,
+        });
+        await sequelize.query(
+            'UPDATE oidc_identities SET created_at = :later WHERE user_id = :id',
+            {
+                replacements: {
+                    later: new Date(Date.now() + 24 * 60 * 60 * 1000),
+                    id: plain.id,
+                },
+            }
+        );
+
+        const res = await adminAgent.get('/api/admin/overview/users');
+        expect(res.status).toBe(200);
+        const byId = new Map(res.body.users.map((u) => [u.id, u]));
+
+        expect(byId.get(sso.id).signup_provider).toBe('google');
+        expect(byId.get(plain.id).signup_provider).toBeNull();
+        expect(byId.get(admin.id).signup_provider).toBeNull();
     });
 
     it('counts the items each user created', async () => {
