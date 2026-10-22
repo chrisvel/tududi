@@ -49,7 +49,7 @@ const Stat: React.FC<{
     value: React.ReactNode;
     hint?: string;
 }> = ({ label, value, hint }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-5">
+    <div className="bg-white dark:bg-gray-900 rounded-lg p-5">
         <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
         <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-1">
             {value}
