@@ -96,6 +96,14 @@ const tokenizeText = (text) => {
             // Start of a quoted string after + or @
             inQuotes = true;
             currentToken += char;
+        } else if (
+            char === '\\' &&
+            inQuotes &&
+            (text[i + 1] === '"' || text[i + 1] === '\\')
+        ) {
+            // An escaped quote or backslash inside a quoted string
+            currentToken += char + text[i + 1];
+            i++;
         } else if (char === '"' && inQuotes) {
             // End of quoted string
             inQuotes = false;
@@ -210,7 +218,9 @@ const parseProjectRefs = (text) => {
                         projectName.startsWith('"') &&
                         projectName.endsWith('"')
                     ) {
-                        projectName = projectName.slice(1, -1);
+                        projectName = projectName
+                            .slice(1, -1)
+                            .replace(/\\(["\\])/g, '$1');
                     }
 
                     if (projectName && !matches.includes(projectName)) {

@@ -37,7 +37,12 @@ import {
     splitFirstLine,
 } from '../../utils/captureText';
 import type { CaptureProject } from '../../utils/captureUi';
-import { InboxTokenKind, splitInboxTokens } from '../../utils/inboxTokens';
+import {
+    formatProjectTokenName,
+    InboxTokenKind,
+    readProjectTokenName,
+    splitInboxTokens,
+} from '../../utils/inboxTokens';
 import {
     isTouchDevice,
     updateCaptureSettings,
@@ -375,7 +380,7 @@ const QuickCaptureInput = React.forwardRef<
             const tokens = [
                 ...picked.tags.map((tag) => `#${tag}`),
                 ...(picked.project && destination !== 'project'
-                    ? [`+${name(picked.project)}`]
+                    ? [`+${formatProjectTokenName(picked.project)}`]
                     : []),
                 ...(picked.area && destination !== 'note'
                     ? [`~${name(picked.area.name)}`]
@@ -574,14 +579,9 @@ const QuickCaptureInput = React.forwardRef<
 
                     for (let j = i; j < groupEnd; j++) {
                         if (tokens[j].startsWith('+')) {
-                            let projectName = tokens[j].substring(1);
-
-                            if (
-                                projectName.startsWith('"') &&
-                                projectName.endsWith('"')
-                            ) {
-                                projectName = projectName.slice(1, -1);
-                            }
+                            const projectName = readProjectTokenName(
+                                tokens[j].substring(1)
+                            );
 
                             if (projectName && !matches.includes(projectName)) {
                                 matches.push(projectName);
@@ -689,6 +689,13 @@ const QuickCaptureInput = React.forwardRef<
                 ) {
                     inQuotes = true;
                     currentToken += char;
+                } else if (
+                    char === '\\' &&
+                    inQuotes &&
+                    (text[i + 1] === '"' || text[i + 1] === '\\')
+                ) {
+                    currentToken += char + text[i + 1];
+                    i++;
                 } else if (char === '"' && inQuotes) {
                     inQuotes = false;
                     currentToken += char;
@@ -908,8 +915,11 @@ const QuickCaptureInput = React.forwardRef<
 
         const removeProjectFromText = (projectToRemove: string) => {
             const escaped = escapeRegExp(projectToRemove);
+            const quoted = escapeRegExp(
+                projectToRemove.replace(/["\\]/g, '\\$&')
+            );
             const quotedPattern = new RegExp(
-                `(^|\\s)\\+"${escaped}"(?=$|\\s)`,
+                `(^|\\s)\\+"${quoted}"(?=$|\\s)`,
                 'gi'
             );
             const simplePattern = new RegExp(
@@ -1231,7 +1241,7 @@ const QuickCaptureInput = React.forwardRef<
 
             return text
                 .replace(/#[a-zA-Z0-9_-]+/g, '')
-                .replace(/\+(?:"[^"]+"|\S+)/g, '')
+                .replace(/\+(?:"(?:\\["\\]|[^"])+"|\S+)/g, '')
                 .trim();
         };
 
@@ -1395,9 +1405,8 @@ const QuickCaptureInput = React.forwardRef<
             }
 
             if (projectMatch) {
-                const formattedProjectName = projectName.includes(' ')
-                    ? `"${projectName}"`
-                    : projectName;
+                const formattedProjectName =
+                    formatProjectTokenName(projectName);
 
                 const newText =
                     beforeCursor.replace(
@@ -1822,7 +1831,7 @@ const QuickCaptureInput = React.forwardRef<
                 line
                     .replace(/#[a-zA-Z0-9_-]+/g, '')
                     .replace(/(^|\s)~(?:"[^"]+"|\S+)/g, '$1')
-                    .replace(/\+(?:"[^"]+"|\S+)/g, '')
+                    .replace(/\+(?:"(?:\\["\\]|[^"])+"|\S+)/g, '')
             ).trim();
             return cleaned || line.trim();
         };
