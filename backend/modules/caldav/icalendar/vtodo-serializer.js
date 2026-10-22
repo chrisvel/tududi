@@ -16,7 +16,11 @@ function serializeTaskToVTODO(task, options = {}) {
 
     const vtodo = new ICAL.Component('vtodo');
 
-    vtodo.addPropertyWithValue('uid', task.uid);
+    // ical.js text properties run String.prototype.replace on the raw value, so
+    // a non-string uid (SQLite num/num-adjacent columns can hand back an integer)
+    // throws and takes the entire serialization with it. Coerce defensively:
+    // a UID has to be text on the wire anyway.
+    vtodo.addPropertyWithValue('uid', String(task.uid));
     vtodo.addPropertyWithValue('summary', task.name);
     // DTSTAMP is defined in UTC (RFC 5545 3.8.7.2); ICAL.Time.now() returns the
     // process' local time and serializes without the trailing Z.
@@ -103,8 +107,10 @@ function serializeTaskToVTODO(task, options = {}) {
         }
     }
 
-    if (task.parent_task_id && task.ParentTask) {
-        vtodo.addPropertyWithValue('related-to', task.ParentTask.uid);
+    const parentUid = task.ParentTask?.uid;
+    if (task.parent_task_id && parentUid !== null && parentUid !== undefined) {
+        // Same non-string hazard as the uid above: RELATED-TO is a text value.
+        vtodo.addPropertyWithValue('related-to', String(parentUid));
         const relatedProp = vtodo.getFirstProperty('related-to');
         if (relatedProp) {
             relatedProp.setParameter('reltype', 'PARENT');
