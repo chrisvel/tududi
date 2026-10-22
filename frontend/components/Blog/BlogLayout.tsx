@@ -16,7 +16,7 @@ interface BlogLayoutProps extends BlogPageProps {
     children: React.ReactNode;
 }
 
-// The frame around every blog page: a light navbar that always offers
+// The frame around every blog page: a white navbar that always offers
 // Cloud, and a footer back to tududi.com.
 const BlogLayout: React.FC<BlogLayoutProps> = ({
     basePath,
@@ -30,7 +30,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
     return (
         <div className="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <nav
-                className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur"
+                className="sticky top-0 z-50 bg-white/90 dark:bg-gray-800/90 backdrop-blur shadow-sm"
                 data-testid="blog-navbar"
             >
                 <div className="w-full max-w-7xl mx-auto h-16 flex items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
@@ -48,7 +48,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
                         </a>
                         <Link
                             to={basePath || '/'}
-                            className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                            className="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white"
                         >
                             {t('blog.nav', 'Blog')}
                         </Link>
@@ -69,6 +69,14 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
                                 <MoonIcon className="h-5 w-5" />
                             )}
                         </button>
+                        {!basePath && (
+                            <a
+                                href="/rss.xml"
+                                className="hidden sm:inline px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"
+                            >
+                                RSS
+                            </a>
+                        )}
                         {links && (
                             <>
                                 <a
@@ -92,7 +100,7 @@ const BlogLayout: React.FC<BlogLayoutProps> = ({
 
             {children}
 
-            <footer className="relative mt-16 bg-gray-100 dark:bg-gray-800/60">
+            <footer className="relative mt-16">
                 <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between text-sm text-gray-500 dark:text-gray-400">
                     <p>
                         &copy; {new Date().getFullYear()}{' '}

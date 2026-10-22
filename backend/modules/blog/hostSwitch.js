@@ -6,8 +6,9 @@ const { logError } = require('../../services/logService');
 const blogService = require('./service');
 
 // The blog's name, as the frontend header shows it (utils/blogService.ts).
-const BLOG_TAGLINE = '…before someone else does.';
-const BLOG_NAME = 'Let’s take control… before someone else does.';
+const BLOG_TAGLINE =
+    'Ideas and stories for running a busy home with less in your head.';
+const BLOG_NAME = 'Small things, sorted.';
 
 const escapeHtml = (value) =>
     String(value)

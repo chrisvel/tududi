@@ -57,17 +57,18 @@ const BlogIndexPage: React.FC<BlogPageProps> = (props) => {
     }, []);
 
     const intro = blog ? introOf(blog.content) : '';
+    const [featured, ...rest] = blog?.posts ?? [];
 
     return (
         <BlogLayout {...props} links={blog?.links ?? null}>
-            <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10 sm:pt-24 sm:pb-14">
+            <header className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 sm:pt-16 sm:pb-10">
                 <h1
-                    className="text-5xl sm:text-7xl font-extrabold tracking-tight leading-[1.05] text-gray-900 dark:text-white"
+                    className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight text-gray-900 dark:text-white"
                     data-testid="blog-title"
                 >
                     {BLOG_TITLE}
                 </h1>
-                <p className="mt-3 text-xl sm:text-2xl font-medium text-gray-500 dark:text-gray-400">
+                <p className="mt-3 max-w-2xl text-lg sm:text-xl text-gray-600 dark:text-gray-400">
                     {BLOG_TAGLINE}
                 </p>
             </header>
@@ -111,17 +112,31 @@ const BlogIndexPage: React.FC<BlogPageProps> = (props) => {
                             </div>
                         )}
                         {blog.posts.length > 0 ? (
-                            <div
-                                className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
-                                data-testid="blog-posts"
-                            >
-                                {blog.posts.map((post) => (
-                                    <BlogPostCard
-                                        key={post.slug}
-                                        post={post}
-                                        basePath={props.basePath}
-                                    />
-                                ))}
+                            <div data-testid="blog-posts">
+                                <BlogPostCard
+                                    post={featured}
+                                    basePath={props.basePath}
+                                    featured
+                                />
+                                {rest.length > 0 && (
+                                    <section className="mt-14">
+                                        <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
+                                            {t(
+                                                'blog.morePosts',
+                                                'More from the blog'
+                                            )}
+                                        </h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {rest.map((post) => (
+                                                <BlogPostCard
+                                                    key={post.slug}
+                                                    post={post}
+                                                    basePath={props.basePath}
+                                                />
+                                            ))}
+                                        </div>
+                                    </section>
+                                )}
                             </div>
                         ) : (
                             <BlogMessage
