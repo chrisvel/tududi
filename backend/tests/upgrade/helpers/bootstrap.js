@@ -39,11 +39,13 @@ function run(command, args, env, cwd = BACKEND_DIR) {
     });
 }
 
+// The CLI's package declares its bin as ./lib/sequelize, a JavaScript entry, so
+// running that file with the interpreter already in hand works the same
+// everywhere. Spawning node_modules/.bin/sequelize only works where npm's shim
+// is an executable file, which excludes Windows.
 const SEQUELIZE_CLI = path.join(
-    BACKEND_DIR,
-    '..',
-    'node_modules',
-    '.bin',
+    path.dirname(require.resolve('sequelize-cli/package.json')),
+    'lib',
     'sequelize'
 );
 
@@ -54,8 +56,8 @@ async function runPrepare(dbFile, extraEnv) {
 
 async function runMigrate(dbFile, extraEnv) {
     return run(
-        SEQUELIZE_CLI,
-        ['db:migrate', '--config', 'config/database.js'],
+        process.execPath,
+        [SEQUELIZE_CLI, 'db:migrate', '--config', 'config/database.js'],
         sqliteEnv(dbFile, extraEnv)
     );
 }
