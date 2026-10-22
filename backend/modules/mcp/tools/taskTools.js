@@ -502,10 +502,9 @@ function registerTaskTools(server, context, tools) {
                 user_id: context.userId,
                 name: params.name,
                 note: params.note ?? params.description ?? '',
-                priority:
-                    params.priority !== undefined
-                        ? PRIORITY_MAP[params.priority]
-                        : 1,
+                priority: Object.hasOwn(PRIORITY_MAP, params.priority)
+                    ? PRIORITY_MAP[params.priority]
+                    : 1,
                 status: 0, // pending
                 due_date: dueDate,
                 due_has_time: dueAttrs.due_has_time ?? false,
@@ -1238,10 +1237,9 @@ function registerTaskTools(server, context, tools) {
                 user_id: context.userId,
                 name: params.name,
                 parent_task_id: parentTask.id,
-                priority:
-                    params.priority !== undefined
-                        ? PRIORITY_MAP[params.priority]
-                        : 1,
+                priority: Object.hasOwn(PRIORITY_MAP, params.priority)
+                    ? PRIORITY_MAP[params.priority]
+                    : 1,
                 status: 0,
                 due_date: processDueDateForStorage(
                     params.due_date,

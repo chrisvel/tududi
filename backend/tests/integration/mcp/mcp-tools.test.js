@@ -463,6 +463,15 @@ describe('MCP Tools Integration', () => {
 
                 const defaultResult = getToolContent(defaultResponse);
                 expect(defaultResult.content.task.priority).toBe(1);
+
+                const nullResponse = await callMcpTool(
+                    apiTokenValue,
+                    'create_task',
+                    { name: 'Null Priority', priority: null }
+                );
+
+                const nullResult = getToolContent(nullResponse);
+                expect(nullResult.content.task.priority).toBe(1);
             });
 
             it('should create a task with description', async () => {
