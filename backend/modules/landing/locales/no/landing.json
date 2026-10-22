@@ -26,14 +26,16 @@
     "titleLine1": "Produktivitet gjort enkelt",
     "titleLine2": "",
     "ctaTrial": "Start din gratis prøveperiode på {{days}} dager",
-    "cloudNoteTrial": "Gratis i {{days}} dager, uten betalingskort. Deretter månedlig eller årlig, si opp når som helst."
+    "cloudNoteTrial": "Gratis i {{days}} dager, uten betalingskort. Deretter månedlig eller årlig, si opp når som helst.",
+    "badge": "For travle mennesker, ingenting å installere"
   },
   "proof": {
     "stars": "stjerner på GitHub",
     "languages": "{{count}} språk",
     "dockerPulls": "Docker-nedlastinger",
     "discord": "Discord-medlemmer",
-    "minute": "Satt opp på ett minutt"
+    "minute": "Satt opp på ett minutt",
+    "guarantee": "14 dagers pengene-tilbake-garanti"
   },
   "press": {
     "featuredIn": "Omtalt i",
@@ -260,7 +262,9 @@
     },
     "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 14 dagers pengene-tilbake-garanti, ingen spørsmål.",
     "perMonth": "/måned per person",
-    "sub": "Én hostet plan, eller kjør den selv hvis du foretrekker å ta hånd om driften."
+    "sub": "Ingen nivåer, ingen tillegg, ingen tilbakeholdte funksjoner. Prøv gratis, deretter én pris.",
+    "selfHostNote": "Utviklere: tududi er åpen kildekode og kan kjøres på din egen server.",
+    "selfHostLink": "Les guiden"
   },
   "compare": {
     "title": "Rask sammenligning",
@@ -364,6 +368,10 @@
       "shutdown": {
         "a": "Appen er MIT-lisensiert og kildekoden er offentlig, så den kan ikke tas fra deg. Hvem som helst kan fortsette å kjøre den, og du kan forke den. På tududi Cloud lever dataene dine i en standard tududi-database i stedet for et proprietært format, så hvis tjenesten noen gang skulle stenge, ville du få dataene dine og en guide til å flytte dem til din egen server.",
         "q": "Hva skjer med dataene mine hvis tududi forsvinner?"
+      },
+      "trust": {
+        "q": "Kan jeg stole på dere med dataene mine?",
+        "a": "Du trenger ikke ta oss på ordet. tududi er åpen kildekode, så hvem som helst kan lese nøyaktig hvordan det håndterer dataene dine. På Cloud forblir alt du legger inn ditt: eksporter det som én fil når som helst, slett kontoen din selv, og det er 14 dagers pengene-tilbake-garanti hvis det viser seg å ikke passe deg."
       }
     },
     "eyebrow": "FAQ",
@@ -484,5 +492,25 @@
         "alt": "I dag med neste oppgave, agendaen og møter fra to kalendere"
       }
     }
+  },
+  "pains": {
+    "eyebrow": "Den mentale belastningen",
+    "title": "Det vanskelige er ikke å organisere. Det er å huske.",
+    "sub": "De fleste apper gir deg enda et sted å skrive inn ting. Problemet var aldri å skrive. Det er å bære alt i hodet.",
+    "items": {
+      "oneHead": {
+        "title": "Alt bor i hodet ditt",
+        "body": "Tannlegen, bilforsikringen, gaven, skjemaet som skulle leveres fredag. Alt ligger der inne, og ingenting blir noen gang lagt ned."
+      },
+      "notesApp": {
+        "title": "En notatapp er ikke et system",
+        "body": "En linje skrevet ved midnatt leses av ingen, heller ikke deg. Den scroller vekk, og bekymringen kommer tilbake en uke senere."
+      },
+      "tooManyApps": {
+        "title": "En app for hvert hjørne",
+        "body": "En kalender her, en liste der, påminnelser på telefonen, et regneark for flyttingen. Fem steder å se, og det du trenger er aldri det som er åpent."
+      }
+    },
+    "turn": "Skriv det én gang. Gi det en plass. La det forlate hodet ditt."
   }
 }

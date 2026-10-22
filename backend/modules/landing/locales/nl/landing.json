@@ -26,14 +26,16 @@
     "titleLine1": "Productiviteit eenvoudig gemaakt",
     "titleLine2": "",
     "ctaTrial": "Start je gratis proefperiode van {{days}} dagen",
-    "cloudNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Daarna per maand of per jaar, altijd opzegbaar."
+    "cloudNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Daarna per maand of per jaar, altijd opzegbaar.",
+    "badge": "Voor drukke mensen, niets te installeren"
   },
   "proof": {
     "stars": "sterren op GitHub",
     "languages": "{{count}} talen",
     "dockerPulls": "Docker-pulls",
     "discord": "Discord-leden",
-    "minute": "Opgezet in een minuut"
+    "minute": "Opgezet in een minuut",
+    "guarantee": "14 dagen niet-goed-geld-terug-garantie"
   },
   "press": {
     "featuredIn": "Te zien in",
@@ -260,7 +262,9 @@
     },
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 14 dagen geld-terug-garantie, zonder vragen.",
     "perMonth": "/maand per persoon",
-    "sub": "Één gehost abonnement, of draai het zelf als je liever de operatie doet."
+    "sub": "Geen niveaus, geen add-ons, geen achtergehouden functies. Probeer gratis, daarna één prijs.",
+    "selfHostNote": "Ontwikkelaars: tududi is open source en kan op je eigen server draaien.",
+    "selfHostLink": "Lees de handleiding"
   },
   "compare": {
     "title": "Snelle vergelijking",
@@ -364,6 +368,10 @@
       "shutdown": {
         "a": "De app is MIT-gelicentieerd en de broncode is openbaar, dus die kan niet van je worden afgenomen. Iedereen kan hem blijven draaien, en jij kunt hem forken. Bij tududi Cloud leven je gegevens in een standaard tududi-database in plaats van een eigen formaat, dus als de dienst ooit zou stoppen, krijg je je gegevens en een gids om ze naar je eigen server te verhuizen.",
         "q": "Wat gebeurt er met mijn gegevens als tududi verdwijnt?"
+      },
+      "trust": {
+        "q": "Kan ik jullie mijn gegevens toevertrouwen?",
+        "a": "Je hoeft ons niet op ons woord te geloven. tududi is open source, dus iedereen kan precies lezen hoe het met je gegevens omgaat. Op Cloud blijft alles wat je invoert van jou: exporteer het op elk moment als één bestand, verwijder zelf je account, en er is een niet-goed-geld-terug-garantie van 14 dagen als het toch niet bij je past."
       }
     },
     "eyebrow": "FAQ",
@@ -484,5 +492,25 @@
         "alt": "Vandaag met de volgende taak, de agenda en afspraken uit twee agenda’s"
       }
     }
+  },
+  "pains": {
+    "eyebrow": "De mentale last",
+    "title": "Organiseren is niet het moeilijke deel. Onthouden wel.",
+    "sub": "De meeste apps geven je nog een plek om dingen in te typen. Typen was nooit het probleem. Het is alles in je hoofd meedragen.",
+    "items": {
+      "oneHead": {
+        "title": "Alles zit in je hoofd",
+        "body": "De tandarts, de autoverzekering, het cadeau, het formulier dat vrijdag binnen moest zijn. Het zit er allemaal in, en niets wordt ooit neergelegd."
+      },
+      "notesApp": {
+        "title": "Een notitie-app is geen systeem",
+        "body": "Een regel die je om middernacht typt, leest niemand, ook jij niet. Hij scrolt weg en de zorg komt een week later terug."
+      },
+      "tooManyApps": {
+        "title": "Een app voor elke hoek",
+        "body": "Een agenda hier, een lijstje daar, herinneringen op de telefoon, een spreadsheet voor de verhuizing. Vijf plekken om te kijken, en de plek die je nodig hebt staat nooit open."
+      }
+    },
+    "turn": "Schrijf het één keer op. Geef het een plek. Laat het je hoofd verlaten."
   }
 }

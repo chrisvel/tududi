@@ -26,14 +26,16 @@
     "titleLine1": "Tuottavuus tehty yksinkertaiseksi",
     "titleLine2": "",
     "ctaTrial": "Aloita {{days}} päivän ilmainen kokeilu",
-    "cloudNoteTrial": "Ilmainen {{days}} päivää, ei maksukorttia. Sen jälkeen kuukausittain tai vuosittain, peru milloin tahansa."
+    "cloudNoteTrial": "Ilmainen {{days}} päivää, ei maksukorttia. Sen jälkeen kuukausittain tai vuosittain, peru milloin tahansa.",
+    "badge": "Kiireisille ihmisille, ei mitään asennettavaa"
   },
   "proof": {
     "stars": "tähteä GitHubissa",
     "languages": "{{count}} kieltä",
     "dockerPulls": "Docker-latausta",
     "discord": "Discord-jäsentä",
-    "minute": "Käyttövalmis minuutissa"
+    "minute": "Käyttövalmis minuutissa",
+    "guarantee": "14 päivän rahat takaisin -takuu"
   },
   "press": {
     "featuredIn": "Esillä julkaisuissa",
@@ -260,7 +262,9 @@
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",
     "perMonth": "/kk per henkilö",
-    "sub": "Yksi isännöity paketti, tai aja sitä itse, jos haluat mieluummin hoitaa ylläpidon."
+    "sub": "Ei tasoja, ei lisäosia, ei pidätettyjä ominaisuuksia. Kokeile ilmaiseksi, sitten yksi hinta.",
+    "selfHostNote": "Kehittäjille: tududi on avointa lähdekoodia ja sitä voi ajaa omalla palvelimella.",
+    "selfHostLink": "Lue ohje"
   },
   "compare": {
     "title": "Nopea vertailu",
@@ -364,6 +368,10 @@
       "shutdown": {
         "a": "Sovellus on MIT-lisensoitu ja lähdekoodi on julkinen, niin sitä ei voida viedä sinulta. Kuka tahansa voi jatkaa sen ajamista, ja voit forkata sen. tududi Cloudissa tietosi asuvat vakiomuotoisessa tududi-tietokannassa eikä omistusoikeudellisessa muodossa, niin jos palvelu joskus suljettaisiin, saisit tietosi ja oppaan niiden siirtämiseen omalle palvelimellesi.",
         "q": "Mitä tapahtuu tiedoillleni, jos tududi katoaa?"
+      },
+      "trust": {
+        "q": "Voinko luottaa teihin tietojeni kanssa?",
+        "a": "Sinun ei tarvitse uskoa pelkkää sanaamme. tududi on avointa lähdekoodia, joten kuka tahansa voi lukea tarkalleen, miten se käsittelee tietojasi. Cloudissa kaikki, mitä laitat sisään, pysyy omanasi: vie se yhtenä tiedostona milloin tahansa, poista tilisi itse, ja jos se ei lopulta sovi sinulle, on 14 päivän rahat takaisin -takuu."
       }
     },
     "eyebrow": "FAQ",
@@ -484,5 +492,25 @@
         "alt": "Tänään-näkymä, jossa seuraava tehtävä, agenda ja kahden kalenterin tapaamiset"
       }
     }
+  },
+  "pains": {
+    "eyebrow": "Mielen kuorma",
+    "title": "Järjestäminen ei ole vaikeaa. Muistaminen on.",
+    "sub": "Useimmat sovellukset antavat sinulle yhden paikan lisää kirjoittaa asioita. Ongelma ei ollut koskaan kirjoittaminen. Se on kaiken kantaminen päässä.",
+    "items": {
+      "oneHead": {
+        "title": "Kaikki asuu päässäsi",
+        "body": "Hammaslääkäri, autovakuutus, lahja, lomake, joka piti palauttaa perjantaina. Kaikki on siellä, eikä mitään koskaan lasketa alas."
+      },
+      "notesApp": {
+        "title": "Muistiinpanosovellus ei ole järjestelmä",
+        "body": "Keskiyöllä kirjoitettua riviä ei lue kukaan, et edes sinä. Se vierii pois ja huoli palaa viikon päästä."
+      },
+      "tooManyApps": {
+        "title": "Sovellus joka nurkkaan",
+        "body": "Kalenteri täällä, lista tuolla, muistutukset puhelimessa, taulukko muuttoa varten. Viisi paikkaa katsottavaksi, eikä tarvitsemasi ole koskaan se, joka on auki."
+      }
+    },
+    "turn": "Kirjoita se kerran. Anna sille paikka. Anna sen lähteä päästäsi."
   }
 }

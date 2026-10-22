@@ -26,14 +26,16 @@
     "titleLine1": "Produktywność uproszczona",
     "titleLine2": "",
     "ctaTrial": "Rozpocznij bezpłatny okres próbny ({{days}} dni)",
-    "cloudNoteTrial": "Bezpłatnie przez {{days}} dni, bez karty. Potem miesięcznie lub rocznie, rezygnacja w każdej chwili."
+    "cloudNoteTrial": "Bezpłatnie przez {{days}} dni, bez karty. Potem miesięcznie lub rocznie, rezygnacja w każdej chwili.",
+    "badge": "Dla zajętych ludzi, nic do instalowania"
   },
   "proof": {
     "stars": "gwiazdek na GitHubie",
     "languages": "{{count}} języków",
     "dockerPulls": "pobrań z Dockera",
     "discord": "członków na Discordzie",
-    "minute": "Skonfigurowane w minutę"
+    "minute": "Skonfigurowane w minutę",
+    "guarantee": "14-dniowa gwarancja zwrotu pieniędzy"
   },
   "press": {
     "featuredIn": "Pisali o nas",
@@ -260,7 +262,9 @@
     },
     "fineprint": "Zrezygnuj w każdej chwili i wyeksportuj wszystko. Gdyby tududi Cloud kiedykolwiek został zamknięty, otrzymasz swoje dane i przewodnik migracji na własny serwer. Do przestrzeni i ruchu API stosuje się zasada fair use. 14-dniowa gwarancja zwrotu pieniędzy, bez pytań.",
     "perMonth": "/mies. za osobę",
-    "sub": "Jeden hostowany plan, albo prowadź go sam, jeśli woli zajmować się operacjami."
+    "sub": "Bez poziomów, bez dodatków, bez ukrytych funkcji. Wypróbuj za darmo, potem jedna cena.",
+    "selfHostNote": "Dla programistów: tududi jest open source i może działać na własnym serwerze.",
+    "selfHostLink": "Przeczytaj przewodnik"
   },
   "compare": {
     "title": "Szybkie porównanie",
@@ -364,6 +368,10 @@
       "shutdown": {
         "a": "Aplikacja jest na licencji MIT, a kod źródłowy jest publiczny, więc nie może zostać Tobie odebrana. Każdy może kontynuować jej prowadzenie, i możesz zrobić fork. W tududi Cloud Twoje dane żyją w standardowej bazie danych tududi, a nie w zastrzeżonym formacie, więc jeśli usługa kiedyś zostałaby zamknięta, otrzymałbyś swoje dane i przewodnik przenoszenia ich na własny serwer.",
         "q": "Co się stanie z moimi danymi, jeśli tududi przestanie istnieć?"
+      },
+      "trust": {
+        "q": "Czy mogę wam zaufać z moimi danymi?",
+        "a": "Nie musisz wierzyć nam na słowo. tududi jest open source, więc każdy może dokładnie sprawdzić, jak obchodzi się z twoimi danymi. W Cloud wszystko, co wpiszesz, pozostaje twoje: wyeksportuj to w każdej chwili jako jeden plik, sam usuń swoje konto, a jeśli okaże się, że to nie dla ciebie, masz 14-dniową gwarancję zwrotu pieniędzy."
       }
     },
     "eyebrow": "FAQ",
@@ -484,5 +492,25 @@
         "alt": "Dziś z następnym zadaniem, agendą i spotkaniami z dwóch kalendarzy"
       }
     }
+  },
+  "pains": {
+    "eyebrow": "Obciążenie psychiczne",
+    "title": "Organizowanie nie jest trudne. Pamiętanie jest.",
+    "sub": "Większość aplikacji daje ci kolejne miejsce do wpisywania rzeczy. Problemem nigdy nie było wpisywanie. Jest nim noszenie wszystkiego w głowie.",
+    "items": {
+      "oneHead": {
+        "title": "Wszystko siedzi w twojej głowie",
+        "body": "Dentysta, ubezpieczenie samochodu, prezent, formularz, który trzeba było oddać w piątek. Wszystko tam jest i nic nigdy nie zostaje odłożone."
+      },
+      "notesApp": {
+        "title": "Aplikacja do notatek to nie system",
+        "body": "Linijki wpisanej o północy nie czyta nikt, łącznie z tobą. Przewija się w dół, a zmartwienie wraca tydzień później."
+      },
+      "tooManyApps": {
+        "title": "Aplikacja na każdy kąt",
+        "body": "Kalendarz tu, lista tam, przypomnienia w telefonie, arkusz na przeprowadzkę. Pięć miejsc do sprawdzenia, a to, którego potrzebujesz, nigdy nie jest otwarte."
+      }
+    },
+    "turn": "Zapisz raz. Daj temu miejsce. Pozwól temu opuścić twoją głowę."
   }
 }

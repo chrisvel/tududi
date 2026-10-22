@@ -27,7 +27,8 @@
     "screenshotAlt": "Rozhranie tududi so zobrazením Dnes a naplánovanými úlohami",
     "cloudNote": "Žiadny server na nastavovanie. Mesačne alebo ročne a zrušiť môžete kedykoľvek.",
     "cloudNoteTrial": "{{days}} dní zadarmo, bez platobnej karty. Potom mesačne alebo ročne, zrušiť môžete kedykoľvek.",
-    "ctaTrial": "Vyskúšajte {{days}} dní zadarmo"
+    "ctaTrial": "Vyskúšajte {{days}} dní zadarmo",
+    "badge": "Pre zaneprázdnených ľudí, nič netreba inštalovať"
   },
   "proof": {
     "stars": "hviezdičiek na GitHube",
@@ -35,7 +36,8 @@
     "dockerPulls": "stiahnutí z Dockeru",
     "discord": "členov na Discorde",
     "discordAlt": "Discord: {{count}} členov",
-    "minute": "Nastavené za minútu"
+    "minute": "Nastavené za minútu",
+    "guarantee": "14-dňová záruka vrátenia peňazí"
   },
   "press": {
     "featuredIn": "Písali o nás",
@@ -237,7 +239,7 @@
   "pricing": {
     "eyebrow": "Cenník",
     "title": "Vyberte si, ako budete tududi používať",
-    "sub": "Jeden hostovaný plán, alebo si ho prevádzkujte sami, ak sa radšej postaráte o prevádzku.",
+    "sub": "Žiadne úrovne, žiadne doplnky, žiadne zadržané funkcie. Vyskúšajte zadarmo, potom jedna cena.",
     "mostPopular": "NAJOBĽÚBENEJŠÍ",
     "earlyBird": "ZAVÁDZACIA CENA",
     "perYear": "/rok",
@@ -262,7 +264,9 @@
       }
     },
     "fineprint": "Zrušiť môžete kedykoľvek a všetko si exportovať. Ak by tududi Cloud niekedy skončil, dostanete svoje dáta a návod na migráciu na vlastný server. Na úložisko a objem API sa vzťahuje primerané používanie. 14-dňová záruka vrátenia peňazí bez otázok.",
-    "perMonth": "/mesiac"
+    "perMonth": "/mesiac",
+    "selfHostNote": "Pre vývojárov: tududi je open source a môže bežať na vlastnom serveri.",
+    "selfHostLink": "Prečítajte si návod"
   },
   "compare": {
     "title": "Rýchle porovnanie",
@@ -332,6 +336,10 @@
       "leaving": {
         "q": "Môžem odísť a čo sa stane s mojimi dátami?",
         "a": "Áno, kedykoľvek. Vo svojom profile všetko exportujete do jedného súboru a importujete ho do tududi na vlastnom serveri, ktoré číta rovnaký formát. Zrušením účtu sa vaše dáta, prílohy a zálohy odstránia z našich serverov a zruší sa aj prípadné predplatné."
+      },
+      "trust": {
+        "q": "Môžem vám zveriť svoje dáta?",
+        "a": "Nemusíte nám veriť na slovo. tududi je open source, takže ktokoľvek si môže prečítať, ako presne s vašimi dátami zaobchádza. V Cloude zostáva všetko, čo vložíte, vaše: kedykoľvek to exportujte ako jeden súbor, účet si zmažte sami, a ak vám to nesadne, platí 14-dňová záruka vrátenia peňazí."
       }
     }
   },
@@ -485,5 +493,25 @@
     "body": "Na zlepšenie vašej skúsenosti s touto stránkou používame cookies. Nastavia sa, len ak ich prijmete.",
     "accept": "Prijať",
     "decline": "Odmietnuť"
+  },
+  "pains": {
+    "eyebrow": "Mentálna záťaž",
+    "title": "Zorganizovať sa nie je ťažké. Pamätať si áno.",
+    "sub": "Väčšina aplikácií vám dá ďalšie miesto, kam písať. Problém nikdy nebol v písaní. Je v tom, že to všetko nosíte v hlave.",
+    "items": {
+      "oneHead": {
+        "title": "Všetko žije vo vašej hlave",
+        "body": "Zubár, poistka na auto, darček, formulár, ktorý mal byť odovzdaný v piatok. Všetko je tam a nič sa nikdy neodloží."
+      },
+      "notesApp": {
+        "title": "Aplikácia na poznámky nie je systém",
+        "body": "Riadok napísaný o polnoci nečíta nikto, ani vy. Odroluje sa a obava sa vráti o týždeň."
+      },
+      "tooManyApps": {
+        "title": "Aplikácia na každý kút",
+        "body": "Kalendár tu, zoznam tam, pripomienky v telefóne, tabuľka na sťahovanie. Päť miest, kam pozerať, a to, ktoré potrebujete, nie je nikdy otvorené."
+      }
+    },
+    "turn": "Napíšte to raz. Dajte tomu miesto. Nechajte to odísť z hlavy."
   }
 }

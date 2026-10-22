@@ -26,14 +26,16 @@
     "titleLine1": "Produktivnost, preprosto narejena",
     "titleLine2": "",
     "ctaTrial": "Začnite brezplačni {{days}}-dnevni preizkus",
-    "cloudNoteTrial": "Brezplačno {{days}} dni, brez kartice. Nato mesečno ali letno, odpoved kadar koli."
+    "cloudNoteTrial": "Brezplačno {{days}} dni, brez kartice. Nato mesečno ali letno, odpoved kadar koli.",
+    "badge": "Za zaposlene ljudi, nič za namestitev"
   },
   "proof": {
     "stars": "zvezdic na GitHubu",
     "languages": "{{count}} jezikov",
     "dockerPulls": "prenosov z Dockerja",
     "discord": "članov na Discordu",
-    "minute": "Nastavljeno v minuti"
+    "minute": "Nastavljeno v minuti",
+    "guarantee": "14-dnevna garancija vračila denarja"
   },
   "press": {
     "featuredIn": "Pisali so o nas",
@@ -260,7 +262,9 @@
     },
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",
     "perMonth": "/mesec na osebo",
-    "sub": "En gostovan paket, ali ga zaženite sami, če raje skrbite za delovanje."
+    "sub": "Brez stopenj, brez dodatkov, brez zadržanih funkcij. Poskusi brezplačno, potem ena cena.",
+    "selfHostNote": "Za razvijalce: tududi je odprtokoden in lahko teče na vašem strežniku.",
+    "selfHostLink": "Preberi navodila"
   },
   "compare": {
     "title": "Hitra primerjava",
@@ -364,6 +368,10 @@
       "shutdown": {
         "a": "Aplikacija je z licenco MIT, in izvorna koda je javna, tako da vam je ni mogoče odvzeti. Kdorkoli jo lahko še naprej zaganja, in lahko jo forkate. V tududi Cloud vaši podatki živijo v standardni podatkovni bazi tududi namesto v lastniškem formatu, tako da če bi storitev kdaj zaprli, bi prejeli svoje podatke in vodnik za premikanje na vaš lastni strežnik.",
         "q": "Kaj se zgodi z mojimi podatki, če tududi izgine?"
+      },
+      "trust": {
+        "q": "Vam lahko zaupam svoje podatke?",
+        "a": "Ni nam treba verjeti na besedo. tududi je odprtokoden, zato lahko vsakdo prebere, kako natanko ravna s tvojimi podatki. V Cloudu ostane vse, kar vneseš, tvoje: kadar koli izvozi kot eno datoteko, sam izbriši svoj račun, in če se izkaže, da ti ne ustreza, velja 14-dnevna garancija vračila denarja."
       }
     },
     "eyebrow": "FAQ",
@@ -484,5 +492,25 @@
         "alt": "Danes z naslednjim opravilom, dnevnim redom in sestanki iz dveh koledarjev"
       }
     }
+  },
+  "pains": {
+    "eyebrow": "Miselna obremenitev",
+    "title": "Organizirati se ni težko. Spomniti se je.",
+    "sub": "Večina aplikacij ti da še en prostor, kamor tipkaš stvari. Težava nikoli ni bila v tipkanju. Težava je, da vse nosiš v glavi.",
+    "items": {
+      "oneHead": {
+        "title": "Vse živi v tvoji glavi",
+        "body": "Zobozdravnik, avtomobilsko zavarovanje, darilo, obrazec, ki bi moral biti oddan v petek. Vse je tam notri in nič se nikoli ne odloži."
+      },
+      "notesApp": {
+        "title": "Aplikacija za zapiske ni sistem",
+        "body": "Vrstice, natipkane ob polnoči, ne prebere nihče, tudi ti ne. Zdrsne navzdol in skrb se vrne teden pozneje."
+      },
+      "tooManyApps": {
+        "title": "Aplikacija za vsak kotiček",
+        "body": "Koledar tukaj, seznam tam, opomniki na telefonu, preglednica za selitev. Pet mest za pogled, in tisto, ki ga potrebuješ, ni nikoli odprto."
+      }
+    },
+    "turn": "Zapiši enkrat. Daj temu mesto. Pusti, da zapusti tvojo glavo."
   }
 }
