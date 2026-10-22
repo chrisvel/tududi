@@ -228,5 +228,39 @@ describe('Upcoming due time (#1932)', () => {
             expect(byDate['2026-10-26']).toBe('09:00');
             expect(byDate['2026-10-27']).toBe('09:00');
         });
+
+        it('keeps 00:30 across the autumn DST shift on Upcoming without getting stuck', async () => {
+            const agent = await login('Europe/Berlin');
+            const created = await agent.post('/api/task').send({
+                name: 'Midnight Sync',
+                due_date: '2026-10-24',
+                due_time: '00:30',
+                recurrence_type: 'daily',
+                recurrence_interval: 1,
+            });
+            expect(created.status).toBe(201);
+            expect(created.body.due_time).toBe('00:30');
+
+            const listed = await agent.get(
+                '/api/tasks?type=upcoming&groupBy=day&maxDays=7'
+            );
+            expect(listed.status).toBe(200);
+
+            const occurrences = seriesNamed(
+                listed.body.groupedTasks,
+                'Midnight Sync'
+            );
+            expect(occurrences.length).toBeGreaterThanOrEqual(4);
+
+            const byDate = {};
+            for (const occ of occurrences) {
+                byDate[occ.due_date] = occ.due_time;
+            }
+
+            expect(byDate['2026-10-24']).toBe('00:30');
+            expect(byDate['2026-10-25']).toBe('00:30');
+            expect(byDate['2026-10-26']).toBe('00:30');
+            expect(byDate['2026-10-27']).toBe('00:30');
+        });
     });
 });
