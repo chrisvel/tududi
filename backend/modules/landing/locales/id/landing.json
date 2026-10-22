@@ -26,14 +26,16 @@
     "titleLine1": "Produktivitas dibuat sederhana",
     "titleLine2": "",
     "ctaTrial": "Mulai uji coba gratis {{days}} hari",
-    "cloudNoteTrial": "Gratis selama {{days}} hari, tanpa kartu. Setelah itu bulanan atau tahunan, batalkan kapan saja."
+    "cloudNoteTrial": "Gratis selama {{days}} hari, tanpa kartu. Setelah itu bulanan atau tahunan, batalkan kapan saja.",
+    "badge": "Untuk orang sibuk, tidak perlu instalasi"
   },
   "proof": {
     "stars": "bintang di GitHub",
     "languages": "{{count}} bahasa",
     "dockerPulls": "unduhan Docker",
     "discord": "anggota Discord",
-    "minute": "Disiapkan dalam satu menit"
+    "minute": "Disiapkan dalam satu menit",
+    "guarantee": "Garansi uang kembali 14 hari"
   },
   "press": {
     "featuredIn": "Diliput oleh",
@@ -260,7 +262,9 @@
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
     "perMonth": "/bulan per orang",
-    "sub": "Satu paket yang dihosting, atau jalankan sendiri jika Anda lebih suka mengurus operasionalnya."
+    "sub": "Tanpa tingkatan, tanpa tambahan, tanpa fitur yang ditahan. Coba gratis, lalu satu harga.",
+    "selfHostNote": "Untuk pengembang: tududi bersifat open source dan dapat dijalankan di server Anda sendiri.",
+    "selfHostLink": "Baca panduan"
   },
   "compare": {
     "title": "Perbandingan singkat",
@@ -364,6 +368,10 @@
       "shutdown": {
         "a": "Aplikasi ini berlisensi MIT, dan kode sumbernya publik, sehingga tidak dapat diambil dari Anda. Siapa pun dapat terus menjalankannya, dan Anda bisa mem-fork-nya. Di tududi Cloud data Anda hidup dalam basis data tududi standar bukan format proprietary, sehingga jika layanan suatu saat ditutup, Anda akan mendapatkan data Anda dan panduan untuk memindahkannya ke server Anda sendiri.",
         "q": "Apa yang terjadi pada data saya jika tududi menghilang?"
+      },
+      "trust": {
+        "q": "Bisakah saya mempercayakan data saya kepada Anda?",
+        "a": "Anda tidak harus percaya begitu saja. tududi bersifat open source, sehingga siapa pun dapat membaca persis bagaimana ia menangani data Anda. Di Cloud, semua yang Anda masukkan tetap milik Anda: ekspor sebagai satu berkas kapan saja, hapus akun Anda sendiri, dan ada garansi uang kembali 14 hari jika ternyata tidak cocok."
       }
     },
     "eyebrow": "FAQ",
@@ -484,5 +492,25 @@
         "alt": "Hari ini dengan tugas berikutnya, agenda, dan rapat dari dua kalender"
       }
     }
+  },
+  "pains": {
+    "eyebrow": "Beban mental",
+    "title": "Mengatur bukan bagian yang sulit. Mengingat yang sulit.",
+    "sub": "Kebanyakan aplikasi hanya memberi satu tempat lagi untuk mengetik. Masalahnya tidak pernah soal mengetik. Masalahnya adalah membawa semuanya di kepala.",
+    "items": {
+      "oneHead": {
+        "title": "Semuanya hidup di kepala Anda",
+        "body": "Dokter gigi, asuransi mobil, hadiah, formulir yang harus dikirim hari Jumat. Semuanya ada di sana, dan tidak satu pun pernah diletakkan."
+      },
+      "notesApp": {
+        "title": "Aplikasi catatan bukan sebuah sistem",
+        "body": "Satu baris yang diketik tengah malam tidak dibaca siapa pun, termasuk Anda. Ia tergulir ke bawah dan kekhawatiran kembali seminggu kemudian."
+      },
+      "tooManyApps": {
+        "title": "Satu aplikasi untuk setiap sudut",
+        "body": "Kalender di sini, daftar di sana, pengingat di ponsel, spreadsheet untuk pindahan. Lima tempat untuk dilihat, dan yang Anda butuhkan tidak pernah yang sedang terbuka."
+      }
+    },
+    "turn": "Tulis sekali. Beri tempat. Biarkan ia keluar dari kepala Anda."
   }
 }

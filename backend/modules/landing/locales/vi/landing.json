@@ -26,14 +26,16 @@
     "titleLine1": "Năng suất được đơn giản hóa",
     "titleLine2": "",
     "ctaTrial": "Bắt đầu dùng thử miễn phí {{days}} ngày",
-    "cloudNoteTrial": "Miễn phí {{days}} ngày, không cần thẻ. Sau đó trả theo tháng hoặc năm, hủy bất cứ lúc nào."
+    "cloudNoteTrial": "Miễn phí {{days}} ngày, không cần thẻ. Sau đó trả theo tháng hoặc năm, hủy bất cứ lúc nào.",
+    "badge": "Dành cho người bận rộn, không cần cài đặt"
   },
   "proof": {
     "stars": "sao trên GitHub",
     "languages": "{{count}} ngôn ngữ",
     "dockerPulls": "lượt tải Docker",
     "discord": "thành viên Discord",
-    "minute": "Thiết lập trong một phút"
+    "minute": "Thiết lập trong một phút",
+    "guarantee": "Đảm bảo hoàn tiền trong 14 ngày"
   },
   "press": {
     "featuredIn": "Được nhắc đến trên",
@@ -260,7 +262,9 @@
     },
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 14 ngày, không cần lý do.",
     "perMonth": "/tháng mỗi người",
-    "sub": "Một gói được lưu trữ, hoặc tự chạy nó nếu bạn thích tự xử lý vận hành hơn."
+    "sub": "Không phân cấp, không gói bổ sung, không giữ lại tính năng. Dùng thử miễn phí, sau đó một mức giá.",
+    "selfHostNote": "Dành cho lập trình viên: tududi là mã nguồn mở và có thể chạy trên máy chủ của bạn.",
+    "selfHostLink": "Đọc hướng dẫn"
   },
   "compare": {
     "title": "So sánh nhanh",
@@ -364,6 +368,10 @@
       "shutdown": {
         "a": "Ứng dụng có bản quyền MIT, và mã nguồn là công khai, vì vậy nó không thể bị lấy đi từ bạn. Bất kỳ ai cũng có thể tiếp tục chạy nó, và bạn có thể fork nó. Trên tududi Cloud, dữ liệu của bạn sống trong một cơ sở dữ liệu tududi chuẩn thay vì một định dạng độc quyền, vì vậy nếu dịch vụ có bao giờ đóng lại, bạn sẽ nhận được dữ liệu của mình và một hướng dẫn để chuyển nó sang máy chủ riêng của bạn.",
         "q": "Điều gì sẽ xảy ra với dữ liệu của tôi nếu tududi biến mất?"
+      },
+      "trust": {
+        "q": "Tôi có thể tin giao dữ liệu cho các bạn không?",
+        "a": "Bạn không cần phải tin lời chúng tôi. tududi là mã nguồn mở, nên ai cũng có thể đọc chính xác cách nó xử lý dữ liệu của bạn. Trên Cloud, mọi thứ bạn đưa vào vẫn là của bạn: xuất ra một tệp duy nhất bất cứ lúc nào, tự xóa tài khoản, và có đảm bảo hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn."
       }
     },
     "eyebrow": "FAQ",
@@ -484,5 +492,25 @@
         "alt": "Hôm nay với việc tiếp theo, lịch trình và cuộc họp từ hai lịch"
       }
     }
+  },
+  "pains": {
+    "eyebrow": "Gánh nặng trong đầu",
+    "title": "Sắp xếp không phải là phần khó. Nhớ mới khó.",
+    "sub": "Hầu hết các ứng dụng chỉ cho bạn thêm một nơi để gõ. Vấn đề chưa bao giờ là việc gõ. Vấn đề là mang tất cả trong đầu.",
+    "items": {
+      "oneHead": {
+        "title": "Mọi thứ sống trong đầu bạn",
+        "body": "Nha sĩ, bảo hiểm xe, món quà, tờ đơn phải nộp hôm thứ Sáu. Tất cả đều ở trong đó, và không có gì được đặt xuống bao giờ."
+      },
+      "notesApp": {
+        "title": "Ứng dụng ghi chú không phải là một hệ thống",
+        "body": "Một dòng gõ lúc nửa đêm không ai đọc, kể cả bạn. Nó trôi xuống dưới và nỗi lo quay lại một tuần sau."
+      },
+      "tooManyApps": {
+        "title": "Mỗi góc một ứng dụng",
+        "body": "Lịch ở đây, danh sách ở kia, lời nhắc trên điện thoại, bảng tính cho việc chuyển nhà. Năm nơi để xem, và nơi bạn cần chẳng bao giờ là nơi đang mở."
+      }
+    },
+    "turn": "Viết một lần. Cho nó một chỗ. Để nó rời khỏi đầu bạn."
   }
 }

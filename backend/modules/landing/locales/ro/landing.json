@@ -26,14 +26,16 @@
     "titleLine1": "Productivitate simplificată",
     "titleLine2": "",
     "ctaTrial": "Începe perioada de probă gratuită de {{days}} zile",
-    "cloudNoteTrial": "Gratuit {{days}} zile, fără card. Apoi lunar sau anual, anulezi oricând."
+    "cloudNoteTrial": "Gratuit {{days}} zile, fără card. Apoi lunar sau anual, anulezi oricând.",
+    "badge": "Pentru oameni ocupați, nimic de instalat"
   },
   "proof": {
     "stars": "stele pe GitHub",
     "languages": "{{count}} limbi",
     "dockerPulls": "descărcări Docker",
     "discord": "membri pe Discord",
-    "minute": "Configurat într-un minut"
+    "minute": "Configurat într-un minut",
+    "guarantee": "Garanție de returnare a banilor în 14 zile"
   },
   "press": {
     "featuredIn": "Am apărut în",
@@ -260,7 +262,9 @@
     },
     "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 14 de zile, fără întrebări.",
     "perMonth": "/lună de persoană",
-    "sub": "Un plan găzduit, sau rulează-l tu, dacă preferi să te ocupi de operare."
+    "sub": "Fără niveluri, fără suplimente, fără funcții reținute. Încearcă gratuit, apoi un singur preț.",
+    "selfHostNote": "Pentru dezvoltatori: tududi este open source și poate rula pe propriul server.",
+    "selfHostLink": "Citește ghidul"
   },
   "compare": {
     "title": "Comparație rapidă",
@@ -364,6 +368,10 @@
       "shutdown": {
         "a": "Aplicația e licențiată MIT și codul sursă e public, așa că nu îți poate fi retrasă. Oricine poate continua să o ruleze, și poți face un fork. Pe tududi Cloud datele tale trăiesc într-o bază de date tududi standard, nu într-un format proprietar, așa că, dacă serviciul s-ar închide vreodată, ai primi datele tale și un ghid pentru a le muta pe propriul tău server.",
         "q": "Ce se întâmplă cu datele mele dacă tududi dispare?"
+      },
+      "trust": {
+        "q": "Pot să vă încredințez datele mele?",
+        "a": "Nu trebuie să ne crezi pe cuvânt. tududi este open source, așa că oricine poate citi exact cum îți gestionează datele. În Cloud, tot ce introduci rămâne al tău: exportă-l oricând ca un singur fișier, șterge-ți singur contul și există o garanție de returnare a banilor în 14 zile dacă nu ți se potrivește."
       }
     },
     "eyebrow": "FAQ",
@@ -484,5 +492,25 @@
         "alt": "Azi cu următoarea sarcină, agenda și întâlniri din două calendare"
       }
     }
+  },
+  "pains": {
+    "eyebrow": "Încărcătura mentală",
+    "title": "Organizarea nu e partea grea. Să ții minte, da.",
+    "sub": "Majoritatea aplicațiilor îți dau încă un loc în care să scrii lucruri. Problema n-a fost niciodată scrisul. E să le porți pe toate în cap.",
+    "items": {
+      "oneHead": {
+        "title": "Totul trăiește în capul tău",
+        "body": "Dentistul, asigurarea mașinii, cadoul, formularul care trebuia depus vineri. Totul e acolo și nimic nu e pus vreodată jos."
+      },
+      "notesApp": {
+        "title": "O aplicație de notițe nu e un sistem",
+        "body": "Un rând scris la miezul nopții nu e citit de nimeni, nici de tine. Alunecă în jos și grija revine o săptămână mai târziu."
+      },
+      "tooManyApps": {
+        "title": "O aplicație pentru fiecare colț",
+        "body": "Un calendar aici, o listă acolo, mementouri pe telefon, un tabel pentru mutare. Cinci locuri în care să te uiți, iar cel de care ai nevoie nu e niciodată cel deschis."
+      }
+    },
+    "turn": "Scrie-l o dată. Dă-i un loc. Lasă-l să-ți iasă din cap."
   }
 }
