@@ -198,6 +198,15 @@ app.use((req, res, next) => {
     })(req, res, next);
 });
 
+// Past this point a request can be refused before its body has been read (the
+// auth guard, a rate limiter, a feature gate). Ending the response then tears
+// the socket down under a client that is still uploading, which reaches it as
+// ECONNRESET rather than the refusal we sent - see drainRequestBody.js. It sits
+// after the parsers, so a JSON or urlencoded body has already been consumed and
+// the response is untouched.
+const drainRequestBody = require('./middleware/drainRequestBody');
+app.use(drainRequestBody);
+
 // RFC 9728 - Protected Resource Metadata (no auth required)
 const oauthRoutes = require('./modules/oauth/routes');
 app.use(oauthRoutes);
