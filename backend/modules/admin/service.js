@@ -421,7 +421,8 @@ class AdminService {
             adminRoles,
             accounts,
             billingRows,
-            identityIds,
+            identities,
+            providers,
             usage,
             emailCounts,
         ] = await Promise.all([
@@ -450,12 +451,36 @@ class AdminService {
                   })
                 : [],
             hosted ? BillingAccount.findAll() : [],
-            adminRepository.findIdentityUserIds(null),
+            adminRepository.findIdentities(),
+            require('../oidc/providerConfig')
+                .getAllProviders()
+                .catch(() => []),
             adminRepository.countItemsByUser(),
             adminRepository.countSentEmailsByUser(),
         ]);
 
         const adminIds = new Set(adminRoles.map((r) => r.user_id));
+        const identityIds = new Set(identities.map((i) => i.user_id));
+        const firstIdentity = new Map();
+        for (const i of identities) {
+            if (!firstIdentity.has(i.user_id)) firstIdentity.set(i.user_id, i);
+        }
+        const providerName = new Map(providers.map((p) => [p.slug, p.name]));
+        // Single sign-on created the account when it has no password, or
+        // when its first link was made within minutes of the account. A
+        // link made later is someone who signed up with email first.
+        const signupProviderOf = (u) => {
+            const identity = firstIdentity.get(u.id);
+            if (!identity) return null;
+            const gap =
+                new Date(identity.created_at).getTime() -
+                new Date(u.created_at).getTime();
+            if (u.password_digest && gap > 5 * 60 * 1000) return null;
+            return (
+                providerName.get(identity.provider_slug) ||
+                identity.provider_slug
+            );
+        };
         const ownerByAccount = new Map(
             accounts.map((a) => [a.id, a.owner_user_id])
         );
@@ -509,6 +534,7 @@ class AdminService {
                     created_at: u.created_at,
                     email_verified: !!u.email_verified,
                     account_status: accountStatusOf(u, identityIds.has(u.id)),
+                    signup_provider: signupProviderOf(u),
                     is_admin: adminIds.has(u.id),
                     member_of: memberOf
                         ? { id: memberOf, email: emailById.get(memberOf) }
