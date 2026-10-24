@@ -16,7 +16,7 @@ const KIND_BY_PREFIX: Record<string, InboxTokenKind> = {
 
 export const splitInboxTokens = (text: string): InboxTextSegment[] => {
     const segments: InboxTextSegment[] = [];
-    const pattern = /(^|\s)([#+@~](?:"[^"]*"|[^\s"]+))/g;
+    const pattern = /(^|\s)([#+@~](?:"(?:\\["\\]|[^"])*"|[^\s"]+))/g;
     let last = 0;
     let match: RegExpExecArray | null;
 
@@ -31,3 +31,15 @@ export const splitInboxTokens = (text: string): InboxTextSegment[] => {
     if (last < text.length) segments.push({ text: text.slice(last) });
     return segments;
 };
+
+// Writes a project name for a +project token. A name with a space or a quote
+// is quoted, and the quotes and backslashes in it are escaped, so the box
+// reads the same name back.
+export const formatProjectTokenName = (name: string): string =>
+    /[\s"]/.test(name) ? `"${name.replace(/["\\]/g, '\\$&')}"` : name;
+
+// The project name in a +project token, without its quotes and escapes.
+export const readProjectTokenName = (name: string): string =>
+    name.startsWith('"') && name.endsWith('"')
+        ? name.slice(1, -1).replace(/\\(["\\])/g, '$1')
+        : name;
