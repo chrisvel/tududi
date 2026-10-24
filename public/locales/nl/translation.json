@@ -2264,6 +2264,66 @@
     "info": {
       "title": "Opmerking:",
       "message": "E-mail- en pushmeldingen komen binnenkort. In-app en Telegram-meldingen zijn momenteel beschikbaar."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Taak binnenkort verlopen",
+        "taskOverdue": "Taak achterstallig",
+        "taskReminder": "Taakherinnering",
+        "taskDeferredReady": "Uitgestelde taak is actief",
+        "taskAssigned": "Taak aan jou toegewezen",
+        "projectDueSoon": "Project binnenkort verlopen",
+        "projectOverdue": "Project achterstallig",
+        "habitReminder": "Gewoonteherinnering",
+        "commentAdded": "Nieuwe opmerking",
+        "commentMention": "Vermelding",
+        "shareInvitation": "Uitnodiging om te delen",
+        "taskCreated": "Taak aangemaakt",
+        "taskUpdated": "Taak gewijzigd",
+        "taskCompleted": "Taak voltooid",
+        "taskDeleted": "Taak verwijderd",
+        "dailySummary": "Dagelijkse samenvatting",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Herinneringen en meldingen",
+        "changes": "Taakwijzigingen",
+        "summary": "Dagelijkse samenvatting"
+      },
+      "namePlaceholder": "Naam, bijv. n8n",
+      "nameLabel": "Naam",
+      "urlKeepPlaceholder": "Nieuw adres (leeg laten om het te behouden)",
+      "urlLabel": "Webhook-adres",
+      "summaryAt": "om",
+      "saving": "Opslaan...",
+      "save": "Opslaan",
+      "deliveriesFailed": "Leveringen konden niet worden geladen.",
+      "noDeliveries": "Nog niets verzonden.",
+      "status": {
+        "delivered": "Afgeleverd",
+        "failed": "Mislukt ({{error}})",
+        "pending": "Wacht op nieuwe poging"
+      },
+      "testSent": "{{name}} heeft het testbericht geaccepteerd.",
+      "disabledFailures": "Uitgeschakeld na te veel mislukte leveringen. Controleer het adres en schakel hem daarna weer in.",
+      "off": "Uit",
+      "lastFailed": "De laatste levering is mislukt.",
+      "lastDelivered": "Laatst afgeleverd {{when}}.",
+      "notUsed": "Nog niets verzonden.",
+      "title": "Webhooks",
+      "description": "Verstuur gebeurtenissen als JSON naar n8n, Home Assistant, Slack, Discord of je eigen server. Elke webhook kiest zijn eigen gebeurtenissen.",
+      "add": "Webhook toevoegen",
+      "secretOnce": "Ondertekeningsgeheim. Kopieer het nu: het wordt niet opnieuw getoond.",
+      "copy": "Kopiëren",
+      "done": "Klaar",
+      "secretHelp": "Elk verzoek bevat X-Tududi-Signature: sha256 HMAC van \"timestamp.body\" met dit geheim, en de tijdstempel in X-Tududi-Timestamp.",
+      "turnOff": "Uitschakelen",
+      "turnOn": "Inschakelen",
+      "edit": "Bewerken",
+      "newSecret": "Nieuw geheim",
+      "history": "Geschiedenis",
+      "confirmDelete": "Verwijderen?",
+      "delete": "Verwijderen"
     }
   },
   "projectStatus": {
@@ -2562,7 +2622,11 @@
     "readOnlyUntil": "Je gegevens zijn alleen-lezen tot {{date}}, daarna wordt het account verwijderd. Neem een abonnement om tududi Cloud te blijven gebruiken.",
     "trialIncludes": "Je proefperiode eindigt op {{date}}. De AI-assistent, openbare notities en leden toevoegen worden ontgrendeld met een abonnement.",
     "backToApp": "Terug naar tududi",
-    "trialBanner": "Gratis proefperiode, resterende dagen: {{count}}"
+    "trialBanner": "Gratis proefperiode, resterende dagen: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhooks zitten niet in de gratis proefperiode. Neem een abonnement om gebeurtenissen naar je eigen diensten te sturen."
+    },
+    "lockedWebhooks": "Webhooks horen bij het betaalde abonnement."
   },
   "demo": {
     "opening": "De demo wordt geopend...",

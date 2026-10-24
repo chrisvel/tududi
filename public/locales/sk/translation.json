@@ -2472,6 +2472,66 @@
         "info": {
             "title": "Poznámka:",
             "message": "E-mailové a push upozornenia pripravujeme. Momentálne sú dostupné upozornenia v aplikácii a cez Telegram."
+        },
+        "webhooks": {
+            "events": {
+                "taskDueSoon": "Úloha čoskoro splatná",
+                "taskOverdue": "Úloha po termíne",
+                "taskReminder": "Pripomienka úlohy",
+                "taskDeferredReady": "Odložená úloha je aktívna",
+                "taskAssigned": "Úloha priradená vám",
+                "projectDueSoon": "Projekt čoskoro splatný",
+                "projectOverdue": "Projekt po termíne",
+                "habitReminder": "Pripomienka návyku",
+                "commentAdded": "Nový komentár",
+                "commentMention": "Zmienka",
+                "shareInvitation": "Pozvánka na zdieľanie",
+                "taskCreated": "Úloha vytvorená",
+                "taskUpdated": "Úloha zmenená",
+                "taskCompleted": "Úloha dokončená",
+                "taskDeleted": "Úloha odstránená",
+                "dailySummary": "Denný súhrn",
+                "test": "Test"
+            },
+            "groups": {
+                "alerts": "Pripomienky a upozornenia",
+                "changes": "Zmeny úloh",
+                "summary": "Denný súhrn"
+            },
+            "namePlaceholder": "Názov, napr. n8n",
+            "nameLabel": "Názov",
+            "urlKeepPlaceholder": "Nová adresa (nechajte prázdne, ak ju chcete ponechať)",
+            "urlLabel": "Adresa webhooku",
+            "summaryAt": "o",
+            "saving": "Ukladá sa...",
+            "save": "Uložiť",
+            "deliveriesFailed": "Doručenia sa nepodarilo načítať.",
+            "noDeliveries": "Zatiaľ nič neodoslané.",
+            "status": {
+                "delivered": "Doručené",
+                "failed": "Zlyhalo ({{error}})",
+                "pending": "Čaká na opakovanie"
+            },
+            "testSent": "{{name}} prijal testovaciu správu.",
+            "disabledFailures": "Vypnuté po príliš veľa neúspešných doručeniach. Skontrolujte adresu a potom ho znova zapnite.",
+            "off": "Vypnuté",
+            "lastFailed": "Posledné doručenie zlyhalo.",
+            "lastDelivered": "Naposledy doručené {{when}}.",
+            "notUsed": "Zatiaľ nič neodoslané.",
+            "title": "Webhooky",
+            "description": "Posielajte udalosti ako JSON do n8n, Home Assistant, Slack, Discord alebo na vlastný server. Každý webhook si vyberá vlastné udalosti.",
+            "add": "Pridať webhook",
+            "secretOnce": "Podpisový kľúč. Skopírujte ho teraz: znova sa nezobrazí.",
+            "copy": "Kopírovať",
+            "done": "Hotovo",
+            "secretHelp": "Každá požiadavka obsahuje X-Tududi-Signature: sha256 HMAC z \"timestamp.body\" s týmto kľúčom, a časovú pečiatku v X-Tududi-Timestamp.",
+            "turnOff": "Vypnúť",
+            "turnOn": "Zapnúť",
+            "edit": "Upraviť",
+            "newSecret": "Nový kľúč",
+            "history": "História",
+            "confirmDelete": "Odstrániť?",
+            "delete": "Odstrániť"
         }
     },
     "aiAssistant": {
@@ -2563,7 +2623,11 @@
         "perkExport": "Export všetkého kedykoľvek",
         "taxNote": "Platby spracúva {{provider}}. Ceny nezahŕňajú príslušné dane. Zrušiť môžete kedykoľvek.",
         "notConfigured": "Predplatné zatiaľ nie je na tejto inštancii dostupné. Kontaktujte podporu.",
-        "exportData": "Exportovať vaše dáta"
+        "exportData": "Exportovať vaše dáta",
+        "trialLock": {
+            "webhooks": "Webhooky nie sú súčasťou bezplatnej skúšobnej verzie. Predplaťte si, ak chcete posielať udalosti do vlastných služieb."
+        },
+        "lockedWebhooks": "Webhooky sú súčasťou plateného plánu."
     },
     "demo": {
         "opening": "Otvára sa demo...",

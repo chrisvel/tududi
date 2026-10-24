@@ -2265,6 +2265,66 @@
     "info": {
       "title": "Merk:",
       "message": "E-post og Push-varsler kommer snart. Varsler i appen og Telegram er for øyeblikket tilgjengelige."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Oppgave forfaller snart",
+        "taskOverdue": "Oppgave forfalt",
+        "taskReminder": "Oppgavepåminnelse",
+        "taskDeferredReady": "Utsatt oppgave er aktiv",
+        "taskAssigned": "Oppgave tildelt deg",
+        "projectDueSoon": "Prosjekt forfaller snart",
+        "projectOverdue": "Prosjekt forfalt",
+        "habitReminder": "Vanepåminnelse",
+        "commentAdded": "Ny kommentar",
+        "commentMention": "Omtale",
+        "shareInvitation": "Delingsinvitasjon",
+        "taskCreated": "Oppgave opprettet",
+        "taskUpdated": "Oppgave endret",
+        "taskCompleted": "Oppgave fullført",
+        "taskDeleted": "Oppgave slettet",
+        "dailySummary": "Daglig sammendrag",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Påminnelser og varsler",
+        "changes": "Oppgaveendringer",
+        "summary": "Daglig sammendrag"
+      },
+      "namePlaceholder": "Navn, f.eks. n8n",
+      "nameLabel": "Navn",
+      "urlKeepPlaceholder": "Ny adresse (la stå tom for å beholde den)",
+      "urlLabel": "Webhook-adresse",
+      "summaryAt": "kl.",
+      "saving": "Lagrer...",
+      "save": "Lagre",
+      "deliveriesFailed": "Kunne ikke laste inn leveranser.",
+      "noDeliveries": "Ingenting sendt ennå.",
+      "status": {
+        "delivered": "Levert",
+        "failed": "Mislyktes ({{error}})",
+        "pending": "Venter på nytt forsøk"
+      },
+      "testSent": "{{name}} godtok testmeldingen.",
+      "disabledFailures": "Slått av etter for mange mislykkede leveranser. Sjekk adressen, og slå den på igjen.",
+      "off": "Av",
+      "lastFailed": "Den siste leveransen mislyktes.",
+      "lastDelivered": "Sist levert {{when}}.",
+      "notUsed": "Ingenting sendt ennå.",
+      "title": "Webhooks",
+      "description": "Send hendelser som JSON til n8n, Home Assistant, Slack, Discord eller din egen server. Hver webhook velger sine egne hendelser.",
+      "add": "Legg til webhook",
+      "secretOnce": "Signeringsnøkkel. Kopier den nå: den vises ikke igjen.",
+      "copy": "Kopier",
+      "done": "Ferdig",
+      "secretHelp": "Hver forespørsel har X-Tududi-Signature: sha256 HMAC av \"timestamp.body\" med denne nøkkelen, og tidsstempelet i X-Tududi-Timestamp.",
+      "turnOff": "Slå av",
+      "turnOn": "Slå på",
+      "edit": "Rediger",
+      "newSecret": "Ny nøkkel",
+      "history": "Historikk",
+      "confirmDelete": "Slette den?",
+      "delete": "Slett"
     }
   },
   "projectStatus": {
@@ -2567,7 +2627,11 @@
     "readOnlyUntil": "Dataene dine er skrivebeskyttet til {{date}}, deretter slettes kontoen. Abonner for å fortsette å bruke tududi Cloud.",
     "trialIncludes": "Prøveperioden din slutter {{date}}. AI-assistenten, offentlige notater og å legge til medlemmer låses opp når du abonnerer.",
     "backToApp": "Tilbake til tududi",
-    "trialBanner": "Gratis prøveperiode, dager igjen: {{count}}"
+    "trialBanner": "Gratis prøveperiode, dager igjen: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhooks er ikke med i den gratis prøveperioden. Abonner for å sende hendelser til dine egne tjenester."
+    },
+    "lockedWebhooks": "Webhooks er en del av det betalte abonnementet."
   },
   "demo": {
     "opening": "Åpner demoen...",

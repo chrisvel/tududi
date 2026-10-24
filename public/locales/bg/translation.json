@@ -2264,6 +2264,66 @@
     "info": {
       "title": "Забележка:",
       "message": "Имейл и Push известия ще бъдат налични скоро. В приложението и Telegram известията в момента са налични."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Задачата скоро е с краен срок",
+        "taskOverdue": "Просрочена задача",
+        "taskReminder": "Напомняне за задача",
+        "taskDeferredReady": "Отложената задача е активна",
+        "taskAssigned": "Задача, възложена на вас",
+        "projectDueSoon": "Проектът скоро е с краен срок",
+        "projectOverdue": "Просрочен проект",
+        "habitReminder": "Напомняне за навик",
+        "commentAdded": "Нов коментар",
+        "commentMention": "Споменаване",
+        "shareInvitation": "Покана за споделяне",
+        "taskCreated": "Създадена задача",
+        "taskUpdated": "Променена задача",
+        "taskCompleted": "Завършена задача",
+        "taskDeleted": "Изтрита задача",
+        "dailySummary": "Дневно обобщение",
+        "test": "Тест"
+      },
+      "groups": {
+        "alerts": "Напомняния и известия",
+        "changes": "Промени в задачи",
+        "summary": "Дневно обобщение"
+      },
+      "namePlaceholder": "Име, напр. n8n",
+      "nameLabel": "Име",
+      "urlKeepPlaceholder": "Нов адрес (оставете празно, за да запазите текущия)",
+      "urlLabel": "Адрес на webhook",
+      "summaryAt": "в",
+      "saving": "Запазване...",
+      "save": "Запази",
+      "deliveriesFailed": "Доставките не можаха да се заредят.",
+      "noDeliveries": "Все още нищо не е изпратено.",
+      "status": {
+        "delivered": "Доставено",
+        "failed": "Неуспешно ({{error}})",
+        "pending": "Изчаква нов опит"
+      },
+      "testSent": "{{name}} прие тестовото съобщение.",
+      "disabledFailures": "Изключен след твърде много неуспешни доставки. Проверете адреса и го включете отново.",
+      "off": "Изкл.",
+      "lastFailed": "Последната доставка е неуспешна.",
+      "lastDelivered": "Последна доставка {{when}}.",
+      "notUsed": "Все още нищо не е изпратено.",
+      "title": "Webhooks",
+      "description": "Изпращайте събития като JSON към n8n, Home Assistant, Slack, Discord или собствен сървър. Всеки webhook избира свои събития.",
+      "add": "Добави webhook",
+      "secretOnce": "Таен ключ за подпис. Копирайте го сега: няма да бъде показан отново.",
+      "copy": "Копирай",
+      "done": "Готово",
+      "secretHelp": "Всяка заявка съдържа X-Tududi-Signature: sha256 HMAC на \"timestamp.body\" с този ключ, и времевия печат в X-Tududi-Timestamp.",
+      "turnOff": "Изключи",
+      "turnOn": "Включи",
+      "edit": "Редактирай",
+      "newSecret": "Нов ключ",
+      "history": "История",
+      "confirmDelete": "Да се изтрие ли?",
+      "delete": "Изтрий"
     }
   },
   "projectStatus": {
@@ -2562,7 +2622,11 @@
     "readOnlyUntil": "Данните ви са само за четене до {{date}}, след което акаунтът се изтрива. Абонирайте се, за да продължите да използвате tududi Cloud.",
     "trialIncludes": "Пробният период приключва на {{date}}. AI асистентът, публичните бележки и добавянето на членове се отключват с абонамент.",
     "backToApp": "Обратно към tududi",
-    "trialBanner": "Безплатен пробен период, оставащи дни: {{count}}"
+    "trialBanner": "Безплатен пробен период, оставащи дни: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhooks не са част от безплатния пробен период. Абонирайте се, за да изпращате събития към свои услуги."
+    },
+    "lockedWebhooks": "Webhooks са част от платения план."
   },
   "demo": {
     "opening": "Отваряне на демото...",

@@ -2778,6 +2778,66 @@
       "enable": "Turn on",
       "disable": "Turn off",
       "failed": "Something went wrong. Please try again."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Task due soon",
+        "taskOverdue": "Task overdue",
+        "taskReminder": "Task reminder",
+        "taskDeferredReady": "Deferred task is active",
+        "taskAssigned": "Task assigned to you",
+        "projectDueSoon": "Project due soon",
+        "projectOverdue": "Project overdue",
+        "habitReminder": "Habit reminder",
+        "commentAdded": "New comment",
+        "commentMention": "Mention",
+        "shareInvitation": "Share invitation",
+        "taskCreated": "Task created",
+        "taskUpdated": "Task changed",
+        "taskCompleted": "Task completed",
+        "taskDeleted": "Task deleted",
+        "dailySummary": "Daily summary",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Reminders and alerts",
+        "changes": "Task changes",
+        "summary": "Daily summary"
+      },
+      "namePlaceholder": "Name, e.g. n8n",
+      "nameLabel": "Name",
+      "urlKeepPlaceholder": "New address (leave empty to keep it)",
+      "urlLabel": "Webhook address",
+      "summaryAt": "at",
+      "saving": "Saving...",
+      "save": "Save",
+      "deliveriesFailed": "Could not load deliveries.",
+      "noDeliveries": "Nothing sent yet.",
+      "status": {
+        "delivered": "Delivered",
+        "failed": "Failed ({{error}})",
+        "pending": "Waiting to retry"
+      },
+      "testSent": "{{name}} accepted the test message.",
+      "disabledFailures": "Turned off after too many failed deliveries. Check the address, then turn it back on.",
+      "off": "Off",
+      "lastFailed": "The last delivery failed.",
+      "lastDelivered": "Last delivered {{when}}.",
+      "notUsed": "Nothing sent yet.",
+      "title": "Webhooks",
+      "description": "Send events as JSON to n8n, Home Assistant, Slack, Discord or your own server. Each webhook picks its own events.",
+      "add": "Add webhook",
+      "secretOnce": "Signing secret. Copy it now: it will not be shown again.",
+      "copy": "Copy",
+      "done": "Done",
+      "secretHelp": "Each request carries X-Tududi-Signature: sha256 HMAC of \"timestamp.body\" with this secret, and the timestamp in X-Tududi-Timestamp.",
+      "turnOff": "Turn off",
+      "turnOn": "Turn on",
+      "edit": "Edit",
+      "newSecret": "New secret",
+      "history": "History",
+      "confirmDelete": "Delete it?",
+      "delete": "Delete"
     }
   },
   "aiAssistant": {
@@ -2884,8 +2944,10 @@
     "trialLock": {
       "ai": "The AI assistant is not part of the free trial. Subscribe to turn it on.",
       "publicNotes": "Public note links are not part of the free trial. Subscribe to share notes with anyone.",
-      "members": "Adding members is not part of the free trial. Subscribe to add family members or teammates."
-    }
+      "members": "Adding members is not part of the free trial. Subscribe to add family members or teammates.",
+      "webhooks": "Webhooks are not part of the free trial. Subscribe to send events to your own services."
+    },
+    "lockedWebhooks": "Webhooks are part of the paid plan."
   },
   "demo": {
     "opening": "Opening the demo...",

@@ -26,6 +26,7 @@ const DEFAULT_PLANS = {
             telegram: false,
             attachments: true,
             public_notes: true,
+            webhooks: false,
         },
     },
     pro: {
@@ -47,11 +48,13 @@ const DEFAULT_PLANS = {
             telegram: true,
             attachments: true,
             public_notes: true,
+            webhooks: true,
         },
     },
     // A new Cloud account before it pays: Pro, with a small AI budget (each
     // call costs money) and one member to try sharing with. Public notes
-    // stay off, since they could host spam on our domain.
+    // stay off, since they could host spam on our domain, and so do
+    // webhooks, which send requests to any address from our servers.
     trial: {
         name: 'Pro',
         limits: {
@@ -71,6 +74,7 @@ const DEFAULT_PLANS = {
             telegram: true,
             attachments: true,
             public_notes: false,
+            webhooks: false,
         },
     },
 };

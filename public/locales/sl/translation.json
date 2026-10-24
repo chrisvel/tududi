@@ -2266,6 +2266,66 @@
     "info": {
       "title": "Opomba:",
       "message": "Obvestila po e-pošti in potisna obvestila kmalu prihajajo. Obvestila v aplikaciji in na Telegramu so trenutno na voljo."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Naloga kmalu zapade",
+        "taskOverdue": "Naloga je zapadla",
+        "taskReminder": "Opomnik za nalogo",
+        "taskDeferredReady": "Odložena naloga je aktivna",
+        "taskAssigned": "Naloga, dodeljena vam",
+        "projectDueSoon": "Projekt kmalu zapade",
+        "projectOverdue": "Projekt je zapadel",
+        "habitReminder": "Opomnik za navado",
+        "commentAdded": "Nov komentar",
+        "commentMention": "Omemba",
+        "shareInvitation": "Povabilo k deljenju",
+        "taskCreated": "Naloga ustvarjena",
+        "taskUpdated": "Naloga spremenjena",
+        "taskCompleted": "Naloga dokončana",
+        "taskDeleted": "Naloga izbrisana",
+        "dailySummary": "Dnevni povzetek",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Opomniki in opozorila",
+        "changes": "Spremembe nalog",
+        "summary": "Dnevni povzetek"
+      },
+      "namePlaceholder": "Ime, npr. n8n",
+      "nameLabel": "Ime",
+      "urlKeepPlaceholder": "Nov naslov (pustite prazno, da ga ohranite)",
+      "urlLabel": "Naslov webhooka",
+      "summaryAt": "ob",
+      "saving": "Shranjevanje...",
+      "save": "Shrani",
+      "deliveriesFailed": "Dostav ni bilo mogoče naložiti.",
+      "noDeliveries": "Nič še ni bilo poslano.",
+      "status": {
+        "delivered": "Dostavljeno",
+        "failed": "Ni uspelo ({{error}})",
+        "pending": "Čaka na ponovni poskus"
+      },
+      "testSent": "{{name}} je sprejel testno sporočilo.",
+      "disabledFailures": "Izklopljeno po preveč neuspelih dostavah. Preverite naslov in ga nato znova vklopite.",
+      "off": "Izklopljeno",
+      "lastFailed": "Zadnja dostava ni uspela.",
+      "lastDelivered": "Nazadnje dostavljeno {{when}}.",
+      "notUsed": "Nič še ni bilo poslano.",
+      "title": "Webhooki",
+      "description": "Pošiljajte dogodke kot JSON v n8n, Home Assistant, Slack, Discord ali na svoj strežnik. Vsak webhook izbere svoje dogodke.",
+      "add": "Dodaj webhook",
+      "secretOnce": "Skrivnost za podpis. Kopirajte jo zdaj: ne bo več prikazana.",
+      "copy": "Kopiraj",
+      "done": "Končano",
+      "secretHelp": "Vsaka zahteva vsebuje X-Tududi-Signature: sha256 HMAC od \"timestamp.body\" s to skrivnostjo, in časovni žig v X-Tududi-Timestamp.",
+      "turnOff": "Izklopi",
+      "turnOn": "Vklopi",
+      "edit": "Uredi",
+      "newSecret": "Nova skrivnost",
+      "history": "Zgodovina",
+      "confirmDelete": "Izbrišem?",
+      "delete": "Izbriši"
     }
   },
   "projectStatus": {
@@ -2566,7 +2626,11 @@
     "readOnlyUntil": "Vaši podatki so samo za branje do {{date}}, nato bo račun izbrisan. Naročite se, da boste tududi Cloud lahko še naprej uporabljali.",
     "trialIncludes": "Preizkusno obdobje se izteče {{date}}. Pomočnik AI, javni zapiski in dodajanje članov se odklenejo z naročnino.",
     "backToApp": "Nazaj v tududi",
-    "trialBanner": "Brezplačni preizkus, preostali dnevi: {{count}}"
+    "trialBanner": "Brezplačni preizkus, preostali dnevi: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhooki niso del brezplačnega preizkusa. Naročite se, da boste pošiljali dogodke v svoje storitve."
+    },
+    "lockedWebhooks": "Webhooki so del plačljivega paketa."
   },
   "demo": {
     "opening": "Odpiranje demota...",

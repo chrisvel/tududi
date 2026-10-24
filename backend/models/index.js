@@ -111,6 +111,8 @@ const EmailDelivery = require('./email_delivery')(sequelize);
 const UsageCounter = require('./usage_counter')(sequelize);
 const Feedback = require('./feedback')(sequelize);
 const PushSubscription = require('./push_subscription')(sequelize);
+const Webhook = require('./webhook')(sequelize);
+const WebhookDelivery = require('./webhook_delivery')(sequelize);
 const Account = require('./account')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
@@ -125,6 +127,14 @@ User.hasMany(PushSubscription, {
     as: 'PushSubscriptions',
 });
 PushSubscription.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasMany(Webhook, { foreignKey: 'user_id', as: 'Webhooks' });
+Webhook.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+Webhook.hasMany(WebhookDelivery, {
+    foreignKey: 'webhook_id',
+    as: 'Deliveries',
+    onDelete: 'CASCADE',
+});
+WebhookDelivery.belongsTo(Webhook, { foreignKey: 'webhook_id', as: 'Webhook' });
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -710,4 +720,6 @@ module.exports = {
     Feedback,
     Account,
     PushSubscription,
+    Webhook,
+    WebhookDelivery,
 };

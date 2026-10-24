@@ -2264,6 +2264,66 @@
     "info": {
       "title": "Catatan:",
       "message": "Notifikasi Email dan Push akan segera hadir. Notifikasi di dalam aplikasi dan Telegram saat ini tersedia."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Tugas segera jatuh tempo",
+        "taskOverdue": "Tugas terlambat",
+        "taskReminder": "Pengingat tugas",
+        "taskDeferredReady": "Tugas yang ditunda sudah aktif",
+        "taskAssigned": "Tugas diberikan kepada Anda",
+        "projectDueSoon": "Proyek segera jatuh tempo",
+        "projectOverdue": "Proyek terlambat",
+        "habitReminder": "Pengingat kebiasaan",
+        "commentAdded": "Komentar baru",
+        "commentMention": "Sebutan",
+        "shareInvitation": "Undangan berbagi",
+        "taskCreated": "Tugas dibuat",
+        "taskUpdated": "Tugas diubah",
+        "taskCompleted": "Tugas selesai",
+        "taskDeleted": "Tugas dihapus",
+        "dailySummary": "Ringkasan harian",
+        "test": "Tes"
+      },
+      "groups": {
+        "alerts": "Pengingat dan peringatan",
+        "changes": "Perubahan tugas",
+        "summary": "Ringkasan harian"
+      },
+      "namePlaceholder": "Nama, mis. n8n",
+      "nameLabel": "Nama",
+      "urlKeepPlaceholder": "Alamat baru (kosongkan untuk mempertahankannya)",
+      "urlLabel": "Alamat webhook",
+      "summaryAt": "pukul",
+      "saving": "Menyimpan...",
+      "save": "Simpan",
+      "deliveriesFailed": "Tidak dapat memuat pengiriman.",
+      "noDeliveries": "Belum ada yang dikirim.",
+      "status": {
+        "delivered": "Terkirim",
+        "failed": "Gagal ({{error}})",
+        "pending": "Menunggu percobaan ulang"
+      },
+      "testSent": "{{name}} menerima pesan tes.",
+      "disabledFailures": "Dimatikan setelah terlalu banyak pengiriman gagal. Periksa alamatnya, lalu nyalakan kembali.",
+      "off": "Mati",
+      "lastFailed": "Pengiriman terakhir gagal.",
+      "lastDelivered": "Terakhir terkirim {{when}}.",
+      "notUsed": "Belum ada yang dikirim.",
+      "title": "Webhook",
+      "description": "Kirim peristiwa sebagai JSON ke n8n, Home Assistant, Slack, Discord, atau server Anda sendiri. Setiap webhook memilih peristiwanya sendiri.",
+      "add": "Tambah webhook",
+      "secretOnce": "Kunci penandatanganan. Salin sekarang: kunci ini tidak akan ditampilkan lagi.",
+      "copy": "Salin",
+      "done": "Selesai",
+      "secretHelp": "Setiap permintaan membawa X-Tududi-Signature: HMAC sha256 dari \"timestamp.body\" dengan kunci ini, dan stempel waktu di X-Tududi-Timestamp.",
+      "turnOff": "Matikan",
+      "turnOn": "Nyalakan",
+      "edit": "Edit",
+      "newSecret": "Kunci baru",
+      "history": "Riwayat",
+      "confirmDelete": "Hapus?",
+      "delete": "Hapus"
     }
   },
   "projectStatus": {
@@ -2562,7 +2622,11 @@
     "readOnlyUntil": "Data Anda hanya bisa dibaca hingga {{date}}, lalu akun akan dihapus. Berlanggananlah untuk terus menggunakan tududi Cloud.",
     "trialIncludes": "Masa uji coba Anda berakhir pada {{date}}. Asisten AI, catatan publik, dan menambahkan anggota terbuka saat Anda berlangganan.",
     "backToApp": "Kembali ke tududi",
-    "trialBanner": "Uji coba gratis, sisa hari: {{count}}"
+    "trialBanner": "Uji coba gratis, sisa hari: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhook tidak termasuk dalam uji coba gratis. Berlangganan untuk mengirim peristiwa ke layanan Anda sendiri."
+    },
+    "lockedWebhooks": "Webhook termasuk dalam paket berbayar."
   },
   "demo": {
     "opening": "Membuka demo...",
