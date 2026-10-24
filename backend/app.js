@@ -423,6 +423,7 @@ const groupsModule = require('./modules/groups');
 const feedbackModule = require('./modules/feedback');
 const pushModule = require('./modules/push');
 const appriseModule = require('./modules/apprise');
+const webhooksModule = require('./modules/webhooks');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -551,6 +552,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, feedbackModule.routes);
     app.use(basePath, pushModule.routes);
     app.use(basePath, appriseModule.routes);
+    app.use(basePath, webhooksModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility

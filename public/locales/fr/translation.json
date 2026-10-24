@@ -2265,6 +2265,66 @@
     "info": {
       "title": "Remarque :",
       "message": "Les notifications par e-mail et push arrivent bientôt. Les notifications dans l'application et sur Telegram sont actuellement disponibles."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Tâche bientôt due",
+        "taskOverdue": "Tâche en retard",
+        "taskReminder": "Rappel de tâche",
+        "taskDeferredReady": "La tâche reportée est active",
+        "taskAssigned": "Tâche qui vous est assignée",
+        "projectDueSoon": "Projet bientôt dû",
+        "projectOverdue": "Projet en retard",
+        "habitReminder": "Rappel d'habitude",
+        "commentAdded": "Nouveau commentaire",
+        "commentMention": "Mention",
+        "shareInvitation": "Invitation de partage",
+        "taskCreated": "Tâche créée",
+        "taskUpdated": "Tâche modifiée",
+        "taskCompleted": "Tâche terminée",
+        "taskDeleted": "Tâche supprimée",
+        "dailySummary": "Résumé quotidien",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Rappels et alertes",
+        "changes": "Modifications de tâches",
+        "summary": "Résumé quotidien"
+      },
+      "namePlaceholder": "Nom, par ex. n8n",
+      "nameLabel": "Nom",
+      "urlKeepPlaceholder": "Nouvelle adresse (laisser vide pour la conserver)",
+      "urlLabel": "Adresse du webhook",
+      "summaryAt": "à",
+      "saving": "Enregistrement...",
+      "save": "Enregistrer",
+      "deliveriesFailed": "Impossible de charger les envois.",
+      "noDeliveries": "Rien n'a encore été envoyé.",
+      "status": {
+        "delivered": "Livré",
+        "failed": "Échec ({{error}})",
+        "pending": "En attente d'un nouvel essai"
+      },
+      "testSent": "{{name}} a accepté le message de test.",
+      "disabledFailures": "Désactivé après trop d'envois échoués. Vérifiez l'adresse, puis réactivez-le.",
+      "off": "Désactivé",
+      "lastFailed": "Le dernier envoi a échoué.",
+      "lastDelivered": "Dernier envoi {{when}}.",
+      "notUsed": "Rien n'a encore été envoyé.",
+      "title": "Webhooks",
+      "description": "Envoyez des événements en JSON vers n8n, Home Assistant, Slack, Discord ou votre propre serveur. Chaque webhook choisit ses propres événements.",
+      "add": "Ajouter un webhook",
+      "secretOnce": "Secret de signature. Copiez-le maintenant : il ne sera plus affiché.",
+      "copy": "Copier",
+      "done": "Terminé",
+      "secretHelp": "Chaque requête contient X-Tududi-Signature : HMAC sha256 de \"timestamp.body\" avec ce secret, et l'horodatage dans X-Tududi-Timestamp.",
+      "turnOff": "Désactiver",
+      "turnOn": "Activer",
+      "edit": "Modifier",
+      "newSecret": "Nouveau secret",
+      "history": "Historique",
+      "confirmDelete": "Le supprimer ?",
+      "delete": "Supprimer"
     }
   },
   "projectStatus": {
@@ -2563,7 +2623,11 @@
     "readOnlyUntil": "Vos données sont en lecture seule jusqu'au {{date}}, puis le compte sera supprimé. Abonnez-vous pour continuer à utiliser tududi Cloud.",
     "trialIncludes": "Votre essai se termine le {{date}}. L'assistant IA, les notes publiques et l'ajout de membres se débloquent avec un abonnement.",
     "backToApp": "Retour à tududi",
-    "trialBanner": "Essai gratuit, jours restants : {{count}}"
+    "trialBanner": "Essai gratuit, jours restants : {{count}}",
+    "trialLock": {
+      "webhooks": "Les webhooks ne font pas partie de l'essai gratuit. Abonnez-vous pour envoyer des événements à vos propres services."
+    },
+    "lockedWebhooks": "Les webhooks font partie de l'offre payante."
   },
   "demo": {
     "opening": "Ouverture de la démo...",

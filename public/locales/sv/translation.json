@@ -2264,6 +2264,66 @@
     "info": {
       "title": "Notera:",
       "message": "E-post och push-notifikationer kommer snart. In-app och Telegram-notifikationer är för närvarande tillgängliga."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Uppgift förfaller snart",
+        "taskOverdue": "Uppgift försenad",
+        "taskReminder": "Uppgiftspåminnelse",
+        "taskDeferredReady": "Uppskjuten uppgift är aktiv",
+        "taskAssigned": "Uppgift tilldelad dig",
+        "projectDueSoon": "Projekt förfaller snart",
+        "projectOverdue": "Projekt försenat",
+        "habitReminder": "Vanepåminnelse",
+        "commentAdded": "Ny kommentar",
+        "commentMention": "Omnämnande",
+        "shareInvitation": "Delningsinbjudan",
+        "taskCreated": "Uppgift skapad",
+        "taskUpdated": "Uppgift ändrad",
+        "taskCompleted": "Uppgift slutförd",
+        "taskDeleted": "Uppgift borttagen",
+        "dailySummary": "Daglig sammanfattning",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Påminnelser och aviseringar",
+        "changes": "Uppgiftsändringar",
+        "summary": "Daglig sammanfattning"
+      },
+      "namePlaceholder": "Namn, t.ex. n8n",
+      "nameLabel": "Namn",
+      "urlKeepPlaceholder": "Ny adress (lämna tom för att behålla den)",
+      "urlLabel": "Webhook-adress",
+      "summaryAt": "kl.",
+      "saving": "Sparar...",
+      "save": "Spara",
+      "deliveriesFailed": "Kunde inte läsa in leveranser.",
+      "noDeliveries": "Inget skickat ännu.",
+      "status": {
+        "delivered": "Levererad",
+        "failed": "Misslyckades ({{error}})",
+        "pending": "Väntar på nytt försök"
+      },
+      "testSent": "{{name}} tog emot testmeddelandet.",
+      "disabledFailures": "Avstängd efter för många misslyckade leveranser. Kontrollera adressen och slå sedan på den igen.",
+      "off": "Av",
+      "lastFailed": "Den senaste leveransen misslyckades.",
+      "lastDelivered": "Senast levererad {{when}}.",
+      "notUsed": "Inget skickat ännu.",
+      "title": "Webhooks",
+      "description": "Skicka händelser som JSON till n8n, Home Assistant, Slack, Discord eller din egen server. Varje webhook väljer sina egna händelser.",
+      "add": "Lägg till webhook",
+      "secretOnce": "Signeringsnyckel. Kopiera den nu: den visas inte igen.",
+      "copy": "Kopiera",
+      "done": "Klar",
+      "secretHelp": "Varje begäran innehåller X-Tududi-Signature: sha256 HMAC av \"timestamp.body\" med den här nyckeln, och tidsstämpeln i X-Tududi-Timestamp.",
+      "turnOff": "Stäng av",
+      "turnOn": "Slå på",
+      "edit": "Redigera",
+      "newSecret": "Ny nyckel",
+      "history": "Historik",
+      "confirmDelete": "Ta bort den?",
+      "delete": "Ta bort"
     }
   },
   "projectStatus": {
@@ -2562,7 +2622,11 @@
     "readOnlyUntil": "Dina data är skrivskyddade till {{date}}, sedan raderas kontot. Prenumerera för att fortsätta använda tududi Cloud.",
     "trialIncludes": "Din provperiod slutar den {{date}}. AI-assistenten, offentliga anteckningar och att lägga till medlemmar låses upp när du prenumererar.",
     "backToApp": "Tillbaka till tududi",
-    "trialBanner": "Kostnadsfri provperiod, dagar kvar: {{count}}"
+    "trialBanner": "Kostnadsfri provperiod, dagar kvar: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhooks ingår inte i den kostnadsfria provperioden. Prenumerera för att skicka händelser till dina egna tjänster."
+    },
+    "lockedWebhooks": "Webhooks ingår i den betalda planen."
   },
   "demo": {
     "opening": "Öppnar demon...",

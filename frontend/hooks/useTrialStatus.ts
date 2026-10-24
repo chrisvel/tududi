@@ -4,7 +4,7 @@ import { fetchBillingStatus } from '../utils/billingService';
 import type { BillingStatus } from '../entities/Billing';
 
 // What the free trial leaves out. Each one is answered by subscribing.
-export type TrialLockedFeature = 'ai' | 'public_notes' | 'members';
+export type TrialLockedFeature = 'ai' | 'public_notes' | 'members' | 'webhooks';
 
 // The sidebar card and every lock box on a page ask at once, so they share
 // one request.

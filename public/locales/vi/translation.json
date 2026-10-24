@@ -2264,6 +2264,66 @@
     "info": {
       "title": "Lưu ý:",
       "message": "Thông báo Email và Push sẽ sớm có. Thông báo trong ứng dụng và Telegram hiện đang có sẵn."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Công việc sắp đến hạn",
+        "taskOverdue": "Công việc quá hạn",
+        "taskReminder": "Nhắc nhở công việc",
+        "taskDeferredReady": "Công việc tạm hoãn đã hoạt động",
+        "taskAssigned": "Công việc được giao cho bạn",
+        "projectDueSoon": "Dự án sắp đến hạn",
+        "projectOverdue": "Dự án quá hạn",
+        "habitReminder": "Nhắc nhở thói quen",
+        "commentAdded": "Bình luận mới",
+        "commentMention": "Lượt nhắc đến",
+        "shareInvitation": "Lời mời chia sẻ",
+        "taskCreated": "Đã tạo công việc",
+        "taskUpdated": "Đã thay đổi công việc",
+        "taskCompleted": "Đã hoàn thành công việc",
+        "taskDeleted": "Đã xóa công việc",
+        "dailySummary": "Tóm tắt hằng ngày",
+        "test": "Thử nghiệm"
+      },
+      "groups": {
+        "alerts": "Nhắc nhở và cảnh báo",
+        "changes": "Thay đổi công việc",
+        "summary": "Tóm tắt hằng ngày"
+      },
+      "namePlaceholder": "Tên, ví dụ n8n",
+      "nameLabel": "Tên",
+      "urlKeepPlaceholder": "Địa chỉ mới (để trống để giữ nguyên)",
+      "urlLabel": "Địa chỉ webhook",
+      "summaryAt": "lúc",
+      "saving": "Đang lưu...",
+      "save": "Lưu",
+      "deliveriesFailed": "Không thể tải lịch sử gửi.",
+      "noDeliveries": "Chưa gửi gì.",
+      "status": {
+        "delivered": "Đã gửi tới",
+        "failed": "Thất bại ({{error}})",
+        "pending": "Đang chờ thử lại"
+      },
+      "testSent": "{{name}} đã nhận tin nhắn thử nghiệm.",
+      "disabledFailures": "Đã tắt sau quá nhiều lần gửi thất bại. Hãy kiểm tra địa chỉ rồi bật lại.",
+      "off": "Tắt",
+      "lastFailed": "Lần gửi gần nhất thất bại.",
+      "lastDelivered": "Gửi thành công lần cuối {{when}}.",
+      "notUsed": "Chưa gửi gì.",
+      "title": "Webhook",
+      "description": "Gửi sự kiện dạng JSON đến n8n, Home Assistant, Slack, Discord hoặc máy chủ của bạn. Mỗi webhook tự chọn sự kiện riêng.",
+      "add": "Thêm webhook",
+      "secretOnce": "Khóa ký. Hãy sao chép ngay: khóa sẽ không hiển thị lại.",
+      "copy": "Sao chép",
+      "done": "Xong",
+      "secretHelp": "Mỗi yêu cầu có X-Tududi-Signature: HMAC sha256 của \"timestamp.body\" với khóa này, và dấu thời gian trong X-Tududi-Timestamp.",
+      "turnOff": "Tắt",
+      "turnOn": "Bật",
+      "edit": "Sửa",
+      "newSecret": "Khóa mới",
+      "history": "Lịch sử",
+      "confirmDelete": "Xóa nó?",
+      "delete": "Xóa"
     }
   },
   "projectStatus": {
@@ -2562,7 +2622,11 @@
     "readOnlyUntil": "Dữ liệu của bạn chỉ có thể xem đến {{date}}, sau đó tài khoản sẽ bị xóa. Hãy đăng ký để tiếp tục dùng tududi Cloud.",
     "trialIncludes": "Thời gian dùng thử kết thúc vào {{date}}. Trợ lý AI, ghi chú công khai và thêm thành viên sẽ mở khi bạn đăng ký.",
     "backToApp": "Quay lại tududi",
-    "trialBanner": "Dùng thử miễn phí, số ngày còn lại: {{count}}"
+    "trialBanner": "Dùng thử miễn phí, số ngày còn lại: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhook không có trong bản dùng thử miễn phí. Hãy đăng ký để gửi sự kiện đến các dịch vụ của riêng bạn."
+    },
+    "lockedWebhooks": "Webhook thuộc gói trả phí."
   },
   "demo": {
     "opening": "Đang mở bản demo...",

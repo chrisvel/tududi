@@ -2267,6 +2267,66 @@
     "info": {
       "title": "Notă:",
       "message": "Notificările prin Email și Push vor fi disponibile în curând. Notificările în aplicație și pe Telegram sunt disponibile în prezent."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Sarcină cu termen apropiat",
+        "taskOverdue": "Sarcină depășită",
+        "taskReminder": "Memento pentru sarcină",
+        "taskDeferredReady": "Sarcina amânată este activă",
+        "taskAssigned": "Sarcină atribuită ție",
+        "projectDueSoon": "Proiect cu termen apropiat",
+        "projectOverdue": "Proiect depășit",
+        "habitReminder": "Memento pentru obicei",
+        "commentAdded": "Comentariu nou",
+        "commentMention": "Mențiune",
+        "shareInvitation": "Invitație de partajare",
+        "taskCreated": "Sarcină creată",
+        "taskUpdated": "Sarcină modificată",
+        "taskCompleted": "Sarcină finalizată",
+        "taskDeleted": "Sarcină ștearsă",
+        "dailySummary": "Rezumat zilnic",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Mementouri și alerte",
+        "changes": "Modificări ale sarcinilor",
+        "summary": "Rezumat zilnic"
+      },
+      "namePlaceholder": "Nume, de ex. n8n",
+      "nameLabel": "Nume",
+      "urlKeepPlaceholder": "Adresă nouă (lasă gol pentru a o păstra)",
+      "urlLabel": "Adresa webhook-ului",
+      "summaryAt": "la",
+      "saving": "Se salvează...",
+      "save": "Salvează",
+      "deliveriesFailed": "Livrările nu au putut fi încărcate.",
+      "noDeliveries": "Nimic trimis încă.",
+      "status": {
+        "delivered": "Livrat",
+        "failed": "Eșuat ({{error}})",
+        "pending": "Așteaptă reîncercarea"
+      },
+      "testSent": "{{name}} a acceptat mesajul de test.",
+      "disabledFailures": "Oprit după prea multe livrări eșuate. Verifică adresa, apoi pornește-l din nou.",
+      "off": "Oprit",
+      "lastFailed": "Ultima livrare a eșuat.",
+      "lastDelivered": "Ultima livrare {{when}}.",
+      "notUsed": "Nimic trimis încă.",
+      "title": "Webhook-uri",
+      "description": "Trimite evenimente ca JSON către n8n, Home Assistant, Slack, Discord sau propriul server. Fiecare webhook își alege propriile evenimente.",
+      "add": "Adaugă webhook",
+      "secretOnce": "Secret de semnare. Copiază-l acum: nu va mai fi afișat.",
+      "copy": "Copiază",
+      "done": "Gata",
+      "secretHelp": "Fiecare cerere conține X-Tududi-Signature: HMAC sha256 pentru \"timestamp.body\" cu acest secret, și marca de timp în X-Tududi-Timestamp.",
+      "turnOff": "Oprește",
+      "turnOn": "Pornește",
+      "edit": "Editează",
+      "newSecret": "Secret nou",
+      "history": "Istoric",
+      "confirmDelete": "Îl ștergi?",
+      "delete": "Șterge"
     }
   },
   "projectStatus": {
@@ -2566,7 +2626,11 @@
     "readOnlyUntil": "Datele tale sunt doar pentru citire până pe {{date}}, apoi contul este șters. Abonează-te pentru a folosi în continuare tududi Cloud.",
     "trialIncludes": "Perioada de probă se încheie pe {{date}}. Asistentul AI, notițele publice și adăugarea de membri se deblochează când te abonezi.",
     "backToApp": "Înapoi la tududi",
-    "trialBanner": "Perioadă de probă gratuită, zile rămase: {{count}}"
+    "trialBanner": "Perioadă de probă gratuită, zile rămase: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhook-urile nu fac parte din perioada de probă gratuită. Abonează-te pentru a trimite evenimente către propriile servicii."
+    },
+    "lockedWebhooks": "Webhook-urile fac parte din planul plătit."
   },
   "demo": {
     "opening": "Deschiderea demo-ului...",

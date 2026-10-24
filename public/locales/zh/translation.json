@@ -2264,6 +2264,66 @@
     "info": {
       "title": "注意：",
       "message": "电子邮件和推送通知即将推出。应用内和 Telegram 通知目前可用。"
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "任务即将到期",
+        "taskOverdue": "任务已逾期",
+        "taskReminder": "任务提醒",
+        "taskDeferredReady": "推迟的任务已生效",
+        "taskAssigned": "分配给你的任务",
+        "projectDueSoon": "项目即将到期",
+        "projectOverdue": "项目已逾期",
+        "habitReminder": "习惯提醒",
+        "commentAdded": "新评论",
+        "commentMention": "提及",
+        "shareInvitation": "共享邀请",
+        "taskCreated": "任务已创建",
+        "taskUpdated": "任务已更改",
+        "taskCompleted": "任务已完成",
+        "taskDeleted": "任务已删除",
+        "dailySummary": "每日摘要",
+        "test": "测试"
+      },
+      "groups": {
+        "alerts": "提醒和警报",
+        "changes": "任务变更",
+        "summary": "每日摘要"
+      },
+      "namePlaceholder": "名称，例如 n8n",
+      "nameLabel": "名称",
+      "urlKeepPlaceholder": "新地址（留空则保持不变）",
+      "urlLabel": "Webhook 地址",
+      "summaryAt": "时间",
+      "saving": "正在保存...",
+      "save": "保存",
+      "deliveriesFailed": "无法加载发送记录。",
+      "noDeliveries": "尚未发送任何内容。",
+      "status": {
+        "delivered": "已送达",
+        "failed": "失败（{{error}}）",
+        "pending": "等待重试"
+      },
+      "testSent": "{{name}} 已接收测试消息。",
+      "disabledFailures": "因发送失败次数过多已关闭。请检查地址，然后重新开启。",
+      "off": "已关闭",
+      "lastFailed": "上次发送失败。",
+      "lastDelivered": "上次送达 {{when}}。",
+      "notUsed": "尚未发送任何内容。",
+      "title": "Webhook",
+      "description": "将事件以 JSON 格式发送到 n8n、Home Assistant、Slack、Discord 或你自己的服务器。每个 Webhook 可选择自己的事件。",
+      "add": "添加 Webhook",
+      "secretOnce": "签名密钥。请立即复制：之后将不再显示。",
+      "copy": "复制",
+      "done": "完成",
+      "secretHelp": "每个请求都带有 X-Tududi-Signature（用此密钥对 \"timestamp.body\" 计算的 sha256 HMAC），时间戳位于 X-Tududi-Timestamp。",
+      "turnOff": "关闭",
+      "turnOn": "开启",
+      "edit": "编辑",
+      "newSecret": "新密钥",
+      "history": "历史记录",
+      "confirmDelete": "确定删除？",
+      "delete": "删除"
     }
   },
   "projectStatus": {
@@ -2562,7 +2622,11 @@
     "readOnlyUntil": "您的数据在 {{date}} 之前为只读，之后账户将被删除。订阅即可继续使用 tududi Cloud。",
     "trialIncludes": "您的试用将于 {{date}} 结束。订阅后即可使用 AI 助手、公开笔记和添加成员。",
     "backToApp": "返回 tududi",
-    "trialBanner": "免费试用，剩余天数：{{count}}"
+    "trialBanner": "免费试用，剩余天数：{{count}}",
+    "trialLock": {
+      "webhooks": "免费试用不包含 Webhook。订阅后即可将事件发送到你自己的服务。"
+    },
+    "lockedWebhooks": "Webhook 属于付费套餐。"
   },
   "demo": {
     "opening": "正在打开演示...",

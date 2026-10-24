@@ -2264,6 +2264,66 @@
     "info": {
       "title": "참고:",
       "message": "이메일 및 푸시 알림이 곧 제공됩니다. 현재 앱 내 및 텔레그램 알림이 가능합니다."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "곧 마감되는 작업",
+        "taskOverdue": "기한이 지난 작업",
+        "taskReminder": "작업 알림",
+        "taskDeferredReady": "미뤄둔 작업이 활성화됨",
+        "taskAssigned": "나에게 할당된 작업",
+        "projectDueSoon": "곧 마감되는 프로젝트",
+        "projectOverdue": "기한이 지난 프로젝트",
+        "habitReminder": "습관 알림",
+        "commentAdded": "새 댓글",
+        "commentMention": "멘션",
+        "shareInvitation": "공유 초대",
+        "taskCreated": "작업 생성됨",
+        "taskUpdated": "작업 변경됨",
+        "taskCompleted": "작업 완료됨",
+        "taskDeleted": "작업 삭제됨",
+        "dailySummary": "일일 요약",
+        "test": "테스트"
+      },
+      "groups": {
+        "alerts": "알림 및 경고",
+        "changes": "작업 변경 사항",
+        "summary": "일일 요약"
+      },
+      "namePlaceholder": "이름 (예: n8n)",
+      "nameLabel": "이름",
+      "urlKeepPlaceholder": "새 주소 (비워 두면 기존 주소 유지)",
+      "urlLabel": "Webhook 주소",
+      "summaryAt": "시간",
+      "saving": "저장 중...",
+      "save": "저장",
+      "deliveriesFailed": "전송 내역을 불러올 수 없습니다.",
+      "noDeliveries": "아직 보낸 내용이 없습니다.",
+      "status": {
+        "delivered": "전송됨",
+        "failed": "실패 ({{error}})",
+        "pending": "재시도 대기 중"
+      },
+      "testSent": "{{name}}에서 테스트 메시지를 받았습니다.",
+      "disabledFailures": "전송 실패가 너무 많아 꺼졌습니다. 주소를 확인한 후 다시 켜세요.",
+      "off": "꺼짐",
+      "lastFailed": "마지막 전송에 실패했습니다.",
+      "lastDelivered": "마지막 전송 {{when}}.",
+      "notUsed": "아직 보낸 내용이 없습니다.",
+      "title": "Webhook",
+      "description": "이벤트를 JSON으로 n8n, Home Assistant, Slack, Discord 또는 자체 서버로 보냅니다. Webhook마다 보낼 이벤트를 선택할 수 있습니다.",
+      "add": "Webhook 추가",
+      "secretOnce": "서명 시크릿입니다. 지금 복사하세요: 다시 표시되지 않습니다.",
+      "copy": "복사",
+      "done": "완료",
+      "secretHelp": "각 요청에는 X-Tududi-Signature(이 시크릿으로 만든 \"timestamp.body\"의 sha256 HMAC)와 X-Tududi-Timestamp의 타임스탬프가 포함됩니다.",
+      "turnOff": "끄기",
+      "turnOn": "켜기",
+      "edit": "편집",
+      "newSecret": "새 시크릿",
+      "history": "기록",
+      "confirmDelete": "삭제할까요?",
+      "delete": "삭제"
     }
   },
   "projectStatus": {
@@ -2562,7 +2622,11 @@
     "readOnlyUntil": "데이터는 {{date}}까지 읽기 전용이며, 그 후 계정이 삭제됩니다. tududi Cloud를 계속 사용하려면 구독하세요.",
     "trialIncludes": "체험 기간은 {{date}}에 끝납니다. AI 어시스턴트, 공개 노트, 멤버 추가는 구독하면 사용할 수 있습니다.",
     "backToApp": "tududi로 돌아가기",
-    "trialBanner": "무료 체험 중, 남은 일수: {{count}}"
+    "trialBanner": "무료 체험 중, 남은 일수: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhook은 무료 체험에 포함되지 않습니다. 자체 서비스로 이벤트를 보내려면 구독하세요."
+    },
+    "lockedWebhooks": "Webhook은 유료 플랜에 포함되어 있습니다."
   },
   "demo": {
     "opening": "데모를 여는 중...",

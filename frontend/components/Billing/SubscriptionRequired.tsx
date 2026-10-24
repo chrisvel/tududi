@@ -133,7 +133,12 @@ const SubscriptionRequired: React.FC = () => {
                       'subscription.lockedMembers',
                       'Adding members is part of the paid plan.'
                   )
-                : null;
+                : lockedFeature === 'webhooks'
+                  ? t(
+                        'subscription.lockedWebhooks',
+                        'Webhooks are part of the paid plan.'
+                    )
+                  : null;
 
     const heading = readOnly
         ? t('subscription.trialEnded', 'Your trial has ended')

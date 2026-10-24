@@ -49,6 +49,8 @@ const {
     UsageCounter,
     Feedback,
     PushSubscription,
+    Webhook,
+    WebhookDelivery,
     SiteVisit,
     EmailDelivery,
 } = require('../models');
@@ -233,6 +235,16 @@ async function eraseUserAccount(userId) {
         await UsageCounter.destroy(byUser);
         await Feedback.destroy(byUser);
         await PushSubscription.destroy(byUser);
+        const webhookIds = (
+            await Webhook.findAll({ attributes: ['id'], ...byUser })
+        ).map((w) => w.id);
+        if (webhookIds.length > 0) {
+            await WebhookDelivery.destroy({
+                where: { webhook_id: webhookIds },
+                ...tx,
+            });
+        }
+        await Webhook.destroy(byUser);
         await SiteVisit.destroy(byUser);
         await EmailDelivery.destroy(byUser);
         // Emails this account sent by hand as an admin stay in the log.
