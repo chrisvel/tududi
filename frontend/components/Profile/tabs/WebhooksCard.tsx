@@ -150,20 +150,27 @@ const WebhookForm: React.FC<WebhookFormProps> = ({
         form.events.length > 0 &&
         (editing || form.url.trim() !== '');
 
+    const submit = () => {
+        if (canSubmit) onSubmit(form);
+    };
+    // Not a <form>: the card sits inside the settings page's own form, and a
+    // nested form would submit that one instead.
+    const submitOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submit();
+        }
+    };
+
     return (
-        <form
-            className="mt-4 space-y-4"
-            autoComplete="off"
-            onSubmit={(e) => {
-                e.preventDefault();
-                if (canSubmit) onSubmit(form);
-            }}
-        >
+        <div className="mt-4 space-y-4">
             <div className="grid gap-3 sm:grid-cols-3">
                 <input
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onKeyDown={submitOnEnter}
+                    autoComplete="off"
                     placeholder={t(
                         'notifications.webhooks.namePlaceholder',
                         'Name, e.g. n8n'
@@ -176,6 +183,8 @@ const WebhookForm: React.FC<WebhookFormProps> = ({
                     type="url"
                     value={form.url}
                     onChange={(e) => setForm({ ...form, url: e.target.value })}
+                    onKeyDown={submitOnEnter}
+                    autoComplete="off"
                     placeholder={
                         editing
                             ? t(
@@ -257,7 +266,8 @@ const WebhookForm: React.FC<WebhookFormProps> = ({
                     {t('common.cancel', 'Cancel')}
                 </button>
                 <button
-                    type="submit"
+                    type="button"
+                    onClick={submit}
                     disabled={!canSubmit}
                     className={primaryButton}
                 >
@@ -266,7 +276,7 @@ const WebhookForm: React.FC<WebhookFormProps> = ({
                         : t('notifications.webhooks.save', 'Save')}
                 </button>
             </div>
-        </form>
+        </div>
     );
 };
 

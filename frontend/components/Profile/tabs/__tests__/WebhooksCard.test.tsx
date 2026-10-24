@@ -97,6 +97,34 @@ describe('WebhooksCard', () => {
         expect(screen.getByText('n8n.example.com')).toBeInTheDocument();
     });
 
+    it('saves without submitting the settings form around it', async () => {
+        mockList.mockResolvedValue([]);
+        mockCreate.mockResolvedValue({ ...saved, secret: 'whsec_abc' });
+        const outerSubmit = jest.fn((e) => e.preventDefault());
+
+        render(
+            <MemoryRouter>
+                <form onSubmit={outerSubmit}>
+                    <WebhooksCard />
+                </form>
+            </MemoryRouter>
+        );
+        fireEvent.click(
+            await screen.findByRole('button', { name: /add webhook/i })
+        );
+        fireEvent.change(screen.getByRole('textbox', { name: /name/i }), {
+            target: { value: 'n8n' },
+        });
+        fireEvent.change(
+            screen.getByRole('textbox', { name: /webhook address/i }),
+            { target: { value: 'https://n8n.example.com/webhook/x' } }
+        );
+        fireEvent.click(screen.getByRole('button', { name: /^save$/i }));
+
+        await waitFor(() => expect(mockCreate).toHaveBeenCalled());
+        expect(outerSubmit).not.toHaveBeenCalled();
+    });
+
     it('asks once more before deleting', async () => {
         mockList.mockResolvedValue([saved]);
         mockDelete.mockResolvedValue({ deleted: true });
