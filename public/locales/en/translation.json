@@ -3460,5 +3460,13 @@
       "letsStart": "I'm done, let's start",
       "settingUp": "Setting up..."
     }
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "weekend": "Weekend",
+      "nextWeek": "Next week"
+    }
   }
 }

@@ -3061,5 +3061,13 @@
     "locked": "Satt av ditt fokus. Rensa det från chippet i övre fältet.",
     "emptyHint": "Visar bara {{label}}",
     "saveError": "Fokuset kunde inte sparas."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Idag",
+      "tomorrow": "Imorgon",
+      "weekend": "Helg",
+      "nextWeek": "Nästa vecka"
+    }
   }
 }

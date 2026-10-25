@@ -3079,5 +3079,13 @@
         "locked": "Nastavené vaším fokusom. Zrušte ho v čipe na hornej lište.",
         "emptyHint": "Zobrazuje sa len {{label}}",
         "saveError": "Fokus sa nepodarilo uložiť."
+    },
+    "datePicker": {
+        "shortcuts": {
+            "today": "Dnes",
+            "tomorrow": "Zajtra",
+            "weekend": "Víkend",
+            "nextWeek": "Budúci týždeň"
+        }
     }
 }

@@ -3060,5 +3060,13 @@
     "locked": "포커스로 설정되었습니다. 상단 바의 칩에서 해제하세요.",
     "emptyHint": "{{label}}만 표시 중",
     "saveError": "포커스를 저장할 수 없습니다."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "오늘",
+      "tomorrow": "내일",
+      "weekend": "주말",
+      "nextWeek": "다음 주"
+    }
   }
 }

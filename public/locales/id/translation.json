@@ -3060,5 +3060,13 @@
     "locked": "Diatur oleh fokus Anda. Hapus dari chip di bilah atas.",
     "emptyHint": "Hanya menampilkan {{label}}",
     "saveError": "Fokus tidak dapat disimpan."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Hari ini",
+      "tomorrow": "Besok",
+      "weekend": "Akhir pekan",
+      "nextWeek": "Minggu depan"
+    }
   }
 }

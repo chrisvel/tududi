@@ -3062,5 +3062,13 @@
     "locked": "Definido pelo seu foco. Limpe-o no chip da barra superior.",
     "emptyHint": "A mostrar apenas {{label}}",
     "saveError": "Não foi possível guardar o foco."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "weekend": "Fim de semana",
+      "nextWeek": "Próxima semana"
+    }
   }
 }

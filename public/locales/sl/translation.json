@@ -3067,5 +3067,13 @@
     "locked": "Nastavljeno z vašim fokusom. Počistite ga v čipu v zgornji vrstici.",
     "emptyHint": "Prikazano samo {{label}}",
     "saveError": "Fokusa ni bilo mogoče shraniti."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Danes",
+      "tomorrow": "Jutri",
+      "weekend": "Vikend",
+      "nextWeek": "Naslednji teden"
+    }
   }
 }

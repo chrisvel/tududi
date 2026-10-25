@@ -3049,5 +3049,13 @@
     "locked": "Definido por tu enfoque. Quítalo desde el chip de la barra superior.",
     "emptyHint": "Mostrando solo {{label}}",
     "saveError": "No se pudo guardar el enfoque."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "weekend": "Fin de semana",
+      "nextWeek": "Próxima semana"
+    }
   }
 }

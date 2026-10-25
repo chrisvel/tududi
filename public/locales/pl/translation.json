@@ -3067,5 +3067,13 @@
     "locked": "Ustawione przez Twój fokus. Wyczyść go z chipa na górnym pasku.",
     "emptyHint": "Pokazuje tylko {{label}}",
     "saveError": "Nie udało się zapisać fokusu."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Dziś",
+      "tomorrow": "Jutro",
+      "weekend": "Weekend",
+      "nextWeek": "Następny tydzień"
+    }
   }
 }

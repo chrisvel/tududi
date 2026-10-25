@@ -3060,5 +3060,13 @@
     "locked": "由你的专注设定。可在顶部栏的标签中清除。",
     "emptyHint": "仅显示 {{label}}",
     "saveError": "无法保存专注设置。"
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "今天",
+      "tomorrow": "明天",
+      "weekend": "周末",
+      "nextWeek": "下周"
+    }
   }
 }

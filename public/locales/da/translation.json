@@ -3061,5 +3061,13 @@
     "locked": "Sat af dit fokus. Ryd det fra chippen i topbjælken.",
     "emptyHint": "Viser kun {{label}}",
     "saveError": "Fokus kunne ikke gemmes."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "I dag",
+      "tomorrow": "I morgen",
+      "weekend": "Weekend",
+      "nextWeek": "Næste uge"
+    }
   }
 }

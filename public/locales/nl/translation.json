@@ -3061,5 +3061,13 @@
     "locked": "Ingesteld door je focus. Wis hem via de chip in de bovenbalk.",
     "emptyHint": "Toont alleen {{label}}",
     "saveError": "De focus kon niet worden opgeslagen."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Vandaag",
+      "tomorrow": "Morgen",
+      "weekend": "Weekend",
+      "nextWeek": "Volgende week"
+    }
   }
 }

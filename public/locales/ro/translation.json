@@ -3066,5 +3066,13 @@
     "locked": "Setat de focusul tău. Șterge-l din cipul din bara de sus.",
     "emptyHint": "Se afișează doar {{label}}",
     "saveError": "Focusul nu a putut fi salvat."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Astăzi",
+      "tomorrow": "Mâine",
+      "weekend": "Weekend",
+      "nextWeek": "Săptămâna viitoare"
+    }
   }
 }
