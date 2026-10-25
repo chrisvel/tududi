@@ -1093,7 +1093,16 @@
     "editBanner": "Rediger prosjektbanner",
     "currentBanner": "Nåværende banner",
     "choosePreset": "Velg et forhåndsinnstilt banner:",
-    "orUploadOwn": "Eller last opp ditt eget:"
+    "orUploadOwn": "Eller last opp ditt eget:",
+    "markComplete": "Fullfør",
+    "completedOn": "Fullført {{date}}",
+    "completedToast": "Prosjekt fullført",
+    "completedWithTasks_one": "Prosjekt fullført, {{count}} oppgave markert som ferdig",
+    "completedWithTasks_other": "Prosjekt fullført, {{count}} oppgaver markert som ferdige",
+    "completeTitle": "Fullføre «{{name}}»?",
+    "completeOpenTasks": "Dette prosjektet har fortsatt åpne oppgaver. Skal de også markeres som ferdige, eller la dem stå åpne? Gjentakende oppgaver beholder timeplanen sin uansett.",
+    "leaveTasksOpen": "La dem stå åpne",
+    "completeTasksToo": "Marker dem også som ferdige"
   },
   "errors": {
     "required": "Dette feltet er påkrevd",
@@ -1131,7 +1140,8 @@
     "failedToSaveGoal": "Kunne ikke lagre målet.",
     "failedToDeleteGoal": "Kunne ikke slette målet.",
     "failedToDeleteNote": "Kunne ikke slette notatet.",
-    "failedToDeleteTag": "Kunne ikke slette merkelappen."
+    "failedToDeleteTag": "Kunne ikke slette merkelappen.",
+    "projectStatusUpdateFailed": "Kunne ikke oppdatere prosjektstatus"
   },
   "inbox": {
     "title": "Innboks",
@@ -1458,7 +1468,20 @@
     "blankSlateTemplate": "Start fra en mal",
     "blankSlateAreas": "Sett opp områder",
     "blankSlateShowAll": "Vis alle prosjekter",
-    "viewAs": "Visning"
+    "viewAs": "Visning",
+    "history": "Historikk",
+    "historyHint": "Fullførte prosjekter, nyeste først",
+    "historyTitle": "Fullførte prosjekter",
+    "historyCount": "{{count}} ferdige",
+    "historyShowCancelled": "Vis avbrutte",
+    "historyEmptyTitle": "Ingenting fullført ennå",
+    "historyEmptyHint": "Prosjekter du markerer som fullført vises her, nyeste først, slik at arbeidet er bevart uten å fylle opp listen din.",
+    "historyTasks": "{{done}} av {{total}} oppgaver",
+    "historyDuration_one": "tok {{count}} dag",
+    "historyDuration_other": "tok {{count}} dager",
+    "reopen": "Gjenåpne",
+    "reopened": "«{{name}}» er i gang igjen",
+    "loadError": "Kunne ikke laste inn prosjekter"
   },
   "projectItem": {
     "edit": "Rediger",
@@ -1505,7 +1528,8 @@
     "noAreasYet": "Ingen områder ennå.",
     "blankSlateHint": "Områder er de delene av livet du tar vare på over tid, for eksempel Jobb, Helse eller Hjem. Legg prosjektene og målene dine i dem for å se hver del på ett sted.",
     "blankSlateNew": "Opprett ditt første område",
-    "blankSlateProjects": "Gå til prosjekter"
+    "blankSlateProjects": "Gå til prosjekter",
+    "finishedProjects": "Ferdige ({{count}})"
   },
   "notes": {
     "loading": "Laster notater...",

@@ -2770,6 +2770,25 @@ describe('MCP Tools Integration', () => {
                 expect(content.project.status).toBe('in_progress');
             });
 
+            it('should record when a project is marked done', async () => {
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Finish me',
+                    status: 'in_progress',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_project',
+                    { uid: project.uid, status: 'done' }
+                );
+
+                const { content } = getToolContent(response);
+                expect(content.project.completed_at).toBeTruthy();
+                await project.reload();
+                expect(project.completed_at).toBeInstanceOf(Date);
+            });
+
             it('should throw error for non-existent project', async () => {
                 const response = await callMcpTool(
                     apiTokenValue,

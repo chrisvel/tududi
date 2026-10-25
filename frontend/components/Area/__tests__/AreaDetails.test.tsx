@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import AreaDetails from '../AreaDetails';
@@ -37,6 +37,12 @@ const tasks = [
 
 const projects = [
     { uid: 'project-1', name: 'Project one', area: { uid: 'areauid1' } },
+    {
+        uid: 'project-2',
+        name: 'Shipped project',
+        status: 'done',
+        area: { uid: 'areauid1' },
+    },
 ];
 
 jest.mock('../../../utils/tasksService', () => ({
@@ -106,10 +112,23 @@ describe('AreaDetails header stats', () => {
     it('links the projects stat to the projects list filtered by this area', async () => {
         renderPage();
 
-        const projectsLink = await screen.findByText('1 projects');
+        const projectsLink = await screen.findByText('2 projects');
         expect(projectsLink.closest('a')).toHaveAttribute(
             'href',
             '/projects?area=areauid1'
         );
+    });
+});
+
+describe('AreaDetails finished projects', () => {
+    it('folds done projects away until the Finished toggle is opened', async () => {
+        renderPage();
+
+        expect(await screen.findByText('Project one')).toBeInTheDocument();
+        expect(screen.queryByText('Shipped project')).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId('area-finished-projects-toggle'));
+
+        expect(screen.getByText('Shipped project')).toBeInTheDocument();
     });
 });

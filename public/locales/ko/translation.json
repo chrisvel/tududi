@@ -1092,7 +1092,15 @@
     "editBanner": "프로젝트 배너 편집",
     "currentBanner": "현재 배너",
     "choosePreset": "프리셋 배너 선택:",
-    "orUploadOwn": "또는 직접 업로드:"
+    "orUploadOwn": "또는 직접 업로드:",
+    "markComplete": "완료",
+    "completedOn": "{{date}}에 완료",
+    "completedToast": "프로젝트 완료",
+    "completedWithTasks_other": "프로젝트 완료, 작업 {{count}}개를 완료로 표시했습니다",
+    "completeTitle": "\"{{name}}\"을(를) 완료할까요?",
+    "completeOpenTasks": "이 프로젝트에 아직 열린 작업이 있습니다. 함께 완료로 표시할까요, 아니면 열어 둘까요? 반복 작업은 어느 쪽이든 일정이 유지됩니다.",
+    "leaveTasksOpen": "열어 두기",
+    "completeTasksToo": "함께 완료"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -1130,7 +1138,8 @@
     "failedToSaveGoal": "목표를 저장하지 못했습니다.",
     "failedToDeleteGoal": "목표를 삭제하지 못했습니다.",
     "failedToDeleteNote": "노트를 삭제하지 못했습니다.",
-    "failedToDeleteTag": "태그를 삭제하지 못했습니다."
+    "failedToDeleteTag": "태그를 삭제하지 못했습니다.",
+    "projectStatusUpdateFailed": "프로젝트 상태를 업데이트하지 못했습니다"
   },
   "inbox": {
     "title": "받은 편지함",
@@ -1457,7 +1466,19 @@
     "blankSlateTemplate": "템플릿으로 시작",
     "blankSlateAreas": "영역 설정",
     "blankSlateShowAll": "모든 프로젝트 보기",
-    "viewAs": "보기"
+    "viewAs": "보기",
+    "history": "기록",
+    "historyHint": "완료된 프로젝트, 최신순",
+    "historyTitle": "완료된 프로젝트",
+    "historyCount": "{{count}}개 완료",
+    "historyShowCancelled": "취소된 항목 보기",
+    "historyEmptyTitle": "아직 완료된 항목이 없습니다",
+    "historyEmptyHint": "완료로 표시한 프로젝트가 최신순으로 여기에 표시되므로, 목록을 어지럽히지 않고 작업 기록을 남길 수 있습니다.",
+    "historyTasks": "작업 {{total}}개 중 {{done}}개",
+    "historyDuration_other": "{{count}}일 걸림",
+    "reopen": "다시 열기",
+    "reopened": "\"{{name}}\"이(가) 다시 진행 중입니다",
+    "loadError": "프로젝트를 불러오지 못했습니다"
   },
   "projectItem": {
     "edit": "편집",
@@ -1504,7 +1525,8 @@
     "noAreasYet": "아직 영역이 없습니다.",
     "blankSlateHint": "영역은 업무, 건강, 집처럼 꾸준히 돌보는 삶의 부분입니다. 프로젝트와 목표를 영역에 넣으면 각 부분을 한곳에서 볼 수 있습니다.",
     "blankSlateNew": "첫 영역 만들기",
-    "blankSlateProjects": "프로젝트로 이동"
+    "blankSlateProjects": "프로젝트로 이동",
+    "finishedProjects": "완료됨 ({{count}})"
   },
   "notes": {
     "loading": "노트 로딩 중...",

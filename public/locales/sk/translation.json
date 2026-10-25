@@ -1122,7 +1122,18 @@
         "createdAndAssigned": "Projekt bol vytvorený a priradený",
         "createError": "Projekt sa nepodarilo vytvoriť",
         "viewProject": "Prejsť na projekt",
-        "attachments": "Prílohy"
+        "attachments": "Prílohy",
+        "markComplete": "Dokončiť",
+        "completedOn": "Dokončené {{date}}",
+        "completedToast": "Projekt dokončený",
+        "completedWithTasks_one": "Projekt dokončený, {{count}} úloha označená ako hotová",
+        "completedWithTasks_few": "Projekt dokončený, {{count}} úlohy označené ako hotové",
+        "completedWithTasks_many": "Projekt dokončený, {{count}} úlohy označenej ako hotovej",
+        "completedWithTasks_other": "Projekt dokončený, {{count}} úloh označených ako hotové",
+        "completeTitle": "Dokončiť „{{name}}“?",
+        "completeOpenTasks": "Tento projekt má ešte otvorené úlohy. Označiť ich tiež ako hotové, alebo ich nechať otvorené? Opakujúce sa úlohy si v každom prípade zachovajú svoj plán.",
+        "leaveTasksOpen": "Nechať otvorené",
+        "completeTasksToo": "Označiť aj ako hotové"
     },
     "errors": {
         "required": "Toto pole je povinné",
@@ -1160,7 +1171,8 @@
         "failedToSaveGoal": "Cieľ sa nepodarilo uložiť.",
         "failedToDeleteGoal": "Cieľ sa nepodarilo odstrániť.",
         "failedToDeleteNote": "Poznámku sa nepodarilo odstrániť.",
-        "failedToDeleteTag": "Štítok sa nepodarilo odstrániť."
+        "failedToDeleteTag": "Štítok sa nepodarilo odstrániť.",
+        "projectStatusUpdateFailed": "Nepodarilo sa aktualizovať stav projektu"
     },
     "inbox": {
         "title": "Schránka",
@@ -1482,7 +1494,22 @@
         },
         "noResults": "Žiadne projekty",
         "reorderError": "Poradie projektov sa nepodarilo uložiť",
-        "viewAs": "Zobrazenie"
+        "viewAs": "Zobrazenie",
+        "history": "História",
+        "historyHint": "Dokončené projekty, najnovšie prvé",
+        "historyTitle": "Dokončené projekty",
+        "historyCount": "Dokončené: {{count}}",
+        "historyShowCancelled": "Zobraziť zrušené",
+        "historyEmptyTitle": "Zatiaľ nič dokončené",
+        "historyEmptyHint": "Projekty, ktoré označíte ako dokončené, sa zobrazia tu, najnovšie prvé, takže práca zostane zaznamenaná a nezahltí váš zoznam.",
+        "historyTasks": "{{done}} z {{total}} úloh",
+        "historyDuration_one": "trval {{count}} deň",
+        "historyDuration_few": "trval {{count}} dni",
+        "historyDuration_many": "trval {{count}} dňa",
+        "historyDuration_other": "trval {{count}} dní",
+        "reopen": "Znova otvoriť",
+        "reopened": "„{{name}}“ je opäť v procese",
+        "loadError": "Nepodarilo sa načítať projekty"
     },
     "projectStatus": {
         "not_started": "Nezačatý",
@@ -1543,7 +1570,8 @@
         "deleteGoal": "Odstrániť cieľ",
         "moveBackToUnlinked": "Presunúť späť medzi neprepojené",
         "horizonSeason": "Sezóna",
-        "horizonYear": "Rok"
+        "horizonYear": "Rok",
+        "finishedProjects": "Dokončené ({{count}})"
     },
     "notes": {
         "addNote": "Pridať poznámku",

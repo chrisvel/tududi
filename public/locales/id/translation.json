@@ -1092,7 +1092,15 @@
     "editBanner": "Edit spanduk proyek",
     "currentBanner": "Spanduk saat ini",
     "choosePreset": "Pilih spanduk preset:",
-    "orUploadOwn": "Atau unggah milik Anda sendiri:"
+    "orUploadOwn": "Atau unggah milik Anda sendiri:",
+    "markComplete": "Selesaikan",
+    "completedOn": "Selesai {{date}}",
+    "completedToast": "Proyek selesai",
+    "completedWithTasks_other": "Proyek selesai, {{count}} tugas ditandai selesai",
+    "completeTitle": "Selesaikan \"{{name}}\"?",
+    "completeOpenTasks": "Proyek ini masih punya tugas terbuka. Tandai juga sebagai selesai, atau biarkan terbuka? Tugas berulang tetap mengikuti jadwalnya.",
+    "leaveTasksOpen": "Biarkan terbuka",
+    "completeTasksToo": "Tandai juga selesai"
   },
   "errors": {
     "required": "Kolom ini diperlukan",
@@ -1130,7 +1138,8 @@
     "failedToSaveGoal": "Gagal menyimpan tujuan.",
     "failedToDeleteGoal": "Gagal menghapus tujuan.",
     "failedToDeleteNote": "Gagal menghapus catatan.",
-    "failedToDeleteTag": "Gagal menghapus tag."
+    "failedToDeleteTag": "Gagal menghapus tag.",
+    "projectStatusUpdateFailed": "Gagal memperbarui status proyek"
   },
   "inbox": {
     "title": "Kotak Masuk",
@@ -1457,7 +1466,19 @@
     "blankSlateTemplate": "Mulai dari templat",
     "blankSlateAreas": "Siapkan area",
     "blankSlateShowAll": "Tampilkan semua proyek",
-    "viewAs": "Tampilan"
+    "viewAs": "Tampilan",
+    "history": "Riwayat",
+    "historyHint": "Proyek selesai, terbaru dulu",
+    "historyTitle": "Proyek selesai",
+    "historyCount": "{{count}} selesai",
+    "historyShowCancelled": "Tampilkan yang dibatalkan",
+    "historyEmptyTitle": "Belum ada yang selesai",
+    "historyEmptyHint": "Proyek yang kamu tandai selesai muncul di sini, terbaru dulu, sehingga pekerjaan tetap tercatat tanpa memenuhi daftarmu.",
+    "historyTasks": "{{done}} dari {{total}} tugas",
+    "historyDuration_other": "memakan waktu {{count}} hari",
+    "reopen": "Buka kembali",
+    "reopened": "\"{{name}}\" kembali berjalan",
+    "loadError": "Gagal memuat proyek"
   },
   "projectItem": {
     "edit": "Sunting",
@@ -1504,7 +1525,8 @@
     "noAreasYet": "Belum ada area.",
     "blankSlateHint": "Area adalah bagian hidup yang Anda rawat dari waktu ke waktu, seperti Kerja, Kesehatan, atau Rumah. Masukkan proyek dan tujuan Anda ke dalamnya untuk melihat setiap bagian di satu tempat.",
     "blankSlateNew": "Buat area pertama Anda",
-    "blankSlateProjects": "Buka proyek"
+    "blankSlateProjects": "Buka proyek",
+    "finishedProjects": "Selesai ({{count}})"
   },
   "notes": {
     "loading": "Memuat catatan...",

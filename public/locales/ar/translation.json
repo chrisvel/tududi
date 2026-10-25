@@ -1092,7 +1092,20 @@
     "editBanner": "تعديل لافتة المشروع",
     "currentBanner": "اللافتة الحالية",
     "choosePreset": "اختر لافتة مسبقة:",
-    "orUploadOwn": "أو قم بتحميل لافتتك الخاصة:"
+    "orUploadOwn": "أو قم بتحميل لافتتك الخاصة:",
+    "markComplete": "إكمال",
+    "completedOn": "اكتمل في {{date}}",
+    "completedToast": "اكتمل المشروع",
+    "completedWithTasks_zero": "اكتمل المشروع، ولم يتم تعليم أي مهمة كمنجزة",
+    "completedWithTasks_one": "اكتمل المشروع، وتم تعليم مهمة واحدة كمنجزة",
+    "completedWithTasks_two": "اكتمل المشروع، وتم تعليم مهمتين كمنجزتين",
+    "completedWithTasks_few": "اكتمل المشروع، وتم تعليم {{count}} مهام كمنجزة",
+    "completedWithTasks_many": "اكتمل المشروع، وتم تعليم {{count}} مهمة كمنجزة",
+    "completedWithTasks_other": "اكتمل المشروع، وتم تعليم {{count}} مهمة كمنجزة",
+    "completeTitle": "إكمال \"{{name}}\"؟",
+    "completeOpenTasks": "لا يزال في هذا المشروع مهام مفتوحة. هل تريد تعليمها كمنجزة أيضًا، أم تركها مفتوحة؟ تحتفظ المهام المتكررة بجدولها في كلتا الحالتين.",
+    "leaveTasksOpen": "اتركها مفتوحة",
+    "completeTasksToo": "علّمها كمنجزة أيضًا"
   },
   "errors": {
     "required": "هذا الحقل مطلوب",
@@ -1130,7 +1143,8 @@
     "failedToSaveGoal": "تعذر حفظ الهدف.",
     "failedToDeleteGoal": "تعذر حذف الهدف.",
     "failedToDeleteNote": "تعذر حذف الملاحظة.",
-    "failedToDeleteTag": "تعذر حذف الوسم."
+    "failedToDeleteTag": "تعذر حذف الوسم.",
+    "projectStatusUpdateFailed": "فشل تحديث حالة المشروع"
   },
   "inbox": {
     "title": "صندوق الوارد",
@@ -1457,7 +1471,24 @@
     "blankSlateTemplate": "ابدأ من قالب",
     "blankSlateAreas": "إعداد المناطق",
     "blankSlateShowAll": "عرض كل المشاريع",
-    "viewAs": "العرض"
+    "viewAs": "العرض",
+    "history": "السجل",
+    "historyHint": "المشاريع المكتملة، الأحدث أولًا",
+    "historyTitle": "المشاريع المكتملة",
+    "historyCount": "المكتملة: {{count}}",
+    "historyShowCancelled": "إظهار الملغاة",
+    "historyEmptyTitle": "لم يكتمل شيء بعد",
+    "historyEmptyHint": "تظهر هنا المشاريع التي تعلّمها كمكتملة، الأحدث أولًا، فيبقى العمل مسجلًا دون أن يزدحم قائمتك.",
+    "historyTasks": "{{done}} من {{total}} مهام",
+    "historyDuration_zero": "استغرق {{count}} يوم",
+    "historyDuration_one": "استغرق يومًا واحدًا",
+    "historyDuration_two": "استغرق يومين",
+    "historyDuration_few": "استغرق {{count}} أيام",
+    "historyDuration_many": "استغرق {{count}} يومًا",
+    "historyDuration_other": "استغرق {{count}} يوم",
+    "reopen": "إعادة فتح",
+    "reopened": "عاد \"{{name}}\" قيد التنفيذ",
+    "loadError": "فشل تحميل المشاريع"
   },
   "projectItem": {
     "edit": "تعديل",
@@ -1504,7 +1535,8 @@
     "noAreasYet": "لا توجد مناطق بعد.",
     "blankSlateHint": "المناطق هي جوانب حياتك التي تعتني بها على المدى الطويل، مثل العمل أو الصحة أو المنزل. ضع فيها مشاريعك وأهدافك لترى كل جانب في مكان واحد.",
     "blankSlateNew": "أنشئ منطقتك الأولى",
-    "blankSlateProjects": "الانتقال إلى المشاريع"
+    "blankSlateProjects": "الانتقال إلى المشاريع",
+    "finishedProjects": "المكتملة ({{count}})"
   },
   "notes": {
     "loading": "جارٍ تحميل الملاحظات...",

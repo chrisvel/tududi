@@ -82,6 +82,9 @@ const PlanMyDay = lazy(() => import('./components/DailyPlan/PlanMyDay'));
 const Welcome = lazy(() => import('./components/Onboarding/Welcome'));
 // Lazy load Tasks component to prevent issues with tags loading
 const Tasks = lazy(() => import('./components/Tasks'));
+const ProjectHistory = lazy(
+    () => import('./components/Project/ProjectHistory')
+);
 // Declared at module scope: the users page switches tabs through the query
 // string, and a lazy component created inside render would remount and
 // re-suspend on every navigation.
@@ -545,6 +548,10 @@ const App: React.FC = () => {
                             />
                             <Route path="/templates" element={<Templates />} />
                             <Route path="/projects" element={<Projects />} />
+                            <Route
+                                path="/projects/completed"
+                                element={<ProjectHistory />}
+                            />
                             <Route
                                 path="/project/:uidSlug"
                                 element={<ProjectDetails />}

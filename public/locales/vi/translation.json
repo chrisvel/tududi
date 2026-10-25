@@ -1092,7 +1092,15 @@
     "editBanner": "Chỉnh sửa biểu ngữ dự án",
     "currentBanner": "Biểu ngữ hiện tại",
     "choosePreset": "Chọn một biểu ngữ đã định sẵn:",
-    "orUploadOwn": "Hoặc tải lên của riêng bạn:"
+    "orUploadOwn": "Hoặc tải lên của riêng bạn:",
+    "markComplete": "Hoàn thành",
+    "completedOn": "Hoàn thành {{date}}",
+    "completedToast": "Dự án đã hoàn thành",
+    "completedWithTasks_other": "Dự án đã hoàn thành, {{count}} công việc được đánh dấu xong",
+    "completeTitle": "Hoàn thành \"{{name}}\"?",
+    "completeOpenTasks": "Dự án này vẫn còn công việc chưa xong. Đánh dấu chúng là xong luôn, hay để mở? Công việc lặp lại vẫn giữ lịch của chúng trong cả hai trường hợp.",
+    "leaveTasksOpen": "Để mở",
+    "completeTasksToo": "Đánh dấu xong luôn"
   },
   "errors": {
     "required": "Trường này là bắt buộc",
@@ -1130,7 +1138,8 @@
     "failedToSaveGoal": "Không thể lưu mục tiêu.",
     "failedToDeleteGoal": "Không thể xóa mục tiêu.",
     "failedToDeleteNote": "Không thể xóa ghi chú.",
-    "failedToDeleteTag": "Không thể xóa thẻ."
+    "failedToDeleteTag": "Không thể xóa thẻ.",
+    "projectStatusUpdateFailed": "Không thể cập nhật trạng thái dự án"
   },
   "inbox": {
     "title": "Hộp thư đến",
@@ -1457,7 +1466,19 @@
     "blankSlateTemplate": "Bắt đầu từ mẫu",
     "blankSlateAreas": "Thiết lập khu vực",
     "blankSlateShowAll": "Hiện tất cả dự án",
-    "viewAs": "Chế độ xem"
+    "viewAs": "Chế độ xem",
+    "history": "Lịch sử",
+    "historyHint": "Dự án đã hoàn thành, mới nhất trước",
+    "historyTitle": "Dự án đã hoàn thành",
+    "historyCount": "{{count}} đã xong",
+    "historyShowCancelled": "Hiện dự án đã hủy",
+    "historyEmptyTitle": "Chưa có gì hoàn thành",
+    "historyEmptyHint": "Các dự án bạn đánh dấu hoàn thành sẽ hiện ở đây, mới nhất trước, để công việc vẫn được lưu lại mà không làm rối danh sách của bạn.",
+    "historyTasks": "{{done}}/{{total}} công việc",
+    "historyDuration_other": "mất {{count}} ngày",
+    "reopen": "Mở lại",
+    "reopened": "\"{{name}}\" đã quay lại trạng thái đang thực hiện",
+    "loadError": "Không thể tải dự án"
   },
   "projectItem": {
     "edit": "Chỉnh sửa",
@@ -1504,7 +1525,8 @@
     "noAreasYet": "Chưa có khu vực nào.",
     "blankSlateHint": "Khu vực là những phần của cuộc sống mà bạn chăm lo lâu dài, như Công việc, Sức khỏe hoặc Nhà. Đặt dự án và mục tiêu vào đó để xem từng phần ở cùng một nơi.",
     "blankSlateNew": "Tạo khu vực đầu tiên",
-    "blankSlateProjects": "Đến dự án"
+    "blankSlateProjects": "Đến dự án",
+    "finishedProjects": "Đã xong ({{count}})"
   },
   "notes": {
     "loading": "Đang tải ghi chú...",

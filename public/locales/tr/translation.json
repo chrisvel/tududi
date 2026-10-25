@@ -1092,7 +1092,16 @@
     "editBanner": "Proje afişini düzenle",
     "currentBanner": "Mevcut afiş",
     "choosePreset": "Bir ön ayar afişi seçin:",
-    "orUploadOwn": "Ya da kendi afişinizi yükleyin:"
+    "orUploadOwn": "Ya da kendi afişinizi yükleyin:",
+    "markComplete": "Tamamla",
+    "completedOn": "{{date}} tarihinde tamamlandı",
+    "completedToast": "Proje tamamlandı",
+    "completedWithTasks_one": "Proje tamamlandı, {{count}} görev tamamlandı olarak işaretlendi",
+    "completedWithTasks_other": "Proje tamamlandı, {{count}} görev tamamlandı olarak işaretlendi",
+    "completeTitle": "\"{{name}}\" tamamlansın mı?",
+    "completeOpenTasks": "Bu projede hâlâ açık görevler var. Onlar da tamamlandı olarak işaretlensin mi, yoksa açık mı kalsın? Tekrarlanan görevler her durumda planlarını korur.",
+    "leaveTasksOpen": "Açık bırak",
+    "completeTasksToo": "Onları da tamamla"
   },
   "errors": {
     "required": "Bu alan gereklidir",
@@ -1130,7 +1139,8 @@
     "failedToSaveGoal": "Hedef kaydedilemedi.",
     "failedToDeleteGoal": "Hedef silinemedi.",
     "failedToDeleteNote": "Not silinemedi.",
-    "failedToDeleteTag": "Etiket silinemedi."
+    "failedToDeleteTag": "Etiket silinemedi.",
+    "projectStatusUpdateFailed": "Proje durumu güncellenemedi"
   },
   "inbox": {
     "title": "Gelen Kutusu",
@@ -1457,7 +1467,20 @@
     "blankSlateTemplate": "Bir şablondan başlayın",
     "blankSlateAreas": "Alanları ayarlayın",
     "blankSlateShowAll": "Tüm projeleri göster",
-    "viewAs": "Görünüm"
+    "viewAs": "Görünüm",
+    "history": "Geçmiş",
+    "historyHint": "Tamamlanan projeler, en yeniler önce",
+    "historyTitle": "Tamamlanan projeler",
+    "historyCount": "{{count}} tamamlandı",
+    "historyShowCancelled": "İptal edilenleri göster",
+    "historyEmptyTitle": "Henüz tamamlanan bir şey yok",
+    "historyEmptyHint": "Tamamlandı olarak işaretlediğin projeler burada en yeniler önce görünür, böylece yapılan iş listeni kalabalıklaştırmadan kayıtlı kalır.",
+    "historyTasks": "{{total}} görevden {{done}} tanesi",
+    "historyDuration_one": "{{count}} gün sürdü",
+    "historyDuration_other": "{{count}} gün sürdü",
+    "reopen": "Yeniden aç",
+    "reopened": "\"{{name}}\" yeniden devam ediyor",
+    "loadError": "Projeler yüklenemedi"
   },
   "projectItem": {
     "edit": "Düzenle",
@@ -1504,7 +1527,8 @@
     "noAreasYet": "Henüz alan yok.",
     "blankSlateHint": "Alanlar, zaman içinde ilgilendiğiniz yaşam bölümleridir; örneğin İş, Sağlık veya Ev. Her bölümü tek yerde görmek için projelerinizi ve hedeflerinizi bu alanlara koyun.",
     "blankSlateNew": "İlk alanınızı oluşturun",
-    "blankSlateProjects": "Projelere git"
+    "blankSlateProjects": "Projelere git",
+    "finishedProjects": "Tamamlanan ({{count}})"
   },
   "notes": {
     "loading": "Notlar yükleniyor...",

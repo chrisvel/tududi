@@ -1094,7 +1094,17 @@
     "editBanner": "Editează bannerul proiectului",
     "currentBanner": "Bannerul curent",
     "choosePreset": "Alege un banner presetat:",
-    "orUploadOwn": "Sau încarcă propriul tău:"
+    "orUploadOwn": "Sau încarcă propriul tău:",
+    "markComplete": "Finalizează",
+    "completedOn": "Finalizat pe {{date}}",
+    "completedToast": "Proiect finalizat",
+    "completedWithTasks_one": "Proiect finalizat, {{count}} sarcină marcată ca făcută",
+    "completedWithTasks_few": "Proiect finalizat, {{count}} sarcini marcate ca făcute",
+    "completedWithTasks_other": "Proiect finalizat, {{count}} de sarcini marcate ca făcute",
+    "completeTitle": "Finalizezi „{{name}}”?",
+    "completeOpenTasks": "Acest proiect mai are sarcini deschise. Le marchezi și pe ele ca făcute sau le lași deschise? Sarcinile recurente își păstrează programul oricum.",
+    "leaveTasksOpen": "Lasă-le deschise",
+    "completeTasksToo": "Marchează-le ca făcute"
   },
   "errors": {
     "required": "Acest câmp este obligatoriu",
@@ -1132,7 +1142,8 @@
     "failedToSaveGoal": "Obiectivul nu a putut fi salvat.",
     "failedToDeleteGoal": "Obiectivul nu a putut fi șters.",
     "failedToDeleteNote": "Nota nu a putut fi ștearsă.",
-    "failedToDeleteTag": "Eticheta nu a putut fi ștearsă."
+    "failedToDeleteTag": "Eticheta nu a putut fi ștearsă.",
+    "projectStatusUpdateFailed": "Nu s-a putut actualiza starea proiectului"
   },
   "inbox": {
     "title": "Căsuța de primire",
@@ -1459,7 +1470,21 @@
     "blankSlateTemplate": "Pornește de la un șablon",
     "blankSlateAreas": "Configurează ariile",
     "blankSlateShowAll": "Afișează toate proiectele",
-    "viewAs": "Vizualizare"
+    "viewAs": "Vizualizare",
+    "history": "Istoric",
+    "historyHint": "Proiecte finalizate, cele mai noi primele",
+    "historyTitle": "Proiecte finalizate",
+    "historyCount": "Finalizate: {{count}}",
+    "historyShowCancelled": "Arată anulate",
+    "historyEmptyTitle": "Nimic finalizat încă",
+    "historyEmptyHint": "Proiectele pe care le marchezi ca finalizate apar aici, cele mai noi primele, astfel încât munca rămâne înregistrată fără să-ți aglomereze lista.",
+    "historyTasks": "{{done}} din {{total}} sarcini",
+    "historyDuration_one": "a durat {{count}} zi",
+    "historyDuration_few": "a durat {{count}} zile",
+    "historyDuration_other": "a durat {{count}} de zile",
+    "reopen": "Redeschide",
+    "reopened": "„{{name}}” este din nou în desfășurare",
+    "loadError": "Nu s-au putut încărca proiectele"
   },
   "projectItem": {
     "edit": "Editează",
@@ -1506,7 +1531,8 @@
     "noAreasYet": "Încă nu există arii.",
     "blankSlateHint": "Ariile sunt părțile vieții de care te ocupi în timp, de exemplu Muncă, Sănătate sau Acasă. Pune în ele proiectele și obiectivele tale ca să vezi fiecare parte într-un singur loc.",
     "blankSlateNew": "Creează prima arie",
-    "blankSlateProjects": "Mergi la proiecte"
+    "blankSlateProjects": "Mergi la proiecte",
+    "finishedProjects": "Finalizate ({{count}})"
   },
   "notes": {
     "loading": "Se încarcă notițele...",

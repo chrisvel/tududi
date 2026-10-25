@@ -1178,7 +1178,16 @@
     "noFilesYet": "No files yet. Drop files here or use +.",
     "allFiles": "All files",
     "dropToUpload": "Drop to upload",
-    "fewerFiles": "Show fewer"
+    "fewerFiles": "Show fewer",
+    "markComplete": "Complete",
+    "completedOn": "Completed {{date}}",
+    "completedToast": "Project completed",
+    "completedWithTasks_one": "Project completed, {{count}} task marked done",
+    "completedWithTasks_other": "Project completed, {{count}} tasks marked done",
+    "completeTitle": "Complete \"{{name}}\"?",
+    "completeOpenTasks": "This project still has open tasks. Mark them done too, or leave them open? Recurring tasks keep their schedule either way.",
+    "leaveTasksOpen": "Leave them open",
+    "completeTasksToo": "Mark them done too"
   },
   "errors": {
     "required": "This field is required",
@@ -1216,7 +1225,8 @@
     "failedToSaveGoal": "Failed to save goal.",
     "failedToDeleteGoal": "Failed to delete goal.",
     "failedToDeleteNote": "Failed to delete note.",
-    "failedToDeleteTag": "Failed to delete tag."
+    "failedToDeleteTag": "Failed to delete tag.",
+    "projectStatusUpdateFailed": "Failed to update project status"
   },
   "inbox": {
     "title": "Inbox",
@@ -1550,7 +1560,20 @@
     },
     "noResults": "No projects",
     "reorderError": "Failed to save project order",
-    "viewAs": "View"
+    "viewAs": "View",
+    "history": "History",
+    "historyHint": "Completed projects, newest first",
+    "historyTitle": "Completed projects",
+    "historyCount": "{{count}} finished",
+    "historyShowCancelled": "Show cancelled",
+    "historyEmptyTitle": "Nothing finished yet",
+    "historyEmptyHint": "Projects you mark as completed show up here, newest first, so the work stays on record without crowding your list.",
+    "historyTasks": "{{done}} of {{total}} tasks",
+    "historyDuration_one": "took {{count}} day",
+    "historyDuration_other": "took {{count}} days",
+    "reopen": "Reopen",
+    "reopened": "\"{{name}}\" is back in progress",
+    "loadError": "Failed to load projects"
   },
   "projectStatus": {
     "not_started": "Not Started",
@@ -1616,7 +1639,8 @@
     "presetHome": "Home",
     "presetWork": "Work",
     "presetHealth": "Health",
-    "presetFamily": "Family"
+    "presetFamily": "Family",
+    "finishedProjects": "Finished ({{count}})"
   },
   "notes": {
     "addNote": "Add Note",

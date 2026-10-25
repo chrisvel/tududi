@@ -150,6 +150,13 @@ const options = {
                             enum: ['low', 'medium', 'high'],
                             description: 'Project priority',
                         },
+                        completed_at: {
+                            type: 'string',
+                            format: 'date-time',
+                            nullable: true,
+                            description:
+                                'When the project was marked done, null otherwise',
+                        },
                         created_at: {
                             type: 'string',
                             format: 'date-time',

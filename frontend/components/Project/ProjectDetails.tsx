@@ -49,6 +49,7 @@ import ProjectOverviewRail from './ProjectOverviewRail';
 import ProjectAttachmentsWidget from './ProjectAttachmentsWidget';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
 import { useProjectMetrics } from './useProjectMetrics';
+import useCompleteProject from './useCompleteProject';
 import {
     matchesTaskStatusFilter,
     TaskStatusFilter,
@@ -138,6 +139,7 @@ const ProjectDetails: React.FC = () => {
 
     // Bumped after something is captured, so new tasks and notes show up
     const [reloadKey, setReloadKey] = useState(0);
+    const { requestComplete, completeDialog } = useCompleteProject();
     useEffect(
         () =>
             onCaptureSaved(() => {
@@ -284,6 +286,16 @@ const ProjectDetails: React.FC = () => {
             );
             throw err;
         }
+    };
+
+    // After a completion the tasks may have changed too, so reload the page
+    const handleProjectCompleted = (savedProject: Project) => {
+        projectsStore.setProjects(
+            projectsStore.projects.map((p) =>
+                p.uid === savedProject.uid ? { ...p, ...savedProject } : p
+            )
+        );
+        setReloadKey((key) => key + 1);
     };
 
     const handleEditBannerClick = () => {
@@ -654,6 +666,13 @@ const ProjectDetails: React.FC = () => {
                 doneCount={taskStats.completed}
                 totalCount={taskStats.total}
                 onUpdate={handleUpdateProject}
+                onComplete={() =>
+                    requestComplete(
+                        project,
+                        taskStats.total - taskStats.completed,
+                        handleProjectCompleted
+                    )
+                }
                 onDeleteClick={() => {
                     setNoteToDelete(null);
                     setIsConfirmDialogOpen(true);
@@ -933,6 +952,7 @@ const ProjectDetails: React.FC = () => {
                             confirmButtonText={t('common.save', 'Save')}
                         />
                     )}
+                    {completeDialog}
                 </div>
             </div>
         </div>
