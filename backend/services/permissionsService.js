@@ -213,6 +213,15 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
             sharedProjectIds = projects.map((p) => p.id);
         }
 
+        // Items other people added to projects the user owns. getAccess
+        // already gives the owner full access to them, so list them too.
+        const ownedProjects = await Project.findAll({
+            where: { user_id: userId },
+            attributes: ['id'],
+            raw: true,
+        });
+        sharedProjectIds.push(...ownedProjects.map((p) => p.id));
+
         const conditions = [
             { user_id: userId }, // Items owned by user
         ];
@@ -222,7 +231,7 @@ async function ownershipOrPermissionWhere(resourceType, userId, cache = null) {
         }
 
         if (sharedProjectIds.length > 0) {
-            conditions.push({ project_id: { [Op.in]: sharedProjectIds } }); // Items in shared projects
+            conditions.push({ project_id: { [Op.in]: sharedProjectIds } }); // Items in shared or owned projects
         }
 
         // Tasks assigned to the caller show up even when they own nothing else

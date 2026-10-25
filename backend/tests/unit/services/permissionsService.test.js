@@ -457,6 +457,34 @@ describe('permissionsService', () => {
             expect(projectCondition).toBeDefined();
         });
 
+        it("should include tasks other users add to the caller's own projects", async () => {
+            const project = await Project.create({
+                name: 'Household',
+                user_id: owner.id,
+            });
+            await Permission.create({
+                user_id: otherUser.id,
+                resource_type: 'project',
+                resource_uid: project.uid,
+                access_level: 'rw',
+                propagation: 'direct',
+                granted_by_user_id: owner.id,
+            });
+            const task = await Task.create({
+                name: 'Added by a collaborator',
+                user_id: otherUser.id,
+                project_id: project.id,
+            });
+
+            const where = await ownershipOrPermissionWhere('task', owner.id);
+            const visible = await Task.findAll({
+                where,
+                attributes: ['id'],
+                raw: true,
+            });
+            expect(visible.map((t) => t.id)).toContain(task.id);
+        });
+
         it('should include tasks assigned to the caller', async () => {
             const person = await Person.create({
                 user_id: owner.id,
