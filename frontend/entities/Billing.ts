@@ -18,6 +18,7 @@ export interface PlanFeatures {
     telegram: boolean;
     attachments: boolean;
     public_notes?: boolean;
+    webhooks?: boolean;
 }
 
 export interface BillingUsage {

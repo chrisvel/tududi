@@ -2273,6 +2273,66 @@
     "info": {
       "title": "Hinweis:",
       "message": "E-Mail- und Push-Benachrichtigungen kommen bald. In-App- und Telegram-Benachrichtigungen sind derzeit verfügbar."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Aufgabe bald fällig",
+        "taskOverdue": "Aufgabe überfällig",
+        "taskReminder": "Aufgabenerinnerung",
+        "taskDeferredReady": "Zurückgestellte Aufgabe ist aktiv",
+        "taskAssigned": "Ihnen zugewiesene Aufgabe",
+        "projectDueSoon": "Projekt bald fällig",
+        "projectOverdue": "Projekt überfällig",
+        "habitReminder": "Gewohnheitserinnerung",
+        "commentAdded": "Neuer Kommentar",
+        "commentMention": "Erwähnung",
+        "shareInvitation": "Freigabeeinladung",
+        "taskCreated": "Aufgabe erstellt",
+        "taskUpdated": "Aufgabe geändert",
+        "taskCompleted": "Aufgabe erledigt",
+        "taskDeleted": "Aufgabe gelöscht",
+        "dailySummary": "Tägliche Zusammenfassung",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Erinnerungen und Hinweise",
+        "changes": "Aufgabenänderungen",
+        "summary": "Tägliche Zusammenfassung"
+      },
+      "namePlaceholder": "Name, z. B. n8n",
+      "nameLabel": "Name",
+      "urlKeepPlaceholder": "Neue Adresse (leer lassen, um sie zu behalten)",
+      "urlLabel": "Webhook-Adresse",
+      "summaryAt": "um",
+      "saving": "Wird gespeichert...",
+      "save": "Speichern",
+      "deliveriesFailed": "Zustellungen konnten nicht geladen werden.",
+      "noDeliveries": "Noch nichts gesendet.",
+      "status": {
+        "delivered": "Zugestellt",
+        "failed": "Fehlgeschlagen ({{error}})",
+        "pending": "Wartet auf erneuten Versuch"
+      },
+      "testSent": "{{name}} hat die Testnachricht angenommen.",
+      "disabledFailures": "Nach zu vielen fehlgeschlagenen Zustellungen ausgeschaltet. Prüfen Sie die Adresse und schalten Sie ihn dann wieder ein.",
+      "off": "Aus",
+      "lastFailed": "Die letzte Zustellung ist fehlgeschlagen.",
+      "lastDelivered": "Zuletzt zugestellt {{when}}.",
+      "notUsed": "Noch nichts gesendet.",
+      "title": "Webhooks",
+      "description": "Senden Sie Ereignisse als JSON an n8n, Home Assistant, Slack, Discord oder Ihren eigenen Server. Jeder Webhook wählt seine eigenen Ereignisse.",
+      "add": "Webhook hinzufügen",
+      "secretOnce": "Signaturgeheimnis. Kopieren Sie es jetzt: Es wird nicht erneut angezeigt.",
+      "copy": "Kopieren",
+      "done": "Fertig",
+      "secretHelp": "Jede Anfrage enthält X-Tududi-Signature: sha256 HMAC von \"timestamp.body\" mit diesem Geheimnis, und den Zeitstempel in X-Tududi-Timestamp.",
+      "turnOff": "Ausschalten",
+      "turnOn": "Einschalten",
+      "edit": "Bearbeiten",
+      "newSecret": "Neues Geheimnis",
+      "history": "Verlauf",
+      "confirmDelete": "Löschen?",
+      "delete": "Löschen"
     }
   },
   "projectStatus": {
@@ -2571,7 +2631,11 @@
     "readOnlyUntil": "Ihre Daten sind bis zum {{date}} schreibgeschützt, danach wird das Konto gelöscht. Abonnieren Sie, um tududi Cloud weiter zu nutzen.",
     "trialIncludes": "Ihre Testphase endet am {{date}}. KI-Assistent, öffentliche Notizen und das Hinzufügen von Mitgliedern werden mit einem Abonnement freigeschaltet.",
     "backToApp": "Zurück zu tududi",
-    "trialBanner": "Kostenlose Testphase, verbleibende Tage: {{count}}"
+    "trialBanner": "Kostenlose Testphase, verbleibende Tage: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhooks sind nicht Teil der kostenlosen Testphase. Abonnieren Sie, um Ereignisse an Ihre eigenen Dienste zu senden."
+    },
+    "lockedWebhooks": "Webhooks sind Teil des kostenpflichtigen Plans."
   },
   "demo": {
     "opening": "Öffne die Demo...",

@@ -2264,6 +2264,66 @@
     "info": {
       "title": "Not:",
       "message": "E-posta ve Push bildirimleri yakında geliyor. Uygulama içi ve Telegram bildirimleri şu anda mevcuttur."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Görevin süresi yaklaşıyor",
+        "taskOverdue": "Görevin süresi geçti",
+        "taskReminder": "Görev hatırlatıcısı",
+        "taskDeferredReady": "Ertelenen görev etkin",
+        "taskAssigned": "Size atanan görev",
+        "projectDueSoon": "Projenin süresi yaklaşıyor",
+        "projectOverdue": "Projenin süresi geçti",
+        "habitReminder": "Alışkanlık hatırlatıcısı",
+        "commentAdded": "Yeni yorum",
+        "commentMention": "Bahsetme",
+        "shareInvitation": "Paylaşım daveti",
+        "taskCreated": "Görev oluşturuldu",
+        "taskUpdated": "Görev değişti",
+        "taskCompleted": "Görev tamamlandı",
+        "taskDeleted": "Görev silindi",
+        "dailySummary": "Günlük özet",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Hatırlatıcılar ve uyarılar",
+        "changes": "Görev değişiklikleri",
+        "summary": "Günlük özet"
+      },
+      "namePlaceholder": "Ad, ör. n8n",
+      "nameLabel": "Ad",
+      "urlKeepPlaceholder": "Yeni adres (korumak için boş bırakın)",
+      "urlLabel": "Webhook adresi",
+      "summaryAt": "saat",
+      "saving": "Kaydediliyor...",
+      "save": "Kaydet",
+      "deliveriesFailed": "Gönderimler yüklenemedi.",
+      "noDeliveries": "Henüz bir şey gönderilmedi.",
+      "status": {
+        "delivered": "Teslim edildi",
+        "failed": "Başarısız ({{error}})",
+        "pending": "Yeniden deneme bekleniyor"
+      },
+      "testSent": "{{name}} test mesajını kabul etti.",
+      "disabledFailures": "Çok fazla başarısız gönderimden sonra kapatıldı. Adresi kontrol edin, ardından yeniden açın.",
+      "off": "Kapalı",
+      "lastFailed": "Son gönderim başarısız oldu.",
+      "lastDelivered": "Son teslim {{when}}.",
+      "notUsed": "Henüz bir şey gönderilmedi.",
+      "title": "Webhook'lar",
+      "description": "Olayları JSON olarak n8n, Home Assistant, Slack, Discord veya kendi sunucunuza gönderin. Her webhook kendi olaylarını seçer.",
+      "add": "Webhook ekle",
+      "secretOnce": "İmzalama anahtarı. Şimdi kopyalayın: tekrar gösterilmeyecek.",
+      "copy": "Kopyala",
+      "done": "Tamam",
+      "secretHelp": "Her istek X-Tududi-Signature içerir: bu anahtarla \"timestamp.body\" üzerinden sha256 HMAC, zaman damgası ise X-Tududi-Timestamp içindedir.",
+      "turnOff": "Kapat",
+      "turnOn": "Aç",
+      "edit": "Düzenle",
+      "newSecret": "Yeni anahtar",
+      "history": "Geçmiş",
+      "confirmDelete": "Silinsin mi?",
+      "delete": "Sil"
     }
   },
   "projectStatus": {
@@ -2562,7 +2622,11 @@
     "readOnlyUntil": "Verileriniz {{date}} tarihine kadar salt okunur, ardından hesap silinir. tududi Cloud'u kullanmaya devam etmek için abone olun.",
     "trialIncludes": "Deneme süreniz {{date}} tarihinde bitiyor. Yapay zeka asistanı, herkese açık notlar ve üye ekleme abone olduğunuzda açılır.",
     "backToApp": "tududi'ye dön",
-    "trialBanner": "Ücretsiz deneme, kalan gün: {{count}}"
+    "trialBanner": "Ücretsiz deneme, kalan gün: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhook'lar ücretsiz denemeye dahil değildir. Olayları kendi hizmetlerinize göndermek için abone olun."
+    },
+    "lockedWebhooks": "Webhook'lar ücretli plana dahildir."
   },
   "demo": {
     "opening": "Demoyu açıyor...",

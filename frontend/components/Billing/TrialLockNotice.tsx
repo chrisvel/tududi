@@ -31,10 +31,15 @@ const TrialLockNotice: React.FC<TrialLockNoticeProps> = ({
                     'subscription.trialLock.publicNotes',
                     'Public note links are not part of the free trial. Subscribe to share notes with anyone.'
                 )
-              : t(
-                    'subscription.trialLock.members',
-                    'Adding members is not part of the free trial. Subscribe to add family members or teammates.'
-                );
+              : feature === 'webhooks'
+                ? t(
+                      'subscription.trialLock.webhooks',
+                      'Webhooks are not part of the free trial. Subscribe to send events to your own services.'
+                  )
+                : t(
+                      'subscription.trialLock.members',
+                      'Adding members is not part of the free trial. Subscribe to add family members or teammates.'
+                  );
 
     return (
         <div

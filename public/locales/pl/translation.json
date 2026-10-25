@@ -2266,6 +2266,66 @@
     "info": {
       "title": "Uwaga:",
       "message": "Powiadomienia e-mailowe i push będą dostępne wkrótce. Powiadomienia w aplikacji i na Telegramie są obecnie dostępne."
+    },
+    "webhooks": {
+      "events": {
+        "taskDueSoon": "Zadanie wkrótce do wykonania",
+        "taskOverdue": "Zadanie zaległe",
+        "taskReminder": "Przypomnienie o zadaniu",
+        "taskDeferredReady": "Odłożone zadanie jest aktywne",
+        "taskAssigned": "Zadanie przypisane do Ciebie",
+        "projectDueSoon": "Projekt wkrótce do zakończenia",
+        "projectOverdue": "Projekt zaległy",
+        "habitReminder": "Przypomnienie o nawyku",
+        "commentAdded": "Nowy komentarz",
+        "commentMention": "Wzmianka",
+        "shareInvitation": "Zaproszenie do udostępnienia",
+        "taskCreated": "Zadanie utworzone",
+        "taskUpdated": "Zadanie zmienione",
+        "taskCompleted": "Zadanie ukończone",
+        "taskDeleted": "Zadanie usunięte",
+        "dailySummary": "Podsumowanie dnia",
+        "test": "Test"
+      },
+      "groups": {
+        "alerts": "Przypomnienia i alerty",
+        "changes": "Zmiany w zadaniach",
+        "summary": "Podsumowanie dnia"
+      },
+      "namePlaceholder": "Nazwa, np. n8n",
+      "nameLabel": "Nazwa",
+      "urlKeepPlaceholder": "Nowy adres (zostaw puste, aby zachować obecny)",
+      "urlLabel": "Adres webhooka",
+      "summaryAt": "o",
+      "saving": "Zapisywanie...",
+      "save": "Zapisz",
+      "deliveriesFailed": "Nie udało się wczytać dostarczeń.",
+      "noDeliveries": "Jeszcze nic nie wysłano.",
+      "status": {
+        "delivered": "Dostarczono",
+        "failed": "Niepowodzenie ({{error}})",
+        "pending": "Oczekuje na ponowienie"
+      },
+      "testSent": "{{name}} przyjął wiadomość testową.",
+      "disabledFailures": "Wyłączono po zbyt wielu nieudanych dostarczeniach. Sprawdź adres, a potem włącz go ponownie.",
+      "off": "Wyłączony",
+      "lastFailed": "Ostatnie dostarczenie nie powiodło się.",
+      "lastDelivered": "Ostatnio dostarczono {{when}}.",
+      "notUsed": "Jeszcze nic nie wysłano.",
+      "title": "Webhooki",
+      "description": "Wysyłaj zdarzenia jako JSON do n8n, Home Assistant, Slack, Discord lub własnego serwera. Każdy webhook ma własny zestaw zdarzeń.",
+      "add": "Dodaj webhook",
+      "secretOnce": "Sekret podpisu. Skopiuj go teraz: nie zostanie pokazany ponownie.",
+      "copy": "Kopiuj",
+      "done": "Gotowe",
+      "secretHelp": "Każde żądanie zawiera X-Tududi-Signature: sha256 HMAC z \"timestamp.body\" z tym sekretem, oraz znacznik czasu w X-Tududi-Timestamp.",
+      "turnOff": "Wyłącz",
+      "turnOn": "Włącz",
+      "edit": "Edytuj",
+      "newSecret": "Nowy sekret",
+      "history": "Historia",
+      "confirmDelete": "Usunąć?",
+      "delete": "Usuń"
     }
   },
   "projectStatus": {
@@ -2566,7 +2626,11 @@
     "readOnlyUntil": "Twoje dane są tylko do odczytu do {{date}}, potem konto zostanie usunięte. Wykup subskrypcję, aby dalej korzystać z tududi Cloud.",
     "trialIncludes": "Twój okres próbny kończy się {{date}}. Asystent AI, publiczne notatki i dodawanie członków odblokujesz po wykupieniu subskrypcji.",
     "backToApp": "Wróć do tududi",
-    "trialBanner": "Bezpłatny okres próbny, pozostało dni: {{count}}"
+    "trialBanner": "Bezpłatny okres próbny, pozostało dni: {{count}}",
+    "trialLock": {
+      "webhooks": "Webhooki nie są dostępne w bezpłatnym okresie próbnym. Wykup subskrypcję, aby wysyłać zdarzenia do własnych usług."
+    },
+    "lockedWebhooks": "Webhooki są częścią płatnego planu."
   },
   "demo": {
     "opening": "Otwieranie dema...",

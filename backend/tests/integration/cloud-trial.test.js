@@ -144,6 +144,22 @@ describe('Cloud trials', () => {
             expect(off.status).not.toBe(402);
         });
 
+        it('leaves out webhooks, but listing and deleting still work', async () => {
+            const res = await agent.post('/api/webhooks').send({
+                name: 'n8n',
+                url: 'https://8.8.8.8/hook',
+                events: ['task.created'],
+            });
+            expect(res.status).toBe(402);
+            expect(res.body.details).toEqual({
+                feature: 'webhooks',
+                plan: 'trial',
+            });
+
+            const list = await agent.get('/api/webhooks');
+            expect(list.status).toBe(200);
+        });
+
         it('adds one member, who shares the trial', async () => {
             const res = await agent
                 .post('/api/members')
