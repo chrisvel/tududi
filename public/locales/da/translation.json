@@ -1092,7 +1092,16 @@
     "editBanner": "Rediger projektbanner",
     "currentBanner": "Nuværende banner",
     "choosePreset": "Vælg et forudindstillet banner:",
-    "orUploadOwn": "Eller upload dit eget:"
+    "orUploadOwn": "Eller upload dit eget:",
+    "markComplete": "Fuldfør",
+    "completedOn": "Fuldført {{date}}",
+    "completedToast": "Projekt fuldført",
+    "completedWithTasks_one": "Projekt fuldført, {{count}} opgave markeret som udført",
+    "completedWithTasks_other": "Projekt fuldført, {{count}} opgaver markeret som udført",
+    "completeTitle": "Fuldfør \"{{name}}\"?",
+    "completeOpenTasks": "Dette projekt har stadig åbne opgaver. Skal de også markeres som udført, eller skal de forblive åbne? Gentagne opgaver beholder deres tidsplan uanset hvad.",
+    "leaveTasksOpen": "Lad dem være åbne",
+    "completeTasksToo": "Markér dem også som udført"
   },
   "errors": {
     "required": "Dette felt er påkrævet",
@@ -1130,7 +1139,8 @@
     "failedToSaveGoal": "Kunne ikke gemme målet.",
     "failedToDeleteGoal": "Kunne ikke slette målet.",
     "failedToDeleteNote": "Kunne ikke slette noten.",
-    "failedToDeleteTag": "Kunne ikke slette tagget."
+    "failedToDeleteTag": "Kunne ikke slette tagget.",
+    "projectStatusUpdateFailed": "Kunne ikke opdatere projektstatus"
   },
   "inbox": {
     "title": "Indbakke",
@@ -1457,7 +1467,20 @@
     "blankSlateTemplate": "Start fra en skabelon",
     "blankSlateAreas": "Opsæt områder",
     "blankSlateShowAll": "Vis alle projekter",
-    "viewAs": "Visning"
+    "viewAs": "Visning",
+    "history": "Historik",
+    "historyHint": "Fuldførte projekter, nyeste først",
+    "historyTitle": "Fuldførte projekter",
+    "historyCount": "{{count}} afsluttet",
+    "historyShowCancelled": "Vis annullerede",
+    "historyEmptyTitle": "Intet afsluttet endnu",
+    "historyEmptyHint": "Projekter, du markerer som fuldført, vises her, nyeste først, så arbejdet er gemt uden at fylde din liste.",
+    "historyTasks": "{{done}} af {{total}} opgaver",
+    "historyDuration_one": "tog {{count}} dag",
+    "historyDuration_other": "tog {{count}} dage",
+    "reopen": "Genåbn",
+    "reopened": "\"{{name}}\" er i gang igen",
+    "loadError": "Kunne ikke indlæse projekter"
   },
   "projectItem": {
     "edit": "Rediger",
@@ -1504,7 +1527,8 @@
     "noAreasYet": "Ingen områder endnu.",
     "blankSlateHint": "Områder er de dele af dit liv, du passer på over tid, fx Arbejde, Helbred eller Hjem. Placer dine projekter og mål i dem for at se hver del ét sted.",
     "blankSlateNew": "Opret dit første område",
-    "blankSlateProjects": "Gå til projekter"
+    "blankSlateProjects": "Gå til projekter",
+    "finishedProjects": "Afsluttet ({{count}})"
   },
   "notes": {
     "loading": "Indlæser noter...",

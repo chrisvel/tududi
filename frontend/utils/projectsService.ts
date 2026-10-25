@@ -102,6 +102,28 @@ export const updateProject = async (
     return updated;
 };
 
+// Marks a project done; completeOpenTasks also finishes its open
+// one-off tasks.
+export const completeProject = async (
+    projectUid: string,
+    completeOpenTasks = false
+): Promise<{ project: Project; completed_tasks: number }> => {
+    const token = await getCsrfToken();
+    const response = await fetch(getApiPath(`project/${projectUid}/complete`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'x-csrf-token': token,
+        },
+        body: JSON.stringify({ complete_open_tasks: completeOpenTasks }),
+    });
+
+    await handleAuthResponse(response, 'Failed to complete project.');
+    return response.json();
+};
+
 export const reorderProjects = async (projectUids: string[]): Promise<void> => {
     const token = await getCsrfToken();
     const response = await fetch(getApiPath('projects/order'), {

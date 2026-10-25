@@ -1092,7 +1092,16 @@
     "editBanner": "Bewerk projectbanner",
     "currentBanner": "Huidige banner",
     "choosePreset": "Kies een vooraf ingestelde banner:",
-    "orUploadOwn": "Of upload je eigen:"
+    "orUploadOwn": "Of upload je eigen:",
+    "markComplete": "Voltooien",
+    "completedOn": "Voltooid op {{date}}",
+    "completedToast": "Project voltooid",
+    "completedWithTasks_one": "Project voltooid, {{count}} taak afgerond",
+    "completedWithTasks_other": "Project voltooid, {{count}} taken afgerond",
+    "completeTitle": "\"{{name}}\" voltooien?",
+    "completeOpenTasks": "Dit project heeft nog open taken. Ook afronden of open laten? Terugkerende taken houden hoe dan ook hun schema.",
+    "leaveTasksOpen": "Open laten",
+    "completeTasksToo": "Ook afronden"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -1130,7 +1139,8 @@
     "failedToSaveGoal": "Doel opslaan mislukt.",
     "failedToDeleteGoal": "Doel verwijderen mislukt.",
     "failedToDeleteNote": "Notitie verwijderen mislukt.",
-    "failedToDeleteTag": "Tag verwijderen mislukt."
+    "failedToDeleteTag": "Tag verwijderen mislukt.",
+    "projectStatusUpdateFailed": "Projectstatus bijwerken mislukt"
   },
   "inbox": {
     "title": "Inbox",
@@ -1457,7 +1467,20 @@
     "blankSlateTemplate": "Begin met een sjabloon",
     "blankSlateAreas": "Gebieden instellen",
     "blankSlateShowAll": "Alle projecten tonen",
-    "viewAs": "Weergave"
+    "viewAs": "Weergave",
+    "history": "Geschiedenis",
+    "historyHint": "Voltooide projecten, nieuwste eerst",
+    "historyTitle": "Voltooide projecten",
+    "historyCount": "{{count}} afgerond",
+    "historyShowCancelled": "Geannuleerde tonen",
+    "historyEmptyTitle": "Nog niets afgerond",
+    "historyEmptyHint": "Projecten die je als voltooid markeert verschijnen hier, nieuwste eerst, zodat het werk bewaard blijft zonder je lijst vol te maken.",
+    "historyTasks": "{{done}} van {{total}} taken",
+    "historyDuration_one": "duurde {{count}} dag",
+    "historyDuration_other": "duurde {{count}} dagen",
+    "reopen": "Heropenen",
+    "reopened": "\"{{name}}\" is weer bezig",
+    "loadError": "Projecten laden mislukt"
   },
   "projectItem": {
     "edit": "Bewerken",
@@ -1504,7 +1527,8 @@
     "noAreasYet": "Nog geen gebieden.",
     "blankSlateHint": "Gebieden zijn de delen van je leven waar je doorlopend aandacht aan geeft, zoals Werk, Gezondheid of Thuis. Zet er je projecten en doelen in om elk deel op één plek te zien.",
     "blankSlateNew": "Maak je eerste gebied",
-    "blankSlateProjects": "Naar projecten"
+    "blankSlateProjects": "Naar projecten",
+    "finishedProjects": "Afgerond ({{count}})"
   },
   "notes": {
     "loading": "Bezig met het laden van notities...",

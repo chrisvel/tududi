@@ -1071,7 +1071,8 @@
     "failedToSaveGoal": "目標を保存できませんでした。",
     "failedToDeleteGoal": "目標を削除できませんでした。",
     "failedToDeleteNote": "ノートを削除できませんでした。",
-    "failedToDeleteTag": "タグを削除できませんでした。"
+    "failedToDeleteTag": "タグを削除できませんでした。",
+    "projectStatusUpdateFailed": "プロジェクトのステータスを更新できませんでした"
   },
   "success": {
     "noteUpdated": "ノートが正常に更新されました！",
@@ -1191,7 +1192,19 @@
     "blankSlateTemplate": "テンプレートから始める",
     "blankSlateAreas": "エリアを設定",
     "blankSlateShowAll": "すべてのプロジェクトを表示",
-    "viewAs": "表示形式"
+    "viewAs": "表示形式",
+    "history": "履歴",
+    "historyHint": "完了したプロジェクト（新しい順）",
+    "historyTitle": "完了したプロジェクト",
+    "historyCount": "{{count}} 件完了",
+    "historyShowCancelled": "キャンセル済みを表示",
+    "historyEmptyTitle": "まだ完了したものはありません",
+    "historyEmptyHint": "完了にしたプロジェクトは新しい順にここに表示されます。リストを散らかさずに作業の記録を残せます。",
+    "historyTasks": "{{total}} 件中 {{done}} 件のタスク",
+    "historyDuration_other": "{{count}} 日かかりました",
+    "reopen": "再開",
+    "reopened": "「{{name}}」を進行中に戻しました",
+    "loadError": "プロジェクトを読み込めませんでした"
   },
   "projectItem": {
     "edit": "編集",
@@ -1238,7 +1251,8 @@
     "noAreasYet": "まだエリアはありません。",
     "blankSlateHint": "エリアは、仕事・健康・家など、長く向き合っていく生活の領域です。プロジェクトや目標をエリアに入れると、それぞれの領域をひとつの場所で見渡せます。",
     "blankSlateNew": "最初のエリアを作成",
-    "blankSlateProjects": "プロジェクトへ"
+    "blankSlateProjects": "プロジェクトへ",
+    "finishedProjects": "完了 ({{count}})"
   },
   "notes": {
     "loading": "ノートを読み込み中...",
@@ -1460,7 +1474,15 @@
     "editBanner": "プロジェクトバナーを編集",
     "currentBanner": "現在のバナー",
     "choosePreset": "プリセットバナーを選択:",
-    "orUploadOwn": "または自分のバナーをアップロード:"
+    "orUploadOwn": "または自分のバナーをアップロード:",
+    "markComplete": "完了",
+    "completedOn": "{{date}} に完了",
+    "completedToast": "プロジェクトを完了しました",
+    "completedWithTasks_other": "プロジェクトを完了し、{{count}} 件のタスクを完了にしました",
+    "completeTitle": "「{{name}}」を完了しますか？",
+    "completeOpenTasks": "このプロジェクトにはまだ未完了のタスクがあります。あわせて完了にしますか、それとも残しますか？繰り返しタスクはどちらの場合もスケジュールを維持します。",
+    "leaveTasksOpen": "未完了のまま残す",
+    "completeTasksToo": "あわせて完了にする"
   },
   "task": {
     "suggestions": {

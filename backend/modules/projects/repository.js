@@ -273,6 +273,18 @@ class ProjectsRepository extends BaseRepository {
         });
     }
 
+    // Tasks still open in a project. Recurring patterns are left out: they
+    // keep their own schedule and are not one-off work to finish.
+    async findOpenTasks(projectId) {
+        return Task.findAll({
+            where: {
+                project_id: projectId,
+                status: { [Op.notIn]: [2, 3, 5] },
+                recurrence_type: 'none',
+            },
+        });
+    }
+
     // Removes a project's tasks, attachments and cover image, orphans its
     // notes and finally deletes the project row, inside the given transaction.
     async deleteProjectContents(project, userId, transaction) {

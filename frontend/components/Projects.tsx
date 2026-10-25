@@ -34,6 +34,7 @@ import {
     FunnelIcon,
     PlusIcon,
     RectangleStackIcon,
+    ClockIcon,
 } from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
 import { PROJECT_TABLE_GRID } from './Project/projectTableLayout';
@@ -51,6 +52,9 @@ import {
     useSortableSensors,
 } from './Shared/sortableList';
 import ProjectShareModal from './Project/ProjectShareModal';
+import useCompleteProject, {
+    countOpenTasks,
+} from './Project/useCompleteProject';
 import { useToast } from './Shared/ToastContext';
 import { saveProjectAsTemplate } from '../utils/templatesService';
 import { fetchProfile, updateUiSettings } from '../utils/profileService';
@@ -151,6 +155,7 @@ const Projects: React.FC = () => {
     } = useStore((state) => state.projectsStore);
     const { isLoading, isError } = useStore((state) => state.projectsStore);
     const canCreateProjects = useCan('create_projects');
+    const { requestComplete, completeDialog } = useCompleteProject();
     const templatesEnabled = useStore(
         (state) => state.userSettingsStore.templatesEnabled
     );
@@ -498,6 +503,12 @@ const Projects: React.FC = () => {
         newStatus: ProjectStatus
     ) => {
         if (!project.uid) return;
+        if (newStatus === 'done' && project.status !== 'done') {
+            requestComplete(project, countOpenTasks(project), async () => {
+                setProjects(await fetchProjects('all', ''));
+            });
+            return;
+        }
         const prevProjects = projects;
         setProjects(
             projects.map((p) =>
@@ -505,7 +516,18 @@ const Projects: React.FC = () => {
             )
         );
         try {
-            await updateProject(project.uid, { status: newStatus });
+            const saved = await updateProject(project.uid, {
+                status: newStatus,
+            });
+            setProjects(
+                useStore
+                    .getState()
+                    .projectsStore.projects.map((p) =>
+                        p.uid === saved.uid
+                            ? { ...p, completed_at: saved.completed_at }
+                            : p
+                    )
+            );
         } catch (error) {
             console.error('Error updating project status:', error);
             setProjects(prevProjects);
@@ -838,6 +860,21 @@ const Projects: React.FC = () => {
                             value={listFilters}
                             onChange={handleListFiltersChange}
                         />
+                        <Link
+                            to="/projects/completed"
+                            aria-label={t('projects.history', 'History')}
+                            title={t(
+                                'projects.historyHint',
+                                'Completed projects, newest first'
+                            )}
+                            className="flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-2 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-sm text-sm font-medium text-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                            data-testid="projects-history-link"
+                        >
+                            <ClockIcon className="h-5 w-5 sm:h-4 sm:w-4" />
+                            <span className="hidden sm:inline">
+                                {t('projects.history', 'History')}
+                            </span>
+                        </Link>
                         {templatesEnabled && (
                             <Link
                                 to="/templates"
@@ -1125,6 +1162,8 @@ const Projects: React.FC = () => {
                     project={shareModal.project}
                 />
             )}
+
+            {completeDialog}
         </div>
     );
 };
