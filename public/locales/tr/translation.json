@@ -2160,11 +2160,17 @@
     "deferUntil": ", ertele",
     "extrasFilter": {
       "isRecurring": "Tekrarlayan",
+      "isNotRecurring": "Tekrarlamayan",
       "isOverdue": "Vadesi Geçmiş",
       "hasContent": "İçerik Var",
+      "hasNoContent": "İçerik Yok",
       "isDeferred": "Ertelenmiş",
+      "isNotDeferred": "Ertelenmemiş",
       "hasTags": "Etiket Var",
-      "isAssignedToProject": "Projeye Atanmış"
+      "hasNoTags": "Etiket Yok",
+      "hasNoDueDate": "Bitiş Tarihi Yok",
+      "isAssignedToProject": "Projeye Atanmış",
+      "hasNoProject": "Proje Yok"
     }
   },
   "subtasks": {

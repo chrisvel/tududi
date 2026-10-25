@@ -156,6 +156,16 @@ class SearchService {
             });
         }
 
+        if (extras.has('not_recurring')) {
+            extraConditions.push({
+                [Op.or]: [
+                    { recurrence_type: 'none' },
+                    { recurrence_type: null },
+                ],
+            });
+            extraConditions.push({ recurring_parent_id: null });
+        }
+
         if (extras.has('overdue')) {
             extraConditions.push({ due_date: { [Op.lt]: nowDate } });
             extraConditions.push({ completed_at: null });
@@ -187,12 +197,40 @@ class SearchService {
             );
         }
 
+        if (extras.has('no_content')) {
+            extraConditions.push({
+                [Op.or]: [
+                    { note: null },
+                    sequelize.where(
+                        sequelize.fn(
+                            'LENGTH',
+                            sequelize.fn('TRIM', sequelize.col('Task.note'))
+                        ),
+                        0
+                    ),
+                ],
+            });
+        }
+
         if (extras.has('deferred')) {
             extraConditions.push({ defer_until: { [Op.gt]: nowDate } });
         }
 
+        if (extras.has('not_deferred')) {
+            extraConditions.push({
+                [Op.or]: [
+                    { defer_until: null },
+                    { defer_until: { [Op.lte]: nowDate } },
+                ],
+            });
+        }
+
         if (extras.has('assigned_to_project')) {
             extraConditions.push({ project_id: { [Op.ne]: null } });
+        }
+
+        if (extras.has('no_project')) {
+            extraConditions.push({ project_id: null });
         }
 
         if (extraConditions.length > 0) {

@@ -2162,11 +2162,17 @@
     "deferUntil": ", відкласти до",
     "extrasFilter": {
       "isRecurring": "є повторюваним",
+      "isNotRecurring": "не є повторюваним",
       "isOverdue": "прострочено",
       "hasContent": "має вміст",
+      "hasNoContent": "не має вмісту",
       "isDeferred": "відкладено",
+      "isNotDeferred": "не відкладено",
       "hasTags": "має теги",
-      "isAssignedToProject": "призначено проекту"
+      "hasNoTags": "не має тегів",
+      "hasNoDueDate": "не має терміну",
+      "isAssignedToProject": "призначено проекту",
+      "hasNoProject": "не має проекту"
     }
   },
   "subtasks": {

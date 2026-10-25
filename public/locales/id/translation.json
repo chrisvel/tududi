@@ -2160,11 +2160,17 @@
     "deferUntil": ", tunda hingga",
     "extrasFilter": {
       "isRecurring": "adalah Berulang",
+      "isNotRecurring": "tidak Berulang",
       "isOverdue": "adalah Terlambat",
       "hasContent": "memiliki Konten",
+      "hasNoContent": "tidak memiliki Konten",
       "isDeferred": "adalah Ditunda",
+      "isNotDeferred": "tidak Ditunda",
       "hasTags": "memiliki Tag",
-      "isAssignedToProject": "adalah Ditugaskan ke Proyek"
+      "hasNoTags": "tidak memiliki Tag",
+      "hasNoDueDate": "tidak memiliki Tenggat",
+      "isAssignedToProject": "adalah Ditugaskan ke Proyek",
+      "hasNoProject": "tidak memiliki Proyek"
     }
   },
   "subtasks": {

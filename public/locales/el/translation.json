@@ -2161,11 +2161,17 @@
     "deferUntil": ", αναβολή μέχρι",
     "extrasFilter": {
       "isRecurring": "είναι Επαναλαμβανόμενο",
+      "isNotRecurring": "δεν είναι Επαναλαμβανόμενο",
       "isOverdue": "είναι Υπερβολικό",
       "hasContent": "έχει Περιεχόμενο",
+      "hasNoContent": "δεν έχει Περιεχόμενο",
       "isDeferred": "είναι Αναβληθέν",
+      "isNotDeferred": "δεν είναι Αναβληθέν",
       "hasTags": "έχει Ετικέτες",
-      "isAssignedToProject": "είναι Ανατεθειμένο σε Έργο"
+      "hasNoTags": "δεν έχει Ετικέτες",
+      "hasNoDueDate": "δεν έχει Προθεσμία",
+      "isAssignedToProject": "είναι Ανατεθειμένο σε Έργο",
+      "hasNoProject": "δεν έχει Έργο"
     }
   },
   "subtasks": {

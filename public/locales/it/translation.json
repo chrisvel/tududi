@@ -2161,11 +2161,17 @@
     "deferUntil": ", rimanda fino a",
     "extrasFilter": {
       "isRecurring": "è Ricorrente",
+      "isNotRecurring": "non è Ricorrente",
       "isOverdue": "è Scaduto",
       "hasContent": "ha Contenuto",
+      "hasNoContent": "non ha Contenuto",
       "isDeferred": "è Rinviato",
+      "isNotDeferred": "non è Rinviato",
       "hasTags": "ha Tag",
-      "isAssignedToProject": "è Assegnato al Progetto"
+      "hasNoTags": "non ha Tag",
+      "hasNoDueDate": "non ha Scadenza",
+      "isAssignedToProject": "è Assegnato al Progetto",
+      "hasNoProject": "non ha Progetto"
     }
   },
   "subtasks": {

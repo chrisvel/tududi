@@ -2162,11 +2162,17 @@
     "deferUntil": ", odloži do",
     "extrasFilter": {
       "isRecurring": "je ponavljajoče",
+      "isNotRecurring": "ni ponavljajoče",
       "isOverdue": "je zapadlo",
       "hasContent": "ima vsebino",
+      "hasNoContent": "nima vsebine",
       "isDeferred": "je odloženo",
+      "isNotDeferred": "ni odloženo",
       "hasTags": "ima oznake",
-      "isAssignedToProject": "je dodeljeno projektu"
+      "hasNoTags": "nima oznak",
+      "hasNoDueDate": "nima roka",
+      "isAssignedToProject": "je dodeljeno projektu",
+      "hasNoProject": "nima projekta"
     }
   },
   "subtasks": {

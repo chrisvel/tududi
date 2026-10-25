@@ -74,9 +74,12 @@ const deferOptions = [
 
 const extrasOptions = [
     { value: 'recurring', labelKey: 'search.extrasFilter.isRecurring' },
+    { value: 'not_recurring', labelKey: 'search.extrasFilter.isNotRecurring' },
     { value: 'overdue', labelKey: 'search.extrasFilter.isOverdue' },
     { value: 'has_content', labelKey: 'search.extrasFilter.hasContent' },
+    { value: 'no_content', labelKey: 'search.extrasFilter.hasNoContent' },
     { value: 'deferred', labelKey: 'search.extrasFilter.isDeferred' },
+    { value: 'not_deferred', labelKey: 'search.extrasFilter.isNotDeferred' },
     { value: 'has_tags', labelKey: 'search.extrasFilter.hasTags' },
     { value: 'no_tags', labelKey: 'search.extrasFilter.hasNoTags' },
     { value: 'no_due_date', labelKey: 'search.extrasFilter.hasNoDueDate' },
@@ -84,7 +87,22 @@ const extrasOptions = [
         value: 'assigned_to_project',
         labelKey: 'search.extrasFilter.isAssignedToProject',
     },
+    { value: 'no_project', labelKey: 'search.extrasFilter.hasNoProject' },
 ];
+
+// Each extra and its opposite can't both apply, so picking one drops the other
+const oppositeExtras: Record<string, string> = {
+    recurring: 'not_recurring',
+    not_recurring: 'recurring',
+    has_content: 'no_content',
+    no_content: 'has_content',
+    deferred: 'not_deferred',
+    not_deferred: 'deferred',
+    has_tags: 'no_tags',
+    no_tags: 'has_tags',
+    assigned_to_project: 'no_project',
+    no_project: 'assigned_to_project',
+};
 
 const SearchMenu: React.FC<SearchMenuProps> = ({
     searchQuery,
@@ -160,7 +178,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         setSelectedExtras((prev) =>
             prev.includes(extra)
                 ? prev.filter((e) => e !== extra)
-                : [...prev, extra]
+                : [...prev.filter((e) => e !== oppositeExtras[extra]), extra]
         );
         if (isSelecting && extra === 'no_tags') {
             setSelectedTags([]);

@@ -1105,6 +1105,71 @@ describe('Universal Search Routes', () => {
                 expect(names).not.toContain('Regular Task');
             });
 
+            it('should return only non-recurring tasks when extras include not_recurring', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'not_recurring',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).not.toContain('Recurring Template');
+                expect(names).not.toContain('Recurring Instance');
+            });
+
+            it('should return only tasks without a note when extras include no_content', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Blank Note Task',
+                    note: '   ',
+                    status: 0,
+                });
+
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'no_content',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).toContain('Blank Note Task');
+                expect(names).not.toContain('Content Task');
+            });
+
+            it('should return only tasks that are not deferred when extras include not_deferred', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Past Defer Task',
+                    defer_until: moment().subtract(1, 'day').toDate(),
+                    status: 0,
+                });
+
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'not_deferred',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).toContain('Past Defer Task');
+                expect(names).not.toContain('Deferred Task');
+            });
+
+            it('should return only tasks without a project when extras include no_project', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'no_project',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).not.toContain('Project Task');
+            });
+
             it('should return only tasks without tags when extras include no_tags', async () => {
                 const response = await agent.get('/api/search').query({
                     filters: 'Task',

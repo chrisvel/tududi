@@ -2163,11 +2163,17 @@
     "deferUntil": ", amână până la",
     "extrasFilter": {
       "isRecurring": "este Recurent",
+      "isNotRecurring": "nu este Recurent",
       "isOverdue": "este Întârziat",
       "hasContent": "are Conținut",
+      "hasNoContent": "nu are Conținut",
       "isDeferred": "este Amânat",
+      "isNotDeferred": "nu este Amânat",
       "hasTags": "are Etichete",
-      "isAssignedToProject": "este Atribuit Proiectului"
+      "hasNoTags": "nu are Etichete",
+      "hasNoDueDate": "nu are Termen",
+      "isAssignedToProject": "este Atribuit Proiectului",
+      "hasNoProject": "nu are Proiect"
     }
   },
   "subtasks": {

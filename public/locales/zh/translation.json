@@ -2160,11 +2160,17 @@
     "deferUntil": "，延迟到",
     "extrasFilter": {
       "isRecurring": "是重复的",
+      "isNotRecurring": "不重复",
       "isOverdue": "已逾期",
       "hasContent": "有内容",
+      "hasNoContent": "无内容",
       "isDeferred": "已延迟",
+      "isNotDeferred": "未推迟",
       "hasTags": "有标签",
-      "isAssignedToProject": "已分配给项目"
+      "hasNoTags": "无标签",
+      "hasNoDueDate": "无截止日期",
+      "isAssignedToProject": "已分配给项目",
+      "hasNoProject": "无项目"
     }
   },
   "subtasks": {

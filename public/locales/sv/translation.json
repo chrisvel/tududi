@@ -2160,11 +2160,17 @@
     "deferUntil": ", skjuta upp tills",
     "extrasFilter": {
       "isRecurring": "är Återkommande",
+      "isNotRecurring": "är inte Återkommande",
       "isOverdue": "är Försenad",
       "hasContent": "har Innehåll",
+      "hasNoContent": "har inget Innehåll",
       "isDeferred": "är Utsatt",
+      "isNotDeferred": "är inte Uppskjuten",
       "hasTags": "har Taggar",
-      "isAssignedToProject": "är Tilldelad Projekt"
+      "hasNoTags": "har inga Taggar",
+      "hasNoDueDate": "har inget Förfallodatum",
+      "isAssignedToProject": "är Tilldelad Projekt",
+      "hasNoProject": "har inget Projekt"
     }
   },
   "subtasks": {

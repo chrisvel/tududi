@@ -2160,11 +2160,17 @@
     "deferUntil": ", 지연할 때까지",
     "extrasFilter": {
       "isRecurring": "반복됨",
+      "isNotRecurring": "반복 안 함",
       "isOverdue": "연체됨",
       "hasContent": "내용이 있음",
+      "hasNoContent": "내용 없음",
       "isDeferred": "연기됨",
+      "isNotDeferred": "연기되지 않음",
       "hasTags": "태그가 있음",
-      "isAssignedToProject": "프로젝트에 할당됨"
+      "hasNoTags": "태그 없음",
+      "hasNoDueDate": "마감일 없음",
+      "isAssignedToProject": "프로젝트에 할당됨",
+      "hasNoProject": "프로젝트 없음"
     }
   },
   "subtasks": {
