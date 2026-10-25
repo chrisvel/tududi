@@ -2164,11 +2164,17 @@
     "deferUntil": "، تأجيل حتى",
     "extrasFilter": {
       "isRecurring": "يتكرر",
+      "isNotRecurring": "لا يتكرر",
       "isOverdue": "متأخر",
       "hasContent": "يمتلك محتوى",
+      "hasNoContent": "بلا محتوى",
       "isDeferred": "مؤجل",
+      "isNotDeferred": "غير مؤجل",
       "hasTags": "يمتلك علامات",
-      "isAssignedToProject": "مخصص لمشروع"
+      "hasNoTags": "بلا علامات",
+      "hasNoDueDate": "بلا تاريخ استحقاق",
+      "isAssignedToProject": "مخصص لمشروع",
+      "hasNoProject": "بلا مشروع"
     }
   },
   "subtasks": {

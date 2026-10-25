@@ -2160,11 +2160,17 @@
     "deferUntil": ", отложи до",
     "extrasFilter": {
       "isRecurring": "е Повтарящо се",
+      "isNotRecurring": "не е Повтарящо се",
       "isOverdue": "е Просрочено",
       "hasContent": "има Съдържание",
+      "hasNoContent": "няма Съдържание",
       "isDeferred": "е Отложено",
+      "isNotDeferred": "не е Отложено",
       "hasTags": "има Тагове",
-      "isAssignedToProject": "е Назначено на Проект"
+      "hasNoTags": "няма Тагове",
+      "hasNoDueDate": "няма Краен срок",
+      "isAssignedToProject": "е Назначено на Проект",
+      "hasNoProject": "няма Проект"
     }
   },
   "subtasks": {

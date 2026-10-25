@@ -2148,11 +2148,17 @@
     "deferUntil": ", aplazar hasta",
     "extrasFilter": {
       "isRecurring": "es Recurrente",
+      "isNotRecurring": "no es Recurrente",
       "isOverdue": "está Vencido",
       "hasContent": "tiene Contenido",
+      "hasNoContent": "no tiene Contenido",
       "isDeferred": "está Diferido",
+      "isNotDeferred": "no está Aplazado",
       "hasTags": "tiene Etiquetas",
-      "isAssignedToProject": "está Asignado al Proyecto"
+      "hasNoTags": "no tiene Etiquetas",
+      "hasNoDueDate": "no tiene Fecha de vencimiento",
+      "isAssignedToProject": "está Asignado al Proyecto",
+      "hasNoProject": "no tiene Proyecto"
     }
   },
   "subtasks": {

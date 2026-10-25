@@ -2160,11 +2160,17 @@
     "deferUntil": ", hoãn lại cho đến",
     "extrasFilter": {
       "isRecurring": "là Lặp lại",
+      "isNotRecurring": "không Lặp lại",
       "isOverdue": "đã Quá hạn",
       "hasContent": "có Nội dung",
+      "hasNoContent": "không có Nội dung",
       "isDeferred": "đã Hoãn lại",
+      "isNotDeferred": "không bị Hoãn",
       "hasTags": "có Thẻ",
-      "isAssignedToProject": "được Giao cho Dự án"
+      "hasNoTags": "không có Thẻ",
+      "hasNoDueDate": "không có Hạn",
+      "isAssignedToProject": "được Giao cho Dự án",
+      "hasNoProject": "không có Dự án"
     }
   },
   "subtasks": {

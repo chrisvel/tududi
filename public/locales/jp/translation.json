@@ -2160,11 +2160,17 @@
     "deferUntil": "、遅延するまで",
     "extrasFilter": {
       "isRecurring": "繰り返し",
+      "isNotRecurring": "繰り返しなし",
       "isOverdue": "期限切れ",
       "hasContent": "コンテンツあり",
+      "hasNoContent": "コンテンツなし",
       "isDeferred": "保留中",
+      "isNotDeferred": "保留なし",
       "hasTags": "タグあり",
-      "isAssignedToProject": "プロジェクトに割り当てられている"
+      "hasNoTags": "タグなし",
+      "hasNoDueDate": "期限なし",
+      "isAssignedToProject": "プロジェクトに割り当てられている",
+      "hasNoProject": "プロジェクトなし"
     }
   },
   "subtasks": {

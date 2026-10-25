@@ -2160,11 +2160,17 @@
     "deferUntil": ", udskyd indtil",
     "extrasFilter": {
       "isRecurring": "er tilbagevendende",
+      "isNotRecurring": "er ikke tilbagevendende",
       "isOverdue": "er forfalden",
       "hasContent": "har indhold",
+      "hasNoContent": "har intet indhold",
       "isDeferred": "er udsat",
+      "isNotDeferred": "er ikke udsat",
       "hasTags": "har tags",
-      "isAssignedToProject": "er tildelt projekt"
+      "hasNoTags": "har ingen tags",
+      "hasNoDueDate": "har ingen forfaldsdato",
+      "isAssignedToProject": "er tildelt projekt",
+      "hasNoProject": "har intet projekt"
     }
   },
   "subtasks": {

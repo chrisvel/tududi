@@ -2160,11 +2160,17 @@
     "deferUntil": ", viivästytä kunnes",
     "extrasFilter": {
       "isRecurring": "on Toistuva",
+      "isNotRecurring": "ei ole Toistuva",
       "isOverdue": "on Erääntynyt",
       "hasContent": "on Sisältöä",
+      "hasNoContent": "ei ole Sisältöä",
       "isDeferred": "on Siirretty",
+      "isNotDeferred": "ei ole Lykätty",
       "hasTags": "on Tunnisteita",
-      "isAssignedToProject": "on Määrätty Projektiin"
+      "hasNoTags": "ei ole Tunnisteita",
+      "hasNoDueDate": "ei ole Eräpäivää",
+      "isAssignedToProject": "on Määrätty Projektiin",
+      "hasNoProject": "ei ole Projektia"
     }
   },
   "subtasks": {

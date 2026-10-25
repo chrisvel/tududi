@@ -2160,11 +2160,17 @@
     "deferUntil": ", uitstellen tot",
     "extrasFilter": {
       "isRecurring": "is Herhalend",
+      "isNotRecurring": "is niet Herhalend",
       "isOverdue": "is Achterstallig",
       "hasContent": "heeft Inhoud",
+      "hasNoContent": "heeft geen Inhoud",
       "isDeferred": "is Uitgesteld",
+      "isNotDeferred": "is niet Uitgesteld",
       "hasTags": "heeft Tags",
-      "isAssignedToProject": "is Toegewezen aan Project"
+      "hasNoTags": "heeft geen Tags",
+      "hasNoDueDate": "heeft geen Vervaldatum",
+      "isAssignedToProject": "is Toegewezen aan Project",
+      "hasNoProject": "heeft geen Project"
     }
   },
   "subtasks": {

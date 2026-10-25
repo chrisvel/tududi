@@ -2644,13 +2644,17 @@
     "tagsFilter": "Tags",
     "extrasFilter": {
       "isRecurring": "is Recurring",
+      "isNotRecurring": "is not Recurring",
       "isOverdue": "is Overdue",
       "hasContent": "has Content",
+      "hasNoContent": "has no Content",
       "isDeferred": "is Deferred",
+      "isNotDeferred": "is not Deferred",
       "hasTags": "has Tags",
       "hasNoTags": "has no Tags",
       "hasNoDueDate": "has no Due Date",
-      "isAssignedToProject": "is Assigned to Project"
+      "isAssignedToProject": "is Assigned to Project",
+      "hasNoProject": "has no Project"
     },
     "saveAsSmartView": "Save as Smart View",
     "viewName": "View Name",

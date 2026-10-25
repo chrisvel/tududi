@@ -2353,11 +2353,17 @@
         "tagsFilter": "Štítky",
         "extrasFilter": {
             "isRecurring": "sa opakujú",
+            "isNotRecurring": "sa neopakujú",
             "isOverdue": "sú po termíne",
             "hasContent": "majú obsah",
+            "hasNoContent": "nemajú obsah",
             "isDeferred": "sú odložené",
+            "isNotDeferred": "nie sú odložené",
             "hasTags": "majú štítky",
-            "isAssignedToProject": "sú priradené k projektu"
+            "hasNoTags": "nemajú štítky",
+            "hasNoDueDate": "nemajú termín",
+            "isAssignedToProject": "sú priradené k projektu",
+            "hasNoProject": "nemajú projekt"
         },
         "saveAsSmartView": "Uložiť ako inteligentné zobrazenie",
         "viewName": "Názov zobrazenia",

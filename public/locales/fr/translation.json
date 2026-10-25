@@ -619,7 +619,7 @@
     },
     "planning": {
       "title": "Planification",
-      "description": "Comment « Que pourriez-vous faire aujourd'hui ? » ordonne vos tâches quand vous planifiez votre journée. Faites glisser les lignes dans l’ordre voulu ; les mêmes tâches apparaissent toujours dans le même ordre.",
+      "description": "Comment « Que pourriez-vous faire aujourd'hui ? » ordonne vos tâches quand vous planifiez votre journée. Faites glisser les lignes dans l'ordre voulu ; les mêmes tâches apparaissent toujours dans le même ordre.",
       "orderTitle": "Ordre (glisser pour modifier)",
       "reset": "Rétablir par défaut",
       "overdue": "En retard",
@@ -632,13 +632,13 @@
       "inProject": "dans un projet",
       "noProject": "sans projet",
       "withinTitle": "Dans chaque groupe",
-      "rulePriority": "Priorité la plus haute d’abord.",
-      "ruleRows": "Puis l’ordre des lignes ci-dessus, pour qu’une tâche dans un projet ne passe jamais devant une tâche de priorité plus haute.",
+      "rulePriority": "Priorité la plus haute d'abord.",
+      "ruleRows": "Puis l'ordre des lignes ci-dessus, pour qu'une tâche dans un projet ne passe jamais devant une tâche de priorité plus haute.",
       "dragRow": "Déplacer {{name}}",
       "moveUp": "Monter {{name}}",
       "moveDown": "Descendre {{name}}",
-      "loadError": "Impossible de charger l’ordre de planification",
-      "saveError": "Impossible d’enregistrer l’ordre de planification",
+      "loadError": "Impossible de charger l'ordre de planification",
+      "saveError": "Impossible d'enregistrer l'ordre de planification",
       "open": "Planifier ma journée",
       "hoursLoadError": "Impossible de charger vos heures de journée",
       "hoursSaveError": "Impossible d'enregistrer vos heures de journée",
@@ -2161,11 +2161,17 @@
     "deferUntil": ", différer jusqu'à",
     "extrasFilter": {
       "isRecurring": "est Récurrent",
+      "isNotRecurring": "n'est pas Récurrent",
       "isOverdue": "est En Retard",
       "hasContent": "a du Contenu",
+      "hasNoContent": "n'a pas de Contenu",
       "isDeferred": "est Différé",
+      "isNotDeferred": "n'est pas Différé",
       "hasTags": "a des Étiquettes",
-      "isAssignedToProject": "est Assigné au Projet"
+      "hasNoTags": "n'a pas d'Étiquettes",
+      "hasNoDueDate": "n'a pas d'Échéance",
+      "isAssignedToProject": "est Assigné au Projet",
+      "hasNoProject": "n'a pas de Projet"
     }
   },
   "subtasks": {
