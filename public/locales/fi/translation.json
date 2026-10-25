@@ -3067,5 +3067,13 @@
     "locked": "Fokuksesi asettama. Poista se yläpalkin merkistä.",
     "emptyHint": "Näytetään vain {{label}}",
     "saveError": "Fokusta ei voitu tallentaa."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Tänään",
+      "tomorrow": "Huomenna",
+      "weekend": "Viikonloppu",
+      "nextWeek": "Ensi viikko"
+    }
   }
 }

@@ -3076,5 +3076,13 @@
     "locked": "Durch deinen Fokus gesetzt. Hebe ihn über den Chip in der oberen Leiste auf.",
     "emptyHint": "Zeigt nur {{label}}",
     "saveError": "Der Fokus konnte nicht gespeichert werden."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "weekend": "Wochenende",
+      "nextWeek": "Nächste Woche"
+    }
   }
 }

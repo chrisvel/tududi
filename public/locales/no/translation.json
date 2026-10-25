@@ -3072,5 +3072,13 @@
     "locked": "Satt av fokuset ditt. Fjern det fra brikken i topplinjen.",
     "emptyHint": "Viser bare {{label}}",
     "saveError": "Fokuset kunne ikke lagres."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "I dag",
+      "tomorrow": "I morgen",
+      "weekend": "Helg",
+      "nextWeek": "Neste uke"
+    }
   }
 }

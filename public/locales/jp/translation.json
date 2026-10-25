@@ -3066,5 +3066,13 @@
     "locked": "フォーカスで設定されています。上部バーのチップから解除してください。",
     "emptyHint": "{{label}} のみ表示中",
     "saveError": "フォーカスを保存できませんでした。"
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "今日",
+      "tomorrow": "明日",
+      "weekend": "週末",
+      "nextWeek": "来週"
+    }
   }
 }

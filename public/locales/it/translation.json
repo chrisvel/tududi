@@ -3068,5 +3068,13 @@
     "locked": "Impostato dal tuo focus. Rimuovilo dal chip nella barra in alto.",
     "emptyHint": "Mostra solo {{label}}",
     "saveError": "Impossibile salvare il focus."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "weekend": "Weekend",
+      "nextWeek": "Prossima settimana"
+    }
   }
 }

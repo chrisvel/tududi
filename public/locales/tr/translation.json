@@ -3067,5 +3067,13 @@
     "locked": "Odağınız tarafından ayarlandı. Üst çubuktaki çipten temizleyin.",
     "emptyHint": "Yalnızca {{label}} gösteriliyor",
     "saveError": "Odak kaydedilemedi."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Bugün",
+      "tomorrow": "Yarın",
+      "weekend": "Hafta sonu",
+      "nextWeek": "Gelecek hafta"
+    }
   }
 }

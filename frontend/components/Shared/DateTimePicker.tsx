@@ -12,6 +12,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import { resolveUserLocale } from '../../utils/localeUtils';
 import { FORM } from '../../constants/formClasses';
+import {
+    DATE_SHORTCUTS,
+    DateShortcut,
+    shortcutDate,
+} from '../../utils/dateShortcuts';
 
 interface DateTimePickerProps {
     value: string; // ISO string
@@ -34,7 +39,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
     className = '',
     renderTrigger,
 }) => {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     const displayLocale = useMemo(
         () => resolveUserLocale(i18n?.language),
         [i18n?.language]
@@ -151,7 +156,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
             const rect = dropdownRef.current.getBoundingClientRect();
             const spaceBelow = window.innerHeight - rect.bottom;
             const spaceAbove = rect.top;
-            const menuHeight = 420; // Calendar + time picker height
+            const menuHeight = 460; // Shortcuts + calendar + time picker height
             const padding = 16;
 
             const wouldFitBelow = spaceBelow >= menuHeight + padding;
@@ -214,6 +219,25 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
         dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
         onChange(dateTime.toISOString());
+        setIsOpen(false);
+    };
+
+    const shortcutLabels: Record<DateShortcut, string> = {
+        today: t('datePicker.shortcuts.today', 'Today'),
+        tomorrow: t('datePicker.shortcuts.tomorrow', 'Tomorrow'),
+        weekend: t('datePicker.shortcuts.weekend', 'Weekend'),
+        next_week: t('datePicker.shortcuts.nextWeek', 'Next week'),
+    };
+
+    // Applies at once and keeps the current time, so a whole-day date stays
+    // whole-day instead of picking up the time select's 12:00 default.
+    const handleShortcut = (kind: DateShortcut) => {
+        const date = shortcutDate(kind, new Date(), firstDayOfWeek);
+        const current = value ? new Date(value) : null;
+        if (current && !isNaN(current.getTime())) {
+            date.setHours(current.getHours(), current.getMinutes(), 0, 0);
+        }
+        onChange(date.toISOString());
         setIsOpen(false);
     };
 
@@ -361,6 +385,29 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {/* Shortcuts */}
+                        <div className="flex flex-wrap gap-1.5 p-3 pb-0">
+                            {DATE_SHORTCUTS.map((kind) => (
+                                <button
+                                    key={kind}
+                                    type="button"
+                                    onClick={() => handleShortcut(kind)}
+                                    title={shortcutDate(
+                                        kind,
+                                        new Date(),
+                                        firstDayOfWeek
+                                    ).toLocaleDateString(displayLocale, {
+                                        weekday: 'short',
+                                        month: 'short',
+                                        day: 'numeric',
+                                    })}
+                                    className="px-2 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-blue-100 hover:text-blue-800 dark:hover:bg-blue-900 dark:hover:text-blue-100 transition-colors"
+                                >
+                                    {shortcutLabels[kind]}
+                                </button>
+                            ))}
+                        </div>
+
                         {/* Calendar Header */}
                         <div className="flex items-center justify-between p-3 border-b border-gray-200 dark:border-gray-600">
                             <button

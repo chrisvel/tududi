@@ -3066,5 +3066,13 @@
     "locked": "Được đặt bởi chế độ tập trung. Xóa từ chip trên thanh trên cùng.",
     "emptyHint": "Chỉ hiển thị {{label}}",
     "saveError": "Không thể lưu chế độ tập trung."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Hôm nay",
+      "tomorrow": "Ngày mai",
+      "weekend": "Cuối tuần",
+      "nextWeek": "Tuần sau"
+    }
   }
 }
