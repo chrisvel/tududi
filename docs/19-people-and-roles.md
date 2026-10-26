@@ -113,6 +113,8 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 20. **A task is shown under its assignee, or under whoever created it if nobody is assigned.** Habits are left out, and a recurring task is shown once with its current due date. Days are worked out in your own timezone. You can open and complete tasks from the board.
 
+21. **Each person has a colour, and dragging a task onto another column assigns it to them.** A person's own colour is used when set; others get distinct colours from a fixed set. The task keeps its due date. The drop goes through the same assignee check as the task page, so a person who can't see the task's project is refused and the board reloads. Group pages use the same board.
+
 ---
 
 ## API summary

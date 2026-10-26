@@ -12,6 +12,11 @@ jest.mock('react-i18next', () => ({
     }),
 }));
 
+jest.mock('../../../i18n', () => ({
+    __esModule: true,
+    default: { t: (key: string) => key, language: 'en' },
+}));
+
 const fetchEveryone = jest.fn();
 jest.mock('../../../utils/everyoneService', () => {
     const actual = jest.requireActual('../../../utils/everyoneService');
@@ -25,32 +30,15 @@ jest.mock('../../../utils/groupsService', () => ({
     fetchGroups: () => Promise.resolve([]),
 }));
 
-jest.mock('../../../utils/projectsService', () => ({
-    fetchProjects: () => Promise.resolve([]),
+const toggleTaskCompletion = jest.fn();
+const updateTask = jest.fn();
+jest.mock('../../../utils/tasksService', () => ({
+    toggleTaskCompletion: (...a: any[]) => toggleTaskCompletion(...a),
+    updateTask: (...a: any[]) => updateTask(...a),
 }));
 
-// The board renders the shared task rows; a stub keeps this test on the
-// board's own wiring. Its button reports the task back as done, the way a
-// row does after completing it.
-jest.mock('../../Task/TaskList', () => ({
-    __esModule: true,
-    default: ({ tasks, onTaskUpdate }: any) => (
-        <ul>
-            {tasks.map((task: any) => (
-                <li key={task.uid}>
-                    <span>{task.name}</span>
-                    <button
-                        type="button"
-                        onClick={() =>
-                            onTaskUpdate({ ...task, status: 'done' })
-                        }
-                    >
-                        Mark complete
-                    </button>
-                </li>
-            ))}
-        </ul>
-    ),
+jest.mock('../../Shared/ToastContext', () => ({
+    useToast: () => ({ showErrorToast: jest.fn() }),
 }));
 
 const emptyBuckets = {
@@ -87,6 +75,7 @@ const renderPage = () =>
 describe('EveryoneDashboard', () => {
     beforeEach(() => {
         fetchEveryone.mockReset();
+        toggleTaskCompletion.mockReset();
     });
 
     it('renders a column per person with their tasks', async () => {
@@ -101,7 +90,14 @@ describe('EveryoneDashboard', () => {
                 },
                 {
                     ...column({}),
-                    today: [{ uid: 't2', name: 'Mate task', status: 0 }],
+                    today: [
+                        {
+                            uid: 't2',
+                            name: 'Mate task',
+                            status: 0,
+                            Project: { name: 'Garden' },
+                        },
+                    ],
                 },
             ],
         });
@@ -111,12 +107,41 @@ describe('EveryoneDashboard', () => {
         await waitFor(() =>
             expect(screen.getByText('Owner task')).toBeInTheDocument()
         );
+        expect(screen.getByText('Garden')).toBeInTheDocument();
         expect(screen.getByText('Mate task')).toBeInTheDocument();
         expect(screen.getByText('Mate')).toBeInTheDocument();
         expect(screen.getByText('You')).toBeInTheDocument();
+        // Your own column names you under "You".
+        expect(screen.getByText('Owner')).toBeInTheDocument();
     });
 
-    it('drops a task from the board when its row completes it', async () => {
+    it('gives people without a colour different colours', async () => {
+        fetchEveryone.mockResolvedValue({
+            summary,
+            columns: [
+                column({}),
+                column({
+                    person: { ...column({}).person, uid: 'p2', name: 'Other' },
+                }),
+            ],
+        });
+        renderPage();
+
+        const first = await screen.findByTestId('person-column-p1');
+        const second = screen.getByTestId('person-column-p2');
+        const strip = (el: HTMLElement) =>
+            (el.firstElementChild as HTMLElement).style.backgroundColor;
+        expect(strip(first)).not.toBe('');
+        expect(strip(first)).not.toBe(strip(second));
+    });
+
+    it('drops a task from the board when its done circle is clicked', async () => {
+        toggleTaskCompletion.mockImplementation(
+            async (_uid: string, task: any) => ({
+                ...task,
+                status: 'done',
+            })
+        );
         fetchEveryone
             .mockResolvedValueOnce({
                 summary,
@@ -135,7 +160,11 @@ describe('EveryoneDashboard', () => {
         );
 
         await userEvent.click(
-            screen.getByRole('button', { name: 'Mark complete' })
+            screen.getByRole('button', { name: 'Mark as done' })
+        );
+        expect(toggleTaskCompletion).toHaveBeenCalledWith(
+            't2',
+            expect.objectContaining({ uid: 't2' })
         );
 
         await waitFor(() =>

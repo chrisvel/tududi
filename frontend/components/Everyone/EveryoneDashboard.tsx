@@ -34,15 +34,15 @@ const EveryoneDashboard: React.FC = () => {
             testId="everyone-dashboard"
             headerExtra={
                 groups.length > 0 && (
-                    <div className="shrink-0 flex flex-wrap items-center gap-2 pb-3">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="mr-0.5 text-xs text-gray-400 dark:text-gray-500">
                             {t('groupPage.yourGroups', 'Your groups')}
                         </span>
                         {groups.map((g) => (
                             <Link
                                 key={g.uid}
                                 to={`/groups/${g.uid}`}
-                                className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                                className="rounded-full bg-white px-2.5 py-0.5 text-xs text-gray-700 hover:bg-gray-100 dark:bg-gray-900/60 dark:text-gray-200 dark:hover:bg-gray-700"
                             >
                                 {g.name}
                             </Link>
