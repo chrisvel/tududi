@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Veuillez sélectionner au moins un jour",
       "deferUntilPlaceholder": "Sélectionnez la date et l'heure de report",
-      "notePlaceholder": "Ajouter une note..."
+      "notePlaceholder": "Ajouter une note...",
+      "startDatePlaceholder": "Choisir la date de début"
     },
     "noteTitle": "Titre de la note",
     "noteContent": "Contenu de la note",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Date cible",
     "color": "Couleur",
     "goalArea": "Zone",
-    "noArea": "Aucune zone"
+    "noArea": "Aucune zone",
+    "startDate": "Début"
   },
   "auth": {
     "login": "Connexion",
@@ -1102,7 +1104,8 @@
     "completeTitle": "Terminer « {{name}} » ?",
     "completeOpenTasks": "Ce projet a encore des tâches ouvertes. Les marquer aussi comme faites, ou les laisser ouvertes ? Les tâches récurrentes gardent leur planification dans tous les cas.",
     "leaveTasksOpen": "Les laisser ouvertes",
-    "completeTasksToo": "Les marquer comme faites"
+    "completeTasksToo": "Les marquer comme faites",
+    "startsOn": "Commence le {{date}}"
   },
   "errors": {
     "required": "Ce champ est requis",
@@ -1391,7 +1394,12 @@
     "estimateHint": "Combien de temps environ ? Utilisé pour planifier votre journée.",
     "estimateClearHint": "Cliquez à nouveau pour effacer",
     "estimateError": "Impossible de mettre à jour l'estimation",
-    "noGoal": "Associer à un objectif"
+    "noGoal": "Associer à un objectif",
+    "startDate": "Début",
+    "noStartDate": "Aucune date de début",
+    "startDateUpdated": "Date de début mise à jour",
+    "startDateUpdateError": "Impossible de mettre à jour la date de début",
+    "startAfterDueError": "Le début ne peut pas être après l'échéance"
   },
   "projects": {
     "loading": "Chargement des projets...",

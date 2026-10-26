@@ -955,7 +955,8 @@
       },
       "selectAtLeastOneDay": "少なくとも1日を選択してください",
       "deferUntilPlaceholder": "延期する日付と時間を選択",
-      "notePlaceholder": "メモを追加..."
+      "notePlaceholder": "メモを追加...",
+      "startDatePlaceholder": "開始日を選択"
     },
     "areaName": "エリア名",
     "areaDescription": "エリアの説明",
@@ -975,7 +976,8 @@
     "goalTargetDate": "目標日",
     "color": "色",
     "goalArea": "エリア",
-    "noArea": "エリアなし"
+    "noArea": "エリアなし",
+    "startDate": "開始"
   },
   "auth": {
     "login": "ログイン",
@@ -1482,7 +1484,8 @@
     "completeTitle": "「{{name}}」を完了しますか？",
     "completeOpenTasks": "このプロジェクトにはまだ未完了のタスクがあります。あわせて完了にしますか、それとも残しますか？繰り返しタスクはどちらの場合もスケジュールを維持します。",
     "leaveTasksOpen": "未完了のまま残す",
-    "completeTasksToo": "あわせて完了にする"
+    "completeTasksToo": "あわせて完了にする",
+    "startsOn": "{{date}} に開始"
   },
   "task": {
     "suggestions": {
@@ -1611,7 +1614,12 @@
     "estimateHint": "だいたいどれくらいかかりますか?一日の計画に使われます。",
     "estimateClearHint": "もう一度クリックすると解除",
     "estimateError": "見積もりを更新できませんでした",
-    "noGoal": "目標に割り当てる"
+    "noGoal": "目標に割り当てる",
+    "startDate": "開始",
+    "noStartDate": "開始日なし",
+    "startDateUpdated": "開始日を更新しました",
+    "startDateUpdateError": "開始日を更新できませんでした",
+    "startAfterDueError": "開始日は期限より後にできません"
   },
   "calendar": {
     "month": "月",

@@ -122,6 +122,14 @@
  *                 type: string
  *                 format: date-time
  *                 description: Project due date
+ *               start_date:
+ *                 type: string
+ *                 format: date
+ *                 description: When the project begins (YYYY-MM-DD, user's timezone)
+ *               start_time:
+ *                 type: string
+ *                 example: "09:30"
+ *                 description: Optional start time (HH:mm, user's timezone); omit for a whole-day start
  *               image_url:
  *                 type: string
  *                 description: Project image URL
@@ -187,6 +195,14 @@
  *                 type: string
  *                 format: date-time
  *                 description: Project due date
+ *               start_date:
+ *                 type: string
+ *                 format: date
+ *                 description: When the project begins (YYYY-MM-DD, user's timezone)
+ *               start_time:
+ *                 type: string
+ *                 example: "09:30"
+ *                 description: Optional start time (HH:mm, user's timezone); omit for a whole-day start
  *               image_url:
  *                 type: string
  *                 description: Project image URL

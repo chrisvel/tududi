@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "하루 이상 선택해 주세요",
       "deferUntilPlaceholder": "연기할 날짜와 시간을 선택하세요",
-      "notePlaceholder": "메모 추가..."
+      "notePlaceholder": "메모 추가...",
+      "startDatePlaceholder": "시작일 선택"
     },
     "noteTitle": "노트 제목",
     "noteContent": "노트 내용",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "목표 날짜",
     "color": "색상",
     "goalArea": "영역",
-    "noArea": "영역 없음"
+    "noArea": "영역 없음",
+    "startDate": "시작"
   },
   "auth": {
     "login": "로그인",
@@ -1100,7 +1102,8 @@
     "completeTitle": "\"{{name}}\"을(를) 완료할까요?",
     "completeOpenTasks": "이 프로젝트에 아직 열린 작업이 있습니다. 함께 완료로 표시할까요, 아니면 열어 둘까요? 반복 작업은 어느 쪽이든 일정이 유지됩니다.",
     "leaveTasksOpen": "열어 두기",
-    "completeTasksToo": "함께 완료"
+    "completeTasksToo": "함께 완료",
+    "startsOn": "{{date}} 시작"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -1389,7 +1392,12 @@
     "estimateHint": "대략 얼마나 걸리나요? 하루를 계획할 때 사용됩니다.",
     "estimateClearHint": "다시 클릭하면 지워집니다",
     "estimateError": "예상 시간을 업데이트할 수 없습니다",
-    "noGoal": "목표에 할당"
+    "noGoal": "목표에 할당",
+    "startDate": "시작",
+    "noStartDate": "시작일 없음",
+    "startDateUpdated": "시작일이 업데이트되었습니다",
+    "startDateUpdateError": "시작일을 업데이트하지 못했습니다",
+    "startAfterDueError": "시작일은 마감일 이후일 수 없습니다"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",

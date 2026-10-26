@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "يرجى اختيار يوم واحد على الأقل",
       "deferUntilPlaceholder": "اختر تاريخ ووقت التأجيل",
-      "notePlaceholder": "أضف ملاحظة..."
+      "notePlaceholder": "أضف ملاحظة...",
+      "startDatePlaceholder": "اختر تاريخ البدء"
     },
     "noteTitle": "عنوان الملاحظة",
     "noteContent": "محتوى الملاحظة",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "التاريخ المستهدف",
     "color": "اللون",
     "goalArea": "المنطقة",
-    "noArea": "بلا منطقة"
+    "noArea": "بلا منطقة",
+    "startDate": "البدء"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -1105,7 +1107,8 @@
     "completeTitle": "إكمال \"{{name}}\"؟",
     "completeOpenTasks": "لا يزال في هذا المشروع مهام مفتوحة. هل تريد تعليمها كمنجزة أيضًا، أم تركها مفتوحة؟ تحتفظ المهام المتكررة بجدولها في كلتا الحالتين.",
     "leaveTasksOpen": "اتركها مفتوحة",
-    "completeTasksToo": "علّمها كمنجزة أيضًا"
+    "completeTasksToo": "علّمها كمنجزة أيضًا",
+    "startsOn": "يبدأ {{date}}"
   },
   "errors": {
     "required": "هذا الحقل مطلوب",
@@ -1394,7 +1397,12 @@
     "estimateHint": "كم تستغرق تقريبًا؟ يُستخدم عند تخطيط يومك.",
     "estimateClearHint": "انقر مرة أخرى للمسح",
     "estimateError": "تعذّر تحديث التقدير",
-    "noGoal": "إسناد إلى هدف"
+    "noGoal": "إسناد إلى هدف",
+    "startDate": "البدء",
+    "noStartDate": "لا يوجد تاريخ بدء",
+    "startDateUpdated": "تم تحديث تاريخ البدء",
+    "startDateUpdateError": "تعذر تحديث تاريخ البدء",
+    "startAfterDueError": "لا يمكن أن يكون البدء بعد تاريخ الاستحقاق"
   },
   "projects": {
     "loading": "جارٍ تحميل المشاريع...",

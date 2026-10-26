@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Vui lòng chọn ít nhất một ngày",
       "deferUntilPlaceholder": "Chọn ngày và giờ hoãn đến",
-      "notePlaceholder": "Thêm ghi chú..."
+      "notePlaceholder": "Thêm ghi chú...",
+      "startDatePlaceholder": "Chọn ngày bắt đầu"
     },
     "noteTitle": "Tiêu đề ghi chú",
     "noteContent": "Nội dung ghi chú",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Ngày mục tiêu",
     "color": "Màu",
     "goalArea": "Khu vực",
-    "noArea": "Không có khu vực"
+    "noArea": "Không có khu vực",
+    "startDate": "Bắt đầu"
   },
   "auth": {
     "login": "Đăng Nhập",
@@ -1100,7 +1102,8 @@
     "completeTitle": "Hoàn thành \"{{name}}\"?",
     "completeOpenTasks": "Dự án này vẫn còn công việc chưa xong. Đánh dấu chúng là xong luôn, hay để mở? Công việc lặp lại vẫn giữ lịch của chúng trong cả hai trường hợp.",
     "leaveTasksOpen": "Để mở",
-    "completeTasksToo": "Đánh dấu xong luôn"
+    "completeTasksToo": "Đánh dấu xong luôn",
+    "startsOn": "Bắt đầu {{date}}"
   },
   "errors": {
     "required": "Trường này là bắt buộc",
@@ -1389,7 +1392,12 @@
     "estimateHint": "Khoảng bao lâu? Dùng khi bạn lên kế hoạch cho ngày.",
     "estimateClearHint": "Nhấn lần nữa để xóa",
     "estimateError": "Không thể cập nhật ước tính",
-    "noGoal": "Gán vào mục tiêu"
+    "noGoal": "Gán vào mục tiêu",
+    "startDate": "Bắt đầu",
+    "noStartDate": "Không có ngày bắt đầu",
+    "startDateUpdated": "Đã cập nhật ngày bắt đầu",
+    "startDateUpdateError": "Không thể cập nhật ngày bắt đầu",
+    "startAfterDueError": "Ngày bắt đầu không thể sau hạn chót"
   },
   "projects": {
     "loading": "Đang tải dự án...",

@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Proszę wybrać przynajmniej jeden dzień",
       "deferUntilPlaceholder": "Wybierz datę i godzinę odłożenia",
-      "notePlaceholder": "Dodaj notatkę..."
+      "notePlaceholder": "Dodaj notatkę...",
+      "startDatePlaceholder": "Wybierz datę rozpoczęcia"
     },
     "noteTitle": "Tytuł notatki",
     "noteContent": "Treść notatki",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Data docelowa",
     "color": "Kolor",
     "goalArea": "Obszar",
-    "noArea": "Brak obszaru"
+    "noArea": "Brak obszaru",
+    "startDate": "Początek"
   },
   "auth": {
     "login": "Zaloguj się",
@@ -1103,7 +1105,8 @@
     "completeTitle": "Zakończyć „{{name}}”?",
     "completeOpenTasks": "Ten projekt ma jeszcze otwarte zadania. Oznaczyć je też jako wykonane czy zostawić otwarte? Zadania cykliczne i tak zachowają swój harmonogram.",
     "leaveTasksOpen": "Zostaw otwarte",
-    "completeTasksToo": "Oznacz też jako wykonane"
+    "completeTasksToo": "Oznacz też jako wykonane",
+    "startsOn": "Zaczyna się {{date}}"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -1392,7 +1395,12 @@
     "estimateHint": "Ile mniej więcej zajmie? Używane przy planowaniu dnia.",
     "estimateClearHint": "Kliknij ponownie, aby wyczyścić",
     "estimateError": "Nie udało się zaktualizować szacunku",
-    "noGoal": "Przypisz do celu"
+    "noGoal": "Przypisz do celu",
+    "startDate": "Początek",
+    "noStartDate": "Brak daty rozpoczęcia",
+    "startDateUpdated": "Data rozpoczęcia zaktualizowana",
+    "startDateUpdateError": "Nie udało się zaktualizować daty rozpoczęcia",
+    "startAfterDueError": "Początek nie może być po terminie"
   },
   "projects": {
     "loading": "Ładowanie projektów...",

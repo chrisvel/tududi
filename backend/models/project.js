@@ -50,6 +50,17 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // When the project begins. Whole-day starts are stored as the
+            // start of the day in the user's timezone.
+            start_date_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
+            start_has_time: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
             user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,

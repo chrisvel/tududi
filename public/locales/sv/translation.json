@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Vänligen välj minst en dag",
       "deferUntilPlaceholder": "Välj datum och tid för uppskjutning",
-      "notePlaceholder": "Lägg till en anteckning..."
+      "notePlaceholder": "Lägg till en anteckning...",
+      "startDatePlaceholder": "Välj startdatum"
     },
     "noteTitle": "Anteckningsitel",
     "noteContent": "Anteckningsinnehåll",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Måldatum",
     "color": "Färg",
     "goalArea": "Område",
-    "noArea": "Inget område"
+    "noArea": "Inget område",
+    "startDate": "Start"
   },
   "auth": {
     "login": "Logga in",
@@ -1101,7 +1103,8 @@
     "completeTitle": "Slutföra \"{{name}}\"?",
     "completeOpenTasks": "Projektet har fortfarande öppna uppgifter. Ska de också markeras som klara, eller lämnas öppna? Återkommande uppgifter behåller sitt schema oavsett.",
     "leaveTasksOpen": "Lämna dem öppna",
-    "completeTasksToo": "Markera dem som klara"
+    "completeTasksToo": "Markera dem som klara",
+    "startsOn": "Börjar {{date}}"
   },
   "errors": {
     "required": "Detta fält är obligatoriskt",
@@ -1390,7 +1393,12 @@
     "estimateHint": "Ungefär hur lång tid? Används när du planerar dagen.",
     "estimateClearHint": "Klicka igen för att rensa",
     "estimateError": "Det gick inte att uppdatera uppskattningen",
-    "noGoal": "Koppla till ett mål"
+    "noGoal": "Koppla till ett mål",
+    "startDate": "Start",
+    "noStartDate": "Inget startdatum",
+    "startDateUpdated": "Startdatum uppdaterat",
+    "startDateUpdateError": "Det gick inte att uppdatera startdatum",
+    "startAfterDueError": "Start kan inte vara efter förfallodatumet"
   },
   "projects": {
     "loading": "Laddar projekt...",

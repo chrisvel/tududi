@@ -10,7 +10,11 @@ import { resolveTaskTokens } from '../../utils/taskTokens';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import AreaDropdown from '../Shared/AreaDropdown';
 import DateTimePicker from '../Shared/DateTimePicker';
-import { fromDueParts, toDueParts } from '../../utils/dueDateTime';
+import {
+    fromDueParts,
+    toDueParts,
+    isStartAfterDue,
+} from '../../utils/dueDateTime';
 import EntitySidePanel from '../SidePanel/EntitySidePanel';
 import {
     SidePanelField,
@@ -63,6 +67,8 @@ interface TaskFormState {
     areaId: number | null;
     dueDate: string;
     dueTime: string;
+    startDate: string;
+    startTime: string;
     tags: string[];
 }
 
@@ -75,6 +81,8 @@ const toFormState = (task: Task): TaskFormState => ({
     areaId: task.area_id ?? null,
     dueDate: task.due_date ? String(task.due_date).split('T')[0] : '',
     dueTime: task.due_has_time ? (task.due_time ?? '') : '',
+    startDate: task.start_date ? String(task.start_date).split('T')[0] : '',
+    startTime: task.start_time ?? '',
     tags: task.tags?.map((tag) => tag.name) ?? [],
 });
 
@@ -171,6 +179,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
             changes.due_time =
                 form.dueDate && form.dueTime ? form.dueTime : null;
         }
+        if (
+            form.startDate !== original.startDate ||
+            form.startTime !== original.startTime
+        ) {
+            changes.start_date = form.startDate || null;
+            changes.start_time =
+                form.startDate && form.startTime ? form.startTime : null;
+        }
         if (JSON.stringify(form.tags) !== JSON.stringify(original.tags)) {
             const existing = tagsStore.tags?.map((tag: any) => tag.name) ?? [];
             const newNames = form.tags.filter(
@@ -185,6 +201,22 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
     const handleSubmit = async () => {
         if (!form.name.trim()) {
             setError(t('task.nameRequired', 'Task name is required'));
+            return;
+        }
+        if (
+            isStartAfterDue(
+                form.startDate,
+                form.startTime,
+                form.dueDate,
+                form.dueTime
+            )
+        ) {
+            setError(
+                t(
+                    'task.startAfterDueError',
+                    'Start cannot be after the due date'
+                )
+            );
             return;
         }
         setSaving(true);
@@ -312,6 +344,21 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
                     value={form.areaId}
                     onChange={(value) => setField('areaId', value)}
                     areas={areas}
+                />
+            </SidePanelSection>
+
+            <SidePanelSection title={t('forms.startDate', 'Start')}>
+                <DateTimePicker
+                    value={fromDueParts(form.startDate, form.startTime || null)}
+                    onChange={(iso) => {
+                        const parts = toDueParts(iso);
+                        setField('startDate', parts.date || '');
+                        setField('startTime', parts.time || '');
+                    }}
+                    placeholder={t(
+                        'forms.task.startDatePlaceholder',
+                        'Select start date'
+                    )}
                 />
             </SidePanelSection>
 

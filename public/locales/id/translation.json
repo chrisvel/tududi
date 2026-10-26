@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Silakan pilih setidaknya satu hari",
       "deferUntilPlaceholder": "Pilih tanggal dan waktu tunda hingga",
-      "notePlaceholder": "Tambahkan catatan..."
+      "notePlaceholder": "Tambahkan catatan...",
+      "startDatePlaceholder": "Pilih tanggal mulai"
     },
     "noteTitle": "Judul Catatan",
     "noteContent": "Konten Catatan",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Tanggal target",
     "color": "Warna",
     "goalArea": "Area",
-    "noArea": "Tanpa area"
+    "noArea": "Tanpa area",
+    "startDate": "Mulai"
   },
   "auth": {
     "login": "Masuk",
@@ -1100,7 +1102,8 @@
     "completeTitle": "Selesaikan \"{{name}}\"?",
     "completeOpenTasks": "Proyek ini masih punya tugas terbuka. Tandai juga sebagai selesai, atau biarkan terbuka? Tugas berulang tetap mengikuti jadwalnya.",
     "leaveTasksOpen": "Biarkan terbuka",
-    "completeTasksToo": "Tandai juga selesai"
+    "completeTasksToo": "Tandai juga selesai",
+    "startsOn": "Mulai {{date}}"
   },
   "errors": {
     "required": "Kolom ini diperlukan",
@@ -1389,7 +1392,12 @@
     "estimateHint": "Kira-kira berapa lama? Dipakai saat merencanakan hari.",
     "estimateClearHint": "Klik lagi untuk menghapus",
     "estimateError": "Gagal memperbarui perkiraan",
-    "noGoal": "Tetapkan ke tujuan"
+    "noGoal": "Tetapkan ke tujuan",
+    "startDate": "Mulai",
+    "noStartDate": "Tidak ada tanggal mulai",
+    "startDateUpdated": "Tanggal mulai diperbarui",
+    "startDateUpdateError": "Gagal memperbarui tanggal mulai",
+    "startAfterDueError": "Mulai tidak boleh setelah tanggal jatuh tempo"
   },
   "projects": {
     "loading": "Memuat proyek...",

@@ -34,6 +34,17 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // When work on the task begins. Whole-day starts are stored as
+            // the start of the day in the user's timezone.
+            start_date: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
+            start_has_time: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
             reminder_at: {
                 type: DataTypes.DATE,
                 allowNull: true,

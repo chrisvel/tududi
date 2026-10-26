@@ -3,6 +3,7 @@ const {
     processDueDateForResponse,
     processDeferUntilForResponse,
     utcToUserTimeString,
+    startForResponse,
 } = require('../../../utils/timezone-utils');
 const {
     getTaskTodayMoveCount,
@@ -19,6 +20,16 @@ function sortTags(tags) {
     return [...tags].sort((a, b) =>
         a.name.toLowerCase().localeCompare(b.name.toLowerCase())
     );
+}
+
+// start_date goes out as the user's local day, start_time as HH:mm or null.
+function startFields(taskJson, timezone) {
+    const start = startForResponse(
+        taskJson.start_date,
+        taskJson.start_has_time,
+        timezone
+    );
+    return { start_date: start.date, start_time: start.time };
 }
 
 async function serializeTask(
@@ -130,6 +141,7 @@ async function serializeTask(
             taskJson.defer_until,
             safeTimezone
         ),
+        ...startFields(taskJson, safeTimezone),
         tags: sortTags(taskJson.Tags),
         Project: taskJson.Project
             ? {
@@ -159,6 +171,7 @@ async function serializeTask(
                       subtask.defer_until,
                       safeTimezone
                   ),
+                  ...startFields(subtask, safeTimezone),
                   completed_at: subtask.completed_at
                       ? subtask.completed_at instanceof Date
                           ? subtask.completed_at.toISOString()

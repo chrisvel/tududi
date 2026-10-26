@@ -444,7 +444,8 @@
       },
       "selectAtLeastOneDay": "Будь ласка, виберіть принаймні один день",
       "deferUntilPlaceholder": "Виберіть дату та час для відкладення",
-      "notePlaceholder": "Додати нотатку..."
+      "notePlaceholder": "Додати нотатку...",
+      "startDatePlaceholder": "Виберіть дату початку"
     },
     "title": "Назва",
     "description": "Опис",
@@ -472,7 +473,8 @@
     "goalTargetDate": "Цільова дата",
     "color": "Колір",
     "goalArea": "Область",
-    "noArea": "Без області"
+    "noArea": "Без області",
+    "startDate": "Початок"
   },
   "modals": {
     "updateNote": "Оновити нотатку",
@@ -758,7 +760,8 @@
     "completeTitle": "Завершити «{{name}}»?",
     "completeOpenTasks": "У цьому проєкті ще є відкриті завдання. Позначити їх теж виконаними чи залишити відкритими? Повторювані завдання в будь-якому разі збережуть свій розклад.",
     "leaveTasksOpen": "Залишити відкритими",
-    "completeTasksToo": "Позначити виконаними"
+    "completeTasksToo": "Позначити виконаними",
+    "startsOn": "Починається {{date}}"
   },
   "profile": {
     "title": "Налаштування Профілю",
@@ -1459,7 +1462,12 @@
     "estimateHint": "Скільки приблизно триватиме? Використовується під час планування дня.",
     "estimateClearHint": "Натисніть ще раз, щоб скинути",
     "estimateError": "Не вдалося оновити оцінку",
-    "noGoal": "Прив'язати до цілі"
+    "noGoal": "Прив'язати до цілі",
+    "startDate": "Початок",
+    "noStartDate": "Немає дати початку",
+    "startDateUpdated": "Дату початку оновлено",
+    "startDateUpdateError": "Не вдалося оновити дату початку",
+    "startAfterDueError": "Початок не може бути пізніше терміну"
   },
   "calendar": {
     "month": "Місяць",

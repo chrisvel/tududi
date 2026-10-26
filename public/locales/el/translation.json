@@ -1258,7 +1258,8 @@
       },
       "selectAtLeastOneDay": "Παρακαλώ επιλέξτε τουλάχιστον μία ημέρα",
       "deferUntilPlaceholder": "Επιλέξτε ημερομηνία και ώρα αναβολής",
-      "notePlaceholder": "Προσθέστε μια σημείωση..."
+      "notePlaceholder": "Προσθέστε μια σημείωση...",
+      "startDatePlaceholder": "Επιλέξτε ημερομηνία έναρξης"
     },
     "projectDescriptionPlaceholder": "Εισάγετε περιγραφή έργου",
     "goalTitlePlaceholder": "Τίτλος στόχου",
@@ -1269,7 +1270,8 @@
     "goalTargetDate": "Ημερομηνία στόχου",
     "color": "Χρώμα",
     "goalArea": "Περιοχή",
-    "noArea": "Χωρίς περιοχή"
+    "noArea": "Χωρίς περιοχή",
+    "startDate": "Έναρξη"
   },
   "priority": {
     "low": "Χαμηλή",
@@ -1415,7 +1417,12 @@
     "estimateHint": "Πόσο περίπου; Χρησιμοποιείται όταν σχεδιάζεις τη μέρα σου.",
     "estimateClearHint": "Κάνε ξανά κλικ για καθαρισμό",
     "estimateError": "Η ενημέρωση της εκτίμησης απέτυχε",
-    "noGoal": "Ανάθεση σε στόχο"
+    "noGoal": "Ανάθεση σε στόχο",
+    "startDate": "Έναρξη",
+    "noStartDate": "Χωρίς ημερομηνία έναρξης",
+    "startDateUpdated": "Η ημερομηνία έναρξης ενημερώθηκε",
+    "startDateUpdateError": "Αποτυχία ενημέρωσης ημερομηνίας έναρξης",
+    "startAfterDueError": "Η έναρξη δεν μπορεί να είναι μετά την προθεσμία"
   },
   "dateFormats": {
     "long": "EEEE, d MMMM yyyy",
@@ -1673,7 +1680,8 @@
     "completeTitle": "Ολοκλήρωση του «{{name}}»;",
     "completeOpenTasks": "Αυτό το έργο έχει ακόμα ανοιχτές εργασίες. Να σημειωθούν κι αυτές ως ολοκληρωμένες ή να μείνουν ανοιχτές; Οι επαναλαμβανόμενες εργασίες κρατούν το πρόγραμμά τους σε κάθε περίπτωση.",
     "leaveTasksOpen": "Να μείνουν ανοιχτές",
-    "completeTasksToo": "Ολοκλήρωση κι αυτών"
+    "completeTasksToo": "Ολοκλήρωση κι αυτών",
+    "startsOn": "Ξεκινά {{date}}"
   },
   "pomodoro": {
     "play": "Αναπαραγωγή",

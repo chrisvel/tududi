@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Por favor, selecione pelo menos um dia",
       "deferUntilPlaceholder": "Selecione a data e hora para adiar até",
-      "notePlaceholder": "Adicionar uma nota..."
+      "notePlaceholder": "Adicionar uma nota...",
+      "startDatePlaceholder": "Selecione a data de início"
     },
     "noteTitle": "Título da Nota",
     "noteContent": "Conteúdo da Nota",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Data-alvo",
     "color": "Cor",
     "goalArea": "Área",
-    "noArea": "Sem área"
+    "noArea": "Sem área",
+    "startDate": "Início"
   },
   "auth": {
     "login": "Entrar",
@@ -1102,7 +1104,8 @@
     "completeTitle": "Concluir \"{{name}}\"?",
     "completeOpenTasks": "Este projeto ainda tem tarefas abertas. Marcá-las também como feitas ou deixá-las abertas? As tarefas recorrentes mantêm o seu agendamento em ambos os casos.",
     "leaveTasksOpen": "Deixar abertas",
-    "completeTasksToo": "Marcar como feitas"
+    "completeTasksToo": "Marcar como feitas",
+    "startsOn": "Começa em {{date}}"
   },
   "errors": {
     "required": "Este campo é obrigatório",
@@ -1391,7 +1394,12 @@
     "estimateHint": "Quanto tempo, mais ou menos? Usado ao planear o dia.",
     "estimateClearHint": "Clique de novo para limpar",
     "estimateError": "Não foi possível atualizar a estimativa",
-    "noGoal": "Atribuir a uma meta"
+    "noGoal": "Atribuir a uma meta",
+    "startDate": "Início",
+    "noStartDate": "Sem data de início",
+    "startDateUpdated": "Data de início atualizada",
+    "startDateUpdateError": "Falha ao atualizar a data de início",
+    "startAfterDueError": "O início não pode ser depois da data de vencimento"
   },
   "projects": {
     "loading": "Carregando projetos...",

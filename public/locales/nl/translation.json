@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Selecteer alstublieft minimaal één dag",
       "deferUntilPlaceholder": "Selecteer uitstel tot datum en tijd",
-      "notePlaceholder": "Voeg een notitie toe..."
+      "notePlaceholder": "Voeg een notitie toe...",
+      "startDatePlaceholder": "Kies een startdatum"
     },
     "noteTitle": "Notitietitel",
     "noteContent": "Notitie-inhoud",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Streefdatum",
     "color": "Kleur",
     "goalArea": "Gebied",
-    "noArea": "Geen gebied"
+    "noArea": "Geen gebied",
+    "startDate": "Start"
   },
   "auth": {
     "login": "Inloggen",
@@ -1101,7 +1103,8 @@
     "completeTitle": "\"{{name}}\" voltooien?",
     "completeOpenTasks": "Dit project heeft nog open taken. Ook afronden of open laten? Terugkerende taken houden hoe dan ook hun schema.",
     "leaveTasksOpen": "Open laten",
-    "completeTasksToo": "Ook afronden"
+    "completeTasksToo": "Ook afronden",
+    "startsOn": "Begint {{date}}"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -1390,7 +1393,12 @@
     "estimateHint": "Hoe lang ongeveer? Wordt gebruikt bij het plannen van je dag.",
     "estimateClearHint": "Klik nogmaals om te wissen",
     "estimateError": "Schatting bijwerken mislukt",
-    "noGoal": "Aan een doel koppelen"
+    "noGoal": "Aan een doel koppelen",
+    "startDate": "Start",
+    "noStartDate": "Geen startdatum",
+    "startDateUpdated": "Startdatum bijgewerkt",
+    "startDateUpdateError": "Startdatum bijwerken mislukt",
+    "startAfterDueError": "De start kan niet na de vervaldatum liggen"
   },
   "projects": {
     "loading": "Projecten laden...",

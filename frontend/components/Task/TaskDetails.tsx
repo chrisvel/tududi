@@ -34,6 +34,7 @@ import {
     TaskRelationsCard,
     TaskRecurrenceCard,
     TaskDueDateCard,
+    TaskStartDateCard,
     TaskDeferUntilCard,
     TaskEstimateCard,
     TaskAttachmentsCard,
@@ -49,6 +50,7 @@ import {
     getTodayDateString,
 } from '../../utils/dateUtils';
 import { isTaskDone } from '../../constants/taskStatus';
+import { isStartAfterDue } from '../../utils/dueDateTime';
 
 const TaskDetails: React.FC = () => {
     const { uid } = useParams<{ uid: string }>();
@@ -164,6 +166,13 @@ const TaskDetails: React.FC = () => {
     const [editedDueTime, setEditedDueTime] = useState<string>(
         task?.due_has_time ? (task.due_time ?? '') : ''
     );
+    const [isEditingStartDate, setIsEditingStartDate] = useState(false);
+    const [editedStartDate, setEditedStartDate] = useState<string>(
+        task?.start_date || ''
+    );
+    const [editedStartTime, setEditedStartTime] = useState<string>(
+        task?.start_time || ''
+    );
     const [isEditingDeferUntil, setIsEditingDeferUntil] = useState(false);
     const [editedDeferUntil, setEditedDeferUntil] = useState<string>(
         task?.defer_until || ''
@@ -188,6 +197,11 @@ const TaskDetails: React.FC = () => {
         setEditedDueDate(task?.due_date || '');
         setEditedDueTime(task?.due_has_time ? (task.due_time ?? '') : '');
     }, [task?.due_date, task?.due_time, task?.due_has_time]);
+
+    useEffect(() => {
+        setEditedStartDate(task?.start_date || '');
+        setEditedStartTime(task?.start_time || '');
+    }, [task?.start_date, task?.start_time]);
 
     useEffect(() => {
         setRecurrenceForm({
@@ -395,6 +409,23 @@ const TaskDetails: React.FC = () => {
             }
         }
 
+        if (
+            isStartAfterDue(
+                task.start_date,
+                task.start_time,
+                editedDueDate,
+                editedDueTime
+            )
+        ) {
+            showErrorToast(
+                t(
+                    'task.startAfterDueError',
+                    'Start cannot be after the due date'
+                )
+            );
+            return;
+        }
+
         if (editedDueDate) {
             const todayStr = getTodayDateString();
             const dueDateStr = editedDueDate.split('T')[0];
@@ -448,6 +479,81 @@ const TaskDetails: React.FC = () => {
         setIsEditingDueDate(false);
         setEditedDueDate(task?.due_date || '');
         setEditedDueTime(task?.due_has_time ? (task.due_time ?? '') : '');
+    };
+
+    const handleStartStartDateEdit = () => {
+        setEditedStartDate(task?.start_date || '');
+        setEditedStartTime(task?.start_time || '');
+        setIsEditingStartDate(true);
+    };
+
+    const handleCancelStartDateEdit = () => {
+        setIsEditingStartDate(false);
+        setEditedStartDate(task?.start_date || '');
+        setEditedStartTime(task?.start_time || '');
+    };
+
+    const handleSaveStartDate = async () => {
+        if (!task?.uid) {
+            handleCancelStartDateEdit();
+            return;
+        }
+
+        if (
+            (editedStartDate || '') === (task.start_date || '') &&
+            (editedStartTime || '') === (task.start_time || '')
+        ) {
+            setIsEditingStartDate(false);
+            return;
+        }
+
+        if (
+            isStartAfterDue(
+                editedStartDate,
+                editedStartTime,
+                task.due_date,
+                task.due_has_time ? task.due_time : null
+            )
+        ) {
+            showErrorToast(
+                t(
+                    'task.startAfterDueError',
+                    'Start cannot be after the due date'
+                )
+            );
+            return;
+        }
+
+        try {
+            taskModifiedRef.current = true;
+            await updateTask(task.uid, {
+                start_date: editedStartDate || null,
+                start_time:
+                    editedStartDate && editedStartTime ? editedStartTime : null,
+            });
+
+            if (uid) {
+                const updatedTask = await fetchTaskByUid(uid);
+                const existingIndex = tasksStore.tasks.findIndex(
+                    (t: Task) => t.uid === uid
+                );
+                if (existingIndex >= 0) {
+                    const updatedTasks = [...tasksStore.tasks];
+                    updatedTasks[existingIndex] = updatedTask;
+                    tasksStore.setTasks(updatedTasks);
+                }
+            }
+
+            showSuccessToast(t('task.startDateUpdated', 'Start date updated'));
+            setIsEditingStartDate(false);
+            setTimelineRefreshKey((prev) => prev + 1);
+        } catch (error) {
+            console.error('Error updating start date:', error);
+            showErrorToast(
+                t('task.startDateUpdateError', 'Failed to update start date')
+            );
+            handleCancelStartDateEdit();
+        }
     };
 
     const handleStartDeferUntilEdit = () => {
@@ -1668,6 +1774,18 @@ const TaskDetails: React.FC = () => {
                                     onUpdate={handleTagsUpdate}
                                     onLoadTags={() => tagsStore.loadTags()}
                                     getTagLink={getTagLink}
+                                />
+
+                                <TaskStartDateCard
+                                    task={task}
+                                    isEditing={isEditingStartDate}
+                                    editedStartDate={editedStartDate}
+                                    onChangeDate={setEditedStartDate}
+                                    editedStartTime={editedStartTime}
+                                    onChangeTime={setEditedStartTime}
+                                    onStartEdit={handleStartStartDateEdit}
+                                    onSave={handleSaveStartDate}
+                                    onCancel={handleCancelStartDateEdit}
                                 />
 
                                 <TaskDueDateCard

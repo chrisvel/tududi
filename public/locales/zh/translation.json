@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "请至少选择一天",
       "deferUntilPlaceholder": "选择延迟至的日期和时间",
-      "notePlaceholder": "添加备注..."
+      "notePlaceholder": "添加备注...",
+      "startDatePlaceholder": "选择开始日期"
     },
     "noteTitle": "笔记标题",
     "noteContent": "笔记内容",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "目标日期",
     "color": "颜色",
     "goalArea": "区域",
-    "noArea": "无区域"
+    "noArea": "无区域",
+    "startDate": "开始"
   },
   "auth": {
     "login": "登录",
@@ -1100,7 +1102,8 @@
     "completeTitle": "完成“{{name}}”？",
     "completeOpenTasks": "此项目仍有未完成的任务。要一并标记为完成，还是保留？重复任务无论如何都会保留其计划。",
     "leaveTasksOpen": "保留未完成",
-    "completeTasksToo": "一并标记完成"
+    "completeTasksToo": "一并标记完成",
+    "startsOn": "{{date}} 开始"
   },
   "errors": {
     "required": "此字段为必填项",
@@ -1389,7 +1392,12 @@
     "estimateHint": "大约需要多久?用于规划一天。",
     "estimateClearHint": "再次点击即可清除",
     "estimateError": "无法更新预估",
-    "noGoal": "分配到目标"
+    "noGoal": "分配到目标",
+    "startDate": "开始",
+    "noStartDate": "无开始日期",
+    "startDateUpdated": "开始日期已更新",
+    "startDateUpdateError": "无法更新开始日期",
+    "startAfterDueError": "开始时间不能晚于截止日期"
   },
   "projects": {
     "loading": "加载项目中...",

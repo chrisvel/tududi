@@ -12,6 +12,8 @@ import AreaDropdown from '../Shared/AreaDropdown';
 import GoalDropdown from '../Shared/GoalDropdown';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import DatePicker from '../Shared/DatePicker';
+import DateTimePicker from '../Shared/DateTimePicker';
+import { fromDueParts, toDueParts } from '../../utils/dueDateTime';
 import ColorPicker from '../Shared/ColorPicker';
 import TagInput from '../Tag/TagInput';
 import { fetchGoals } from '../../utils/goalsService';
@@ -78,18 +80,6 @@ const Panel: React.FC<{
     </section>
 );
 
-const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({
-    label,
-    children,
-}) => (
-    <div className="flex items-center justify-between gap-3 py-2 text-sm">
-        <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
-        <dd className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 text-right text-gray-800 dark:text-gray-200">
-            {children}
-        </dd>
-    </div>
-);
-
 // A project info row that edits in place. The value keeps its links; a
 // pencil (or the empty-state text) opens the editor under the row, and
 // picking a value saves it and closes the editor again.
@@ -144,7 +134,7 @@ const EditableRow: React.FC<{
 );
 
 type EditableField =
-    'area' | 'goal' | 'priority' | 'due' | 'tags' | 'color' | null;
+    'area' | 'goal' | 'priority' | 'start' | 'due' | 'tags' | 'color' | null;
 
 const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
     project,
@@ -434,14 +424,44 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
                             String(project.priority)
                         )}
                     </EditableRow>
-                    {project.created_at && (
-                        <InfoRow label={t('project.started', 'Started')}>
-                            {format(
-                                new Date(project.created_at),
+                    <EditableRow
+                        label={t('task.startDate', 'Start')}
+                        editLabel={t(
+                            'forms.task.startDatePlaceholder',
+                            'Select start date'
+                        )}
+                        empty={t('task.noStartDate', 'No start date')}
+                        hasValue={!!project.start_date}
+                        editing={editing === 'start'}
+                        onStartEdit={() => setEditing('start')}
+                        editor={
+                            <DateTimePicker
+                                value={fromDueParts(
+                                    project.start_date,
+                                    project.start_time
+                                )}
+                                onChange={(iso) => {
+                                    const parts = toDueParts(iso);
+                                    save({
+                                        start_date: parts.date,
+                                        start_time: parts.date
+                                            ? parts.time
+                                            : null,
+                                    });
+                                }}
+                                placeholder={t(
+                                    'forms.task.startDatePlaceholder',
+                                    'Select start date'
+                                )}
+                            />
+                        }
+                    >
+                        {project.start_date &&
+                            `${format(
+                                new Date(`${project.start_date}T00:00:00`),
                                 'MMM d, yyyy'
-                            )}
-                        </InfoRow>
-                    )}
+                            )}${project.start_time ? ` ${project.start_time}` : ''}`}
+                    </EditableRow>
                     <EditableRow
                         label={t('common.due', 'Due')}
                         editLabel={t('project.changeDue', 'Change due date')}

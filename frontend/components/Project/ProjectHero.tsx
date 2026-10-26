@@ -151,7 +151,13 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
     const percent =
         totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
-    const startDate = project.created_at ? new Date(project.created_at) : null;
+    // The project's own start, or the day it was created when none is set.
+    const startDate = project.start_date
+        ? new Date(`${project.start_date}T${project.start_time || '00:00'}:00`)
+        : project.created_at
+          ? new Date(project.created_at)
+          : null;
+    const startsLater = !!startDate && startDate.getTime() > Date.now();
     const isDone = project.status === 'done';
     const completedDate =
         isDone && project.completed_at ? new Date(project.completed_at) : null;
@@ -318,16 +324,27 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                                         <span>·</span>
                                     )}
                                     <span>
-                                        {t(
-                                            'project.startedOn',
-                                            'Started {{date}}',
-                                            {
-                                                date: format(
-                                                    startDate,
-                                                    'MMM d, yyyy'
-                                                ),
-                                            }
-                                        )}
+                                        {startsLater
+                                            ? t(
+                                                  'project.startsOn',
+                                                  'Starts {{date}}',
+                                                  {
+                                                      date: format(
+                                                          startDate,
+                                                          'MMM d, yyyy'
+                                                      ),
+                                                  }
+                                              )
+                                            : t(
+                                                  'project.startedOn',
+                                                  'Started {{date}}',
+                                                  {
+                                                      date: format(
+                                                          startDate,
+                                                          'MMM d, yyyy'
+                                                      ),
+                                                  }
+                                              )}
                                     </span>
                                 </>
                             )}

@@ -28,7 +28,11 @@ const projectsController = {
     async list(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const result = await projectsService.getAll(userId, req.query);
+            const result = await projectsService.getAll(
+                userId,
+                req.query,
+                req.currentUser?.timezone
+            );
             res.json(result);
         } catch (error) {
             next(error);
@@ -74,7 +78,11 @@ const projectsController = {
     async create(req, res, next) {
         try {
             const userId = requireUserId(req);
-            const project = await projectsService.create(userId, req.body);
+            const project = await projectsService.create(
+                userId,
+                req.body,
+                req.currentUser?.timezone
+            );
             res.status(201).json(project);
         } catch (error) {
             next(error);
@@ -91,7 +99,8 @@ const projectsController = {
             const project = await projectsService.update(
                 userId,
                 req.params.uid,
-                req.body
+                req.body,
+                req.currentUser?.timezone
             );
             res.json(project);
         } catch (error) {

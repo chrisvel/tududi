@@ -13,6 +13,9 @@ const { getBlockedCountMap } = require('../tasks/relations/service');
 const {
     getSafeTimezone,
     processDueDateForResponse,
+    startDateTimeToUTC,
+    startForResponse,
+    utcToUserDateString,
 } = require('../../utils/timezone-utils');
 const { uid: generateUid } = require('../../utils/uid');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
@@ -85,11 +88,43 @@ function calculateTaskStatus(tasks) {
     };
 }
 
+// The project's start as the user's local day and HH:mm (or null).
+function startFields(project, timezone) {
+    const start = startForResponse(
+        project.start_date_at,
+        project.start_has_time,
+        getSafeTimezone(timezone)
+    );
+    return { start_date: start.date, start_time: start.time };
+}
+
+// Reads start_date (YYYY-MM-DD) and start_time (HH:mm) into the stored
+// start_date_at. Changing start_date alone drops the time.
+function applyStart(target, data, timezone, storedStart = null) {
+    if (data.start_date === undefined && data.start_time === undefined) return;
+    const tz = getSafeTimezone(timezone);
+    const dateString =
+        data.start_date !== undefined
+            ? data.start_date || null
+            : storedStart && utcToUserDateString(storedStart, tz);
+    try {
+        const { value, hasTime } = startDateTimeToUTC(
+            dateString,
+            data.start_time,
+            tz
+        );
+        target.start_date_at = value;
+        target.start_has_time = hasTime;
+    } catch (error) {
+        throw new ValidationError(error.message);
+    }
+}
+
 class ProjectsService {
     /**
      * Get all projects for a user with filters.
      */
-    async getAll(userId, query) {
+    async getAll(userId, query, userTimezone) {
         const {
             status,
             state,
@@ -214,6 +249,7 @@ class ProjectsService {
                     ...projectJson,
                     tags: sortTags(projectJson.Tags),
                     due_date_at: formatDate(project.due_date_at),
+                    ...startFields(project, userTimezone),
                     task_status: taskStatus,
                     completion_percentage:
                         taskStatus.total > 0
@@ -324,6 +360,13 @@ class ProjectsService {
                           safeTimezone
                       ),
                   };
+                  const start = startForResponse(
+                      task.start_date,
+                      task.start_has_time,
+                      safeTimezone
+                  );
+                  normalizedTask.start_date = start.date;
+                  normalizedTask.start_time = start.time;
                   delete normalizedTask.Tags;
                   delete normalizedTask.Subtasks;
                   return normalizedTask;
@@ -351,6 +394,7 @@ class ProjectsService {
             Tasks: normalizedTasks,
             Notes: normalizedNotes,
             due_date_at: formatDate(project.due_date_at),
+            ...startFields(project, userTimezone),
             user_id: project.user_id,
             share_count: shareCount,
             is_shared: sharedUids.has(project.uid),
@@ -369,7 +413,7 @@ class ProjectsService {
     /**
      * Create a new project.
      */
-    async create(userId, data) {
+    async create(userId, data, userTimezone) {
         await entitlements.assertCanCreate(userId, 'project');
         const {
             name,
@@ -406,6 +450,7 @@ class ProjectsService {
             status: status || state || 'not_started',
             user_id: userId,
         };
+        applyStart(projectData, data, userTimezone);
 
         const project = await projectsRepository.create(projectData);
 
@@ -427,13 +472,14 @@ class ProjectsService {
             uid: projectUid,
             tags: [],
             due_date_at: formatDate(project.due_date_at),
+            ...startFields(project, userTimezone),
         };
     }
 
     /**
      * Update a project.
      */
-    async update(userId, uid, data) {
+    async update(userId, uid, data, userTimezone) {
         const validatedUid = validateUid(uid);
         const project = await projectsRepository.findOne({ uid: validatedUid });
 
@@ -476,6 +522,7 @@ class ProjectsService {
             updateData.priority = priority === '' ? null : priority;
         if (due_date_at !== undefined)
             updateData.due_date_at = due_date_at === '' ? null : due_date_at;
+        applyStart(updateData, data, userTimezone, project.start_date_at);
         if (image_url !== undefined)
             updateData.image_url = image_url === '' ? null : image_url;
         if (color !== undefined) updateData.color = color === '' ? null : color;
@@ -518,6 +565,7 @@ class ProjectsService {
             ...projectJson,
             tags: sortTags(projectJson.Tags),
             due_date_at: formatDate(projectWithAssociations.due_date_at),
+            ...startFields(projectWithAssociations, userTimezone),
         };
     }
 

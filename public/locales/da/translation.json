@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Vælg venligst mindst én dag",
       "deferUntilPlaceholder": "Vælg udsætte indtil dato og tid",
-      "notePlaceholder": "Tilføj en note..."
+      "notePlaceholder": "Tilføj en note...",
+      "startDatePlaceholder": "Vælg startdato"
     },
     "noteTitle": "Notetitel",
     "noteContent": "Noteindhold",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Måldato",
     "color": "Farve",
     "goalArea": "Område",
-    "noArea": "Intet område"
+    "noArea": "Intet område",
+    "startDate": "Start"
   },
   "auth": {
     "login": "Log ind",
@@ -1101,7 +1103,8 @@
     "completeTitle": "Fuldfør \"{{name}}\"?",
     "completeOpenTasks": "Dette projekt har stadig åbne opgaver. Skal de også markeres som udført, eller skal de forblive åbne? Gentagne opgaver beholder deres tidsplan uanset hvad.",
     "leaveTasksOpen": "Lad dem være åbne",
-    "completeTasksToo": "Markér dem også som udført"
+    "completeTasksToo": "Markér dem også som udført",
+    "startsOn": "Starter {{date}}"
   },
   "errors": {
     "required": "Dette felt er påkrævet",
@@ -1390,7 +1393,12 @@
     "estimateHint": "Cirka hvor lang tid? Bruges når du planlægger dagen.",
     "estimateClearHint": "Klik igen for at rydde",
     "estimateError": "Estimatet kunne ikke opdateres",
-    "noGoal": "Knyt til et mål"
+    "noGoal": "Knyt til et mål",
+    "startDate": "Start",
+    "noStartDate": "Ingen startdato",
+    "startDateUpdated": "Startdato opdateret",
+    "startDateUpdateError": "Kunne ikke opdatere startdato",
+    "startAfterDueError": "Start kan ikke ligge efter forfaldsdatoen"
   },
   "projects": {
     "loading": "Indlæser projekter...",

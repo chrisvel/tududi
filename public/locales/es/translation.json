@@ -1159,7 +1159,8 @@
       },
       "selectAtLeastOneDay": "Por favor, selecciona al menos un día",
       "deferUntilPlaceholder": "Seleccione la fecha y hora hasta la cual aplazar",
-      "notePlaceholder": "Añadir una nota..."
+      "notePlaceholder": "Añadir una nota...",
+      "startDatePlaceholder": "Selecciona la fecha de inicio"
     },
     "projectDescriptionPlaceholder": "Ingrese la descripción del proyecto",
     "goalTitlePlaceholder": "Título de la meta",
@@ -1170,7 +1171,8 @@
     "goalTargetDate": "Fecha objetivo",
     "color": "Color",
     "goalArea": "Área",
-    "noArea": "Sin área"
+    "noArea": "Sin área",
+    "startDate": "Inicio"
   },
   "dateFormats": {
     "long": "EEEE, d 'de' MMMM 'de' yyyy",
@@ -1238,7 +1240,8 @@
     "completeTitle": "¿Completar «{{name}}»?",
     "completeOpenTasks": "Este proyecto aún tiene tareas abiertas. ¿Marcarlas también como hechas o dejarlas abiertas? Las tareas recurrentes mantienen su calendario en ambos casos.",
     "leaveTasksOpen": "Dejarlas abiertas",
-    "completeTasksToo": "Marcarlas como hechas"
+    "completeTasksToo": "Marcarlas como hechas",
+    "startsOn": "Empieza el {{date}}"
   },
   "task": {
     "labels": {
@@ -1367,7 +1370,12 @@
     "estimateHint": "¿Cuánto tiempo, más o menos? Se usa al planificar tu día.",
     "estimateClearHint": "Haz clic de nuevo para borrar",
     "estimateError": "No se pudo actualizar la estimación",
-    "noGoal": "Asignar a una meta"
+    "noGoal": "Asignar a una meta",
+    "startDate": "Inicio",
+    "noStartDate": "Sin fecha de inicio",
+    "startDateUpdated": "Fecha de inicio actualizada",
+    "startDateUpdateError": "No se pudo actualizar la fecha de inicio",
+    "startAfterDueError": "El inicio no puede ser posterior a la fecha de vencimiento"
   },
   "dateIndicators": {
     "today": "HOY",

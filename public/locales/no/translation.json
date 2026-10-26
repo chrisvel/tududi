@@ -977,7 +977,8 @@
       },
       "selectAtLeastOneDay": "Vennligst velg minst én dag",
       "deferUntilPlaceholder": "Velg dato og klokkeslett for utsettelse",
-      "notePlaceholder": "Legg til en notat..."
+      "notePlaceholder": "Legg til en notat...",
+      "startDatePlaceholder": "Velg startdato"
     },
     "noteTitle": "Notattittel",
     "noteContent": "Notatinnhold",
@@ -1001,7 +1002,8 @@
     "goalTargetDate": "Måldato",
     "color": "Farge",
     "goalArea": "Område",
-    "noArea": "Ikke noe område"
+    "noArea": "Ikke noe område",
+    "startDate": "Start"
   },
   "auth": {
     "login": "Logg inn",
@@ -1102,7 +1104,8 @@
     "completeTitle": "Fullføre «{{name}}»?",
     "completeOpenTasks": "Dette prosjektet har fortsatt åpne oppgaver. Skal de også markeres som ferdige, eller la dem stå åpne? Gjentakende oppgaver beholder timeplanen sin uansett.",
     "leaveTasksOpen": "La dem stå åpne",
-    "completeTasksToo": "Marker dem også som ferdige"
+    "completeTasksToo": "Marker dem også som ferdige",
+    "startsOn": "Starter {{date}}"
   },
   "errors": {
     "required": "Dette feltet er påkrevd",
@@ -1391,7 +1394,12 @@
     "estimateHint": "Omtrent hvor lenge? Brukes når du planlegger dagen.",
     "estimateClearHint": "Klikk igjen for å fjerne",
     "estimateError": "Kunne ikke oppdatere estimatet",
-    "noGoal": "Knytt til et mål"
+    "noGoal": "Knytt til et mål",
+    "startDate": "Start",
+    "noStartDate": "Ingen startdato",
+    "startDateUpdated": "Startdato oppdatert",
+    "startDateUpdateError": "Kunne ikke oppdatere startdato",
+    "startAfterDueError": "Start kan ikke være etter forfallsdatoen"
   },
   "projects": {
     "loading": "Laster prosjekter...",

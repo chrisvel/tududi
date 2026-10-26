@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Lütfen en az bir gün seçin",
       "deferUntilPlaceholder": "Erteleme tarihi ve saatini seçin",
-      "notePlaceholder": "Not ekle..."
+      "notePlaceholder": "Not ekle...",
+      "startDatePlaceholder": "Başlangıç tarihi seçin"
     },
     "noteTitle": "Not Başlığı",
     "noteContent": "Not İçeriği",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Hedef tarih",
     "color": "Renk",
     "goalArea": "Alan",
-    "noArea": "Alan yok"
+    "noArea": "Alan yok",
+    "startDate": "Başlangıç"
   },
   "auth": {
     "login": "Giriş Yap",
@@ -1101,7 +1103,8 @@
     "completeTitle": "\"{{name}}\" tamamlansın mı?",
     "completeOpenTasks": "Bu projede hâlâ açık görevler var. Onlar da tamamlandı olarak işaretlensin mi, yoksa açık mı kalsın? Tekrarlanan görevler her durumda planlarını korur.",
     "leaveTasksOpen": "Açık bırak",
-    "completeTasksToo": "Onları da tamamla"
+    "completeTasksToo": "Onları da tamamla",
+    "startsOn": "{{date}} tarihinde başlıyor"
   },
   "errors": {
     "required": "Bu alan gereklidir",
@@ -1390,7 +1393,12 @@
     "estimateHint": "Yaklaşık ne kadar sürer? Gününü planlarken kullanılır.",
     "estimateClearHint": "Temizlemek için tekrar tıkla",
     "estimateError": "Tahmin güncellenemedi",
-    "noGoal": "Bir hedefe ata"
+    "noGoal": "Bir hedefe ata",
+    "startDate": "Başlangıç",
+    "noStartDate": "Başlangıç tarihi yok",
+    "startDateUpdated": "Başlangıç tarihi güncellendi",
+    "startDateUpdateError": "Başlangıç tarihi güncellenemedi",
+    "startAfterDueError": "Başlangıç, bitiş tarihinden sonra olamaz"
   },
   "projects": {
     "loading": "Projeler yükleniyor...",
