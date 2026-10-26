@@ -46,7 +46,7 @@ describe('Blog', () => {
             share({
                 title: 'How to organize a family',
                 content:
-                    'A family is not a team.\n\n![People](/api/uploads/note-files/people.png)\n\nSee [[Weekly review]].',
+                    'A family is not a team.\n\n![Walkthrough](/api/uploads/note-files/walkthrough.mp4)\n\n![People](/api/uploads/note-files/people.png)\n\nSee [[Weekly review]].',
                 user_id: admin.id,
             })
         );

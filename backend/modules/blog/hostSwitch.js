@@ -53,8 +53,7 @@ async function headFor(req, origin) {
             const post = await blogService.getPost(match[1]);
             title = `${post.title} | tududi`;
             description = post.excerpt;
-            const cover = post.content.match(/!\[[^\]]*\]\(([^)\s]+)/);
-            image = cover ? cover[1] : null;
+            image = blogService.coverOf(post.content);
             type = 'article';
         } else if (req.path === '/') {
             description = (await blogService.getIndex()).excerpt;

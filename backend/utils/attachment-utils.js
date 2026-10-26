@@ -24,6 +24,9 @@ const ALLOWED_TYPES = {
     'image/jpeg': ['.jpg', '.jpeg'],
     'image/gif': ['.gif'],
     'image/webp': ['.webp'],
+    // Video, played inline in notes and on public note pages
+    'video/mp4': ['.mp4'],
+    'video/webm': ['.webm'],
     // Spreadsheets
     'application/vnd.ms-excel': ['.xls'],
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
@@ -48,6 +51,8 @@ const INLINE_SAFE_EXTENSIONS = new Set([
     '.jpeg',
     '.gif',
     '.webp',
+    '.mp4',
+    '.webm',
 ]);
 
 // Stored extension for any type outside ALLOWED_TYPES. It is not
