@@ -92,6 +92,26 @@ describe('eventsForDate', () => {
         expect(call.end_minute).toBe(12 * 60 + 30);
     });
 
+    it('places events by wall clock on a DST change day', () => {
+        const dentist = parseCalendar(
+            [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//test//EN',
+                'BEGIN:VEVENT',
+                'UID:dentist',
+                'DTSTART;TZID=Europe/Athens:20261025T160000',
+                'DTEND;TZID=Europe/Athens:20261025T170000',
+                'SUMMARY:Dentist',
+                'END:VEVENT',
+                'END:VCALENDAR',
+            ].join('\r\n')
+        );
+        const [event] = eventsForDate(dentist, '2026-10-25', 'Europe/Athens');
+        expect(event.start_minute).toBe(16 * 60);
+        expect(event.end_minute).toBe(17 * 60);
+    });
+
     it('lists all-day events first without minutes', () => {
         const [first] = eventsForDate(events, '2026-09-24', 'Europe/Athens');
         expect(first).toMatchObject({
