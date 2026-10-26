@@ -3130,7 +3130,8 @@
     "legendOverdue": "Atrasadas",
     "saveError": "Não foi possível mover a tarefa",
     "dueOn": "Prazo {{date}}",
-    "startsOn": "Começa {{date}}"
+    "startsOn": "Começa {{date}}",
+    "noLinks": "Marque tarefas como bloqueadoras de outras para ver o caminho até o fim"
   },
   "everyoneTimeline": {
     "view": "Visualização",
@@ -3146,6 +3147,10 @@
     "loadTitle": "{{hours}} de {{capacity}} planejadas",
     "legendLoad": "Horas das estimativas, distribuídas do início ao prazo",
     "legendOver": "Mais do que seu dia de planejamento de {{hours}}",
-    "dragHint": "Arraste uma barra para o lado para movê-la, ou para outra pessoa para atribuí-la"
+    "dragHint": "Arraste uma barra para movê-la, as pontas para mudar as datas ou para outra pessoa para atribuí-la",
+    "oneWeek": "1 semana",
+    "eightWeeks": "8 semanas",
+    "zoomIn": "Aproximar",
+    "zoomOut": "Afastar"
   }
 }

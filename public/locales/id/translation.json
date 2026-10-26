@@ -3124,7 +3124,8 @@
     "legendOverdue": "Terlambat",
     "saveError": "Tidak dapat memindahkan tugas",
     "dueOn": "Tenggat {{date}}",
-    "startsOn": "Mulai {{date}}"
+    "startsOn": "Mulai {{date}}",
+    "noLinks": "Tandai tugas sebagai penghambat tugas lain untuk melihat jalur hingga selesai"
   },
   "everyoneTimeline": {
     "view": "Tampilan",
@@ -3140,6 +3141,10 @@
     "loadTitle": "{{hours}} dari {{capacity}} direncanakan",
     "legendLoad": "Jam dari estimasi tugas, dibagi dari mulai hingga tenggat",
     "legendOver": "Lebih dari hari perencanaan {{hours}} Anda",
-    "dragHint": "Seret bilah ke samping untuk memindahkan, atau ke orang lain untuk menugaskan"
+    "dragHint": "Seret bilah untuk memindahkannya, ujungnya untuk mengubah tanggal, atau ke orang lain untuk menugaskannya",
+    "oneWeek": "1 minggu",
+    "eightWeeks": "8 minggu",
+    "zoomIn": "Perbesar",
+    "zoomOut": "Perkecil"
   }
 }

@@ -3137,7 +3137,8 @@
     "legendOverdue": "Zamujeno",
     "saveError": "Opravila ni bilo mogoče premakniti",
     "dueOn": "Rok {{date}}",
-    "startsOn": "Začne se {{date}}"
+    "startsOn": "Začne se {{date}}",
+    "noLinks": "Označite opravila kot blokirajoča za druga, da vidite pot do konca"
   },
   "everyoneTimeline": {
     "view": "Pogled",
@@ -3153,6 +3154,10 @@
     "loadTitle": "{{hours}} od {{capacity}} načrtovano",
     "legendLoad": "Ure iz ocen opravil, razporejene od začetka do roka",
     "legendOver": "Več kot vaš načrtovalni dan {{hours}}",
-    "dragHint": "Povlecite vrstico vstran za premik ali na drugo osebo za dodelitev"
+    "dragHint": "Povlecite vrstico, da jo premaknete, njene konce, da spremenite datume, ali na drugo osebo, da jo dodelite",
+    "oneWeek": "1 teden",
+    "eightWeeks": "8 tednov",
+    "zoomIn": "Povečaj",
+    "zoomOut": "Pomanjšaj"
   }
 }

@@ -5,10 +5,14 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import {
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    MagnifyingGlassMinusIcon,
+    MagnifyingGlassPlusIcon,
+} from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
 import {
     EveryoneTimelineResponse,
@@ -16,6 +20,7 @@ import {
 } from '../../utils/everyoneService';
 import { updateTask } from '../../utils/tasksService';
 import { useToast } from '../Shared/ToastContext';
+import TaskModal from '../Task/TaskModal';
 import { columnColors, PersonAvatar } from './PeopleBoard';
 import {
     TimelineItem,
@@ -33,6 +38,10 @@ const LOAD_HEIGHT = 34;
 const LEFT_WIDTH = 200;
 const HEADER_HEIGHT = 52;
 const SPAN_KEY = 'everyone_timeline_days';
+// Zoom steps in days, with the narrowest a day may get before the grid
+// scrolls sideways
+const SPANS = [7, 14, 28, 56];
+const MIN_DAY_WIDTH: Record<number, number> = { 7: 80, 14: 44, 28: 22, 56: 14 };
 
 interface Placed {
     item: TimelineItem;
@@ -42,6 +51,7 @@ interface Placed {
 interface DragState {
     uid: string;
     lane: string;
+    edge: 'move' | 'start' | 'end';
     originX: number;
     delta: number;
 }
@@ -90,11 +100,11 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
     header,
 }) => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const { showErrorToast } = useToast();
     const [days, setDays] = useState<number>(() => {
         try {
-            return localStorage.getItem(SPAN_KEY) === '28' ? 28 : 14;
+            const saved = Number(localStorage.getItem(SPAN_KEY));
+            return SPANS.includes(saved) ? saved : 14;
         } catch {
             return 14;
         }
@@ -104,6 +114,7 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
     const [error, setError] = useState(false);
     const [drag, setDrag] = useState<DragState | null>(null);
     const [hoverLane, setHoverLane] = useState<string | null>(null);
+    const [panelTask, setPanelTask] = useState<Task | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [viewWidth, setViewWidth] = useState(0);
 
@@ -142,12 +153,17 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
     const last = first + days - 1;
     const today = todayDay();
     // Days stretch to fill the space; past a minimum width the grid scrolls
-    const minDayW = days === 14 ? 44 : 22;
+    const minDayW = MIN_DAY_WIDTH[days];
     const dayW = viewWidth
         ? Math.max(minDayW, (viewWidth - LEFT_WIDTH) / days)
-        : days === 14
-          ? 72
-          : 40;
+        : minDayW * 1.5;
+    const spanIndex = SPANS.indexOf(days);
+    const spanLabels: Record<number, string> = {
+        7: t('everyoneTimeline.oneWeek', '1 week'),
+        14: t('everyoneTimeline.twoWeeks', '2 weeks'),
+        28: t('everyoneTimeline.fourWeeks', '4 weeks'),
+        56: t('everyoneTimeline.eightWeeks', '8 weeks'),
+    };
     const width = days * dayW;
     const capacity = data
         ? (data.day_hours.end - data.day_hours.start) / 60
@@ -193,9 +209,11 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
     ) => {
         if (e.button !== 0 || !item.task.uid) return;
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        const edge = (e.target as HTMLElement).dataset?.edge;
         setDrag({
             uid: item.task.uid,
             lane: laneUid,
+            edge: edge === 'start' || edge === 'end' ? edge : 'move',
             originX: e.clientX,
             delta: 0,
         });
@@ -213,7 +231,7 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
         if (!drag) return;
         const delta = Math.round((e.clientX - drag.originX) / dayW);
         if (delta !== drag.delta) setDrag({ ...drag, delta });
-        setHoverLane(laneAt(e.clientX, e.clientY));
+        if (drag.edge === 'move') setHoverLane(laneAt(e.clientX, e.clientY));
     };
 
     const handlePointerUp = async (
@@ -222,19 +240,19 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
         original: TimelineItem
     ) => {
         if (!drag) return;
-        const { delta, lane } = drag;
-        const target = laneAt(e.clientX, e.clientY);
+        const { delta, lane, edge } = drag;
+        const target = edge === 'move' ? laneAt(e.clientX, e.clientY) : null;
         setDrag(null);
         setHoverLane(null);
         const moved = delta !== 0;
         const reassigned = !!target && target !== lane;
         if (!moved && !reassigned) {
-            navigate(`/task/${task.uid}`);
+            if (edge === 'move') setPanelTask(task);
             return;
         }
         const payload: Partial<Task> = {};
         if (moved) {
-            Object.assign(payload, shiftDates(original, delta, 'move'));
+            Object.assign(payload, shiftDates(original, delta, edge));
             if (payload.start_date && task.start_time)
                 payload.start_time = task.start_time;
             if (payload.due_date && task.due_has_time && task.due_time)
@@ -295,25 +313,34 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                 <div
                     role="group"
                     aria-label={t('projectTimeline.scale', 'Scale')}
-                    className="flex rounded-lg bg-gray-200/70 p-0.5 dark:bg-gray-800"
+                    className="flex items-center rounded-lg bg-gray-200/70 p-0.5 dark:bg-gray-800"
                 >
-                    {[14, 28].map((n) => (
-                        <button
-                            key={n}
-                            type="button"
-                            aria-pressed={days === n}
-                            onClick={() => changeDays(n)}
-                            className={`rounded-md px-3 py-1 text-sm ${
-                                days === n
-                                    ? 'bg-white font-medium text-gray-900 shadow-sm dark:bg-gray-700 dark:text-gray-100'
-                                    : 'text-gray-600 dark:text-gray-300'
-                            }`}
-                        >
-                            {n === 14
-                                ? t('everyoneTimeline.twoWeeks', '2 weeks')
-                                : t('everyoneTimeline.fourWeeks', '4 weeks')}
-                        </button>
-                    ))}
+                    <button
+                        type="button"
+                        aria-label={t('everyoneTimeline.zoomIn', 'Zoom in')}
+                        title={t('everyoneTimeline.zoomIn', 'Zoom in')}
+                        disabled={spanIndex <= 0}
+                        onClick={() => changeDays(SPANS[spanIndex - 1])}
+                        className="rounded-md p-1.5 text-gray-600 hover:bg-white disabled:opacity-40 disabled:hover:bg-transparent dark:text-gray-300 dark:hover:bg-gray-700"
+                    >
+                        <MagnifyingGlassPlusIcon className="h-4 w-4" />
+                    </button>
+                    <span
+                        className="min-w-[4.5rem] text-center text-sm font-medium text-gray-700 dark:text-gray-200"
+                        data-testid="everyone-timeline-span"
+                    >
+                        {spanLabels[days]}
+                    </span>
+                    <button
+                        type="button"
+                        aria-label={t('everyoneTimeline.zoomOut', 'Zoom out')}
+                        title={t('everyoneTimeline.zoomOut', 'Zoom out')}
+                        disabled={spanIndex >= SPANS.length - 1}
+                        onClick={() => changeDays(SPANS[spanIndex + 1])}
+                        className="rounded-md p-1.5 text-gray-600 hover:bg-white disabled:opacity-40 disabled:hover:bg-transparent dark:text-gray-300 dark:hover:bg-gray-700"
+                    >
+                        <MagnifyingGlassMinusIcon className="h-4 w-4" />
+                    </button>
                 </div>
             </div>
 
@@ -384,7 +411,13 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                                                 )}
                                             </span>
                                         )}
-                                        <span>{format(dateOf(day), 'd')}</span>
+                                        {(dayW >= 18 ||
+                                            weekday === 1 ||
+                                            day === today) && (
+                                            <span>
+                                                {format(dateOf(day), 'd')}
+                                            </span>
+                                        )}
                                     </div>
                                 );
                             })}
@@ -497,6 +530,33 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                                             const shift = dragging
                                                 ? drag!.delta * dayW
                                                 : 0;
+                                            const edge = dragging
+                                                ? drag!.edge
+                                                : 'move';
+                                            const original = originalItem(
+                                                item.task
+                                            );
+                                            // Resizing is only offered on ends
+                                            // that are inside the window
+                                            const canResize =
+                                                item.kind === 'range' &&
+                                                (item.to - item.from + 1) *
+                                                    dayW >=
+                                                    40;
+                                            const startHandle =
+                                                canResize &&
+                                                original.from >= first;
+                                            const endHandle =
+                                                canResize &&
+                                                original.to <= last;
+                                            const leftShift =
+                                                edge === 'end' ? 0 : shift;
+                                            const widthShift =
+                                                edge === 'start'
+                                                    ? -shift
+                                                    : edge === 'end'
+                                                      ? shift
+                                                      : 0;
                                             const span =
                                                 item.to - item.from + 1;
                                             const est = item.task
@@ -529,12 +589,10 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                                                         handlePointerUp(
                                                             e,
                                                             item.task,
-                                                            originalItem(
-                                                                item.task
-                                                            )
+                                                            original
                                                         )
                                                     }
-                                                    className={`absolute flex touch-none items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-2 text-left text-xs font-medium text-gray-900 dark:text-gray-100 ${
+                                                    className={`group absolute flex touch-none items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-2 text-left text-xs font-medium text-gray-900 dark:text-gray-100 ${
                                                         dragging
                                                             ? 'z-10 cursor-grabbing shadow-lg'
                                                             : 'cursor-grab'
@@ -545,8 +603,13 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                                                                 first) *
                                                                 dayW +
                                                             3 +
-                                                            shift,
-                                                        width: span * dayW - 6,
+                                                            leftShift,
+                                                        width: Math.max(
+                                                            dayW - 6,
+                                                            span * dayW -
+                                                                6 +
+                                                                widthShift
+                                                        ),
                                                         top:
                                                             8 +
                                                             track *
@@ -555,6 +618,18 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                                                         backgroundColor: `${color}${item.kind === 'start' ? '22' : '38'}`,
                                                     }}
                                                 >
+                                                    {startHandle && (
+                                                        <span
+                                                            data-edge="start"
+                                                            className="absolute inset-y-0 left-0 w-2 cursor-ew-resize rounded-l-md group-hover:bg-black/10 dark:group-hover:bg-white/20"
+                                                        />
+                                                    )}
+                                                    {endHandle && (
+                                                        <span
+                                                            data-edge="end"
+                                                            className="absolute inset-y-0 right-0 w-2 cursor-ew-resize rounded-r-md group-hover:bg-black/10 dark:group-hover:bg-white/20"
+                                                        />
+                                                    )}
                                                     {item.kind === 'due' && (
                                                         <span
                                                             className="h-2 w-2 flex-shrink-0 rotate-45"
@@ -616,9 +691,11 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                                                                     ? formatHours(
                                                                           hours
                                                                       )
-                                                                    : Math.round(
-                                                                          hours
-                                                                      )}
+                                                                    : dayW >= 22
+                                                                      ? Math.round(
+                                                                            hours
+                                                                        )
+                                                                      : ''}
                                                             </div>
                                                         )}
                                                     </div>
@@ -651,11 +728,19 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                     <span>
                         {t(
                             'everyoneTimeline.dragHint',
-                            'Drag a bar sideways to move it, or onto another person to assign it'
+                            'Drag a bar to move it, its ends to change the dates, or onto another person to assign it'
                         )}
                     </span>
                 </div>
             </div>
+            {panelTask && (
+                <TaskModal
+                    isOpen
+                    onClose={() => setPanelTask(null)}
+                    task={panelTask}
+                    onSaved={load}
+                />
+            )}
         </div>
     );
 };

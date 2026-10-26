@@ -27,6 +27,7 @@ interface TaskModalProps {
     isOpen: boolean;
     onClose: () => void;
     task: Task;
+    onSaved?: (task: Task) => void;
 }
 
 const STATUS_OPTIONS: { value: number; key: string; fallback: string }[] = [
@@ -88,7 +89,12 @@ const toFormState = (task: Task): TaskFormState => ({
 
 // Edits the core fields of a task in the side panel. Recurrence, relations,
 // subtasks and reminders stay on the task page.
-const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
+const TaskModal: React.FC<TaskModalProps> = ({
+    isOpen,
+    onClose,
+    task,
+    onSaved,
+}) => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
     const projects = useStore(
@@ -232,6 +238,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, task }) => {
             await updateTask(task.uid!, changes as Partial<Task>);
             const fresh = await fetchTaskByUid(task.uid!);
             useStore.getState().tasksStore.updateTaskInStore(fresh);
+            onSaved?.(fresh);
             showSuccessToast(t('success.taskUpdated', 'Task updated!'));
             onClose();
         } catch (err) {

@@ -3117,7 +3117,8 @@
     "legendOverdue": "Vencidas",
     "saveError": "No se pudo mover la tarea",
     "dueOn": "Vence {{date}}",
-    "startsOn": "Empieza {{date}}"
+    "startsOn": "Empieza {{date}}",
+    "noLinks": "Marca tareas como bloqueantes de otras para ver el camino hasta el final"
   },
   "everyoneTimeline": {
     "view": "Vista",
@@ -3133,6 +3134,10 @@
     "loadTitle": "{{hours}} de {{capacity}} planificadas",
     "legendLoad": "Horas de las estimaciones, repartidas del inicio al vencimiento",
     "legendOver": "Más que tu día de planificación de {{hours}}",
-    "dragHint": "Arrastra una barra a los lados para moverla, o sobre otra persona para asignarla"
+    "dragHint": "Arrastra una barra para moverla, sus extremos para cambiar las fechas o sobre otra persona para asignarla",
+    "oneWeek": "1 semana",
+    "eightWeeks": "8 semanas",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar"
   }
 }

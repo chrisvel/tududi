@@ -3127,7 +3127,8 @@
     "legendOverdue": "Myöhässä",
     "saveError": "Tehtävää ei voitu siirtää",
     "dueOn": "Erääntyy {{date}}",
-    "startsOn": "Alkaa {{date}}"
+    "startsOn": "Alkaa {{date}}",
+    "noLinks": "Merkitse tehtäviä muita estäviksi nähdäksesi polun loppuun"
   },
   "everyoneTimeline": {
     "view": "Näkymä",
@@ -3143,6 +3144,10 @@
     "loadTitle": "{{hours}} / {{capacity}} suunniteltu",
     "legendLoad": "Tunnit tehtävien arvioista, jaettuna alusta eräpäivään",
     "legendOver": "Enemmän kuin {{hours}} suunnittelupäiväsi",
-    "dragHint": "Vedä palkkia sivulle siirtääksesi sen tai toisen henkilön kohdalle antaaksesi sen hänelle"
+    "dragHint": "Vedä palkkia siirtääksesi sen, sen päitä muuttaaksesi päivämääriä tai toisen henkilön kohdalle antaaksesi sen hänelle",
+    "oneWeek": "1 viikko",
+    "eightWeeks": "8 viikkoa",
+    "zoomIn": "Lähennä",
+    "zoomOut": "Loitonna"
   }
 }

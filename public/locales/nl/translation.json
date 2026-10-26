@@ -3127,7 +3127,8 @@
     "legendOverdue": "Te laat",
     "saveError": "Kon de taak niet verplaatsen",
     "dueOn": "Deadline {{date}}",
-    "startsOn": "Begint {{date}}"
+    "startsOn": "Begint {{date}}",
+    "noLinks": "Markeer taken als blokkerend voor andere taken om het pad naar het einde te zien"
   },
   "everyoneTimeline": {
     "view": "Weergave",
@@ -3143,6 +3144,10 @@
     "loadTitle": "{{hours}} van {{capacity}} gepland",
     "legendLoad": "Uren uit taakschattingen, verdeeld van start tot deadline",
     "legendOver": "Meer dan je planningsdag van {{hours}}",
-    "dragHint": "Sleep een balk opzij om hem te verplaatsen, of naar iemand anders om hem toe te wijzen"
+    "dragHint": "Sleep een balk om hem te verplaatsen, de uiteinden om de datums te wijzigen, of naar een ander persoon om hem toe te wijzen",
+    "oneWeek": "1 week",
+    "eightWeeks": "8 weken",
+    "zoomIn": "Inzoomen",
+    "zoomOut": "Uitzoomen"
   }
 }

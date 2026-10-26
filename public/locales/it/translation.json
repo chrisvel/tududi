@@ -3130,7 +3130,8 @@
     "legendOverdue": "In ritardo",
     "saveError": "Impossibile spostare l'attività",
     "dueOn": "Scade {{date}}",
-    "startsOn": "Inizia {{date}}"
+    "startsOn": "Inizia {{date}}",
+    "noLinks": "Segna le attività come bloccanti per altre per vedere il percorso fino alla fine"
   },
   "everyoneTimeline": {
     "view": "Vista",
@@ -3146,6 +3147,10 @@
     "loadTitle": "{{hours}} su {{capacity}} pianificate",
     "legendLoad": "Ore dalle stime delle attività, distribuite dall'inizio alla scadenza",
     "legendOver": "Più della tua giornata di pianificazione di {{hours}}",
-    "dragHint": "Trascina una barra di lato per spostarla, o su un'altra persona per assegnarla"
+    "dragHint": "Trascina una barra per spostarla, le sue estremità per cambiare le date o su un'altra persona per assegnarla",
+    "oneWeek": "1 settimana",
+    "eightWeeks": "8 settimane",
+    "zoomIn": "Ingrandisci",
+    "zoomOut": "Riduci"
   }
 }

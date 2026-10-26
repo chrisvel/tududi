@@ -3136,7 +3136,8 @@
     "legendOverdue": "Überfällig",
     "saveError": "Die Aufgabe konnte nicht verschoben werden",
     "dueOn": "Fällig {{date}}",
-    "startsOn": "Beginnt {{date}}"
+    "startsOn": "Beginnt {{date}}",
+    "noLinks": "Markiere Aufgaben als blockierend, um den Weg zum Ziel zu sehen"
   },
   "everyoneTimeline": {
     "view": "Ansicht",
@@ -3152,6 +3153,10 @@
     "loadTitle": "{{hours}} von {{capacity}} geplant",
     "legendLoad": "Stunden aus Aufgabenschätzungen, verteilt von Beginn bis Fälligkeit",
     "legendOver": "Mehr als dein Planungstag von {{hours}}",
-    "dragHint": "Balken seitlich ziehen zum Verschieben, auf eine andere Person zum Zuweisen"
+    "dragHint": "Balken ziehen zum Verschieben, an den Enden ziehen für neue Daten, auf eine andere Person zum Zuweisen",
+    "oneWeek": "1 Woche",
+    "eightWeeks": "8 Wochen",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern"
   }
 }

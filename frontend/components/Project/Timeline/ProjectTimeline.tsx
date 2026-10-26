@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { TFunction } from 'i18next';
 import { format } from 'date-fns';
 import { Task } from '../../../entities/Task';
@@ -59,6 +58,7 @@ interface ProjectTimelineProps {
         task: Task,
         dates: { start_date?: string; due_date?: string }
     ) => Promise<void>;
+    onOpenTask: (task: Task) => void;
     t: TFunction;
 }
 
@@ -67,9 +67,9 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
     tasks,
     links,
     onDatesChange,
+    onOpenTask,
     t,
 }) => {
-    const navigate = useNavigate();
     const scrollRef = useRef<HTMLDivElement>(null);
     const [zoom, setZoom] = useState<Zoom>(() => {
         const saved = readSetting(ZOOM_KEY);
@@ -97,6 +97,14 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
             ),
         [items, projectStart, projectDue, today, zoom]
     );
+    // The path follows "blocks" links, so it needs at least one between
+    // two tasks on the chart
+    const hasLinks = useMemo(() => {
+        const uids = new Set(items.map((item) => item.task.uid));
+        return links.some(
+            (link) => uids.has(link.from_uid) && uids.has(link.to_uid)
+        );
+    }, [items, links]);
     const path = useMemo(
         () => (showPath ? findPath(items, links) : new Set<string>()),
         [items, links, showPath]
@@ -202,7 +210,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
         const { delta, edge } = drag;
         setDrag(null);
         if (delta === 0) {
-            if (edge === 'move') navigate(`/task/${item.task.uid}`);
+            if (edge === 'move') onOpenTask(item.task);
             return;
         }
         await onDatesChange(item.task, shiftDates(item, delta, edge));
@@ -342,10 +350,25 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                         {t('sidebar.today', 'Today')}
                     </button>
                 </div>
-                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <label
+                    title={
+                        hasLinks
+                            ? undefined
+                            : t(
+                                  'projectTimeline.noLinks',
+                                  'Mark tasks as blocking other tasks to see the path to the finish'
+                              )
+                    }
+                    className={`flex items-center gap-2 text-sm ${
+                        hasLinks
+                            ? 'text-gray-700 dark:text-gray-300'
+                            : 'cursor-not-allowed text-gray-400 dark:text-gray-500'
+                    }`}
+                >
                     <input
                         type="checkbox"
-                        checked={showPath}
+                        checked={showPath && hasLinks}
+                        disabled={!hasLinks}
                         onChange={togglePath}
                         className="h-4 w-4 rounded text-blue-600"
                     />
@@ -365,7 +388,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                         <button
                             key={item.task.uid}
                             type="button"
-                            onClick={() => navigate(`/task/${item.task.uid}`)}
+                            onClick={() => onOpenTask(item.task)}
                             className={`flex w-full flex-col justify-center px-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 ${
                                 i % 2 ? 'bg-gray-50/60 dark:bg-gray-800/40' : ''
                             }`}
@@ -731,9 +754,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                         );
                                         e.dataTransfer.effectAllowed = 'move';
                                     }}
-                                    onClick={() =>
-                                        navigate(`/task/${task.uid}`)
-                                    }
+                                    onClick={() => onOpenTask(task)}
                                     className="cursor-grab rounded-lg bg-gray-100 px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                                 >
                                     {task.name}

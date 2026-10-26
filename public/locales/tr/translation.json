@@ -3127,7 +3127,8 @@
     "legendOverdue": "Gecikmiş",
     "saveError": "Görev taşınamadı",
     "dueOn": "Bitiş {{date}}",
-    "startsOn": "Başlangıç {{date}}"
+    "startsOn": "Başlangıç {{date}}",
+    "noLinks": "Bitişe giden yolu görmek için görevleri diğer görevleri engelleyen olarak işaretleyin"
   },
   "everyoneTimeline": {
     "view": "Görünüm",
@@ -3143,6 +3144,10 @@
     "loadTitle": "{{capacity}} içinden {{hours}} planlandı",
     "legendLoad": "Görev tahminlerinden saatler, başlangıçtan bitişe dağıtılmış",
     "legendOver": "{{hours}} planlama gününüzden fazla",
-    "dragHint": "Taşımak için çubuğu yana, atamak için başka bir kişiye sürükleyin"
+    "dragHint": "Taşımak için bir çubuğu, tarihleri değiştirmek için uçlarını sürükleyin veya atamak için başka bir kişinin üzerine bırakın",
+    "oneWeek": "1 hafta",
+    "eightWeeks": "8 hafta",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır"
   }
 }

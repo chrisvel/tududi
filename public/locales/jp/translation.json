@@ -3124,7 +3124,8 @@
     "legendOverdue": "期限切れ",
     "saveError": "タスクを移動できませんでした",
     "dueOn": "期限 {{date}}",
-    "startsOn": "開始 {{date}}"
+    "startsOn": "開始 {{date}}",
+    "noLinks": "タスクを他のタスクのブロッカーに設定すると、完了までの経路が表示されます"
   },
   "everyoneTimeline": {
     "view": "表示",
@@ -3140,6 +3141,10 @@
     "loadTitle": "{{capacity}} 中 {{hours}} 予定",
     "legendLoad": "タスク見積もりの時間を開始から期限まで配分",
     "legendOver": "{{hours}} の計画日を超えています",
-    "dragHint": "バーを横にドラッグして移動、別の人にドラッグして割り当て"
+    "dragHint": "バーをドラッグして移動、端をドラッグして日付を変更、別の人にドラッグして割り当て",
+    "oneWeek": "1週間",
+    "eightWeeks": "8週間",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小"
   }
 }

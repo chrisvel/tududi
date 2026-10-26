@@ -3130,7 +3130,8 @@
     "legendOverdue": "En retard",
     "saveError": "Impossible de déplacer la tâche",
     "dueOn": "Échéance {{date}}",
-    "startsOn": "Commence {{date}}"
+    "startsOn": "Commence {{date}}",
+    "noLinks": "Marquez des tâches comme bloquant d'autres tâches pour voir le chemin jusqu'à la fin"
   },
   "everyoneTimeline": {
     "view": "Vue",
@@ -3146,6 +3147,10 @@
     "loadTitle": "{{hours}} sur {{capacity}} prévues",
     "legendLoad": "Heures des estimations, réparties du début à l'échéance",
     "legendOver": "Plus que votre journée de planification de {{hours}}",
-    "dragHint": "Faites glisser une barre sur le côté pour la déplacer, ou sur une autre personne pour l'assigner"
+    "dragHint": "Faites glisser une barre pour la déplacer, ses extrémités pour changer les dates, ou sur une autre personne pour l'assigner",
+    "oneWeek": "1 semaine",
+    "eightWeeks": "8 semaines",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière"
   }
 }
