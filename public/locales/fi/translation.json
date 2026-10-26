@@ -1092,7 +1092,16 @@
     "editBanner": "Muokkaa projektin banneria",
     "currentBanner": "Nykyinen banneri",
     "choosePreset": "Valitse esiasetettu banneri:",
-    "orUploadOwn": "Tai lataa oma:"
+    "orUploadOwn": "Tai lataa oma:",
+    "markComplete": "Valmis",
+    "completedOn": "Valmistui {{date}}",
+    "completedToast": "Projekti valmis",
+    "completedWithTasks_one": "Projekti valmis, {{count}} tehtävä merkitty tehdyksi",
+    "completedWithTasks_other": "Projekti valmis, {{count}} tehtävää merkitty tehdyiksi",
+    "completeTitle": "Merkitäänkö \"{{name}}\" valmiiksi?",
+    "completeOpenTasks": "Projektissa on vielä avoimia tehtäviä. Merkitäänkö nekin tehdyiksi vai jätetäänkö avoimiksi? Toistuvat tehtävät säilyttävät aikataulunsa joka tapauksessa.",
+    "leaveTasksOpen": "Jätä avoimiksi",
+    "completeTasksToo": "Merkitse nekin tehdyiksi"
   },
   "errors": {
     "required": "Tämä kenttä on pakollinen",
@@ -1130,7 +1139,8 @@
     "failedToSaveGoal": "Tavoitteen tallentaminen epäonnistui.",
     "failedToDeleteGoal": "Tavoitteen poistaminen epäonnistui.",
     "failedToDeleteNote": "Muistiinpanon poistaminen epäonnistui.",
-    "failedToDeleteTag": "Tunnisteen poistaminen epäonnistui."
+    "failedToDeleteTag": "Tunnisteen poistaminen epäonnistui.",
+    "projectStatusUpdateFailed": "Projektin tilan päivitys epäonnistui"
   },
   "inbox": {
     "title": "Saapuneet",
@@ -1457,7 +1467,20 @@
     "blankSlateTemplate": "Aloita mallista",
     "blankSlateAreas": "Määritä alueet",
     "blankSlateShowAll": "Näytä kaikki projektit",
-    "viewAs": "Näkymä"
+    "viewAs": "Näkymä",
+    "history": "Historia",
+    "historyHint": "Valmiit projektit, uusimmat ensin",
+    "historyTitle": "Valmiit projektit",
+    "historyCount": "{{count}} valmiina",
+    "historyShowCancelled": "Näytä perutut",
+    "historyEmptyTitle": "Ei vielä mitään valmista",
+    "historyEmptyHint": "Valmiiksi merkitsemäsi projektit näkyvät täällä uusimmat ensin, joten työ jää talteen täyttämättä listaasi.",
+    "historyTasks": "{{done}}/{{total}} tehtävää",
+    "historyDuration_one": "kesti {{count}} päivän",
+    "historyDuration_other": "kesti {{count}} päivää",
+    "reopen": "Avaa uudelleen",
+    "reopened": "\"{{name}}\" on taas käynnissä",
+    "loadError": "Projektien lataus epäonnistui"
   },
   "projectItem": {
     "edit": "Muokkaa",
@@ -1504,7 +1527,8 @@
     "noAreasYet": "Ei vielä alueita.",
     "blankSlateHint": "Alueet ovat elämäsi osia, joista huolehdit jatkuvasti, kuten Työ, Terveys tai Koti. Lisää niihin projektisi ja tavoitteesi nähdäksesi jokaisen osan yhdessä paikassa.",
     "blankSlateNew": "Luo ensimmäinen alueesi",
-    "blankSlateProjects": "Siirry projekteihin"
+    "blankSlateProjects": "Siirry projekteihin",
+    "finishedProjects": "Valmiit ({{count}})"
   },
   "notes": {
     "loading": "Ladataan muistiinpanoja...",
@@ -3067,5 +3091,13 @@
     "locked": "Fokuksesi asettama. Poista se yläpalkin merkistä.",
     "emptyHint": "Näytetään vain {{label}}",
     "saveError": "Fokusta ei voitu tallentaa."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Tänään",
+      "tomorrow": "Huomenna",
+      "weekend": "Viikonloppu",
+      "nextWeek": "Ensi viikko"
+    }
   }
 }

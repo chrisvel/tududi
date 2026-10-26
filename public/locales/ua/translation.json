@@ -355,7 +355,22 @@
     "blankSlateTemplate": "Почати з шаблону",
     "blankSlateAreas": "Налаштувати області",
     "blankSlateShowAll": "Показати всі проекти",
-    "viewAs": "Вигляд"
+    "viewAs": "Вигляд",
+    "history": "Історія",
+    "historyHint": "Завершені проєкти, спершу нові",
+    "historyTitle": "Завершені проєкти",
+    "historyCount": "Завершено: {{count}}",
+    "historyShowCancelled": "Показати скасовані",
+    "historyEmptyTitle": "Поки нічого не завершено",
+    "historyEmptyHint": "Проєкти, які ви позначите завершеними, з'являться тут, спершу нові. Робота залишається в історії й не захаращує список.",
+    "historyTasks": "{{done}} з {{total}} завдань",
+    "historyDuration_one": "тривав {{count}} день",
+    "historyDuration_few": "тривав {{count}} дні",
+    "historyDuration_many": "тривав {{count}} днів",
+    "historyDuration_other": "тривав {{count}} дня",
+    "reopen": "Відкрити знову",
+    "reopened": "«{{name}}» знову в роботі",
+    "loadError": "Не вдалося завантажити проєкти"
   },
   "projectItem": {
     "edit": "Редагувати",
@@ -539,7 +554,8 @@
     "failedToSaveGoal": "Не вдалося зберегти ціль.",
     "failedToDeleteGoal": "Не вдалося видалити ціль.",
     "failedToDeleteNote": "Не вдалося видалити нотатку.",
-    "failedToDeleteTag": "Не вдалося видалити тег."
+    "failedToDeleteTag": "Не вдалося видалити тег.",
+    "projectStatusUpdateFailed": "Не вдалося оновити статус проєкту"
   },
   "success": {
     "noteUpdated": "Нотатку успішно оновлено!",
@@ -731,7 +747,18 @@
     "editBanner": "Редагувати банер проекту",
     "currentBanner": "Поточний банер",
     "choosePreset": "Виберіть пресет банера:",
-    "orUploadOwn": "Або завантажте свій власний:"
+    "orUploadOwn": "Або завантажте свій власний:",
+    "markComplete": "Завершити",
+    "completedOn": "Завершено {{date}}",
+    "completedToast": "Проєкт завершено",
+    "completedWithTasks_one": "Проєкт завершено, {{count}} завдання позначено виконаним",
+    "completedWithTasks_few": "Проєкт завершено, {{count}} завдання позначено виконаними",
+    "completedWithTasks_many": "Проєкт завершено, {{count}} завдань позначено виконаними",
+    "completedWithTasks_other": "Проєкт завершено, {{count}} завдання позначено виконаними",
+    "completeTitle": "Завершити «{{name}}»?",
+    "completeOpenTasks": "У цьому проєкті ще є відкриті завдання. Позначити їх теж виконаними чи залишити відкритими? Повторювані завдання в будь-якому разі збережуть свій розклад.",
+    "leaveTasksOpen": "Залишити відкритими",
+    "completeTasksToo": "Позначити виконаними"
   },
   "profile": {
     "title": "Налаштування Профілю",
@@ -1641,7 +1668,8 @@
     "noAreasYet": "Поки немає областей.",
     "blankSlateHint": "Області — це частини життя, про які ви дбаєте постійно, наприклад «Робота», «Здоров'я» чи «Дім». Додайте до них проекти й цілі, щоб бачити кожну частину в одному місці.",
     "blankSlateNew": "Створити першу область",
-    "blankSlateProjects": "Перейти до проектів"
+    "blankSlateProjects": "Перейти до проектів",
+    "finishedProjects": "Завершені ({{count}})"
   },
   "tags": {
     "loading": "Завантаження тегів...",
@@ -3073,5 +3101,13 @@
     "locked": "Задано вашим фокусом. Скиньте його в чипі на верхній панелі.",
     "emptyHint": "Показано лише {{label}}",
     "saveError": "Не вдалося зберегти фокус."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Сьогодні",
+      "tomorrow": "Завтра",
+      "weekend": "Вихідні",
+      "nextWeek": "Наступний тиждень"
+    }
   }
 }

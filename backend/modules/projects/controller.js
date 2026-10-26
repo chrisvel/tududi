@@ -99,6 +99,21 @@ const projectsController = {
         }
     },
 
+    // POST /api/project/:uid/complete
+    async complete(req, res, next) {
+        try {
+            const userId = requireUserId(req);
+            const result = await projectsService.complete(
+                userId,
+                req.params.uid,
+                { completeOpenTasks: req.body?.complete_open_tasks === true }
+            );
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    },
+
     /**
      * DELETE /api/project/:uid
      * Delete a project.

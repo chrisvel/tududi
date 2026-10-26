@@ -441,7 +441,8 @@
     "failedToSaveGoal": "Ziel konnte nicht gespeichert werden.",
     "failedToDeleteGoal": "Ziel konnte nicht gelöscht werden.",
     "failedToDeleteNote": "Notiz konnte nicht gelöscht werden.",
-    "failedToDeleteTag": "Tag konnte nicht gelöscht werden."
+    "failedToDeleteTag": "Tag konnte nicht gelöscht werden.",
+    "projectStatusUpdateFailed": "Projektstatus konnte nicht aktualisiert werden"
   },
   "success": {
     "noteUpdated": "Notiz erfolgreich aktualisiert!",
@@ -633,7 +634,16 @@
     "editBanner": "Projektbanner bearbeiten",
     "currentBanner": "Aktuelles Banner",
     "choosePreset": "Wählen Sie ein vordefiniertes Banner:",
-    "orUploadOwn": "Oder laden Sie Ihr eigenes hoch:"
+    "orUploadOwn": "Oder laden Sie Ihr eigenes hoch:",
+    "markComplete": "Abschließen",
+    "completedOn": "Abgeschlossen am {{date}}",
+    "completedToast": "Projekt abgeschlossen",
+    "completedWithTasks_one": "Projekt abgeschlossen, {{count}} Aufgabe erledigt",
+    "completedWithTasks_other": "Projekt abgeschlossen, {{count}} Aufgaben erledigt",
+    "completeTitle": "„{{name}}“ abschließen?",
+    "completeOpenTasks": "Dieses Projekt hat noch offene Aufgaben. Sollen sie ebenfalls erledigt werden oder offen bleiben? Wiederkehrende Aufgaben behalten in jedem Fall ihren Zeitplan.",
+    "leaveTasksOpen": "Offen lassen",
+    "completeTasksToo": "Ebenfalls erledigen"
   },
   "profile": {
     "title": "Profil-Einstellungen",
@@ -1603,7 +1613,20 @@
     "blankSlateTemplate": "Mit einer Vorlage beginnen",
     "blankSlateAreas": "Bereiche einrichten",
     "blankSlateShowAll": "Alle Projekte anzeigen",
-    "viewAs": "Ansicht"
+    "viewAs": "Ansicht",
+    "history": "Verlauf",
+    "historyHint": "Abgeschlossene Projekte, neueste zuerst",
+    "historyTitle": "Abgeschlossene Projekte",
+    "historyCount": "{{count}} abgeschlossen",
+    "historyShowCancelled": "Abgebrochene anzeigen",
+    "historyEmptyTitle": "Noch nichts abgeschlossen",
+    "historyEmptyHint": "Projekte, die du abschließt, erscheinen hier, neueste zuerst. So bleibt die Arbeit dokumentiert, ohne deine Liste zu überladen.",
+    "historyTasks": "{{done}} von {{total}} Aufgaben",
+    "historyDuration_one": "dauerte {{count}} Tag",
+    "historyDuration_other": "dauerte {{count}} Tage",
+    "reopen": "Wieder öffnen",
+    "reopened": "„{{name}}“ ist wieder in Bearbeitung",
+    "loadError": "Projekte konnten nicht geladen werden"
   },
   "projectItem": {
     "edit": "Bearbeiten",
@@ -1650,7 +1673,8 @@
     "noAreasYet": "Noch keine Bereiche.",
     "blankSlateHint": "Bereiche sind die Teile deines Lebens, um die du dich dauerhaft kümmerst, etwa Arbeit, Gesundheit oder Zuhause. Ordne ihnen Projekte und Ziele zu, um jeden Teil an einem Ort zu sehen.",
     "blankSlateNew": "Ersten Bereich erstellen",
-    "blankSlateProjects": "Zu den Projekten"
+    "blankSlateProjects": "Zu den Projekten",
+    "finishedProjects": "Abgeschlossen ({{count}})"
   },
   "tags": {
     "loading": "Tags laden...",
@@ -3076,5 +3100,13 @@
     "locked": "Durch deinen Fokus gesetzt. Hebe ihn über den Chip in der oberen Leiste auf.",
     "emptyHint": "Zeigt nur {{label}}",
     "saveError": "Der Fokus konnte nicht gespeichert werden."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "weekend": "Wochenende",
+      "nextWeek": "Nächste Woche"
+    }
   }
 }

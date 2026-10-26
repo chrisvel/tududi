@@ -83,12 +83,12 @@ function isBusy(event) {
     );
 }
 
-// Minutes past midnight on the user's clock. Counting elapsed minutes from
-// midnight instead puts events an hour off on a DST change day (23 or 25
-// hours long).
-function wallClockMinute(at, dayEnd, userTimezone) {
+// Minutes on the user's clock, not elapsed time: on a DST change day 16:00
+// is 15 or 17 hours after midnight, but must still sit at 16:00.
+function wallMinute(at, dayStart, dayEnd) {
+    if (!at.isAfter(dayStart)) return 0;
     if (!at.isBefore(dayEnd)) return 24 * 60;
-    const local = at.clone().tz(userTimezone);
+    const local = at.clone().tz(dayStart.tz());
     return local.hours() * 60 + local.minutes();
 }
 
@@ -134,8 +134,8 @@ function buildOccurrence(event, start, end, date, userTimezone, tzid) {
         busy: isBusy(event),
         start: startAt.toISOString(),
         end: endAt.toISOString(),
-        start_minute: wallClockMinute(clippedStart, dayEnd, userTimezone),
-        end_minute: wallClockMinute(clippedEnd, dayEnd, userTimezone),
+        start_minute: wallMinute(clippedStart, dayStart, dayEnd),
+        end_minute: wallMinute(clippedEnd, dayStart, dayEnd),
     };
 }
 

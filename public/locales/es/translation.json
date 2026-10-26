@@ -799,7 +799,8 @@
     "failedToSaveGoal": "No se pudo guardar la meta.",
     "failedToDeleteGoal": "No se pudo eliminar la meta.",
     "failedToDeleteNote": "No se pudo eliminar la nota.",
-    "failedToDeleteTag": "No se pudo eliminar la etiqueta."
+    "failedToDeleteTag": "No se pudo eliminar la etiqueta.",
+    "projectStatusUpdateFailed": "Error al actualizar el estado del proyecto"
   },
   "dropdown": {
     "createNew": "Crear Nuevo",
@@ -1001,7 +1002,21 @@
     "blankSlateTemplate": "Empezar desde una plantilla",
     "blankSlateAreas": "Configurar áreas",
     "blankSlateShowAll": "Mostrar todos los proyectos",
-    "viewAs": "Vista"
+    "viewAs": "Vista",
+    "history": "Historial",
+    "historyHint": "Proyectos completados, los más recientes primero",
+    "historyTitle": "Proyectos completados",
+    "historyCount": "{{count}} terminados",
+    "historyShowCancelled": "Mostrar cancelados",
+    "historyEmptyTitle": "Aún no hay nada terminado",
+    "historyEmptyHint": "Los proyectos que marques como completados aparecen aquí, los más recientes primero, para que el trabajo quede registrado sin saturar tu lista.",
+    "historyTasks": "{{done}} de {{total}} tareas",
+    "historyDuration_one": "duró {{count}} día",
+    "historyDuration_many": "duró {{count}} días",
+    "historyDuration_other": "duró {{count}} días",
+    "reopen": "Reabrir",
+    "reopened": "«{{name}}» vuelve a estar en curso",
+    "loadError": "Error al cargar los proyectos"
   },
   "projectItem": {
     "edit": "Editar",
@@ -1213,7 +1228,17 @@
     "editBanner": "Editar banner del proyecto",
     "currentBanner": "Banner actual",
     "choosePreset": "Elige un banner preestablecido:",
-    "orUploadOwn": "O sube el tuyo propio:"
+    "orUploadOwn": "O sube el tuyo propio:",
+    "markComplete": "Completar",
+    "completedOn": "Completado el {{date}}",
+    "completedToast": "Proyecto completado",
+    "completedWithTasks_one": "Proyecto completado, {{count}} tarea marcada como hecha",
+    "completedWithTasks_many": "Proyecto completado, {{count}} tareas marcadas como hechas",
+    "completedWithTasks_other": "Proyecto completado, {{count}} tareas marcadas como hechas",
+    "completeTitle": "¿Completar «{{name}}»?",
+    "completeOpenTasks": "Este proyecto aún tiene tareas abiertas. ¿Marcarlas también como hechas o dejarlas abiertas? Las tareas recurrentes mantienen su calendario en ambos casos.",
+    "leaveTasksOpen": "Dejarlas abiertas",
+    "completeTasksToo": "Marcarlas como hechas"
   },
   "task": {
     "labels": {
@@ -1437,7 +1462,8 @@
     "noAreasYet": "Aún no hay áreas.",
     "blankSlateHint": "Las áreas son las partes de tu vida que cuidas a lo largo del tiempo, como Trabajo, Salud o Casa. Pon en ellas tus proyectos y metas para ver cada parte en un solo lugar.",
     "blankSlateNew": "Crea tu primera área",
-    "blankSlateProjects": "Ir a proyectos"
+    "blankSlateProjects": "Ir a proyectos",
+    "finishedProjects": "Terminados ({{count}})"
   },
   "notes": {
     "loading": "Cargando notas...",
@@ -3055,5 +3081,13 @@
     "locked": "Definido por tu enfoque. Quítalo desde el chip de la barra superior.",
     "emptyHint": "Mostrando solo {{label}}",
     "saveError": "No se pudo guardar el enfoque."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "weekend": "Fin de semana",
+      "nextWeek": "Próxima semana"
+    }
   }
 }

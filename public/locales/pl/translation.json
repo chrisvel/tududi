@@ -1092,7 +1092,18 @@
     "editBanner": "Edytuj baner projektu",
     "currentBanner": "Aktualny baner",
     "choosePreset": "Wybierz predefiniowany baner:",
-    "orUploadOwn": "Lub prześlij własny:"
+    "orUploadOwn": "Lub prześlij własny:",
+    "markComplete": "Zakończ",
+    "completedOn": "Zakończono {{date}}",
+    "completedToast": "Projekt zakończony",
+    "completedWithTasks_one": "Projekt zakończony, {{count}} zadanie oznaczone jako wykonane",
+    "completedWithTasks_few": "Projekt zakończony, {{count}} zadania oznaczone jako wykonane",
+    "completedWithTasks_many": "Projekt zakończony, {{count}} zadań oznaczonych jako wykonane",
+    "completedWithTasks_other": "Projekt zakończony, {{count}} zadania oznaczone jako wykonane",
+    "completeTitle": "Zakończyć „{{name}}”?",
+    "completeOpenTasks": "Ten projekt ma jeszcze otwarte zadania. Oznaczyć je też jako wykonane czy zostawić otwarte? Zadania cykliczne i tak zachowają swój harmonogram.",
+    "leaveTasksOpen": "Zostaw otwarte",
+    "completeTasksToo": "Oznacz też jako wykonane"
   },
   "errors": {
     "required": "To pole jest wymagane",
@@ -1130,7 +1141,8 @@
     "failedToSaveGoal": "Nie udało się zapisać celu.",
     "failedToDeleteGoal": "Nie udało się usunąć celu.",
     "failedToDeleteNote": "Nie udało się usunąć notatki.",
-    "failedToDeleteTag": "Nie udało się usunąć tagu."
+    "failedToDeleteTag": "Nie udało się usunąć tagu.",
+    "projectStatusUpdateFailed": "Nie udało się zaktualizować statusu projektu"
   },
   "inbox": {
     "title": "Skrzynka odbiorcza",
@@ -1457,7 +1469,22 @@
     "blankSlateTemplate": "Zacznij od szablonu",
     "blankSlateAreas": "Skonfiguruj obszary",
     "blankSlateShowAll": "Pokaż wszystkie projekty",
-    "viewAs": "Widok"
+    "viewAs": "Widok",
+    "history": "Historia",
+    "historyHint": "Zakończone projekty, od najnowszych",
+    "historyTitle": "Zakończone projekty",
+    "historyCount": "Zakończone: {{count}}",
+    "historyShowCancelled": "Pokaż anulowane",
+    "historyEmptyTitle": "Nic jeszcze nie zakończono",
+    "historyEmptyHint": "Projekty oznaczone jako zakończone pojawiają się tutaj, od najnowszych, więc praca zostaje zapisana i nie zaśmieca listy.",
+    "historyTasks": "{{done}} z {{total}} zadań",
+    "historyDuration_one": "trwał {{count}} dzień",
+    "historyDuration_few": "trwał {{count}} dni",
+    "historyDuration_many": "trwał {{count}} dni",
+    "historyDuration_other": "trwał {{count}} dnia",
+    "reopen": "Otwórz ponownie",
+    "reopened": "„{{name}}” znów jest w toku",
+    "loadError": "Nie udało się wczytać projektów"
   },
   "projectItem": {
     "edit": "Edytuj",
@@ -1504,7 +1531,8 @@
     "noAreasYet": "Nie ma jeszcze obszarów.",
     "blankSlateHint": "Obszary to części życia, o które dbasz na co dzień, na przykład Praca, Zdrowie czy Dom. Umieść w nich projekty i cele, aby widzieć każdą część w jednym miejscu.",
     "blankSlateNew": "Utwórz pierwszy obszar",
-    "blankSlateProjects": "Przejdź do projektów"
+    "blankSlateProjects": "Przejdź do projektów",
+    "finishedProjects": "Zakończone ({{count}})"
   },
   "notes": {
     "loading": "Ładowanie notatek...",
@@ -3073,5 +3101,13 @@
     "locked": "Ustawione przez Twój fokus. Wyczyść go z chipa na górnym pasku.",
     "emptyHint": "Pokazuje tylko {{label}}",
     "saveError": "Nie udało się zapisać fokusu."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Dziś",
+      "tomorrow": "Jutro",
+      "weekend": "Weekend",
+      "nextWeek": "Następny tydzień"
+    }
   }
 }

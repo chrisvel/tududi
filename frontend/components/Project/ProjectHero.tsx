@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TFunction } from 'i18next';
 import { differenceInCalendarDays, format } from 'date-fns';
 import {
+    ArrowUturnLeftIcon,
     CameraIcon,
+    CheckCircleIcon,
     CheckIcon,
     ChevronDownIcon,
     EllipsisHorizontalIcon,
@@ -33,6 +35,8 @@ interface ProjectHeroProps {
     doneCount: number;
     totalCount: number;
     onUpdate: (patch: Partial<Project>) => Promise<void>;
+    // Marking done goes here instead of onUpdate, so open tasks can be asked about
+    onComplete?: () => void;
     onDeleteClick: () => void;
     onShareClick: () => void;
     onSaveAsTemplate?: () => void;
@@ -46,6 +50,7 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
     doneCount,
     totalCount,
     onUpdate,
+    onComplete,
     onDeleteClick,
     onShareClick,
     onSaveAsTemplate,
@@ -136,6 +141,10 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
     const changeStatus = async (status: ProjectStatus) => {
         setStatusOpen(false);
         if (status === project.status) return;
+        if (status === 'done' && onComplete) {
+            onComplete();
+            return;
+        }
         await onUpdate({ status }).catch(() => undefined);
     };
 
@@ -143,7 +152,12 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
         totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
     const startDate = project.created_at ? new Date(project.created_at) : null;
-    const dueDate = project.due_date_at ? new Date(project.due_date_at) : null;
+    const isDone = project.status === 'done';
+    const completedDate =
+        isDone && project.completed_at ? new Date(project.completed_at) : null;
+    // Once done, the due date countdown stops mattering
+    const dueDate =
+        !isDone && project.due_date_at ? new Date(project.due_date_at) : null;
     const today = new Date();
     const daysLeft = dueDate ? differenceInCalendarDays(dueDate, today) : null;
     // How much of the time between start and due date has passed, so the
@@ -284,9 +298,25 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                                     {dueText}
                                 </span>
                             )}
+                            {completedDate && (
+                                <span data-testid="project-completed-on">
+                                    {t(
+                                        'project.completedOn',
+                                        'Completed {{date}}',
+                                        {
+                                            date: format(
+                                                completedDate,
+                                                'MMM d, yyyy'
+                                            ),
+                                        }
+                                    )}
+                                </span>
+                            )}
                             {startDate && (
                                 <>
-                                    {dueText && <span>·</span>}
+                                    {(dueText || completedDate) && (
+                                        <span>·</span>
+                                    )}
                                     <span>
                                         {t(
                                             'project.startedOn',
@@ -400,6 +430,27 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                     </div>
 
                     <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
+                        {isDone ? (
+                            <button
+                                type="button"
+                                onClick={() => changeStatus('in_progress')}
+                                className={actionClass}
+                                data-testid="project-reopen"
+                            >
+                                <ArrowUturnLeftIcon className="h-4 w-4" />
+                                {t('projects.reopen', 'Reopen')}
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => changeStatus('done')}
+                                className={actionClass}
+                                data-testid="project-mark-complete"
+                            >
+                                <CheckCircleIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                {t('project.markComplete', 'Complete')}
+                            </button>
+                        )}
                         {onTogglePin && (
                             <button
                                 type="button"

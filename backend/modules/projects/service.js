@@ -521,6 +521,33 @@ class ProjectsService {
         };
     }
 
+    // Marks a project done, optionally finishing its open tasks too.
+    async complete(userId, uid, { completeOpenTasks = false } = {}) {
+        const validatedUid = validateUid(uid);
+        const project = await projectsRepository.findOne({ uid: validatedUid });
+
+        if (!project) {
+            throw new NotFoundError('Project not found.');
+        }
+
+        let completedTasks = 0;
+        if (completeOpenTasks) {
+            const openTasks = await projectsRepository.findOpenTasks(
+                project.id
+            );
+            // One by one so task hooks (webhooks, history) still run
+            for (const task of openTasks) {
+                await task.update({ status: 2, completed_at: new Date() });
+            }
+            completedTasks = openTasks.length;
+        }
+
+        const updated = await this.update(userId, validatedUid, {
+            status: 'done',
+        });
+        return { project: updated, completed_tasks: completedTasks };
+    }
+
     /**
      * Delete a project.
      */

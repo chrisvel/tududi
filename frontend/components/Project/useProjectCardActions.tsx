@@ -8,6 +8,7 @@ import { useToast } from '../Shared/ToastContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import ProjectModal from './ProjectModal';
 import ProjectShareModal from './ProjectShareModal';
+import useCompleteProject, { countOpenTasks } from './useCompleteProject';
 
 // Handlers and modals behind the ProjectItem cards, so a page can show the
 // same cards /projects shows. `refresh` reloads that page's project list.
@@ -28,6 +29,7 @@ const useProjectCardActions = (refresh: () => Promise<void>) => {
     );
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [projectShare, setProjectShare] = useState<Project | null>(null);
+    const { requestComplete, completeDialog } = useCompleteProject();
 
     useEffect(() => {
         if (!areasLoaded) loadAreas();
@@ -72,6 +74,12 @@ const useProjectCardActions = (refresh: () => Promise<void>) => {
         status: ProjectStatus
     ) => {
         if (!project.uid) return;
+        if (status === 'done' && project.status !== 'done') {
+            requestComplete(project, countOpenTasks(project), () => {
+                refresh();
+            });
+            return;
+        }
         try {
             await updateProject(project.uid, { status });
             await refresh();
@@ -125,6 +133,7 @@ const useProjectCardActions = (refresh: () => Promise<void>) => {
                     project={projectShare}
                 />
             )}
+            {completeDialog}
         </>
     );
 

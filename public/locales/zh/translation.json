@@ -1092,7 +1092,15 @@
     "editBanner": "编辑项目横幅",
     "currentBanner": "当前横幅",
     "choosePreset": "选择一个预设横幅：",
-    "orUploadOwn": "或上传您自己的："
+    "orUploadOwn": "或上传您自己的：",
+    "markComplete": "完成",
+    "completedOn": "完成于 {{date}}",
+    "completedToast": "项目已完成",
+    "completedWithTasks_other": "项目已完成，{{count}} 个任务已标记为完成",
+    "completeTitle": "完成“{{name}}”？",
+    "completeOpenTasks": "此项目仍有未完成的任务。要一并标记为完成，还是保留？重复任务无论如何都会保留其计划。",
+    "leaveTasksOpen": "保留未完成",
+    "completeTasksToo": "一并标记完成"
   },
   "errors": {
     "required": "此字段为必填项",
@@ -1130,7 +1138,8 @@
     "failedToSaveGoal": "无法保存目标。",
     "failedToDeleteGoal": "无法删除目标。",
     "failedToDeleteNote": "无法删除笔记。",
-    "failedToDeleteTag": "无法删除标签。"
+    "failedToDeleteTag": "无法删除标签。",
+    "projectStatusUpdateFailed": "更新项目状态失败"
   },
   "inbox": {
     "title": "收件箱",
@@ -1457,7 +1466,19 @@
     "blankSlateTemplate": "从模板开始",
     "blankSlateAreas": "设置区域",
     "blankSlateShowAll": "显示所有项目",
-    "viewAs": "视图"
+    "viewAs": "视图",
+    "history": "历史",
+    "historyHint": "已完成的项目，最新的在前",
+    "historyTitle": "已完成的项目",
+    "historyCount": "已完成 {{count}} 个",
+    "historyShowCancelled": "显示已取消",
+    "historyEmptyTitle": "还没有完成的项目",
+    "historyEmptyHint": "你标记为完成的项目会按最新优先显示在这里，工作记录得以保留，又不会让列表变得拥挤。",
+    "historyTasks": "{{done}}/{{total}} 个任务",
+    "historyDuration_other": "用时 {{count}} 天",
+    "reopen": "重新打开",
+    "reopened": "“{{name}}”已恢复为进行中",
+    "loadError": "加载项目失败"
   },
   "projectItem": {
     "edit": "编辑",
@@ -1504,7 +1525,8 @@
     "noAreasYet": "还没有区域。",
     "blankSlateHint": "区域是你长期经营的生活领域，比如工作、健康或家庭。把项目和目标放进区域，就能在一个地方看到每个领域。",
     "blankSlateNew": "创建第一个区域",
-    "blankSlateProjects": "前往项目"
+    "blankSlateProjects": "前往项目",
+    "finishedProjects": "已完成 ({{count}})"
   },
   "notes": {
     "loading": "加载笔记...",
@@ -3066,5 +3088,13 @@
     "locked": "由你的专注设定。可在顶部栏的标签中清除。",
     "emptyHint": "仅显示 {{label}}",
     "saveError": "无法保存专注设置。"
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "今天",
+      "tomorrow": "明天",
+      "weekend": "周末",
+      "nextWeek": "下周"
+    }
   }
 }

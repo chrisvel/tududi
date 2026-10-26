@@ -1092,7 +1092,17 @@
     "editBanner": "Modifica banner del progetto",
     "currentBanner": "Banner attuale",
     "choosePreset": "Scegli un banner preimpostato:",
-    "orUploadOwn": "Oppure carica il tuo:"
+    "orUploadOwn": "Oppure carica il tuo:",
+    "markComplete": "Completa",
+    "completedOn": "Completato il {{date}}",
+    "completedToast": "Progetto completato",
+    "completedWithTasks_one": "Progetto completato, {{count}} attività segnata come fatta",
+    "completedWithTasks_many": "Progetto completato, {{count}} attività segnate come fatte",
+    "completedWithTasks_other": "Progetto completato, {{count}} attività segnate come fatte",
+    "completeTitle": "Completare \"{{name}}\"?",
+    "completeOpenTasks": "Questo progetto ha ancora attività aperte. Segnarle anche come fatte o lasciarle aperte? Le attività ricorrenti mantengono comunque la loro pianificazione.",
+    "leaveTasksOpen": "Lasciale aperte",
+    "completeTasksToo": "Segnale come fatte"
   },
   "errors": {
     "required": "Questo campo è obbligatorio",
@@ -1130,7 +1140,8 @@
     "failedToSaveGoal": "Impossibile salvare l'obiettivo.",
     "failedToDeleteGoal": "Impossibile eliminare l'obiettivo.",
     "failedToDeleteNote": "Impossibile eliminare la nota.",
-    "failedToDeleteTag": "Impossibile eliminare il tag."
+    "failedToDeleteTag": "Impossibile eliminare il tag.",
+    "projectStatusUpdateFailed": "Impossibile aggiornare lo stato del progetto"
   },
   "inbox": {
     "title": "Inbox",
@@ -1457,7 +1468,21 @@
     "blankSlateTemplate": "Parti da un modello",
     "blankSlateAreas": "Configura le aree",
     "blankSlateShowAll": "Mostra tutti i progetti",
-    "viewAs": "Visualizzazione"
+    "viewAs": "Visualizzazione",
+    "history": "Cronologia",
+    "historyHint": "Progetti completati, dal più recente",
+    "historyTitle": "Progetti completati",
+    "historyCount": "{{count}} completati",
+    "historyShowCancelled": "Mostra annullati",
+    "historyEmptyTitle": "Ancora nulla di completato",
+    "historyEmptyHint": "I progetti che segni come completati compaiono qui, dal più recente, così il lavoro resta registrato senza affollare la tua lista.",
+    "historyTasks": "{{done}} di {{total}} attività",
+    "historyDuration_one": "durato {{count}} giorno",
+    "historyDuration_many": "durato {{count}} giorni",
+    "historyDuration_other": "durato {{count}} giorni",
+    "reopen": "Riapri",
+    "reopened": "\"{{name}}\" è di nuovo in corso",
+    "loadError": "Impossibile caricare i progetti"
   },
   "projectItem": {
     "edit": "Modifica",
@@ -1504,7 +1529,8 @@
     "noAreasYet": "Ancora nessuna area.",
     "blankSlateHint": "Le aree sono le parti della tua vita di cui ti occupi nel tempo, come Lavoro, Salute o Casa. Inserisci lì progetti e obiettivi per vedere ogni parte in un unico posto.",
     "blankSlateNew": "Crea la tua prima area",
-    "blankSlateProjects": "Vai ai progetti"
+    "blankSlateProjects": "Vai ai progetti",
+    "finishedProjects": "Completati ({{count}})"
   },
   "notes": {
     "loading": "Caricamento note...",
@@ -3068,5 +3094,13 @@
     "locked": "Impostato dal tuo focus. Rimuovilo dal chip nella barra in alto.",
     "emptyHint": "Mostra solo {{label}}",
     "saveError": "Impossibile salvare il focus."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Oggi",
+      "tomorrow": "Domani",
+      "weekend": "Weekend",
+      "nextWeek": "Prossima settimana"
+    }
   }
 }

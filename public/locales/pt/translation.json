@@ -1092,7 +1092,17 @@
     "editBanner": "Editar banner do projeto",
     "currentBanner": "Banner atual",
     "choosePreset": "Escolha um banner predefinido:",
-    "orUploadOwn": "Ou carregue o seu próprio:"
+    "orUploadOwn": "Ou carregue o seu próprio:",
+    "markComplete": "Concluir",
+    "completedOn": "Concluído em {{date}}",
+    "completedToast": "Projeto concluído",
+    "completedWithTasks_one": "Projeto concluído, {{count}} tarefa marcada como feita",
+    "completedWithTasks_many": "Projeto concluído, {{count}} tarefas marcadas como feitas",
+    "completedWithTasks_other": "Projeto concluído, {{count}} tarefas marcadas como feitas",
+    "completeTitle": "Concluir \"{{name}}\"?",
+    "completeOpenTasks": "Este projeto ainda tem tarefas abertas. Marcá-las também como feitas ou deixá-las abertas? As tarefas recorrentes mantêm o seu agendamento em ambos os casos.",
+    "leaveTasksOpen": "Deixar abertas",
+    "completeTasksToo": "Marcar como feitas"
   },
   "errors": {
     "required": "Este campo é obrigatório",
@@ -1130,7 +1140,8 @@
     "failedToSaveGoal": "Não foi possível salvar a meta.",
     "failedToDeleteGoal": "Não foi possível excluir a meta.",
     "failedToDeleteNote": "Não foi possível excluir a nota.",
-    "failedToDeleteTag": "Não foi possível excluir a tag."
+    "failedToDeleteTag": "Não foi possível excluir a tag.",
+    "projectStatusUpdateFailed": "Falha ao atualizar o estado do projeto"
   },
   "inbox": {
     "title": "Caixa de Entrada",
@@ -1457,7 +1468,21 @@
     "blankSlateTemplate": "Começar de um modelo",
     "blankSlateAreas": "Configurar áreas",
     "blankSlateShowAll": "Mostrar todos os projetos",
-    "viewAs": "Visualização"
+    "viewAs": "Visualização",
+    "history": "Histórico",
+    "historyHint": "Projetos concluídos, os mais recentes primeiro",
+    "historyTitle": "Projetos concluídos",
+    "historyCount": "{{count}} concluídos",
+    "historyShowCancelled": "Mostrar cancelados",
+    "historyEmptyTitle": "Nada concluído ainda",
+    "historyEmptyHint": "Os projetos que marcar como concluídos aparecem aqui, os mais recentes primeiro, para que o trabalho fique registado sem sobrecarregar a sua lista.",
+    "historyTasks": "{{done}} de {{total}} tarefas",
+    "historyDuration_one": "levou {{count}} dia",
+    "historyDuration_many": "levou {{count}} dias",
+    "historyDuration_other": "levou {{count}} dias",
+    "reopen": "Reabrir",
+    "reopened": "\"{{name}}\" voltou a estar em andamento",
+    "loadError": "Falha ao carregar projetos"
   },
   "projectItem": {
     "edit": "Editar",
@@ -1504,7 +1529,8 @@
     "noAreasYet": "Ainda não há áreas.",
     "blankSlateHint": "Áreas são as partes da sua vida que você mantém ao longo do tempo, como Trabalho, Saúde ou Casa. Coloque nelas seus projetos e metas para ver cada parte em um só lugar.",
     "blankSlateNew": "Crie sua primeira área",
-    "blankSlateProjects": "Ir para projetos"
+    "blankSlateProjects": "Ir para projetos",
+    "finishedProjects": "Concluídos ({{count}})"
   },
   "notes": {
     "loading": "Carregando notas...",
@@ -3068,5 +3094,13 @@
     "locked": "Definido pelo seu foco. Limpe-o no chip da barra superior.",
     "emptyHint": "A mostrar apenas {{label}}",
     "saveError": "Não foi possível guardar o foco."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "weekend": "Fim de semana",
+      "nextWeek": "Próxima semana"
+    }
   }
 }

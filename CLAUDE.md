@@ -205,6 +205,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Status lifecycle and stalled detection
     - Completion tracking and progress metrics
     - Project sharing and collaboration permissions
+    - Completing projects (open-task prompt) and the completed history page
     - Due dates, notifications, and priorities
     - Deletion behavior (orphaning vs cascading)
     - Filtering, grouping, and sidebar pinning

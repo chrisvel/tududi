@@ -136,6 +136,10 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: 'not_started',
             },
+            completed_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             tableName: 'projects',
@@ -149,7 +153,27 @@ module.exports = (sequelize) => {
                 {
                     fields: ['is_template'],
                 },
+                {
+                    fields: ['user_id', 'completed_at'],
+                    name: 'projects_user_id_completed_at',
+                },
             ],
+            hooks: {
+                // Every write path (REST, MCP, templates) goes through here,
+                // so the completion date always follows the status.
+                beforeSave: (project) => {
+                    if (!project.isNewRecord && !project.changed('status')) {
+                        return;
+                    }
+                    if (project.status === 'done') {
+                        if (!project.completed_at) {
+                            project.completed_at = new Date();
+                        }
+                    } else {
+                        project.completed_at = null;
+                    }
+                },
+            },
         }
     );
 

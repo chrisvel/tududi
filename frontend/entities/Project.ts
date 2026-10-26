@@ -44,6 +44,7 @@ export interface Project {
     task_show_completed?: boolean;
     task_sort_order?: string;
     status?: ProjectStatus;
+    completed_at?: string | null;
     created_at?: string;
     updated_at?: string;
     share_count?: number;

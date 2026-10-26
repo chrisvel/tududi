@@ -195,12 +195,11 @@ describe('Upcoming due time (#1932)', () => {
     });
 
     describe('DST transition wall-clock (Europe/Berlin)', () => {
-        // Upcoming starts at today, so pin the clock to the morning of the
-        // first day; only Date is faked so the server and database keep
-        // their real timers.
+        // Upcoming starts today, so pin the clock before the 2026-10-25 shift.
+        // Only Date is faked; timers stay real for the app and supertest.
         beforeEach(() => {
             jest.useFakeTimers({
-                now: new Date('2026-10-24T06:00:00Z'),
+                now: new Date('2026-10-23T12:00:00Z'),
                 doNotFake: [
                     'hrtime',
                     'nextTick',

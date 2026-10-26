@@ -1092,7 +1092,18 @@
     "editBanner": "Редактировать баннер проекта",
     "currentBanner": "Текущий баннер",
     "choosePreset": "Выберите предустановленный баннер:",
-    "orUploadOwn": "Или загрузите свой:"
+    "orUploadOwn": "Или загрузите свой:",
+    "markComplete": "Завершить",
+    "completedOn": "Завершён {{date}}",
+    "completedToast": "Проект завершён",
+    "completedWithTasks_one": "Проект завершён, {{count}} задача отмечена выполненной",
+    "completedWithTasks_few": "Проект завершён, {{count}} задачи отмечены выполненными",
+    "completedWithTasks_many": "Проект завершён, {{count}} задач отмечено выполненными",
+    "completedWithTasks_other": "Проект завершён, {{count}} задачи отмечены выполненными",
+    "completeTitle": "Завершить «{{name}}»?",
+    "completeOpenTasks": "В этом проекте ещё есть открытые задачи. Отметить их тоже выполненными или оставить открытыми? Повторяющиеся задачи в любом случае сохранят своё расписание.",
+    "leaveTasksOpen": "Оставить открытыми",
+    "completeTasksToo": "Отметить выполненными"
   },
   "errors": {
     "required": "Это поле обязательно для заполнения",
@@ -1130,7 +1141,8 @@
     "failedToSaveGoal": "Не удалось сохранить цель.",
     "failedToDeleteGoal": "Не удалось удалить цель.",
     "failedToDeleteNote": "Не удалось удалить заметку.",
-    "failedToDeleteTag": "Не удалось удалить тег."
+    "failedToDeleteTag": "Не удалось удалить тег.",
+    "projectStatusUpdateFailed": "Не удалось обновить статус проекта"
   },
   "inbox": {
     "title": "Входящие",
@@ -1457,7 +1469,22 @@
     "blankSlateTemplate": "Начать с шаблона",
     "blankSlateAreas": "Настроить области",
     "blankSlateShowAll": "Показать все проекты",
-    "viewAs": "Вид"
+    "viewAs": "Вид",
+    "history": "История",
+    "historyHint": "Завершённые проекты, сначала новые",
+    "historyTitle": "Завершённые проекты",
+    "historyCount": "Завершено: {{count}}",
+    "historyShowCancelled": "Показать отменённые",
+    "historyEmptyTitle": "Пока ничего не завершено",
+    "historyEmptyHint": "Проекты, которые вы отметите завершёнными, появятся здесь, сначала новые. Работа остаётся в истории и не загромождает список.",
+    "historyTasks": "{{done}} из {{total}} задач",
+    "historyDuration_one": "занял {{count}} день",
+    "historyDuration_few": "занял {{count}} дня",
+    "historyDuration_many": "занял {{count}} дней",
+    "historyDuration_other": "занял {{count}} дня",
+    "reopen": "Открыть снова",
+    "reopened": "«{{name}}» снова в работе",
+    "loadError": "Не удалось загрузить проекты"
   },
   "projectItem": {
     "edit": "Редактировать",
@@ -1504,7 +1531,8 @@
     "noAreasYet": "Пока нет областей.",
     "blankSlateHint": "Области — это части жизни, о которых вы заботитесь постоянно, например «Работа», «Здоровье» или «Дом». Поместите в них проекты и цели, чтобы видеть каждую часть в одном месте.",
     "blankSlateNew": "Создать первую область",
-    "blankSlateProjects": "Перейти к проектам"
+    "blankSlateProjects": "Перейти к проектам",
+    "finishedProjects": "Завершённые ({{count}})"
   },
   "notes": {
     "loading": "Загрузка заметок...",
@@ -3073,5 +3101,13 @@
     "locked": "Задано вашим фокусом. Сбросьте его в чипе на верхней панели.",
     "emptyHint": "Показано только {{label}}",
     "saveError": "Не удалось сохранить фокус."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Сегодня",
+      "tomorrow": "Завтра",
+      "weekend": "Выходные",
+      "nextWeek": "Следующая неделя"
+    }
   }
 }

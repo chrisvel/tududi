@@ -262,6 +262,22 @@ These properties are computed automatically based on project content:
 - Affects "active projects" filter (planned/in_progress/waiting)
 - Affects stalled detection
 - Updates last modified timestamp
+- Moving to `done` records `completed_at`; moving away from `done` clears it (a model `beforeSave` hook, so REST, MCP and every other write path behave the same). Cancelled projects get no `completed_at`.
+
+### Completing a Project
+
+- The project page has a **Complete** button (it turns into **Reopen** once the project is done), and picking **Completed** in any status menu does the same.
+- If the project still has open tasks, a dialog asks whether to **mark them done too** or **leave them open**. Recurring task patterns are never completed this way: they keep their schedule.
+- API: `POST /api/project/:uid/complete` with `{ "complete_open_tasks": true|false }` returns `{ project, completed_tasks }`. Requires write access. Open tasks are those not done, archived or cancelled, with `recurrence_type = 'none'`; each is updated on its own so task hooks (webhooks) still fire.
+- The project page shows "Completed <date>" in place of the due date countdown.
+
+### Completed Projects History
+
+- `/projects/completed` (the **History** button on the Projects page) lists done projects newest first, grouped by year and then month of `completed_at`.
+- Each row shows the area, tasks done out of total, how many days the project took (created to completed) and a **Reopen** action, which sets the status back to `in_progress`.
+- **Show cancelled** adds cancelled projects, dated by their last update. The choice is remembered per browser.
+- Projects that were already done before `completed_at` existed were backfilled from `updated_at` by the migration.
+- On an Area page, done and cancelled projects fold into a collapsed **Finished (n)** section below the active ones.
 
 ### Deleting a Project
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '../../store/useStore';
@@ -39,6 +40,7 @@ const AreaDetails: React.FC = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<AreaTab>('projects');
+    const [showFinished, setShowFinished] = useState(false);
 
     const areaUid = uidSlug?.split('-')[0] || '';
 
@@ -110,6 +112,23 @@ const AreaDetails: React.FC = () => {
             const projectArea = p.area || (p as any).Area;
             return projectArea?.uid === areaUid;
         }
+    );
+
+    // Done and cancelled projects fold away below the ones still going
+    const isFinished = (p: Project) =>
+        p.status === 'done' || p.status === 'cancelled';
+    const openProjects = areaProjects.filter((p) => !isFinished(p));
+    const finishedProjects = areaProjects.filter(isFinished);
+    const renderProjectCard = (project: Project) => (
+        <ProjectItem
+            key={project.id}
+            project={project}
+            viewMode="cards"
+            getCompletionPercentage={() =>
+                (project as any).completion_percentage || 0
+            }
+            {...cardActions}
+        />
     );
 
     const areaGoals: Goal[] = goalsStore.goals.filter(
@@ -257,18 +276,41 @@ const AreaDetails: React.FC = () => {
                         {t('areas.noProjects', 'No projects in this area.')}
                     </p>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {areaProjects.map((project) => (
-                            <ProjectItem
-                                key={project.id}
-                                project={project}
-                                viewMode="cards"
-                                getCompletionPercentage={() =>
-                                    (project as any).completion_percentage || 0
-                                }
-                                {...cardActions}
-                            />
-                        ))}
+                    <div className="space-y-6">
+                        {openProjects.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {openProjects.map(renderProjectCard)}
+                            </div>
+                        )}
+                        {finishedProjects.length > 0 && (
+                            <div>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowFinished((value) => !value)
+                                    }
+                                    className="inline-flex items-center gap-1 px-2 text-sm font-medium text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                                    aria-expanded={showFinished}
+                                    data-testid="area-finished-projects-toggle"
+                                >
+                                    <ChevronRightIcon
+                                        className={`h-4 w-4 transition-transform ${showFinished ? 'rotate-90' : ''}`}
+                                    />
+                                    {t(
+                                        'areas.finishedProjects',
+                                        'Finished ({{count}})',
+                                        { count: finishedProjects.length }
+                                    )}
+                                </button>
+                                {showFinished && (
+                                    <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 opacity-80">
+                                        {finishedProjects.map(
+                                            renderProjectCard
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 ))}
 

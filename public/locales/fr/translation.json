@@ -1092,7 +1092,17 @@
     "editBanner": "Modifier la bannière du projet",
     "currentBanner": "Bannière actuelle",
     "choosePreset": "Choisissez une bannière prédéfinie :",
-    "orUploadOwn": "Ou téléchargez la vôtre :"
+    "orUploadOwn": "Ou téléchargez la vôtre :",
+    "markComplete": "Terminer",
+    "completedOn": "Terminé le {{date}}",
+    "completedToast": "Projet terminé",
+    "completedWithTasks_one": "Projet terminé, {{count}} tâche marquée comme faite",
+    "completedWithTasks_many": "Projet terminé, {{count}} tâches marquées comme faites",
+    "completedWithTasks_other": "Projet terminé, {{count}} tâches marquées comme faites",
+    "completeTitle": "Terminer « {{name}} » ?",
+    "completeOpenTasks": "Ce projet a encore des tâches ouvertes. Les marquer aussi comme faites, ou les laisser ouvertes ? Les tâches récurrentes gardent leur planification dans tous les cas.",
+    "leaveTasksOpen": "Les laisser ouvertes",
+    "completeTasksToo": "Les marquer comme faites"
   },
   "errors": {
     "required": "Ce champ est requis",
@@ -1130,7 +1140,8 @@
     "failedToSaveGoal": "Impossible d'enregistrer l'objectif.",
     "failedToDeleteGoal": "Impossible de supprimer l'objectif.",
     "failedToDeleteNote": "Impossible de supprimer la note.",
-    "failedToDeleteTag": "Impossible de supprimer l'étiquette."
+    "failedToDeleteTag": "Impossible de supprimer l'étiquette.",
+    "projectStatusUpdateFailed": "Échec de la mise à jour du statut du projet"
   },
   "inbox": {
     "title": "Boîte de réception",
@@ -1457,7 +1468,21 @@
     "blankSlateTemplate": "Partir d'un modèle",
     "blankSlateAreas": "Configurer les zones",
     "blankSlateShowAll": "Afficher tous les projets",
-    "viewAs": "Affichage"
+    "viewAs": "Affichage",
+    "history": "Historique",
+    "historyHint": "Projets terminés, les plus récents d'abord",
+    "historyTitle": "Projets terminés",
+    "historyCount": "{{count}} terminé(s)",
+    "historyShowCancelled": "Afficher les annulés",
+    "historyEmptyTitle": "Rien de terminé pour l'instant",
+    "historyEmptyHint": "Les projets que vous marquez comme terminés apparaissent ici, les plus récents d'abord. Le travail reste archivé sans encombrer votre liste.",
+    "historyTasks": "{{done}} tâches sur {{total}}",
+    "historyDuration_one": "a duré {{count}} jour",
+    "historyDuration_many": "a duré {{count}} jours",
+    "historyDuration_other": "a duré {{count}} jours",
+    "reopen": "Rouvrir",
+    "reopened": "« {{name}} » est de nouveau en cours",
+    "loadError": "Échec du chargement des projets"
   },
   "projectItem": {
     "edit": "Modifier",
@@ -1504,7 +1529,8 @@
     "noAreasYet": "Aucune zone pour l'instant.",
     "blankSlateHint": "Les zones sont les parties de votre vie dont vous vous occupez dans la durée, comme Travail, Santé ou Maison. Placez-y vos projets et objectifs pour voir chaque partie au même endroit.",
     "blankSlateNew": "Créer votre première zone",
-    "blankSlateProjects": "Aller aux projets"
+    "blankSlateProjects": "Aller aux projets",
+    "finishedProjects": "Terminés ({{count}})"
   },
   "notes": {
     "loading": "Chargement des notes...",
@@ -3068,5 +3094,13 @@
     "locked": "Défini par votre focus. Effacez-le depuis la puce de la barre du haut.",
     "emptyHint": "Affiche uniquement {{label}}",
     "saveError": "Impossible d'enregistrer le focus."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain",
+      "weekend": "Week-end",
+      "nextWeek": "Semaine prochaine"
+    }
   }
 }

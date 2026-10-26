@@ -1092,7 +1092,16 @@
     "editBanner": "Redigera projektbanner",
     "currentBanner": "Aktuell banner",
     "choosePreset": "Välj en förinställd banner:",
-    "orUploadOwn": "Eller ladda upp din egen:"
+    "orUploadOwn": "Eller ladda upp din egen:",
+    "markComplete": "Slutför",
+    "completedOn": "Slutfört {{date}}",
+    "completedToast": "Projektet slutfört",
+    "completedWithTasks_one": "Projektet slutfört, {{count}} uppgift markerad som klar",
+    "completedWithTasks_other": "Projektet slutfört, {{count}} uppgifter markerade som klara",
+    "completeTitle": "Slutföra \"{{name}}\"?",
+    "completeOpenTasks": "Projektet har fortfarande öppna uppgifter. Ska de också markeras som klara, eller lämnas öppna? Återkommande uppgifter behåller sitt schema oavsett.",
+    "leaveTasksOpen": "Lämna dem öppna",
+    "completeTasksToo": "Markera dem som klara"
   },
   "errors": {
     "required": "Detta fält är obligatoriskt",
@@ -1130,7 +1139,8 @@
     "failedToSaveGoal": "Det gick inte att spara målet.",
     "failedToDeleteGoal": "Det gick inte att radera målet.",
     "failedToDeleteNote": "Det gick inte att ta bort anteckningen.",
-    "failedToDeleteTag": "Det gick inte att ta bort taggen."
+    "failedToDeleteTag": "Det gick inte att ta bort taggen.",
+    "projectStatusUpdateFailed": "Det gick inte att uppdatera projektstatus"
   },
   "inbox": {
     "title": "Inkorg",
@@ -1457,7 +1467,20 @@
     "blankSlateTemplate": "Börja från en mall",
     "blankSlateAreas": "Konfigurera områden",
     "blankSlateShowAll": "Visa alla projekt",
-    "viewAs": "Vy"
+    "viewAs": "Vy",
+    "history": "Historik",
+    "historyHint": "Slutförda projekt, nyaste först",
+    "historyTitle": "Slutförda projekt",
+    "historyCount": "{{count}} klara",
+    "historyShowCancelled": "Visa avbrutna",
+    "historyEmptyTitle": "Inget slutfört än",
+    "historyEmptyHint": "Projekt som du markerar som slutförda visas här, nyaste först, så att arbetet finns kvar utan att fylla din lista.",
+    "historyTasks": "{{done}} av {{total}} uppgifter",
+    "historyDuration_one": "tog {{count}} dag",
+    "historyDuration_other": "tog {{count}} dagar",
+    "reopen": "Öppna igen",
+    "reopened": "\"{{name}}\" pågår igen",
+    "loadError": "Det gick inte att läsa in projekt"
   },
   "projectItem": {
     "edit": "Ändra",
@@ -1504,7 +1527,8 @@
     "noAreasYet": "Inga områden än.",
     "blankSlateHint": "Områden är de delar av livet som du tar hand om över tid, till exempel Jobb, Hälsa eller Hem. Lägg dina projekt och mål i dem för att se varje del på ett ställe.",
     "blankSlateNew": "Skapa ditt första område",
-    "blankSlateProjects": "Gå till projekt"
+    "blankSlateProjects": "Gå till projekt",
+    "finishedProjects": "Klara ({{count}})"
   },
   "notes": {
     "loading": "Laddar anteckningar...",
@@ -3067,5 +3091,13 @@
     "locked": "Satt av ditt fokus. Rensa det från chippet i övre fältet.",
     "emptyHint": "Visar bara {{label}}",
     "saveError": "Fokuset kunde inte sparas."
+  },
+  "datePicker": {
+    "shortcuts": {
+      "today": "Idag",
+      "tomorrow": "Imorgon",
+      "weekend": "Helg",
+      "nextWeek": "Nästa vecka"
+    }
   }
 }
