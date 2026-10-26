@@ -1,0 +1,602 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { Task } from '../../entities/Task';
+import {
+    EveryoneTimelineResponse,
+    fetchEveryoneTimeline,
+} from '../../utils/everyoneService';
+import { updateTask } from '../../utils/tasksService';
+import { useToast } from '../Shared/ToastContext';
+import { columnColors, PersonAvatar } from './PeopleBoard';
+import {
+    TimelineItem,
+    buildItems,
+    dateOf,
+    fromDay,
+    shiftDates,
+    todayDay,
+    weekdayOf,
+} from '../Project/Timeline/timelineLayout';
+
+const TRACK_HEIGHT = 32;
+const BAR_HEIGHT = 26;
+const LOAD_HEIGHT = 34;
+const LEFT_WIDTH = 200;
+const SPAN_KEY = 'everyone_timeline_days';
+
+interface Placed {
+    item: TimelineItem;
+    track: number;
+}
+
+interface DragState {
+    uid: string;
+    lane: string;
+    originX: number;
+    delta: number;
+}
+
+// Packs bars into as few rows as possible without overlaps.
+const packTracks = (items: TimelineItem[]): Placed[] => {
+    const trackEnds: number[] = [];
+    return items.map((item) => {
+        let track = trackEnds.findIndex((end) => end < item.from);
+        if (track === -1) {
+            track = trackEnds.length;
+            trackEnds.push(item.to);
+        } else {
+            trackEnds[track] = item.to;
+        }
+        return { item, track };
+    });
+};
+
+// Planned hours per day: each estimate is spread evenly over the days its
+// task covers.
+const dailyLoad = (items: TimelineItem[], first: number, days: number) => {
+    const load = new Array(days).fill(0);
+    items.forEach((item) => {
+        const minutes = item.task.estimated_minutes;
+        if (!minutes) return;
+        const span = item.to - item.from + 1;
+        for (let day = item.from; day <= item.to; day += 1) {
+            const i = day - first;
+            if (i >= 0 && i < days) load[i] += minutes / 60 / span;
+        }
+    });
+    return load;
+};
+
+const formatHours = (hours: number) =>
+    hours >= 10 ? `${Math.round(hours)}h` : `${Math.round(hours * 10) / 10}h`;
+
+const startOfWeek = (day: number) => {
+    let d = day;
+    while (weekdayOf(d) !== 1) d -= 1;
+    return d;
+};
+
+const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
+    header,
+}) => {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { showErrorToast } = useToast();
+    const [days, setDays] = useState<number>(() => {
+        try {
+            return localStorage.getItem(SPAN_KEY) === '28' ? 28 : 14;
+        } catch {
+            return 14;
+        }
+    });
+    const [first, setFirst] = useState(() => startOfWeek(todayDay()));
+    const [data, setData] = useState<EveryoneTimelineResponse | null>(null);
+    const [error, setError] = useState(false);
+    const [drag, setDrag] = useState<DragState | null>(null);
+    const [hoverLane, setHoverLane] = useState<string | null>(null);
+
+    const load = useCallback(() => {
+        fetchEveryoneTimeline(fromDay(first), days)
+            .then((res) => {
+                setData(res);
+                setError(false);
+            })
+            .catch(() => setError(true));
+    }, [first, days]);
+
+    useEffect(() => {
+        load();
+    }, [load]);
+
+    const changeDays = (next: number) => {
+        setDays(next);
+        try {
+            localStorage.setItem(SPAN_KEY, String(next));
+        } catch {
+            // Only a convenience
+        }
+    };
+
+    const last = first + days - 1;
+    const today = todayDay();
+    const dayW = days === 14 ? 72 : 40;
+    const width = days * dayW;
+    const capacity = data
+        ? (data.day_hours.end - data.day_hours.start) / 60
+        : 8;
+
+    const colors = useMemo(
+        () => columnColors(data?.lanes || []),
+        [data?.lanes]
+    );
+
+    const lanes = useMemo(
+        () =>
+            (data?.lanes || []).map((lane) => {
+                const { items } = buildItems(lane.tasks);
+                const clipped = items.map((item) => ({
+                    ...item,
+                    from: Math.max(item.from, first),
+                    to: Math.min(item.to, last),
+                }));
+                const placed = packTracks(clipped);
+                const tracks = Math.max(1, ...placed.map((p) => p.track + 1));
+                const loadByDay = dailyLoad(items, first, days);
+                const planned = loadByDay.reduce((a, b) => a + b, 0);
+                const overDays = loadByDay.filter((h) => h > capacity).length;
+                return {
+                    lane,
+                    placed,
+                    tracks,
+                    loadByDay,
+                    planned,
+                    overDays,
+                };
+            }),
+        [data, first, last, days, capacity]
+    );
+
+    const dayList = Array.from({ length: days }, (_, i) => first + i);
+
+    const handlePointerDown = (
+        e: React.PointerEvent,
+        item: TimelineItem,
+        laneUid: string
+    ) => {
+        if (e.button !== 0 || !item.task.uid) return;
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        setDrag({
+            uid: item.task.uid,
+            lane: laneUid,
+            originX: e.clientX,
+            delta: 0,
+        });
+    };
+
+    const laneAt = (clientX: number, clientY: number) => {
+        const els = document.elementsFromPoint(clientX, clientY);
+        const laneEl = els.find(
+            (el) => (el as HTMLElement).dataset?.laneUid
+        ) as HTMLElement | undefined;
+        return laneEl?.dataset.laneUid ?? null;
+    };
+
+    const handlePointerMove = (e: React.PointerEvent) => {
+        if (!drag) return;
+        const delta = Math.round((e.clientX - drag.originX) / dayW);
+        if (delta !== drag.delta) setDrag({ ...drag, delta });
+        setHoverLane(laneAt(e.clientX, e.clientY));
+    };
+
+    const handlePointerUp = async (
+        e: React.PointerEvent,
+        task: Task,
+        original: TimelineItem
+    ) => {
+        if (!drag) return;
+        const { delta, lane } = drag;
+        const target = laneAt(e.clientX, e.clientY);
+        setDrag(null);
+        setHoverLane(null);
+        const moved = delta !== 0;
+        const reassigned = !!target && target !== lane;
+        if (!moved && !reassigned) {
+            navigate(`/task/${task.uid}`);
+            return;
+        }
+        const payload: Partial<Task> = {};
+        if (moved) {
+            Object.assign(payload, shiftDates(original, delta, 'move'));
+            if (payload.start_date && task.start_time)
+                payload.start_time = task.start_time;
+            if (payload.due_date && task.due_has_time && task.due_time)
+                payload.due_time = task.due_time;
+        }
+        if (reassigned) payload.assigned_to = target;
+        try {
+            await updateTask(task.uid!, payload);
+        } catch (err: any) {
+            showErrorToast(
+                err?.message ||
+                    t('projectTimeline.saveError', 'Could not move the task')
+            );
+        }
+        load();
+    };
+
+    // Unclipped item for a task, so a drag shifts its real dates
+    const originalItem = (task: Task) => buildItems([task]).items[0];
+
+    return (
+        <div
+            className="h-full flex flex-col overflow-hidden px-4 sm:px-6 lg:px-8"
+            data-testid="everyone-timeline"
+        >
+            {header}
+
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        aria-label={t('everyoneTimeline.earlier', 'Earlier')}
+                        onClick={() => setFirst((d) => d - 7)}
+                        className="rounded-lg bg-white p-1.5 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                    >
+                        <ChevronLeftIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setFirst(startOfWeek(todayDay()))}
+                        className="rounded-lg bg-white px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                    >
+                        {t('sidebar.today', 'Today')}
+                    </button>
+                    <button
+                        type="button"
+                        aria-label={t('everyoneTimeline.later', 'Later')}
+                        onClick={() => setFirst((d) => d + 7)}
+                        className="rounded-lg bg-white p-1.5 text-gray-600 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+                    >
+                        <ChevronRightIcon className="h-4 w-4" />
+                    </button>
+                    <span className="ml-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {format(dateOf(first), 'MMM d')} –{' '}
+                        {format(dateOf(last), 'MMM d')}
+                    </span>
+                </div>
+                <div
+                    role="group"
+                    aria-label={t('projectTimeline.scale', 'Scale')}
+                    className="flex rounded-lg bg-gray-200/70 p-0.5 dark:bg-gray-800"
+                >
+                    {[14, 28].map((n) => (
+                        <button
+                            key={n}
+                            type="button"
+                            aria-pressed={days === n}
+                            onClick={() => changeDays(n)}
+                            className={`rounded-md px-3 py-1 text-sm ${
+                                days === n
+                                    ? 'bg-white font-medium text-gray-900 shadow-sm dark:bg-gray-700 dark:text-gray-100'
+                                    : 'text-gray-600 dark:text-gray-300'
+                            }`}
+                        >
+                            {n === 14
+                                ? t('everyoneTimeline.twoWeeks', '2 weeks')
+                                : t('everyoneTimeline.fourWeeks', '4 weeks')}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {error && (
+                <div className="mb-3 rounded-xl bg-white p-4 text-sm text-red-600 dark:bg-gray-800 dark:text-red-400">
+                    {t(
+                        'everyoneTimeline.loadError',
+                        'Could not load the timeline.'
+                    )}
+                </div>
+            )}
+
+            <div className="min-h-0 flex-1 overflow-auto pb-6">
+                <div
+                    className="rounded-xl bg-white shadow-sm dark:bg-gray-900"
+                    style={{ width: LEFT_WIDTH + width }}
+                    onPointerMove={handlePointerMove}
+                >
+                    <div className="sticky top-0 z-20 flex rounded-t-xl bg-white dark:bg-gray-900">
+                        <div
+                            className="sticky left-0 z-10 flex items-end bg-white px-4 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:bg-gray-900 dark:text-gray-400"
+                            style={{ width: LEFT_WIDTH, height: 48 }}
+                        >
+                            {t('everyone.people', 'People')}
+                        </div>
+                        {dayList.map((day) => {
+                            const weekday = weekdayOf(day);
+                            const weekend = weekday === 0 || weekday === 6;
+                            return (
+                                <div
+                                    key={day}
+                                    className={`flex flex-col justify-end pb-2 pl-2 text-[11px] leading-tight ${
+                                        day === today
+                                            ? 'font-bold text-blue-700 dark:text-blue-400'
+                                            : 'text-gray-500 dark:text-gray-400'
+                                    } ${weekend ? 'bg-gray-500/[0.06] dark:bg-white/[0.04]' : ''}`}
+                                    style={{ width: dayW, height: 48 }}
+                                >
+                                    <span>{format(dateOf(day), 'EEE')}</span>
+                                    <span>{format(dateOf(day), 'MMM d')}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {lanes.map(
+                        (
+                            {
+                                lane,
+                                placed,
+                                tracks,
+                                loadByDay,
+                                planned,
+                                overDays,
+                            },
+                            laneIndex
+                        ) => {
+                            const color = colors[lane.person.uid];
+                            const bodyH = 8 + tracks * TRACK_HEIGHT;
+                            const isTarget =
+                                !!drag &&
+                                hoverLane === lane.person.uid &&
+                                drag.lane !== lane.person.uid;
+                            const band =
+                                laneIndex % 2
+                                    ? 'bg-gray-50 dark:bg-gray-800/40'
+                                    : 'bg-white dark:bg-gray-900';
+                            return (
+                                <div
+                                    key={lane.person.uid}
+                                    data-lane-uid={lane.person.uid}
+                                    data-testid={`timeline-lane-${lane.person.uid}`}
+                                    className={`flex ${band}`}
+                                    style={
+                                        isTarget
+                                            ? { backgroundColor: `${color}1f` }
+                                            : undefined
+                                    }
+                                >
+                                    <div
+                                        className={`sticky left-0 z-10 flex items-start gap-2.5 px-4 py-3 ${band}`}
+                                        style={{ width: LEFT_WIDTH }}
+                                    >
+                                        <PersonAvatar
+                                            name={lane.person.name}
+                                            color={color}
+                                        />
+                                        <div className="min-w-0">
+                                            <div className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                {lane.is_self
+                                                    ? t('everyone.you', 'You')
+                                                    : lane.person.name}
+                                            </div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                {t(
+                                                    'everyoneTimeline.planned',
+                                                    '{{hours}} planned',
+                                                    {
+                                                        hours: formatHours(
+                                                            planned
+                                                        ),
+                                                    }
+                                                )}
+                                                {overDays > 0 &&
+                                                    ` · ${t(
+                                                        'everyoneTimeline.daysOver',
+                                                        '{{count}} days over',
+                                                        { count: overDays }
+                                                    )}`}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        className="relative"
+                                        style={{
+                                            width,
+                                            height: bodyH + LOAD_HEIGHT,
+                                        }}
+                                    >
+                                        {dayList.map((day) => {
+                                            const weekday = weekdayOf(day);
+                                            if (weekday !== 0 && weekday !== 6)
+                                                return null;
+                                            return (
+                                                <div
+                                                    key={`w-${day}`}
+                                                    className="absolute inset-y-0 bg-gray-500/[0.06] dark:bg-white/[0.04]"
+                                                    style={{
+                                                        left:
+                                                            (day - first) *
+                                                            dayW,
+                                                        width: dayW,
+                                                    }}
+                                                />
+                                            );
+                                        })}
+                                        {today >= first && today <= last && (
+                                            <div
+                                                className="absolute inset-y-0 w-0.5 bg-blue-600 dark:bg-blue-400"
+                                                style={{
+                                                    left:
+                                                        (today - first) * dayW,
+                                                }}
+                                            />
+                                        )}
+                                        {placed.map(({ item, track }) => {
+                                            const dragging =
+                                                drag?.uid === item.task.uid;
+                                            const shift = dragging
+                                                ? drag!.delta * dayW
+                                                : 0;
+                                            const span =
+                                                item.to - item.from + 1;
+                                            const est = item.task
+                                                .estimated_minutes
+                                                ? formatHours(
+                                                      item.task
+                                                          .estimated_minutes /
+                                                          60
+                                                  )
+                                                : '';
+                                            const label = `${item.task.name}${
+                                                item.task.Project?.name
+                                                    ? ` · ${item.task.Project.name}`
+                                                    : ''
+                                            }${est ? ` · ${est}` : ''}`;
+                                            return (
+                                                <button
+                                                    key={item.task.uid}
+                                                    type="button"
+                                                    title={label}
+                                                    aria-label={label}
+                                                    onPointerDown={(e) =>
+                                                        handlePointerDown(
+                                                            e,
+                                                            item,
+                                                            lane.person.uid
+                                                        )
+                                                    }
+                                                    onPointerUp={(e) =>
+                                                        handlePointerUp(
+                                                            e,
+                                                            item.task,
+                                                            originalItem(
+                                                                item.task
+                                                            )
+                                                        )
+                                                    }
+                                                    className={`absolute flex touch-none items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-2 text-left text-xs font-medium text-gray-900 dark:text-gray-100 ${
+                                                        dragging
+                                                            ? 'z-10 cursor-grabbing shadow-lg'
+                                                            : 'cursor-grab'
+                                                    } ${item.kind === 'due' ? 'justify-center' : ''}`}
+                                                    style={{
+                                                        left:
+                                                            (item.from -
+                                                                first) *
+                                                                dayW +
+                                                            3 +
+                                                            shift,
+                                                        width: span * dayW - 6,
+                                                        top:
+                                                            8 +
+                                                            track *
+                                                                TRACK_HEIGHT,
+                                                        height: BAR_HEIGHT,
+                                                        backgroundColor: `${color}${item.kind === 'start' ? '22' : '38'}`,
+                                                    }}
+                                                >
+                                                    {item.kind === 'due' && (
+                                                        <span
+                                                            className="h-2 w-2 flex-shrink-0 rotate-45"
+                                                            style={{
+                                                                backgroundColor:
+                                                                    color,
+                                                            }}
+                                                        />
+                                                    )}
+                                                    <span className="truncate">
+                                                        {item.task.name}
+                                                    </span>
+                                                    {est &&
+                                                        span * dayW > 110 && (
+                                                            <span className="ml-auto flex-shrink-0 text-[11px] text-gray-600 dark:text-gray-300">
+                                                                {est}
+                                                            </span>
+                                                        )}
+                                                </button>
+                                            );
+                                        })}
+                                        <div
+                                            className="absolute inset-x-0 flex"
+                                            style={{
+                                                top: bodyH + 4,
+                                                height: LOAD_HEIGHT - 10,
+                                            }}
+                                        >
+                                            {loadByDay.map((hours, i) => {
+                                                const over = hours > capacity;
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className="px-0.5"
+                                                        style={{ width: dayW }}
+                                                    >
+                                                        {hours > 0 && (
+                                                            <div
+                                                                className={`flex h-full items-center justify-center rounded text-[11px] font-semibold tabular-nums ${
+                                                                    over
+                                                                        ? 'bg-orange-200 text-orange-900 dark:bg-orange-500/30 dark:text-orange-100'
+                                                                        : 'bg-indigo-50 text-indigo-800 dark:bg-indigo-500/20 dark:text-indigo-100'
+                                                                }`}
+                                                                title={t(
+                                                                    'everyoneTimeline.loadTitle',
+                                                                    '{{hours}} of {{capacity}} planned',
+                                                                    {
+                                                                        hours: formatHours(
+                                                                            hours
+                                                                        ),
+                                                                        capacity:
+                                                                            formatHours(
+                                                                                capacity
+                                                                            ),
+                                                                    }
+                                                                )}
+                                                            >
+                                                                {formatHours(
+                                                                    hours
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+                    )}
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-4 px-1 text-xs text-gray-500 dark:text-gray-400">
+                    <span className="flex items-center gap-1.5">
+                        <span className="h-3 w-7 rounded bg-indigo-50 dark:bg-indigo-500/20" />
+                        {t(
+                            'everyoneTimeline.legendLoad',
+                            'Hours from task estimates, spread from start to due'
+                        )}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <span className="h-3 w-7 rounded bg-orange-200 dark:bg-orange-500/30" />
+                        {t(
+                            'everyoneTimeline.legendOver',
+                            'More than your {{hours}} planning day',
+                            { hours: formatHours(capacity) }
+                        )}
+                    </span>
+                    <span>
+                        {t(
+                            'everyoneTimeline.dragHint',
+                            'Drag a bar sideways to move it, or onto another person to assign it'
+                        )}
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default EveryoneTimeline;

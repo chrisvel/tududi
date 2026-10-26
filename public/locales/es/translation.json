@@ -3118,5 +3118,21 @@
     "saveError": "No se pudo mover la tarea",
     "dueOn": "Vence {{date}}",
     "startsOn": "Empieza {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Vista",
+    "board": "Tablero",
+    "subtitle": "Quién hace qué en las próximas semanas",
+    "earlier": "Antes",
+    "later": "Después",
+    "twoWeeks": "2 semanas",
+    "fourWeeks": "4 semanas",
+    "loadError": "No se pudo cargar el cronograma.",
+    "planned": "{{hours}} planificadas",
+    "daysOver": "{{count}} días de exceso",
+    "loadTitle": "{{hours}} de {{capacity}} planificadas",
+    "legendLoad": "Horas de las estimaciones, repartidas del inicio al vencimiento",
+    "legendOver": "Más que tu día de planificación de {{hours}}",
+    "dragHint": "Arrastra una barra a los lados para moverla, o sobre otra persona para asignarla"
   }
 }

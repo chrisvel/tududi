@@ -3128,5 +3128,21 @@
     "saveError": "Kon de taak niet verplaatsen",
     "dueOn": "Deadline {{date}}",
     "startsOn": "Begint {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Weergave",
+    "board": "Bord",
+    "subtitle": "Wie doet wat in de komende weken",
+    "earlier": "Eerder",
+    "later": "Later",
+    "twoWeeks": "2 weken",
+    "fourWeeks": "4 weken",
+    "loadError": "Kon de tijdlijn niet laden.",
+    "planned": "{{hours}} gepland",
+    "daysOver": "{{count}} dagen te veel",
+    "loadTitle": "{{hours}} van {{capacity}} gepland",
+    "legendLoad": "Uren uit taakschattingen, verdeeld van start tot deadline",
+    "legendOver": "Meer dan je planningsdag van {{hours}}",
+    "dragHint": "Sleep een balk opzij om hem te verplaatsen, of naar iemand anders om hem toe te wijzen"
   }
 }

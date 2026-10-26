@@ -3128,5 +3128,21 @@
     "saveError": "Det gick inte att flytta uppgiften",
     "dueOn": "Förfaller {{date}}",
     "startsOn": "Börjar {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Vy",
+    "board": "Tavla",
+    "subtitle": "Vem gör vad de kommande veckorna",
+    "earlier": "Tidigare",
+    "later": "Senare",
+    "twoWeeks": "2 veckor",
+    "fourWeeks": "4 veckor",
+    "loadError": "Det gick inte att läsa in tidslinjen.",
+    "planned": "{{hours}} planerat",
+    "daysOver": "{{count}} dagar över",
+    "loadTitle": "{{hours}} av {{capacity}} planerat",
+    "legendLoad": "Timmar från uppgiftsuppskattningar, fördelade från start till förfallodag",
+    "legendOver": "Mer än din planeringsdag på {{hours}}",
+    "dragHint": "Dra en stapel åt sidan för att flytta den, eller till en annan person för att tilldela den"
   }
 }

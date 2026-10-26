@@ -3131,5 +3131,21 @@
     "saveError": "Impossibile spostare l'attività",
     "dueOn": "Scade {{date}}",
     "startsOn": "Inizia {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Vista",
+    "board": "Bacheca",
+    "subtitle": "Chi fa cosa nelle prossime settimane",
+    "earlier": "Prima",
+    "later": "Dopo",
+    "twoWeeks": "2 settimane",
+    "fourWeeks": "4 settimane",
+    "loadError": "Impossibile caricare la cronologia.",
+    "planned": "{{hours}} pianificate",
+    "daysOver": "{{count}} giorni in eccesso",
+    "loadTitle": "{{hours}} su {{capacity}} pianificate",
+    "legendLoad": "Ore dalle stime delle attività, distribuite dall'inizio alla scadenza",
+    "legendOver": "Più della tua giornata di pianificazione di {{hours}}",
+    "dragHint": "Trascina una barra di lato per spostarla, o su un'altra persona per assegnarla"
   }
 }

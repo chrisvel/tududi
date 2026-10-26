@@ -3148,5 +3148,21 @@
     "saveError": "تعذر نقل المهمة",
     "dueOn": "تستحق {{date}}",
     "startsOn": "تبدأ {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "العرض",
+    "board": "اللوحة",
+    "subtitle": "من يعمل على ماذا في الأسابيع القادمة",
+    "earlier": "أبكر",
+    "later": "لاحقًا",
+    "twoWeeks": "أسبوعان",
+    "fourWeeks": "4 أسابيع",
+    "loadError": "تعذر تحميل الجدول الزمني.",
+    "planned": "{{hours}} مخطط لها",
+    "daysOver": "{{count}} أيام زائدة",
+    "loadTitle": "{{hours}} من {{capacity}} مخطط لها",
+    "legendLoad": "ساعات من تقديرات المهام موزعة من البدء إلى الاستحقاق",
+    "legendOver": "أكثر من يوم التخطيط البالغ {{hours}}",
+    "dragHint": "اسحب الشريط جانبيًا لنقله، أو إلى شخص آخر لإسناده"
   }
 }

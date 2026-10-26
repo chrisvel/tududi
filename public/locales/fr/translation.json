@@ -3131,5 +3131,21 @@
     "saveError": "Impossible de déplacer la tâche",
     "dueOn": "Échéance {{date}}",
     "startsOn": "Commence {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Vue",
+    "board": "Tableau",
+    "subtitle": "Qui fait quoi dans les semaines à venir",
+    "earlier": "Plus tôt",
+    "later": "Plus tard",
+    "twoWeeks": "2 semaines",
+    "fourWeeks": "4 semaines",
+    "loadError": "Impossible de charger la chronologie.",
+    "planned": "{{hours}} prévues",
+    "daysOver": "{{count}} jours en surcharge",
+    "loadTitle": "{{hours}} sur {{capacity}} prévues",
+    "legendLoad": "Heures des estimations, réparties du début à l'échéance",
+    "legendOver": "Plus que votre journée de planification de {{hours}}",
+    "dragHint": "Faites glisser une barre sur le côté pour la déplacer, ou sur une autre personne pour l'assigner"
   }
 }

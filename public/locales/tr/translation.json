@@ -3128,5 +3128,21 @@
     "saveError": "Görev taşınamadı",
     "dueOn": "Bitiş {{date}}",
     "startsOn": "Başlangıç {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Görünüm",
+    "board": "Pano",
+    "subtitle": "Önümüzdeki haftalarda kim ne yapıyor",
+    "earlier": "Önce",
+    "later": "Sonra",
+    "twoWeeks": "2 hafta",
+    "fourWeeks": "4 hafta",
+    "loadError": "Zaman çizelgesi yüklenemedi.",
+    "planned": "{{hours}} planlandı",
+    "daysOver": "{{count}} gün fazla",
+    "loadTitle": "{{capacity}} içinden {{hours}} planlandı",
+    "legendLoad": "Görev tahminlerinden saatler, başlangıçtan bitişe dağıtılmış",
+    "legendOver": "{{hours}} planlama gününüzden fazla",
+    "dragHint": "Taşımak için çubuğu yana, atamak için başka bir kişiye sürükleyin"
   }
 }

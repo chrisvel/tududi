@@ -3128,5 +3128,21 @@
     "saveError": "Tehtävää ei voitu siirtää",
     "dueOn": "Erääntyy {{date}}",
     "startsOn": "Alkaa {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Näkymä",
+    "board": "Taulu",
+    "subtitle": "Kuka tekee mitäkin tulevina viikkoina",
+    "earlier": "Aiemmin",
+    "later": "Myöhemmin",
+    "twoWeeks": "2 viikkoa",
+    "fourWeeks": "4 viikkoa",
+    "loadError": "Aikajanaa ei voitu ladata.",
+    "planned": "{{hours}} suunniteltu",
+    "daysOver": "{{count}} päivää yli",
+    "loadTitle": "{{hours}} / {{capacity}} suunniteltu",
+    "legendLoad": "Tunnit tehtävien arvioista, jaettuna alusta eräpäivään",
+    "legendOver": "Enemmän kuin {{hours}} suunnittelupäiväsi",
+    "dragHint": "Vedä palkkia sivulle siirtääksesi sen tai toisen henkilön kohdalle antaaksesi sen hänelle"
   }
 }

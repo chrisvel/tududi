@@ -3138,5 +3138,21 @@
     "saveError": "Opravila ni bilo mogoče premakniti",
     "dueOn": "Rok {{date}}",
     "startsOn": "Začne se {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Pogled",
+    "board": "Tabla",
+    "subtitle": "Kdo dela kaj v prihodnjih tednih",
+    "earlier": "Prej",
+    "later": "Pozneje",
+    "twoWeeks": "2 tedna",
+    "fourWeeks": "4 tedni",
+    "loadError": "Časovnice ni bilo mogoče naložiti.",
+    "planned": "{{hours}} načrtovano",
+    "daysOver": "{{count}} dni preveč",
+    "loadTitle": "{{hours}} od {{capacity}} načrtovano",
+    "legendLoad": "Ure iz ocen opravil, razporejene od začetka do roka",
+    "legendOver": "Več kot vaš načrtovalni dan {{hours}}",
+    "dragHint": "Povlecite vrstico vstran za premik ali na drugo osebo za dodelitev"
   }
 }

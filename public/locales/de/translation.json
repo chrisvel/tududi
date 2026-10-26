@@ -3137,5 +3137,21 @@
     "saveError": "Die Aufgabe konnte nicht verschoben werden",
     "dueOn": "Fällig {{date}}",
     "startsOn": "Beginnt {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Ansicht",
+    "board": "Board",
+    "subtitle": "Wer in den nächsten Wochen woran arbeitet",
+    "earlier": "Früher",
+    "later": "Später",
+    "twoWeeks": "2 Wochen",
+    "fourWeeks": "4 Wochen",
+    "loadError": "Die Zeitleiste konnte nicht geladen werden.",
+    "planned": "{{hours}} geplant",
+    "daysOver": "{{count}} Tage zu viel",
+    "loadTitle": "{{hours}} von {{capacity}} geplant",
+    "legendLoad": "Stunden aus Aufgabenschätzungen, verteilt von Beginn bis Fälligkeit",
+    "legendOver": "Mehr als dein Planungstag von {{hours}}",
+    "dragHint": "Balken seitlich ziehen zum Verschieben, auf eine andere Person zum Zuweisen"
   }
 }

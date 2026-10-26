@@ -3131,5 +3131,21 @@
     "saveError": "Não foi possível mover a tarefa",
     "dueOn": "Prazo {{date}}",
     "startsOn": "Começa {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Visualização",
+    "board": "Quadro",
+    "subtitle": "Quem faz o quê nas próximas semanas",
+    "earlier": "Antes",
+    "later": "Depois",
+    "twoWeeks": "2 semanas",
+    "fourWeeks": "4 semanas",
+    "loadError": "Não foi possível carregar a linha do tempo.",
+    "planned": "{{hours}} planejadas",
+    "daysOver": "{{count}} dias acima",
+    "loadTitle": "{{hours}} de {{capacity}} planejadas",
+    "legendLoad": "Horas das estimativas, distribuídas do início ao prazo",
+    "legendOver": "Mais do que seu dia de planejamento de {{hours}}",
+    "dragHint": "Arraste uma barra para o lado para movê-la, ou para outra pessoa para atribuí-la"
   }
 }

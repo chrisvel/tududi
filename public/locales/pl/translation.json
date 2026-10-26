@@ -3138,5 +3138,21 @@
     "saveError": "Nie udało się przenieść zadania",
     "dueOn": "Termin {{date}}",
     "startsOn": "Zaczyna się {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Widok",
+    "board": "Tablica",
+    "subtitle": "Kto co robi w najbliższych tygodniach",
+    "earlier": "Wcześniej",
+    "later": "Później",
+    "twoWeeks": "2 tygodnie",
+    "fourWeeks": "4 tygodnie",
+    "loadError": "Nie udało się wczytać osi czasu.",
+    "planned": "{{hours}} zaplanowane",
+    "daysOver": "{{count}} dni ponad",
+    "loadTitle": "{{hours}} z {{capacity}} zaplanowane",
+    "legendLoad": "Godziny z szacunków zadań, rozłożone od początku do terminu",
+    "legendOver": "Więcej niż twój dzień planowania {{hours}}",
+    "dragHint": "Przeciągnij pasek w bok, aby go przesunąć, lub na inną osobę, aby go przypisać"
   }
 }

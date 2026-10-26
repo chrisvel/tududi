@@ -3150,5 +3150,21 @@
         "saveError": "Úlohu sa nepodarilo presunúť",
         "dueOn": "Termín {{date}}",
         "startsOn": "Začína {{date}}"
+    },
+    "everyoneTimeline": {
+        "view": "Zobrazenie",
+        "board": "Tabuľa",
+        "subtitle": "Kto čo robí v nasledujúcich týždňoch",
+        "earlier": "Skôr",
+        "later": "Neskôr",
+        "twoWeeks": "2 týždne",
+        "fourWeeks": "4 týždne",
+        "loadError": "Časovú os sa nepodarilo načítať.",
+        "planned": "{{hours}} naplánované",
+        "daysOver": "{{count}} dní nad",
+        "loadTitle": "{{hours}} z {{capacity}} naplánované",
+        "legendLoad": "Hodiny z odhadov úloh, rozložené od začiatku po termín",
+        "legendOver": "Viac ako váš plánovací deň {{hours}}",
+        "dragHint": "Potiahnite pruh do strany na presun alebo na inú osobu na priradenie"
     }
 }

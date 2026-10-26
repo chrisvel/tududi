@@ -3125,5 +3125,21 @@
     "saveError": "Tidak dapat memindahkan tugas",
     "dueOn": "Tenggat {{date}}",
     "startsOn": "Mulai {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "Tampilan",
+    "board": "Papan",
+    "subtitle": "Siapa mengerjakan apa dalam beberapa minggu ke depan",
+    "earlier": "Lebih awal",
+    "later": "Nanti",
+    "twoWeeks": "2 minggu",
+    "fourWeeks": "4 minggu",
+    "loadError": "Tidak dapat memuat linimasa.",
+    "planned": "{{hours}} direncanakan",
+    "daysOver": "{{count}} hari berlebih",
+    "loadTitle": "{{hours}} dari {{capacity}} direncanakan",
+    "legendLoad": "Jam dari estimasi tugas, dibagi dari mulai hingga tenggat",
+    "legendOver": "Lebih dari hari perencanaan {{hours}} Anda",
+    "dragHint": "Seret bilah ke samping untuk memindahkan, atau ke orang lain untuk menugaskan"
   }
 }

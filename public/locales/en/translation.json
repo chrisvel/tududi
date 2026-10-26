@@ -3527,5 +3527,21 @@
     "saveError": "Could not move the task",
     "dueOn": "Due {{date}}",
     "startsOn": "Starts {{date}}"
+  },
+  "everyoneTimeline": {
+    "view": "View",
+    "board": "Board",
+    "subtitle": "Who is doing what over the coming weeks",
+    "earlier": "Earlier",
+    "later": "Later",
+    "twoWeeks": "2 weeks",
+    "fourWeeks": "4 weeks",
+    "loadError": "Could not load the timeline.",
+    "planned": "{{hours}} planned",
+    "daysOver": "{{count}} days over",
+    "loadTitle": "{{hours}} of {{capacity}} planned",
+    "legendLoad": "Hours from task estimates, spread from start to due",
+    "legendOver": "More than your {{hours}} planning day",
+    "dragHint": "Drag a bar sideways to move it, or onto another person to assign it"
   }
 }
