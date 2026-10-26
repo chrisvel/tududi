@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
@@ -25,6 +31,7 @@ const TRACK_HEIGHT = 32;
 const BAR_HEIGHT = 26;
 const LOAD_HEIGHT = 34;
 const LEFT_WIDTH = 200;
+const HEADER_HEIGHT = 52;
 const SPAN_KEY = 'everyone_timeline_days';
 
 interface Placed {
@@ -97,6 +104,18 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
     const [error, setError] = useState(false);
     const [drag, setDrag] = useState<DragState | null>(null);
     const [hoverLane, setHoverLane] = useState<string | null>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [viewWidth, setViewWidth] = useState(0);
+
+    useEffect(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+        const measure = () => setViewWidth(el.clientWidth);
+        measure();
+        const observer = new ResizeObserver(measure);
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     const load = useCallback(() => {
         fetchEveryoneTimeline(fromDay(first), days)
@@ -122,7 +141,13 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
 
     const last = first + days - 1;
     const today = todayDay();
-    const dayW = days === 14 ? 72 : 40;
+    // Days stretch to fill the space; past a minimum width the grid scrolls
+    const minDayW = days === 14 ? 44 : 22;
+    const dayW = viewWidth
+        ? Math.max(minDayW, (viewWidth - LEFT_WIDTH) / days)
+        : days === 14
+          ? 72
+          : 40;
     const width = days * dayW;
     const capacity = data
         ? (data.day_hours.end - data.day_hours.start) / 60
@@ -301,7 +326,7 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                 </div>
             )}
 
-            <div className="min-h-0 flex-1 overflow-auto pb-6">
+            <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto pb-6">
                 <div
                     className="rounded-xl bg-white shadow-sm dark:bg-gray-900"
                     style={{ width: LEFT_WIDTH + width }}
@@ -310,28 +335,60 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                     <div className="sticky top-0 z-20 flex rounded-t-xl bg-white dark:bg-gray-900">
                         <div
                             className="sticky left-0 z-10 flex items-end bg-white px-4 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:bg-gray-900 dark:text-gray-400"
-                            style={{ width: LEFT_WIDTH, height: 48 }}
+                            style={{ width: LEFT_WIDTH, height: HEADER_HEIGHT }}
                         >
                             {t('everyone.people', 'People')}
                         </div>
-                        {dayList.map((day) => {
-                            const weekday = weekdayOf(day);
-                            const weekend = weekday === 0 || weekday === 6;
-                            return (
-                                <div
-                                    key={day}
-                                    className={`flex flex-col justify-end pb-2 pl-2 text-[11px] leading-tight ${
-                                        day === today
-                                            ? 'font-bold text-blue-700 dark:text-blue-400'
-                                            : 'text-gray-500 dark:text-gray-400'
-                                    } ${weekend ? 'bg-gray-500/[0.06] dark:bg-white/[0.04]' : ''}`}
-                                    style={{ width: dayW, height: 48 }}
-                                >
-                                    <span>{format(dateOf(day), 'EEE')}</span>
-                                    <span>{format(dateOf(day), 'MMM d')}</span>
-                                </div>
-                            );
-                        })}
+                        <div
+                            className="relative"
+                            style={{ width, height: HEADER_HEIGHT }}
+                        >
+                            {dayList.map((day, i) =>
+                                i === 0 || weekdayOf(day) === 1 ? (
+                                    <div
+                                        key={`wk-${day}`}
+                                        className="absolute top-1.5 truncate pl-2 text-xs font-medium text-gray-700 dark:text-gray-300"
+                                        style={{
+                                            left: i * dayW,
+                                            width:
+                                                Math.min(
+                                                    7 -
+                                                        ((weekdayOf(day) + 6) %
+                                                            7),
+                                                    days - i
+                                                ) * dayW,
+                                        }}
+                                    >
+                                        {format(dateOf(day), 'MMM d')}
+                                    </div>
+                                ) : null
+                            )}
+                            {dayList.map((day, i) => {
+                                const weekday = weekdayOf(day);
+                                const weekend = weekday === 0 || weekday === 6;
+                                return (
+                                    <div
+                                        key={day}
+                                        className={`absolute bottom-0 flex h-7 items-center justify-center gap-1 whitespace-nowrap text-[11px] tabular-nums ${
+                                            day === today
+                                                ? 'font-bold text-blue-700 dark:text-blue-400'
+                                                : 'text-gray-500 dark:text-gray-400'
+                                        } ${weekend ? 'bg-gray-500/[0.06] dark:bg-white/[0.04]' : ''}`}
+                                        style={{ left: i * dayW, width: dayW }}
+                                    >
+                                        {dayW >= 36 && (
+                                            <span>
+                                                {format(
+                                                    dateOf(day),
+                                                    dayW >= 56 ? 'EEE' : 'EEEEE'
+                                                )}
+                                            </span>
+                                        )}
+                                        <span>{format(dateOf(day), 'd')}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
 
                     {lanes.map(
@@ -555,9 +612,13 @@ const EveryoneTimeline: React.FC<{ header: React.ReactNode }> = ({
                                                                     }
                                                                 )}
                                                             >
-                                                                {formatHours(
-                                                                    hours
-                                                                )}
+                                                                {dayW >= 40
+                                                                    ? formatHours(
+                                                                          hours
+                                                                      )
+                                                                    : Math.round(
+                                                                          hours
+                                                                      )}
                                                             </div>
                                                         )}
                                                     </div>
