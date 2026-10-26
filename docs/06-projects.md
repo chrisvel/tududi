@@ -83,6 +83,12 @@ Area: "Personal"
    - Used in URLs: `/project/:uid`
    - Cannot be changed
 
+4. **Start** (optional)
+   - When the project begins: a day, optionally with a time
+   - Same API shape as tasks: `start_date` (YYYY-MM-DD) and `start_time` (HH:mm) in the user's timezone, stored in `start_date_at`
+   - Shown and edited in the project's overview panel; the page header says "Starts" or "Started", or falls back to the created date when no start is set
+   - Cannot be after the project's due date in the web UI
+
 ### Organization
 
 4. **Area** (optional)
