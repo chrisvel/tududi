@@ -3117,5 +3117,26 @@
       "weekend": "Выходные",
       "nextWeek": "Следующая неделя"
     }
+  },
+  "projectTimeline": {
+    "title": "Временная шкала",
+    "days": "Дни",
+    "weeks": "Недели",
+    "months": "Месяцы",
+    "scale": "Масштаб",
+    "highlightPath": "Выделить путь",
+    "empty": "Пока нет задач с датами",
+    "noDates": "Пока без дат",
+    "dragHint": "Перетащите задачу на шкалу, чтобы запланировать её",
+    "spareDays": "{{count}} дн. запаса",
+    "projectStart": "Начало проекта",
+    "projectDue": "Срок проекта",
+    "legendRange": "Начало → Срок",
+    "legendDue": "Только срок",
+    "legendBlocks": "Блокирует",
+    "legendOverdue": "Просрочено",
+    "saveError": "Не удалось перенести задачу",
+    "dueOn": "Срок {{date}}",
+    "startsOn": "Начало {{date}}"
   }
 }

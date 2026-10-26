@@ -3117,5 +3117,26 @@
       "weekend": "Weekend",
       "nextWeek": "Następny tydzień"
     }
+  },
+  "projectTimeline": {
+    "title": "Oś czasu",
+    "days": "Dni",
+    "weeks": "Tygodnie",
+    "months": "Miesiące",
+    "scale": "Skala",
+    "highlightPath": "Wyróżnij ścieżkę",
+    "empty": "Brak zadań z datami",
+    "noDates": "Jeszcze bez dat",
+    "dragHint": "Przeciągnij na oś czasu, aby zaplanować",
+    "spareDays": "{{count}} dni zapasu",
+    "projectStart": "Początek projektu",
+    "projectDue": "Termin projektu",
+    "legendRange": "Początek → Termin",
+    "legendDue": "Tylko termin",
+    "legendBlocks": "Blokuje",
+    "legendOverdue": "Zaległe",
+    "saveError": "Nie udało się przenieść zadania",
+    "dueOn": "Termin {{date}}",
+    "startsOn": "Zaczyna się {{date}}"
   }
 }

@@ -3107,5 +3107,26 @@
       "weekend": "Viikonloppu",
       "nextWeek": "Ensi viikko"
     }
+  },
+  "projectTimeline": {
+    "title": "Aikajana",
+    "days": "Päivät",
+    "weeks": "Viikot",
+    "months": "Kuukaudet",
+    "scale": "Mittakaava",
+    "highlightPath": "Korosta polku",
+    "empty": "Ei vielä päivättyjä tehtäviä",
+    "noDates": "Ei vielä päivämääriä",
+    "dragHint": "Vedä tehtävä aikajanalle ajoittaaksesi sen",
+    "spareDays": "{{count}} päivää pelivaraa",
+    "projectStart": "Projektin alku",
+    "projectDue": "Projektin eräpäivä",
+    "legendRange": "Alku → Eräpäivä",
+    "legendDue": "Vain eräpäivä",
+    "legendBlocks": "Estää",
+    "legendOverdue": "Myöhässä",
+    "saveError": "Tehtävää ei voitu siirtää",
+    "dueOn": "Erääntyy {{date}}",
+    "startsOn": "Alkaa {{date}}"
   }
 }

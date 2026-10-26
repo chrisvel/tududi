@@ -9,13 +9,17 @@ const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
 const scopeService = require('../../services/scopeService');
 const { sortTags } = require('../tasks/core/serializers');
-const { getBlockedCountMap } = require('../tasks/relations/service');
+const {
+    getBlockedCountMap,
+    getBlockLinks,
+} = require('../tasks/relations/service');
 const {
     getSafeTimezone,
     processDueDateForResponse,
     startDateTimeToUTC,
     startForResponse,
     utcToUserDateString,
+    utcToUserTimeString,
 } = require('../../utils/timezone-utils');
 const { uid: generateUid } = require('../../utils/uid');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
@@ -367,6 +371,9 @@ class ProjectsService {
                   );
                   normalizedTask.start_date = start.date;
                   normalizedTask.start_time = start.time;
+                  normalizedTask.due_time = task.due_has_time
+                      ? utcToUserTimeString(task.due_date, safeTimezone)
+                      : null;
                   delete normalizedTask.Tags;
                   delete normalizedTask.Subtasks;
                   return normalizedTask;
@@ -395,6 +402,7 @@ class ProjectsService {
             Notes: normalizedNotes,
             due_date_at: formatDate(project.due_date_at),
             ...startFields(project, userTimezone),
+            task_links: await getBlockLinks(projectJson.Tasks || []),
             user_id: project.user_id,
             share_count: shareCount,
             is_shared: sharedUids.has(project.uid),

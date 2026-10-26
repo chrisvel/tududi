@@ -34,6 +34,7 @@ import {
     deleteTask,
     fetchTaskOrder,
     saveTaskOrder,
+    updateTask,
 } from '../../utils/tasksService';
 import { mergeVisibleOrder } from '../Shared/sortableList';
 import IconSortDropdown from '../Shared/IconSortDropdown';
@@ -45,6 +46,7 @@ import { onCaptureSaved, openCapture } from '../../utils/captureUi';
 import BannerEditModal from './BannerEditModal';
 import ProjectShareModal from './ProjectShareModal';
 import ProjectTasksSection from './ProjectTasksSection';
+import ProjectTimeline from './Timeline/ProjectTimeline';
 import ProjectOverviewRail from './ProjectOverviewRail';
 import ProjectAttachmentsWidget from './ProjectAttachmentsWidget';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
@@ -74,6 +76,23 @@ const ProjectDetails: React.FC = () => {
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] = useState(false);
     const [previewNote, setPreviewNote] = useState<Note | null>(null);
+    const [view, setView] = useState<'tasks' | 'timeline'>(() => {
+        try {
+            return localStorage.getItem('project_view') === 'timeline'
+                ? 'timeline'
+                : 'tasks';
+        } catch {
+            return 'tasks';
+        }
+    });
+    const changeView = (next: 'tasks' | 'timeline') => {
+        setView(next);
+        try {
+            localStorage.setItem('project_view', next);
+        } catch {
+            // The chosen view is only a convenience
+        }
+    };
     const [isBannerEditModalOpen, setIsBannerEditModalOpen] = useState(false);
     const attachmentsApi = useMemo(
         () =>
@@ -185,6 +204,39 @@ const ProjectDetails: React.FC = () => {
         };
         loadProjectData();
     }, [uidSlug, reloadKey]);
+
+    // Moving a bar on the timeline. Times of day are kept: sending a date
+    // alone would turn a timed start or due into a whole-day one.
+    const handleTaskDatesChange = async (
+        task: Task,
+        dates: { start_date?: string; due_date?: string }
+    ) => {
+        if (!task.uid) return;
+        const payload: Partial<Task> = { ...dates };
+        if (dates.start_date && task.start_time)
+            payload.start_time = task.start_time;
+        if (dates.due_date && task.due_has_time && task.due_time)
+            payload.due_time = task.due_time;
+        try {
+            const saved = await updateTask(task.uid, payload);
+            setTasks((prev) =>
+                prev.map((item) =>
+                    item.uid === task.uid
+                        ? {
+                              ...item,
+                              start_date: saved.start_date ?? null,
+                              start_time: saved.start_time ?? null,
+                              due_date: saved.due_date,
+                              due_time: saved.due_time ?? null,
+                              due_has_time: saved.due_has_time,
+                          }
+                        : item
+                )
+            );
+        } catch {
+            showErrorToast(t('projectTimeline.saveError', 'Could not move the task'));
+        }
+    };
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         if (!updatedTask.id) return;
@@ -690,9 +742,24 @@ const ProjectDetails: React.FC = () => {
                     <div className="mb-4">
                         <div className="flex items-center justify-between min-h-[2.5rem]">
                             <div className="flex items-center gap-4 sm:gap-6 self-stretch pl-2 sm:pl-3">
-                                <span className="relative flex items-center self-stretch py-2.5 text-sm font-medium text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100">
-                                    {t('tasks.title', 'Tasks')}
-                                </span>
+                                {(['tasks', 'timeline'] as const).map((tab) => (
+                                    <button
+                                        key={tab}
+                                        type="button"
+                                        aria-pressed={view === tab}
+                                        data-testid={`project-view-${tab}`}
+                                        onClick={() => changeView(tab)}
+                                        className={`relative flex items-center self-stretch py-2.5 text-sm font-medium ${
+                                            view === tab
+                                                ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
+                                                : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
+                                        }`}
+                                    >
+                                        {tab === 'tasks'
+                                            ? t('tasks.title', 'Tasks')
+                                            : t('projectTimeline.title', 'Timeline')}
+                                    </button>
+                                ))}
                             </div>
 
                             {
@@ -805,49 +872,59 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-start">
-                                <div className="min-w-0 space-y-4">
-                                    <ProjectTasksSection
-                                        displayTasks={displayTasks}
-                                        onTaskUpdate={handleTaskUpdate}
-                                        onTaskCompletionToggle={
-                                            handleTaskCompletionToggle
-                                        }
-                                        onTaskDelete={handleTaskDelete}
-                                        onToggleToday={undefined}
-                                        allProjects={allProjects}
-                                        showCompleted={
-                                            taskStatusFilter !== 'active'
-                                        }
-                                        taskSearchQuery={taskSearchQuery}
-                                        onTaskReorder={handleTaskReorder}
-                                        t={t}
-                                    />
-                                </div>
-
-                                <div className="space-y-4">
-                                    <ProjectOverviewRail
-                                        project={project}
-                                        areas={areas}
-                                        notes={notes}
-                                        t={t}
-                                        onUpdate={handleUpdateProject}
-                                        onShareClick={() =>
-                                            setIsShareModalOpen(true)
-                                        }
-                                        onCreateNote={() =>
-                                            openCaptureForProject('note')
-                                        }
-                                        onOpenNote={setPreviewNote}
-                                    />
-                                    {attachmentsApi && (
-                                        <ProjectAttachmentsWidget
-                                            api={attachmentsApi}
+                            {view === 'timeline' ? (
+                                <ProjectTimeline
+                                    project={project}
+                                    tasks={displayTasks}
+                                    links={project.task_links || []}
+                                    onDatesChange={handleTaskDatesChange}
+                                    t={t}
+                                />
+                            ) : (
+                                <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-start">
+                                    <div className="min-w-0 space-y-4">
+                                        <ProjectTasksSection
+                                            displayTasks={displayTasks}
+                                            onTaskUpdate={handleTaskUpdate}
+                                            onTaskCompletionToggle={
+                                                handleTaskCompletionToggle
+                                            }
+                                            onTaskDelete={handleTaskDelete}
+                                            onToggleToday={undefined}
+                                            allProjects={allProjects}
+                                            showCompleted={
+                                                taskStatusFilter !== 'active'
+                                            }
+                                            taskSearchQuery={taskSearchQuery}
+                                            onTaskReorder={handleTaskReorder}
                                             t={t}
                                         />
-                                    )}
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <ProjectOverviewRail
+                                            project={project}
+                                            areas={areas}
+                                            notes={notes}
+                                            t={t}
+                                            onUpdate={handleUpdateProject}
+                                            onShareClick={() =>
+                                                setIsShareModalOpen(true)
+                                            }
+                                            onCreateNote={() =>
+                                                openCaptureForProject('note')
+                                            }
+                                            onOpenNote={setPreviewNote}
+                                        />
+                                        {attachmentsApi && (
+                                            <ProjectAttachmentsWidget
+                                                api={attachmentsApi}
+                                                t={t}
+                                            />
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </>
                     }
 

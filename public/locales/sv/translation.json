@@ -3107,5 +3107,26 @@
       "weekend": "Helg",
       "nextWeek": "Nästa vecka"
     }
+  },
+  "projectTimeline": {
+    "title": "Tidslinje",
+    "days": "Dagar",
+    "weeks": "Veckor",
+    "months": "Månader",
+    "scale": "Skala",
+    "highlightPath": "Markera vägen",
+    "empty": "Inga uppgifter med datum än",
+    "noDates": "Inga datum än",
+    "dragHint": "Dra en till tidslinjen för att schemalägga den",
+    "spareDays": "{{count}} dagars marginal",
+    "projectStart": "Projektstart",
+    "projectDue": "Projektets förfallodag",
+    "legendRange": "Start → Förfallodag",
+    "legendDue": "Bara förfallodag",
+    "legendBlocks": "Blockerar",
+    "legendOverdue": "Försenade",
+    "saveError": "Det gick inte att flytta uppgiften",
+    "dueOn": "Förfaller {{date}}",
+    "startsOn": "Börjar {{date}}"
   }
 }

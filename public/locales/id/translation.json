@@ -3104,5 +3104,26 @@
       "weekend": "Akhir pekan",
       "nextWeek": "Minggu depan"
     }
+  },
+  "projectTimeline": {
+    "title": "Linimasa",
+    "days": "Hari",
+    "weeks": "Minggu",
+    "months": "Bulan",
+    "scale": "Skala",
+    "highlightPath": "Sorot jalur",
+    "empty": "Belum ada tugas bertanggal",
+    "noDates": "Belum ada tanggal",
+    "dragHint": "Seret ke linimasa untuk menjadwalkannya",
+    "spareDays": "{{count}} hari cadangan",
+    "projectStart": "Mulai proyek",
+    "projectDue": "Tenggat proyek",
+    "legendRange": "Mulai → Tenggat",
+    "legendDue": "Hanya tenggat",
+    "legendBlocks": "Memblokir",
+    "legendOverdue": "Terlambat",
+    "saveError": "Tidak dapat memindahkan tugas",
+    "dueOn": "Tenggat {{date}}",
+    "startsOn": "Mulai {{date}}"
   }
 }

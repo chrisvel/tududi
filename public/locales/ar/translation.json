@@ -3127,5 +3127,26 @@
       "weekend": "عطلة نهاية الأسبوع",
       "nextWeek": "الأسبوع القادم"
     }
+  },
+  "projectTimeline": {
+    "title": "الجدول الزمني",
+    "days": "أيام",
+    "weeks": "أسابيع",
+    "months": "أشهر",
+    "scale": "المقياس",
+    "highlightPath": "إبراز المسار",
+    "empty": "لا توجد مهام بتواريخ بعد",
+    "noDates": "بلا تواريخ بعد",
+    "dragHint": "اسحب مهمة إلى الجدول الزمني لجدولتها",
+    "spareDays": "{{count}} أيام احتياطية",
+    "projectStart": "بداية المشروع",
+    "projectDue": "استحقاق المشروع",
+    "legendRange": "البدء ← الاستحقاق",
+    "legendDue": "تاريخ الاستحقاق فقط",
+    "legendBlocks": "يحجب",
+    "legendOverdue": "متأخرة",
+    "saveError": "تعذر نقل المهمة",
+    "dueOn": "تستحق {{date}}",
+    "startsOn": "تبدأ {{date}}"
   }
 }

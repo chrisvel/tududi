@@ -3104,5 +3104,26 @@
       "weekend": "週末",
       "nextWeek": "来週"
     }
+  },
+  "projectTimeline": {
+    "title": "タイムライン",
+    "days": "日",
+    "weeks": "週",
+    "months": "月",
+    "scale": "スケール",
+    "highlightPath": "パスを強調",
+    "empty": "日付のあるタスクはまだありません",
+    "noDates": "日付未設定",
+    "dragHint": "タイムラインにドラッグして予定を立てる",
+    "spareDays": "{{count}} 日の余裕",
+    "projectStart": "プロジェクト開始",
+    "projectDue": "プロジェクト期限",
+    "legendRange": "開始 → 期限",
+    "legendDue": "期限のみ",
+    "legendBlocks": "ブロック",
+    "legendOverdue": "期限切れ",
+    "saveError": "タスクを移動できませんでした",
+    "dueOn": "期限 {{date}}",
+    "startsOn": "開始 {{date}}"
   }
 }

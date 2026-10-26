@@ -3110,5 +3110,26 @@
       "weekend": "Week-end",
       "nextWeek": "Semaine prochaine"
     }
+  },
+  "projectTimeline": {
+    "title": "Chronologie",
+    "days": "Jours",
+    "weeks": "Semaines",
+    "months": "Mois",
+    "scale": "Échelle",
+    "highlightPath": "Mettre en évidence le chemin",
+    "empty": "Aucune tâche datée pour l'instant",
+    "noDates": "Pas encore de dates",
+    "dragHint": "Faites-en glisser une sur la chronologie pour la planifier",
+    "spareDays": "{{count}} jours de marge",
+    "projectStart": "Début du projet",
+    "projectDue": "Échéance du projet",
+    "legendRange": "Début → Échéance",
+    "legendDue": "Échéance seule",
+    "legendBlocks": "Bloque",
+    "legendOverdue": "En retard",
+    "saveError": "Impossible de déplacer la tâche",
+    "dueOn": "Échéance {{date}}",
+    "startsOn": "Commence {{date}}"
   }
 }

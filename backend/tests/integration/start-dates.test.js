@@ -173,6 +173,29 @@ describe('Start date and time', () => {
             expect(task.start_time).toBe('10:00');
         });
 
+        it('lists blocks links between the project tasks for the timeline', async () => {
+            const project = await agent
+                .post('/api/project')
+                .send({ name: 'Move flat' });
+            const lease = await agent.post('/api/task').send({
+                name: 'Sign lease',
+                project_id: project.body.id,
+            });
+            const movers = await agent.post('/api/task').send({
+                name: 'Book movers',
+                project_id: project.body.id,
+            });
+            const linked = await agent
+                .post(`/api/task/${lease.body.uid}/relations`)
+                .send({ target_uid: movers.body.uid, type: 'blocks' });
+            expect(linked.status).toBe(201);
+
+            const fetched = await agent.get(`/api/project/${project.body.uid}`);
+            expect(fetched.body.task_links).toEqual([
+                { from_uid: lease.body.uid, to_uid: movers.body.uid },
+            ]);
+        });
+
         it('rejects a malformed project start date', async () => {
             const res = await agent
                 .post('/api/project')

@@ -3506,5 +3506,26 @@
       "weekend": "Weekend",
       "nextWeek": "Next week"
     }
+  },
+  "projectTimeline": {
+    "title": "Timeline",
+    "days": "Days",
+    "weeks": "Weeks",
+    "months": "Months",
+    "scale": "Scale",
+    "highlightPath": "Highlight the path",
+    "empty": "No tasks with dates yet",
+    "noDates": "No dates yet",
+    "dragHint": "Drag one onto the timeline to schedule it",
+    "spareDays": "{{count}} days spare",
+    "projectStart": "Project start",
+    "projectDue": "Project due",
+    "legendRange": "Start → Due",
+    "legendDue": "Due date only",
+    "legendBlocks": "Blocks",
+    "legendOverdue": "Overdue",
+    "saveError": "Could not move the task",
+    "dueOn": "Due {{date}}",
+    "startsOn": "Starts {{date}}"
   }
 }

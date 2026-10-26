@@ -3107,5 +3107,26 @@
       "weekend": "Weekend",
       "nextWeek": "Volgende week"
     }
+  },
+  "projectTimeline": {
+    "title": "Tijdlijn",
+    "days": "Dagen",
+    "weeks": "Weken",
+    "months": "Maanden",
+    "scale": "Schaal",
+    "highlightPath": "Pad markeren",
+    "empty": "Nog geen taken met datums",
+    "noDates": "Nog geen datums",
+    "dragHint": "Sleep er een naar de tijdlijn om hem in te plannen",
+    "spareDays": "{{count}} dagen speling",
+    "projectStart": "Projectstart",
+    "projectDue": "Projectdeadline",
+    "legendRange": "Start → Deadline",
+    "legendDue": "Alleen deadline",
+    "legendBlocks": "Blokkeert",
+    "legendOverdue": "Te laat",
+    "saveError": "Kon de taak niet verplaatsen",
+    "dueOn": "Deadline {{date}}",
+    "startsOn": "Begint {{date}}"
   }
 }

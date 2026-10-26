@@ -3110,5 +3110,26 @@
       "weekend": "Fim de semana",
       "nextWeek": "Próxima semana"
     }
+  },
+  "projectTimeline": {
+    "title": "Linha do tempo",
+    "days": "Dias",
+    "weeks": "Semanas",
+    "months": "Meses",
+    "scale": "Escala",
+    "highlightPath": "Destacar o caminho",
+    "empty": "Ainda não há tarefas com datas",
+    "noDates": "Ainda sem datas",
+    "dragHint": "Arraste uma para a linha do tempo para agendá-la",
+    "spareDays": "{{count}} dias de folga",
+    "projectStart": "Início do projeto",
+    "projectDue": "Prazo do projeto",
+    "legendRange": "Início → Prazo",
+    "legendDue": "Só prazo",
+    "legendBlocks": "Bloqueia",
+    "legendOverdue": "Atrasadas",
+    "saveError": "Não foi possível mover a tarefa",
+    "dueOn": "Prazo {{date}}",
+    "startsOn": "Começa {{date}}"
   }
 }

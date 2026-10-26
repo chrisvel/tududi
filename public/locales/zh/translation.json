@@ -3104,5 +3104,26 @@
       "weekend": "周末",
       "nextWeek": "下周"
     }
+  },
+  "projectTimeline": {
+    "title": "时间线",
+    "days": "天",
+    "weeks": "周",
+    "months": "月",
+    "scale": "比例",
+    "highlightPath": "突出显示路径",
+    "empty": "还没有带日期的任务",
+    "noDates": "尚无日期",
+    "dragHint": "拖到时间线上即可安排",
+    "spareDays": "余量 {{count}} 天",
+    "projectStart": "项目开始",
+    "projectDue": "项目截止",
+    "legendRange": "开始 → 截止",
+    "legendDue": "仅截止日期",
+    "legendBlocks": "阻塞",
+    "legendOverdue": "已逾期",
+    "saveError": "无法移动任务",
+    "dueOn": "截止 {{date}}",
+    "startsOn": "开始 {{date}}"
   }
 }

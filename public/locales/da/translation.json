@@ -3107,5 +3107,26 @@
       "weekend": "Weekend",
       "nextWeek": "Næste uge"
     }
+  },
+  "projectTimeline": {
+    "title": "Tidslinje",
+    "days": "Dage",
+    "weeks": "Uger",
+    "months": "Måneder",
+    "scale": "Skala",
+    "highlightPath": "Fremhæv stien",
+    "empty": "Ingen opgaver med datoer endnu",
+    "noDates": "Ingen datoer endnu",
+    "dragHint": "Træk en opgave ind på tidslinjen for at planlægge den",
+    "spareDays": "{{count}} dages luft",
+    "projectStart": "Projektstart",
+    "projectDue": "Projektets forfald",
+    "legendRange": "Start → Forfald",
+    "legendDue": "Kun forfaldsdato",
+    "legendBlocks": "Blokerer",
+    "legendOverdue": "Forsinket",
+    "saveError": "Opgaven kunne ikke flyttes",
+    "dueOn": "Forfalder {{date}}",
+    "startsOn": "Starter {{date}}"
   }
 }

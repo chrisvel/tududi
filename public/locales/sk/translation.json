@@ -3129,5 +3129,26 @@
             "weekend": "Víkend",
             "nextWeek": "Budúci týždeň"
         }
+    },
+    "projectTimeline": {
+        "title": "Časová os",
+        "days": "Dni",
+        "weeks": "Týždne",
+        "months": "Mesiace",
+        "scale": "Mierka",
+        "highlightPath": "Zvýrazniť cestu",
+        "empty": "Zatiaľ žiadne úlohy s dátumami",
+        "noDates": "Zatiaľ bez dátumov",
+        "dragHint": "Presuňte úlohu na časovú os a naplánujte ju",
+        "spareDays": "{{count}} dní rezervy",
+        "projectStart": "Začiatok projektu",
+        "projectDue": "Termín projektu",
+        "legendRange": "Začiatok → Termín",
+        "legendDue": "Len termín",
+        "legendBlocks": "Blokuje",
+        "legendOverdue": "Po termíne",
+        "saveError": "Úlohu sa nepodarilo presunúť",
+        "dueOn": "Termín {{date}}",
+        "startsOn": "Začína {{date}}"
     }
 }

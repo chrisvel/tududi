@@ -3104,5 +3104,26 @@
       "weekend": "주말",
       "nextWeek": "다음 주"
     }
+  },
+  "projectTimeline": {
+    "title": "타임라인",
+    "days": "일",
+    "weeks": "주",
+    "months": "월",
+    "scale": "배율",
+    "highlightPath": "경로 강조",
+    "empty": "아직 날짜가 있는 작업이 없습니다",
+    "noDates": "아직 날짜 없음",
+    "dragHint": "타임라인으로 끌어 일정을 잡으세요",
+    "spareDays": "{{count}}일 여유",
+    "projectStart": "프로젝트 시작",
+    "projectDue": "프로젝트 마감",
+    "legendRange": "시작 → 마감",
+    "legendDue": "마감일만",
+    "legendBlocks": "차단",
+    "legendOverdue": "기한 지남",
+    "saveError": "작업을 옮기지 못했습니다",
+    "dueOn": "마감 {{date}}",
+    "startsOn": "시작 {{date}}"
   }
 }

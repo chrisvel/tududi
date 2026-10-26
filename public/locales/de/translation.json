@@ -3116,5 +3116,26 @@
       "weekend": "Wochenende",
       "nextWeek": "Nächste Woche"
     }
+  },
+  "projectTimeline": {
+    "title": "Zeitleiste",
+    "days": "Tage",
+    "weeks": "Wochen",
+    "months": "Monate",
+    "scale": "Maßstab",
+    "highlightPath": "Pfad hervorheben",
+    "empty": "Noch keine Aufgaben mit Datum",
+    "noDates": "Noch ohne Datum",
+    "dragHint": "Auf die Zeitleiste ziehen, um sie einzuplanen",
+    "spareDays": "{{count}} Tage Puffer",
+    "projectStart": "Projektbeginn",
+    "projectDue": "Projektfälligkeit",
+    "legendRange": "Beginn → Fällig",
+    "legendDue": "Nur Fälligkeitsdatum",
+    "legendBlocks": "Blockiert",
+    "legendOverdue": "Überfällig",
+    "saveError": "Die Aufgabe konnte nicht verschoben werden",
+    "dueOn": "Fällig {{date}}",
+    "startsOn": "Beginnt {{date}}"
   }
 }

@@ -3104,5 +3104,26 @@
       "weekend": "Cuối tuần",
       "nextWeek": "Tuần sau"
     }
+  },
+  "projectTimeline": {
+    "title": "Dòng thời gian",
+    "days": "Ngày",
+    "weeks": "Tuần",
+    "months": "Tháng",
+    "scale": "Tỷ lệ",
+    "highlightPath": "Làm nổi bật đường đi",
+    "empty": "Chưa có công việc nào có ngày",
+    "noDates": "Chưa có ngày",
+    "dragHint": "Kéo một mục vào dòng thời gian để lên lịch",
+    "spareDays": "Dư {{count}} ngày",
+    "projectStart": "Bắt đầu dự án",
+    "projectDue": "Hạn dự án",
+    "legendRange": "Bắt đầu → Hạn",
+    "legendDue": "Chỉ có hạn",
+    "legendBlocks": "Chặn",
+    "legendOverdue": "Quá hạn",
+    "saveError": "Không thể di chuyển công việc",
+    "dueOn": "Hạn {{date}}",
+    "startsOn": "Bắt đầu {{date}}"
   }
 }

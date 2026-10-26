@@ -371,6 +371,17 @@ No Area
 
 ---
 
+## Timeline View
+
+The project page has two tabs above the tasks: **Tasks** (the list) and **Timeline** (a Gantt chart). The chosen tab is remembered per browser.
+
+- **Bars** run from a task's start date to its due date. A task with only a due date shows as a diamond; one with only a start shows as a short faded bar. Tasks with neither sit in a "No dates yet" tray under the chart.
+- **Scheduling:** drag a bar to move both dates, drag either end to change one, drag a diamond to move the due date. Times of day are kept. Drag a task from the tray onto a day to give it that day as start and due. Clicking a bar opens the task.
+- **Arrows** show "blocks" relations between the project's tasks (`task_links` on `GET /api/project/:uid`, as `{ from_uid, to_uid }` pairs).
+- **Highlight the path** marks the chain of blocking tasks that sets the finish (from the linked task that ends last, back through the blocker that ends latest) and shows spare days on open tasks off that chain: days until what they block starts, or until the project's due date.
+- **Scale:** Days, Weeks or Months. A line marks today, dashed lines mark the project's start and due date, and open tasks past their due date are orange.
+- The chart follows the page's status filter and search.
+
 ## Tasks and Notes in Projects
 
 ### Adding Tasks to Projects

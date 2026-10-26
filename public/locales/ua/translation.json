@@ -3117,5 +3117,26 @@
       "weekend": "Вихідні",
       "nextWeek": "Наступний тиждень"
     }
+  },
+  "projectTimeline": {
+    "title": "Часова шкала",
+    "days": "Дні",
+    "weeks": "Тижні",
+    "months": "Місяці",
+    "scale": "Масштаб",
+    "highlightPath": "Виділити шлях",
+    "empty": "Поки немає завдань із датами",
+    "noDates": "Поки без дат",
+    "dragHint": "Перетягніть завдання на шкалу, щоб запланувати",
+    "spareDays": "{{count}} дн. запасу",
+    "projectStart": "Початок проєкту",
+    "projectDue": "Термін проєкту",
+    "legendRange": "Початок → Термін",
+    "legendDue": "Лише термін",
+    "legendBlocks": "Блокує",
+    "legendOverdue": "Прострочено",
+    "saveError": "Не вдалося перенести завдання",
+    "dueOn": "Термін {{date}}",
+    "startsOn": "Початок {{date}}"
   }
 }

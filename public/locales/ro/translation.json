@@ -3114,5 +3114,26 @@
       "weekend": "Weekend",
       "nextWeek": "Săptămâna viitoare"
     }
+  },
+  "projectTimeline": {
+    "title": "Cronologie",
+    "days": "Zile",
+    "weeks": "Săptămâni",
+    "months": "Luni",
+    "scale": "Scară",
+    "highlightPath": "Evidențiază drumul",
+    "empty": "Încă nu există sarcini cu date",
+    "noDates": "Încă fără date",
+    "dragHint": "Trage una pe cronologie pentru a o programa",
+    "spareDays": "{{count}} zile rezervă",
+    "projectStart": "Început proiect",
+    "projectDue": "Termen proiect",
+    "legendRange": "Început → Termen",
+    "legendDue": "Doar termen",
+    "legendBlocks": "Blochează",
+    "legendOverdue": "Întârziate",
+    "saveError": "Sarcina nu a putut fi mutată",
+    "dueOn": "Termen {{date}}",
+    "startsOn": "Începe {{date}}"
   }
 }

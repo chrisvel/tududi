@@ -3117,5 +3117,26 @@
       "weekend": "Vikend",
       "nextWeek": "Naslednji teden"
     }
+  },
+  "projectTimeline": {
+    "title": "Časovnica",
+    "days": "Dnevi",
+    "weeks": "Tedni",
+    "months": "Meseci",
+    "scale": "Merilo",
+    "highlightPath": "Poudari pot",
+    "empty": "Še ni opravil z datumi",
+    "noDates": "Še brez datumov",
+    "dragHint": "Povlecite ga na časovnico, da ga načrtujete",
+    "spareDays": "{{count}} dni rezerve",
+    "projectStart": "Začetek projekta",
+    "projectDue": "Rok projekta",
+    "legendRange": "Začetek → Rok",
+    "legendDue": "Samo rok",
+    "legendBlocks": "Blokira",
+    "legendOverdue": "Zamujeno",
+    "saveError": "Opravila ni bilo mogoče premakniti",
+    "dueOn": "Rok {{date}}",
+    "startsOn": "Začne se {{date}}"
   }
 }
