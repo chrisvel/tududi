@@ -11,7 +11,9 @@ const SETTING_KEY = 'blog_note_uid';
 
 const WIKILINK = /\[\[([^[\]\n]+?)\]\]/g;
 const NOTE_FILE_LINK = /\/api\/uploads\/note-files\/([A-Za-z0-9._-]+)/g;
-const FIRST_IMAGE = /!\[[^\]]*\]\(([^)\s]+)/;
+const IMAGE = /!\[[^\]]*\]\(([^)\s]+)/g;
+// Image syntax that points at a video renders a player, not a cover.
+const VIDEO_URL = /\.(mp4|webm)(?:[?#]|$)/i;
 
 // Enough for any real blog, and a bound on the walk if notes link in circles.
 const MAX_POSTS = 200;
@@ -35,12 +37,13 @@ function publicContent(note) {
 }
 
 // The first paragraph of plain prose, for a post card and the meta
-// description. Headings, images, lists and quotes are skipped.
+// description. Headings, images (linked ones too), lists and quotes are
+// skipped.
 function excerptOf(content) {
     const paragraph = (content || '')
         .split(/\n\s*\n/)
         .map((p) => p.trim())
-        .find((p) => p && !/^(#|!\[|[-*+>]|\d+\.|```|\|)/.test(p));
+        .find((p) => p && !/^(#|!\[|\[!\[|[-*+>]|\d+\.|```|\|)/.test(p));
     if (!paragraph) return '';
     const text = paragraph
         .replace(/\[\[([^[\]\n]+?)\]\]/g, '$1')
@@ -148,13 +151,19 @@ function siteLinks() {
     };
 }
 
+// The first picture in a post, for its card and og:image.
+function coverOf(content) {
+    const image = [...(content || '').matchAll(IMAGE)].find(
+        (m) => !VIDEO_URL.test(m[1])
+    );
+    return image ? image[1] : null;
+}
+
 function postCard(blog, note) {
-    const content = publicContent(note);
-    const cover = content.match(FIRST_IMAGE);
     return {
         ...blog.describe(note),
         excerpt: excerptOf(note.content),
-        cover: cover ? cover[1] : null,
+        cover: coverOf(publicContent(note)),
         published_at: note.public_shared_at,
     };
 }
@@ -266,4 +275,5 @@ const blogService = {
 };
 
 module.exports = blogService;
+module.exports.coverOf = coverOf;
 module.exports._internal = { excerptOf, assignSlugs };
