@@ -460,7 +460,7 @@ function PeopleBoard<T extends EveryoneResponse>({
             </header>
 
             {!anyTasks && (
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 text-sm text-gray-500 dark:text-gray-400">
+                <div className="shrink-0 mb-5 bg-white dark:bg-gray-800 rounded-xl p-6 text-sm text-gray-500 dark:text-gray-400">
                     {emptyMessage}
                 </div>
             )}
