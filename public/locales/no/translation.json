@@ -3112,5 +3112,47 @@
       "weekend": "Helg",
       "nextWeek": "Neste uke"
     }
+  },
+  "projectTimeline": {
+    "title": "Tidslinje",
+    "days": "Dager",
+    "weeks": "Uker",
+    "months": "Måneder",
+    "scale": "Skala",
+    "highlightPath": "Fremhev stien",
+    "empty": "Ingen oppgaver med datoer ennå",
+    "noDates": "Ingen datoer ennå",
+    "dragHint": "Dra en til tidslinjen for å planlegge den",
+    "spareDays": "{{count}} dager slakk",
+    "projectStart": "Prosjektstart",
+    "projectDue": "Prosjektfrist",
+    "legendRange": "Start → Frist",
+    "legendDue": "Bare frist",
+    "legendBlocks": "Blokkerer",
+    "legendOverdue": "Forfalt",
+    "saveError": "Kunne ikke flytte oppgaven",
+    "dueOn": "Frist {{date}}",
+    "startsOn": "Starter {{date}}",
+    "noLinks": "Merk oppgaver som blokkerende for andre oppgaver for å se veien til målet"
+  },
+  "everyoneTimeline": {
+    "view": "Visning",
+    "board": "Tavle",
+    "subtitle": "Hvem gjør hva de neste ukene",
+    "earlier": "Tidligere",
+    "later": "Senere",
+    "twoWeeks": "2 uker",
+    "fourWeeks": "4 uker",
+    "loadError": "Kunne ikke laste tidslinjen.",
+    "planned": "{{hours}} planlagt",
+    "daysOver": "{{count}} dager over",
+    "loadTitle": "{{hours}} av {{capacity}} planlagt",
+    "legendLoad": "Timer fra oppgaveestimater, fordelt fra start til frist",
+    "legendOver": "Mer enn planleggingsdagen din på {{hours}}",
+    "dragHint": "Dra en stolpe for å flytte den, endene for å endre datoene, eller over til en annen person for å tildele den",
+    "oneWeek": "1 uke",
+    "eightWeeks": "8 uker",
+    "zoomIn": "Zoom inn",
+    "zoomOut": "Zoom ut"
   }
 }

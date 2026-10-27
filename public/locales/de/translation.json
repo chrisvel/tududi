@@ -3116,5 +3116,47 @@
       "weekend": "Wochenende",
       "nextWeek": "Nächste Woche"
     }
+  },
+  "projectTimeline": {
+    "title": "Zeitleiste",
+    "days": "Tage",
+    "weeks": "Wochen",
+    "months": "Monate",
+    "scale": "Maßstab",
+    "highlightPath": "Pfad hervorheben",
+    "empty": "Noch keine Aufgaben mit Datum",
+    "noDates": "Noch ohne Datum",
+    "dragHint": "Auf die Zeitleiste ziehen, um sie einzuplanen",
+    "spareDays": "{{count}} Tage Puffer",
+    "projectStart": "Projektbeginn",
+    "projectDue": "Projektfälligkeit",
+    "legendRange": "Beginn → Fällig",
+    "legendDue": "Nur Fälligkeitsdatum",
+    "legendBlocks": "Blockiert",
+    "legendOverdue": "Überfällig",
+    "saveError": "Die Aufgabe konnte nicht verschoben werden",
+    "dueOn": "Fällig {{date}}",
+    "startsOn": "Beginnt {{date}}",
+    "noLinks": "Markiere Aufgaben als blockierend, um den Weg zum Ziel zu sehen"
+  },
+  "everyoneTimeline": {
+    "view": "Ansicht",
+    "board": "Board",
+    "subtitle": "Wer in den nächsten Wochen woran arbeitet",
+    "earlier": "Früher",
+    "later": "Später",
+    "twoWeeks": "2 Wochen",
+    "fourWeeks": "4 Wochen",
+    "loadError": "Die Zeitleiste konnte nicht geladen werden.",
+    "planned": "{{hours}} geplant",
+    "daysOver": "{{count}} Tage zu viel",
+    "loadTitle": "{{hours}} von {{capacity}} geplant",
+    "legendLoad": "Stunden aus Aufgabenschätzungen, verteilt von Beginn bis Fälligkeit",
+    "legendOver": "Mehr als dein Planungstag von {{hours}}",
+    "dragHint": "Balken ziehen zum Verschieben, an den Enden ziehen für neue Daten, auf eine andere Person zum Zuweisen",
+    "oneWeek": "1 Woche",
+    "eightWeeks": "8 Wochen",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern"
   }
 }

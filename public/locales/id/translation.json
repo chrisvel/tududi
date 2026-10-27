@@ -3104,5 +3104,47 @@
       "weekend": "Akhir pekan",
       "nextWeek": "Minggu depan"
     }
+  },
+  "projectTimeline": {
+    "title": "Linimasa",
+    "days": "Hari",
+    "weeks": "Minggu",
+    "months": "Bulan",
+    "scale": "Skala",
+    "highlightPath": "Sorot jalur",
+    "empty": "Belum ada tugas bertanggal",
+    "noDates": "Belum ada tanggal",
+    "dragHint": "Seret ke linimasa untuk menjadwalkannya",
+    "spareDays": "{{count}} hari cadangan",
+    "projectStart": "Mulai proyek",
+    "projectDue": "Tenggat proyek",
+    "legendRange": "Mulai → Tenggat",
+    "legendDue": "Hanya tenggat",
+    "legendBlocks": "Memblokir",
+    "legendOverdue": "Terlambat",
+    "saveError": "Tidak dapat memindahkan tugas",
+    "dueOn": "Tenggat {{date}}",
+    "startsOn": "Mulai {{date}}",
+    "noLinks": "Tandai tugas sebagai penghambat tugas lain untuk melihat jalur hingga selesai"
+  },
+  "everyoneTimeline": {
+    "view": "Tampilan",
+    "board": "Papan",
+    "subtitle": "Siapa mengerjakan apa dalam beberapa minggu ke depan",
+    "earlier": "Lebih awal",
+    "later": "Nanti",
+    "twoWeeks": "2 minggu",
+    "fourWeeks": "4 minggu",
+    "loadError": "Tidak dapat memuat linimasa.",
+    "planned": "{{hours}} direncanakan",
+    "daysOver": "{{count}} hari berlebih",
+    "loadTitle": "{{hours}} dari {{capacity}} direncanakan",
+    "legendLoad": "Jam dari estimasi tugas, dibagi dari mulai hingga tenggat",
+    "legendOver": "Lebih dari hari perencanaan {{hours}} Anda",
+    "dragHint": "Seret bilah untuk memindahkannya, ujungnya untuk mengubah tanggal, atau ke orang lain untuk menugaskannya",
+    "oneWeek": "1 minggu",
+    "eightWeeks": "8 minggu",
+    "zoomIn": "Perbesar",
+    "zoomOut": "Perkecil"
   }
 }

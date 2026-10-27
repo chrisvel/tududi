@@ -3107,5 +3107,47 @@
       "weekend": "Helg",
       "nextWeek": "Nästa vecka"
     }
+  },
+  "projectTimeline": {
+    "title": "Tidslinje",
+    "days": "Dagar",
+    "weeks": "Veckor",
+    "months": "Månader",
+    "scale": "Skala",
+    "highlightPath": "Markera vägen",
+    "empty": "Inga uppgifter med datum än",
+    "noDates": "Inga datum än",
+    "dragHint": "Dra en till tidslinjen för att schemalägga den",
+    "spareDays": "{{count}} dagars marginal",
+    "projectStart": "Projektstart",
+    "projectDue": "Projektets förfallodag",
+    "legendRange": "Start → Förfallodag",
+    "legendDue": "Bara förfallodag",
+    "legendBlocks": "Blockerar",
+    "legendOverdue": "Försenade",
+    "saveError": "Det gick inte att flytta uppgiften",
+    "dueOn": "Förfaller {{date}}",
+    "startsOn": "Börjar {{date}}",
+    "noLinks": "Markera uppgifter som blockerande för andra för att se vägen till målet"
+  },
+  "everyoneTimeline": {
+    "view": "Vy",
+    "board": "Tavla",
+    "subtitle": "Vem gör vad de kommande veckorna",
+    "earlier": "Tidigare",
+    "later": "Senare",
+    "twoWeeks": "2 veckor",
+    "fourWeeks": "4 veckor",
+    "loadError": "Det gick inte att läsa in tidslinjen.",
+    "planned": "{{hours}} planerat",
+    "daysOver": "{{count}} dagar över",
+    "loadTitle": "{{hours}} av {{capacity}} planerat",
+    "legendLoad": "Timmar från uppgiftsuppskattningar, fördelade från start till förfallodag",
+    "legendOver": "Mer än din planeringsdag på {{hours}}",
+    "dragHint": "Dra en stapel för att flytta den, dess ändar för att ändra datumen, eller till en annan person för att tilldela den",
+    "oneWeek": "1 vecka",
+    "eightWeeks": "8 veckor",
+    "zoomIn": "Zooma in",
+    "zoomOut": "Zooma ut"
   }
 }

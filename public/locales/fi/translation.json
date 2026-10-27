@@ -3107,5 +3107,47 @@
       "weekend": "Viikonloppu",
       "nextWeek": "Ensi viikko"
     }
+  },
+  "projectTimeline": {
+    "title": "Aikajana",
+    "days": "Päivät",
+    "weeks": "Viikot",
+    "months": "Kuukaudet",
+    "scale": "Mittakaava",
+    "highlightPath": "Korosta polku",
+    "empty": "Ei vielä päivättyjä tehtäviä",
+    "noDates": "Ei vielä päivämääriä",
+    "dragHint": "Vedä tehtävä aikajanalle ajoittaaksesi sen",
+    "spareDays": "{{count}} päivää pelivaraa",
+    "projectStart": "Projektin alku",
+    "projectDue": "Projektin eräpäivä",
+    "legendRange": "Alku → Eräpäivä",
+    "legendDue": "Vain eräpäivä",
+    "legendBlocks": "Estää",
+    "legendOverdue": "Myöhässä",
+    "saveError": "Tehtävää ei voitu siirtää",
+    "dueOn": "Erääntyy {{date}}",
+    "startsOn": "Alkaa {{date}}",
+    "noLinks": "Merkitse tehtäviä muita estäviksi nähdäksesi polun loppuun"
+  },
+  "everyoneTimeline": {
+    "view": "Näkymä",
+    "board": "Taulu",
+    "subtitle": "Kuka tekee mitäkin tulevina viikkoina",
+    "earlier": "Aiemmin",
+    "later": "Myöhemmin",
+    "twoWeeks": "2 viikkoa",
+    "fourWeeks": "4 viikkoa",
+    "loadError": "Aikajanaa ei voitu ladata.",
+    "planned": "{{hours}} suunniteltu",
+    "daysOver": "{{count}} päivää yli",
+    "loadTitle": "{{hours}} / {{capacity}} suunniteltu",
+    "legendLoad": "Tunnit tehtävien arvioista, jaettuna alusta eräpäivään",
+    "legendOver": "Enemmän kuin {{hours}} suunnittelupäiväsi",
+    "dragHint": "Vedä palkkia siirtääksesi sen, sen päitä muuttaaksesi päivämääriä tai toisen henkilön kohdalle antaaksesi sen hänelle",
+    "oneWeek": "1 viikko",
+    "eightWeeks": "8 viikkoa",
+    "zoomIn": "Lähennä",
+    "zoomOut": "Loitonna"
   }
 }

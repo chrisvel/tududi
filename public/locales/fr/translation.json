@@ -3110,5 +3110,47 @@
       "weekend": "Week-end",
       "nextWeek": "Semaine prochaine"
     }
+  },
+  "projectTimeline": {
+    "title": "Chronologie",
+    "days": "Jours",
+    "weeks": "Semaines",
+    "months": "Mois",
+    "scale": "Échelle",
+    "highlightPath": "Mettre en évidence le chemin",
+    "empty": "Aucune tâche datée pour l'instant",
+    "noDates": "Pas encore de dates",
+    "dragHint": "Faites-en glisser une sur la chronologie pour la planifier",
+    "spareDays": "{{count}} jours de marge",
+    "projectStart": "Début du projet",
+    "projectDue": "Échéance du projet",
+    "legendRange": "Début → Échéance",
+    "legendDue": "Échéance seule",
+    "legendBlocks": "Bloque",
+    "legendOverdue": "En retard",
+    "saveError": "Impossible de déplacer la tâche",
+    "dueOn": "Échéance {{date}}",
+    "startsOn": "Commence {{date}}",
+    "noLinks": "Marquez des tâches comme bloquant d'autres tâches pour voir le chemin jusqu'à la fin"
+  },
+  "everyoneTimeline": {
+    "view": "Vue",
+    "board": "Tableau",
+    "subtitle": "Qui fait quoi dans les semaines à venir",
+    "earlier": "Plus tôt",
+    "later": "Plus tard",
+    "twoWeeks": "2 semaines",
+    "fourWeeks": "4 semaines",
+    "loadError": "Impossible de charger la chronologie.",
+    "planned": "{{hours}} prévues",
+    "daysOver": "{{count}} jours en surcharge",
+    "loadTitle": "{{hours}} sur {{capacity}} prévues",
+    "legendLoad": "Heures des estimations, réparties du début à l'échéance",
+    "legendOver": "Plus que votre journée de planification de {{hours}}",
+    "dragHint": "Faites glisser une barre pour la déplacer, ses extrémités pour changer les dates, ou sur une autre personne pour l'assigner",
+    "oneWeek": "1 semaine",
+    "eightWeeks": "8 semaines",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière"
   }
 }

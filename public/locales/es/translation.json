@@ -3097,5 +3097,47 @@
       "weekend": "Fin de semana",
       "nextWeek": "Próxima semana"
     }
+  },
+  "projectTimeline": {
+    "title": "Cronograma",
+    "days": "Días",
+    "weeks": "Semanas",
+    "months": "Meses",
+    "scale": "Escala",
+    "highlightPath": "Resaltar la ruta",
+    "empty": "Aún no hay tareas con fechas",
+    "noDates": "Sin fechas aún",
+    "dragHint": "Arrastra una al cronograma para programarla",
+    "spareDays": "{{count}} días de margen",
+    "projectStart": "Inicio del proyecto",
+    "projectDue": "Vencimiento del proyecto",
+    "legendRange": "Inicio → Vencimiento",
+    "legendDue": "Solo fecha de vencimiento",
+    "legendBlocks": "Bloquea",
+    "legendOverdue": "Vencidas",
+    "saveError": "No se pudo mover la tarea",
+    "dueOn": "Vence {{date}}",
+    "startsOn": "Empieza {{date}}",
+    "noLinks": "Marca tareas como bloqueantes de otras para ver el camino hasta el final"
+  },
+  "everyoneTimeline": {
+    "view": "Vista",
+    "board": "Tablero",
+    "subtitle": "Quién hace qué en las próximas semanas",
+    "earlier": "Antes",
+    "later": "Después",
+    "twoWeeks": "2 semanas",
+    "fourWeeks": "4 semanas",
+    "loadError": "No se pudo cargar el cronograma.",
+    "planned": "{{hours}} planificadas",
+    "daysOver": "{{count}} días de exceso",
+    "loadTitle": "{{hours}} de {{capacity}} planificadas",
+    "legendLoad": "Horas de las estimaciones, repartidas del inicio al vencimiento",
+    "legendOver": "Más que tu día de planificación de {{hours}}",
+    "dragHint": "Arrastra una barra para moverla, sus extremos para cambiar las fechas o sobre otra persona para asignarla",
+    "oneWeek": "1 semana",
+    "eightWeeks": "8 semanas",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar"
   }
 }

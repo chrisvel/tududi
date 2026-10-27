@@ -3110,5 +3110,47 @@
       "weekend": "Fim de semana",
       "nextWeek": "Próxima semana"
     }
+  },
+  "projectTimeline": {
+    "title": "Linha do tempo",
+    "days": "Dias",
+    "weeks": "Semanas",
+    "months": "Meses",
+    "scale": "Escala",
+    "highlightPath": "Destacar o caminho",
+    "empty": "Ainda não há tarefas com datas",
+    "noDates": "Ainda sem datas",
+    "dragHint": "Arraste uma para a linha do tempo para agendá-la",
+    "spareDays": "{{count}} dias de folga",
+    "projectStart": "Início do projeto",
+    "projectDue": "Prazo do projeto",
+    "legendRange": "Início → Prazo",
+    "legendDue": "Só prazo",
+    "legendBlocks": "Bloqueia",
+    "legendOverdue": "Atrasadas",
+    "saveError": "Não foi possível mover a tarefa",
+    "dueOn": "Prazo {{date}}",
+    "startsOn": "Começa {{date}}",
+    "noLinks": "Marque tarefas como bloqueadoras de outras para ver o caminho até o fim"
+  },
+  "everyoneTimeline": {
+    "view": "Visualização",
+    "board": "Quadro",
+    "subtitle": "Quem faz o quê nas próximas semanas",
+    "earlier": "Antes",
+    "later": "Depois",
+    "twoWeeks": "2 semanas",
+    "fourWeeks": "4 semanas",
+    "loadError": "Não foi possível carregar a linha do tempo.",
+    "planned": "{{hours}} planejadas",
+    "daysOver": "{{count}} dias acima",
+    "loadTitle": "{{hours}} de {{capacity}} planejadas",
+    "legendLoad": "Horas das estimativas, distribuídas do início ao prazo",
+    "legendOver": "Mais do que seu dia de planejamento de {{hours}}",
+    "dragHint": "Arraste uma barra para movê-la, as pontas para mudar as datas ou para outra pessoa para atribuí-la",
+    "oneWeek": "1 semana",
+    "eightWeeks": "8 semanas",
+    "zoomIn": "Aproximar",
+    "zoomOut": "Afastar"
   }
 }

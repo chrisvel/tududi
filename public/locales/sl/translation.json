@@ -3117,5 +3117,47 @@
       "weekend": "Vikend",
       "nextWeek": "Naslednji teden"
     }
+  },
+  "projectTimeline": {
+    "title": "Časovnica",
+    "days": "Dnevi",
+    "weeks": "Tedni",
+    "months": "Meseci",
+    "scale": "Merilo",
+    "highlightPath": "Poudari pot",
+    "empty": "Še ni opravil z datumi",
+    "noDates": "Še brez datumov",
+    "dragHint": "Povlecite ga na časovnico, da ga načrtujete",
+    "spareDays": "{{count}} dni rezerve",
+    "projectStart": "Začetek projekta",
+    "projectDue": "Rok projekta",
+    "legendRange": "Začetek → Rok",
+    "legendDue": "Samo rok",
+    "legendBlocks": "Blokira",
+    "legendOverdue": "Zamujeno",
+    "saveError": "Opravila ni bilo mogoče premakniti",
+    "dueOn": "Rok {{date}}",
+    "startsOn": "Začne se {{date}}",
+    "noLinks": "Označite opravila kot blokirajoča za druga, da vidite pot do konca"
+  },
+  "everyoneTimeline": {
+    "view": "Pogled",
+    "board": "Tabla",
+    "subtitle": "Kdo dela kaj v prihodnjih tednih",
+    "earlier": "Prej",
+    "later": "Pozneje",
+    "twoWeeks": "2 tedna",
+    "fourWeeks": "4 tedni",
+    "loadError": "Časovnice ni bilo mogoče naložiti.",
+    "planned": "{{hours}} načrtovano",
+    "daysOver": "{{count}} dni preveč",
+    "loadTitle": "{{hours}} od {{capacity}} načrtovano",
+    "legendLoad": "Ure iz ocen opravil, razporejene od začetka do roka",
+    "legendOver": "Več kot vaš načrtovalni dan {{hours}}",
+    "dragHint": "Povlecite vrstico, da jo premaknete, njene konce, da spremenite datume, ali na drugo osebo, da jo dodelite",
+    "oneWeek": "1 teden",
+    "eightWeeks": "8 tednov",
+    "zoomIn": "Povečaj",
+    "zoomOut": "Pomanjšaj"
   }
 }

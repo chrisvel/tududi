@@ -3110,5 +3110,47 @@
       "weekend": "Weekend",
       "nextWeek": "Prossima settimana"
     }
+  },
+  "projectTimeline": {
+    "title": "Cronologia",
+    "days": "Giorni",
+    "weeks": "Settimane",
+    "months": "Mesi",
+    "scale": "Scala",
+    "highlightPath": "Evidenzia il percorso",
+    "empty": "Ancora nessuna attività con date",
+    "noDates": "Ancora senza date",
+    "dragHint": "Trascinane una sulla cronologia per pianificarla",
+    "spareDays": "{{count}} giorni di margine",
+    "projectStart": "Inizio progetto",
+    "projectDue": "Scadenza progetto",
+    "legendRange": "Inizio → Scadenza",
+    "legendDue": "Solo scadenza",
+    "legendBlocks": "Blocca",
+    "legendOverdue": "In ritardo",
+    "saveError": "Impossibile spostare l'attività",
+    "dueOn": "Scade {{date}}",
+    "startsOn": "Inizia {{date}}",
+    "noLinks": "Segna le attività come bloccanti per altre per vedere il percorso fino alla fine"
+  },
+  "everyoneTimeline": {
+    "view": "Vista",
+    "board": "Bacheca",
+    "subtitle": "Chi fa cosa nelle prossime settimane",
+    "earlier": "Prima",
+    "later": "Dopo",
+    "twoWeeks": "2 settimane",
+    "fourWeeks": "4 settimane",
+    "loadError": "Impossibile caricare la cronologia.",
+    "planned": "{{hours}} pianificate",
+    "daysOver": "{{count}} giorni in eccesso",
+    "loadTitle": "{{hours}} su {{capacity}} pianificate",
+    "legendLoad": "Ore dalle stime delle attività, distribuite dall'inizio alla scadenza",
+    "legendOver": "Più della tua giornata di pianificazione di {{hours}}",
+    "dragHint": "Trascina una barra per spostarla, le sue estremità per cambiare le date o su un'altra persona per assegnarla",
+    "oneWeek": "1 settimana",
+    "eightWeeks": "8 settimane",
+    "zoomIn": "Ingrandisci",
+    "zoomOut": "Riduci"
   }
 }

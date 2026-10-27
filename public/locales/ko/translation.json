@@ -3104,5 +3104,47 @@
       "weekend": "주말",
       "nextWeek": "다음 주"
     }
+  },
+  "projectTimeline": {
+    "title": "타임라인",
+    "days": "일",
+    "weeks": "주",
+    "months": "월",
+    "scale": "배율",
+    "highlightPath": "경로 강조",
+    "empty": "아직 날짜가 있는 작업이 없습니다",
+    "noDates": "아직 날짜 없음",
+    "dragHint": "타임라인으로 끌어 일정을 잡으세요",
+    "spareDays": "{{count}}일 여유",
+    "projectStart": "프로젝트 시작",
+    "projectDue": "프로젝트 마감",
+    "legendRange": "시작 → 마감",
+    "legendDue": "마감일만",
+    "legendBlocks": "차단",
+    "legendOverdue": "기한 지남",
+    "saveError": "작업을 옮기지 못했습니다",
+    "dueOn": "마감 {{date}}",
+    "startsOn": "시작 {{date}}",
+    "noLinks": "작업을 다른 작업의 차단 작업으로 지정하면 완료까지의 경로를 볼 수 있습니다"
+  },
+  "everyoneTimeline": {
+    "view": "보기",
+    "board": "보드",
+    "subtitle": "앞으로 몇 주 동안 누가 무엇을 하는지",
+    "earlier": "이전",
+    "later": "이후",
+    "twoWeeks": "2주",
+    "fourWeeks": "4주",
+    "loadError": "타임라인을 불러오지 못했습니다.",
+    "planned": "{{hours}} 계획됨",
+    "daysOver": "{{count}}일 초과",
+    "loadTitle": "{{capacity}} 중 {{hours}} 계획됨",
+    "legendLoad": "작업 예상 시간을 시작부터 마감까지 나눈 시간",
+    "legendOver": "{{hours}} 계획 시간 초과",
+    "dragHint": "막대를 끌어 이동하고, 끝을 끌어 날짜를 바꾸거나, 다른 사람에게 끌어 배정하세요",
+    "oneWeek": "1주",
+    "eightWeeks": "8주",
+    "zoomIn": "확대",
+    "zoomOut": "축소"
   }
 }

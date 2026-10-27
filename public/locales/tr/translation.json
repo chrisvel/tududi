@@ -3107,5 +3107,47 @@
       "weekend": "Hafta sonu",
       "nextWeek": "Gelecek hafta"
     }
+  },
+  "projectTimeline": {
+    "title": "Zaman çizelgesi",
+    "days": "Günler",
+    "weeks": "Haftalar",
+    "months": "Aylar",
+    "scale": "Ölçek",
+    "highlightPath": "Yolu vurgula",
+    "empty": "Henüz tarihli görev yok",
+    "noDates": "Henüz tarih yok",
+    "dragHint": "Planlamak için birini zaman çizelgesine sürükleyin",
+    "spareDays": "{{count}} gün pay",
+    "projectStart": "Proje başlangıcı",
+    "projectDue": "Proje bitişi",
+    "legendRange": "Başlangıç → Bitiş",
+    "legendDue": "Yalnızca bitiş tarihi",
+    "legendBlocks": "Engeller",
+    "legendOverdue": "Gecikmiş",
+    "saveError": "Görev taşınamadı",
+    "dueOn": "Bitiş {{date}}",
+    "startsOn": "Başlangıç {{date}}",
+    "noLinks": "Bitişe giden yolu görmek için görevleri diğer görevleri engelleyen olarak işaretleyin"
+  },
+  "everyoneTimeline": {
+    "view": "Görünüm",
+    "board": "Pano",
+    "subtitle": "Önümüzdeki haftalarda kim ne yapıyor",
+    "earlier": "Önce",
+    "later": "Sonra",
+    "twoWeeks": "2 hafta",
+    "fourWeeks": "4 hafta",
+    "loadError": "Zaman çizelgesi yüklenemedi.",
+    "planned": "{{hours}} planlandı",
+    "daysOver": "{{count}} gün fazla",
+    "loadTitle": "{{capacity}} içinden {{hours}} planlandı",
+    "legendLoad": "Görev tahminlerinden saatler, başlangıçtan bitişe dağıtılmış",
+    "legendOver": "{{hours}} planlama gününüzden fazla",
+    "dragHint": "Taşımak için bir çubuğu, tarihleri değiştirmek için uçlarını sürükleyin veya atamak için başka bir kişinin üzerine bırakın",
+    "oneWeek": "1 hafta",
+    "eightWeeks": "8 hafta",
+    "zoomIn": "Yakınlaştır",
+    "zoomOut": "Uzaklaştır"
   }
 }
