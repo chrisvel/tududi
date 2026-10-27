@@ -16,6 +16,7 @@ import {
     AdminBillingSummaryRow,
 } from '../../utils/adminBillingService';
 import { FORM } from '../../constants/formClasses';
+import { TEAM_SEATS } from '../../utils/billingPlans';
 import {
     ADMIN_TABLE_WRAPPER,
     SortHeader,
@@ -507,6 +508,18 @@ const AdminBillingPage: React.FC = () => {
                                     className={`${FORM.select} mt-1 w-full`}
                                 >
                                     <option value="pro">pro</option>
+                                    {TEAM_SEATS.map((seats) => (
+                                        <option
+                                            key={seats}
+                                            value={`team_${seats}`}
+                                        >
+                                            {t('billing.teamName', {
+                                                defaultValue:
+                                                    'Team ({{seats}} seats)',
+                                                seats: seats,
+                                            })}
+                                        </option>
+                                    ))}
                                     <option value="free">free</option>
                                 </select>
                             </label>

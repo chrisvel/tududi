@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { getConfig } = require('../../../config/config');
 const { logError } = require('../../../services/logService');
 const { NotFoundError } = require('../../../shared/errors');
+const { buildCatalog, lookupPrice } = require('./priceCatalog');
 
 // Lemon Squeezy: a merchant of record, so it collects VAT and issues the
 // invoices. Subscriptions are created through a hosted checkout (one
@@ -36,27 +37,22 @@ function isConfigured() {
     return !!(s.apiKey && s.storeId);
 }
 
-function configuredPrices() {
+// Variant ids by plan: { pro: { month, year }, team_5: { month, year }, … }.
+function configuredPlans() {
     const variants = settings().variants || {};
-    return {
-        month: variants.proMonthly || null,
-        year: variants.proAnnual || null,
-    };
+    return buildCatalog(variants);
+}
+
+function configuredPrices(plan = 'pro') {
+    return configuredPlans()[plan] || { month: null, year: null };
 }
 
 function planForPrice(variantId) {
-    const prices = configuredPrices();
-    const id = variantId == null ? null : String(variantId);
-    if (id && (id === prices.month || id === prices.year)) return 'pro';
-    return null;
+    return lookupPrice(configuredPlans(), variantId).plan;
 }
 
 function intervalForVariant(variantId) {
-    const prices = configuredPrices();
-    const id = variantId == null ? null : String(variantId);
-    if (id && id === prices.month) return 'month';
-    if (id && id === prices.year) return 'year';
-    return null;
+    return lookupPrice(configuredPlans(), variantId).interval;
 }
 
 async function api(method, path, body) {
@@ -111,8 +107,9 @@ function subscriptionToAccountFields(resource) {
     };
 }
 
-// The subscription's line item, whose quantity is the number of paid seats.
-// Left out when the payload has none, so an older stored value survives.
+// The subscription's line item, kept for reference. Seats come from the plan
+// (a Team variant), never from this quantity. Left out when the payload has
+// none, so an older stored value survives.
 function seatFields(item) {
     if (!item || item.id == null) return {};
     return {
@@ -121,39 +118,15 @@ function seatFields(item) {
     };
 }
 
-// Sets the number of paid seats. Lemon Squeezy prorates the change onto the
-// next invoice, so nothing is charged at the moment a member is added.
-async function updateSeats({ account, quantity }) {
-    let itemId = account.provider_subscription_item_id;
-    if (!itemId && account.provider_subscription_id) {
-        const result = await api(
-            'GET',
-            `/subscriptions/${account.provider_subscription_id}`
-        );
-        itemId = result.data.attributes.first_subscription_item?.id;
-    }
-    if (!itemId) {
-        throw new NotFoundError('No subscription to add seats to');
-    }
-    const result = await api('PATCH', `/subscription-items/${itemId}`, {
-        data: {
-            type: 'subscription-items',
-            id: String(itemId),
-            attributes: { quantity },
-        },
-    });
-    const attributes = result?.data?.attributes || {};
-    return {
-        provider_subscription_item_id: String(itemId),
-        seat_quantity: Number.isInteger(attributes.quantity)
-            ? attributes.quantity
-            : quantity,
-    };
-}
-
-async function createCheckout({ user, account, interval, successUrl }) {
+async function createCheckout({
+    user,
+    account,
+    plan = 'pro',
+    interval,
+    successUrl,
+}) {
     const s = settings();
-    const variantId = configuredPrices()[interval];
+    const variantId = configuredPrices(plan)[interval];
     const result = await api('POST', '/checkouts', {
         data: {
             type: 'checkouts',
@@ -341,6 +314,7 @@ function validateConfig() {
     const problems = [];
     const s = settings();
     const prices = configuredPrices();
+    const team = settings().variants?.team || {};
     if (!s.apiKey)
         problems.push(
             'LEMONSQUEEZY_API_KEY is not set: checkout is unavailable'
@@ -357,6 +331,11 @@ function validateConfig() {
         problems.push(
             'No LEMONSQUEEZY_VARIANT_PRO_MONTHLY or LEMONSQUEEZY_VARIANT_PRO_ANNUAL configured: nothing to sell'
         );
+    const unknown = Object.keys(team).filter((key) => !configuredPlans()[key]);
+    if (unknown.length > 0)
+        problems.push(
+            `LEMONSQUEEZY_TEAM_VARIANTS_JSON has entries that are not Team plans or have no variant ids: ${unknown.join(', ')}`
+        );
     return problems;
 }
 
@@ -365,9 +344,9 @@ module.exports = {
     displayName: 'Lemon Squeezy',
     signatureHeader: 'x-signature',
     isConfigured,
+    configuredPlans,
     configuredPrices,
     planForPrice,
-    updateSeats,
     canOpenPortal: (account) =>
         !!(account?.provider_subscription_id || account?.provider_customer_id),
     createCheckout,

@@ -46,12 +46,15 @@ describe('billingService', () => {
             .mockResolvedValue(
                 makeResponse(200, { url: 'https://checkout.stripe.test/x' })
             );
-        const url = await startCheckout('year');
-        expect(url).toBe('https://checkout.stripe.test/x');
+        const checkout = await startCheckout('year');
+        expect(checkout.url).toBe('https://checkout.stripe.test/x');
         const [, options] = (global.fetch as jest.Mock).mock.calls[0];
         expect(options.method).toBe('POST');
         expect(options.headers['x-csrf-token']).toBe('csrf-token');
-        expect(JSON.parse(options.body)).toEqual({ interval: 'year' });
+        expect(JSON.parse(options.body)).toEqual({
+            interval: 'year',
+            plan: 'pro',
+        });
     });
 
     it('sends the session id when syncing after checkout', async () => {

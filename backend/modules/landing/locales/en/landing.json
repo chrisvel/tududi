@@ -256,21 +256,22 @@
   },
   "pricing": {
     "eyebrow": "Pricing",
-    "title": "One plan, everything in it",
-    "sub": "No tiers, no add-ons, no features held back. Try it free, then one price.",
+    "title": "Pay for yourself, or for your team",
+    "sub": "Every plan has every feature. Pro is for one person; a Team plan comes in a fixed size and you add people up to it.",
     "mostPopular": "MOST POPULAR",
     "earlyBird": "EARLY BIRD",
     "perYear": "/year",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "or",
         "launchNote": "Early bird annual price, yours for as long as you stay subscribed.",
         "priceNote": "Everything included. Cancel any time.",
         "features": [
           "Running in a minute, with no server to set up",
           "Unlimited tasks, projects and notes, plus attachments",
-          "Add family members or teammates, each a seat at the same price",
+          "For one person. Want to add people? Pick a Team plan",
           "AI day planning, calendar feeds and CalDAV sync",
           "Updates and daily backups handled for you, with {{proStorageGb}} GB of storage",
           "Export everything any time, delete your account yourself"
@@ -279,12 +280,34 @@
         "actionTrial": "Start free trial →",
         "priceNoteTrial": "{{days}} days free, no card needed. Cancel any time.",
         "trialNote": "The trial includes the AI assistant with a smaller allowance and one member you can add. Public note links open once you subscribe."
+      },
+      "team": {
+        "name": "Team",
+        "perPersonMonth": "/person a month",
+        "perPersonYear": "/person a year",
+        "sizes": "Sold in sizes of {{sizes}} seats, you included. A team of 5 is {{example}} a month.",
+        "moreThan": "More than {{max}} people?",
+        "contact": "Get in touch",
+        "action": "Start your team →",
+        "features": [
+          "Everything in Pro, for every person on the team",
+          "Add people up to your size, and move to a bigger size any time",
+          "Shared projects, groups and an Everyone board of who is doing what",
+          "Each person keeps their own private tasks and notes",
+          "One subscription, paid by the account owner"
+        ]
+      },
+      "picker": {
+        "label": "Who is it for?",
+        "solo": "Just me",
+        "team": "Team of {{n}}",
+        "perMonth": "/month",
+        "perYear": "/year"
       }
     },
     "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a guide to keep running it. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
-    "selfHostNote": "Developers: tududi is open source and can be run on your own server.",
-    "selfHostLink": "Read the guide",
-    "perMonth": "/month"
+    "perMonth": "/month",
+    "nextPrice": "From {{date}} the price per person goes to {{monthly}} a month or {{annual}} a year. Subscribe before then to keep today's price for as long as you stay subscribed."
   },
   "compare": {
     "title": "Quick Comparison",
@@ -352,8 +375,8 @@
       },
       "freePlan": {
         "q": "Is there a free plan or a trial on tududi Cloud?",
-        "a": "No. Cloud is {{monthly}} a month or {{price}} a year, and that is the whole price list: no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first.",
-        "aTrial": "There is no free plan, but every new account gets a {{days}}-day free trial, no card needed. The trial includes the AI assistant with a smaller allowance and one member you can add. Public note links open once you subscribe. If you do not subscribe, the account turns read-only for 30 days so you can export your data, and is then deleted. After the trial, Cloud is {{monthly}} a month or {{price}} a year."
+        "a": "No. Pro is {{monthly}} a month or {{price}} a year for one person, and Team plans cost the same per person in fixed sizes. There is no free tier, no trial clock, no card taken for something that quietly starts billing later. There is a 14-day money-back guarantee if it turns out not to suit you, and there is a live demo on this page if you would like a look around first.",
+        "aTrial": "There is no free plan, but every new account gets a {{days}}-day free trial, no card needed. The trial includes the AI assistant with a smaller allowance and one member you can add. Public note links open once you subscribe. If you do not subscribe, the account turns read-only for 30 days so you can export your data, and is then deleted. After the trial, Pro is {{monthly}} a month or {{price}} a year, and Team plans cost the same per person."
       },
       "leaving": {
         "q": "Can I leave, and what happens to my data?",
@@ -405,7 +428,7 @@
   },
   "cloud": {
     "metaTitle": "tududi Cloud: the hosted tududi, run for you",
-    "metaDescription": "tududi Cloud is the same open source system, running on our servers with updates, backups and email handled for you. One plan, monthly or yearly, cancel any time.",
+    "metaDescription": "tududi Cloud is the same open source system, running on our servers with updates, backups and email handled for you. Pro for one person or a Team plan for a group, monthly or yearly, cancel any time.",
     "title": "Why use tududi Cloud?",
     "lede": "The same system either way. The difference is who keeps it running, patched and backed up at three in the morning.",
     "ctaPrimary": "Get started",
@@ -440,13 +463,13 @@
         "body": "No cloud-only features and no crippled self-hosted build. If we ever shut the service down you get your data and a migration guide."
       }
     },
-    "pricingTitle": "One plan, two ways to pay",
+    "pricingTitle": "Pro for you, Team for everyone",
     "pricingSub": "Everything included. Cancel whenever you like.",
     "orAnnual": "or",
     "priceNote": "Billed by our payment provider. Prices exclude applicable taxes.",
     "includes": [
       "Unlimited tasks, projects and notes",
-      "Add family members or teammates, each a seat at the same price",
+      "For one person. Team plans add people in fixed sizes",
       "Attachments and file uploads",
       "AI day planning, calendar feeds and CalDAV sync",
       "Daily backups and managed updates",

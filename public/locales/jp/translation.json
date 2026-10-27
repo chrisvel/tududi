@@ -2613,7 +2613,8 @@
       "note": "ノート",
       "storage": "添付ファイルのストレージ",
       "ai": "今日のAIリクエスト",
-      "aiCredits": "今月のAIクレジット"
+      "aiCredits": "今月のAIクレジット",
+      "member": "メンバー"
     },
     "feature": {
       "ai": "AIアシスタント",
@@ -2627,7 +2628,20 @@
     },
     "seatCovered": "あなたの席は {{name}} が支払っています。",
     "workspaceOwner": "ワークスペースのオーナー",
-    "seats": "サブスクリプションの席数：{{count}}（あなたとほか {{members}} 人）。"
+    "teamName": "チーム（{{seats}} 席）",
+    "seatsUsed": "{{seats}} 席中 {{used}} 席を使用中。",
+    "seatsFullHint": "さらに必要な場合は、「サブスクリプションを管理」から大きいチームプランに変更してください。",
+    "justMe": "自分だけ",
+    "team": "チーム",
+    "teamSize": "チームの人数",
+    "upToSeats": "最大 {{seats}} 人",
+    "pricePerMonth": "月 {{price}}",
+    "pricePerYear": "年 {{price}}",
+    "perSeatNote": "（あなたを含めて {{seats}} 席）",
+    "membersNeedTeam": "Pro は 1 人用です。チームプランならメンバーを追加できます（3 席から）。",
+    "seatsFull": "プランの {{seats}} 席はすべて使用中です。さらに人を追加するには、大きいチームプランに変更してください。",
+    "changePlan": "プランを変更",
+    "planChanged": "プランを変更しました。"
   },
   "subscription": {
     "title": "サブスクリプション",
@@ -2662,7 +2676,11 @@
     "trialLock": {
       "webhooks": "Webhook は無料トライアルには含まれていません。自分のサービスにイベントを送るには、サブスクリプションに登録してください。"
     },
-    "lockedWebhooks": "Webhook は有料プランに含まれています。"
+    "lockedWebhooks": "Webhook は有料プランに含まれています。",
+    "whoFor": "誰が使いますか？",
+    "justMe": "自分だけ（Pro）",
+    "teamOf": "最大 {{seats}} 人のチーム",
+    "perSeat": "1 人あたり月 {{price}}、あなたを含めて {{seats}} 席"
   },
   "demo": {
     "opening": "デモを開いています...",
@@ -2728,13 +2746,13 @@
     "giveAccount": "アカウントを付与",
     "nameRequiredWithoutEmail": "メールがない場合は名前を入力してください",
     "failedToAdd": "メンバーを追加できませんでした",
-    "seatNote": "メンバー1人につき、サブスクリプションの席が1つ増えます。変更は次回の請求に日割りで反映され、メンバーを削除すると席が戻ります。",
+    "seatNote": "メンバー 1 人につきプランの席を 1 つ使います。メンバーを削除すると、その席は別の人が使えるようになります。",
     "editTitle": "メンバーを編集",
     "nameRequired": "名前を入力してください",
     "failedToUpdate": "メンバーを更新できませんでした",
     "addEmailHint": "メールアドレスを追加すると、パスワード設定の招待が送られます。後から変更することはできません。",
     "remove": "メンバーを削除",
-    "removeConfirm": "{{name}} を削除しますか？アカウントとそのすべての内容が削除され、元に戻せません。tududi Cloud では、その席がサブスクリプションから外れます。",
+    "removeConfirm": "{{name}} を削除しますか？アカウントとそのすべての内容が削除され、元に戻せません。tududi Cloud では、その席が空き、別の人が使えるようになります。",
     "removed": "メンバーを削除しました",
     "updated": "メンバーを更新しました",
     "invitationSent": "招待を送信しました",

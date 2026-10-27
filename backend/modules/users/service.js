@@ -61,8 +61,6 @@ const { User, Role } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
 const entitlements = require('../../services/entitlementsService');
 const { eraseUserAccount } = require('../../services/accountErasureService');
-const seatsService = require('../../services/seatsService');
-const accountsService = require('../../services/accountsService');
 const secretCipher = require('../../shared/crypto/secretCipher');
 const {
     createApiToken,
@@ -460,12 +458,7 @@ class UsersService {
             }
         }
 
-        const payerId = await accountsService.getOwnerId(userId);
         await eraseUserAccount(userId);
-        // A member leaving frees its seat on the account owner's subscription.
-        if (payerId !== userId) {
-            await seatsService.reconcile(payerId);
-        }
         return { success: true };
     }
 

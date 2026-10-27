@@ -2621,7 +2621,8 @@
       "note": "notițe",
       "storage": "spațiu pentru atașamente",
       "ai": "cereri AI astăzi",
-      "aiCredits": "Credite AI luna aceasta"
+      "aiCredits": "Credite AI luna aceasta",
+      "member": "membri"
     },
     "feature": {
       "ai": "asistentul AI",
@@ -2635,7 +2636,20 @@
     },
     "seatCovered": "Locul tău este plătit de {{name}}.",
     "workspaceOwner": "proprietarul spațiului de lucru",
-    "seats": "Locuri în abonament: {{count}} (tu și încă {{members}})."
+    "teamName": "Echipă ({{seats}} locuri)",
+    "seatsUsed": "{{used}} din {{seats}} locuri ocupate.",
+    "seatsFullHint": "Pentru mai multe, treci la un plan Echipă mai mare din „Gestionează abonamentul”.",
+    "justMe": "Doar eu",
+    "team": "Echipă",
+    "teamSize": "Mărimea echipei",
+    "upToSeats": "Până la {{seats}} persoane",
+    "pricePerMonth": "{{price}} pe lună",
+    "pricePerYear": "{{price}} pe an",
+    "perSeatNote": "({{seats}} locuri, inclusiv tu)",
+    "membersNeedTeam": "Pro este pentru o singură persoană. Un plan Echipă îți permite să adaugi membri, de la 3 locuri în sus.",
+    "seatsFull": "Toate cele {{seats}} locuri din planul tău sunt ocupate. Treci la un plan Echipă mai mare ca să adaugi mai multe persoane.",
+    "changePlan": "Schimbă planul",
+    "planChanged": "Planul tău a fost schimbat."
   },
   "subscription": {
     "title": "Abonament",
@@ -2670,7 +2684,11 @@
     "trialLock": {
       "webhooks": "Webhook-urile nu fac parte din perioada de probă gratuită. Abonează-te pentru a trimite evenimente către propriile servicii."
     },
-    "lockedWebhooks": "Webhook-urile fac parte din planul plătit."
+    "lockedWebhooks": "Webhook-urile fac parte din planul plătit.",
+    "whoFor": "Pentru cine este?",
+    "justMe": "Doar eu (Pro)",
+    "teamOf": "O echipă de până la {{seats}} persoane",
+    "perSeat": "{{price}} de persoană pe lună, {{seats}} locuri inclusiv tu"
   },
   "demo": {
     "opening": "Deschiderea demo-ului...",
@@ -2736,13 +2754,13 @@
     "giveAccount": "Dă un cont",
     "nameRequiredWithoutEmail": "Introdu un nume când nu există e-mail",
     "failedToAdd": "Nu s-a putut adăuga membrul",
-    "seatNote": "Fiecare membru înseamnă încă un loc în abonamentul tău. Modificarea se calculează proporțional pe factura următoare, iar eliminarea unui membru eliberează locul.",
+    "seatNote": "Fiecare membru ocupă un loc din planul tău. Eliminarea unui membru eliberează locul pentru altcineva.",
     "editTitle": "Editează membrul",
     "nameRequired": "Introdu un nume",
     "failedToUpdate": "Membrul nu a putut fi actualizat",
     "addEmailHint": "Adăugarea unui e-mail îi trimite o invitație să își seteze o parolă. Nu mai poate fi schimbat ulterior.",
     "remove": "Elimină membrul",
-    "removeConfirm": "Elimini pe {{name}}? Contul și tot conținutul său sunt șterse, iar acțiunea nu poate fi anulată. În tududi Cloud locul este scos din abonamentul tău.",
+    "removeConfirm": "Elimini pe {{name}}? Contul și tot conținutul său sunt șterse, iar acțiunea nu poate fi anulată. În tududi Cloud locul său se eliberează pentru altcineva.",
     "removed": "Membru eliminat",
     "updated": "Membru actualizat",
     "invitationSent": "Invitație trimisă",

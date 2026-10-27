@@ -44,6 +44,8 @@ const UpgradeModal: React.FC = () => {
                 return t('billing.resource.storage', 'attachment storage');
             case 'ai_requests':
                 return t('billing.resource.ai', 'AI requests this month');
+            case 'member':
+                return t('billing.resource.member', 'members');
             default:
                 return resource || '';
         }
@@ -71,28 +73,43 @@ const UpgradeModal: React.FC = () => {
         }
     };
 
-    const message =
-        code === 'FEATURE_NOT_IN_PLAN'
-            ? t('billing.featureNotInPlan', {
+    // Members are seats: the plan holds the owner plus `limit` others.
+    const memberMessage = () =>
+        details?.limit === 0
+            ? t(
+                  'billing.membersNeedTeam',
+                  'Pro is for one person. A Team plan lets you add members, from 3 seats up.'
+              )
+            : t('billing.seatsFull', {
                   defaultValue:
-                      'Your {{plan}} plan does not include {{feature}}.',
-                  plan: details?.plan,
-                  feature: featureLabel(details?.feature),
-              })
-            : t('billing.limitReached', {
-                  defaultValue:
-                      'Your {{plan}} plan allows {{limit}} {{resource}}. You are at {{current}}.',
-                  plan: details?.plan,
-                  limit:
-                      details?.resource === 'storage'
-                          ? `${Math.round((details.limit || 0) / (1024 * 1024))} MB`
-                          : details?.limit,
-                  resource: resourceLabel(details?.resource),
-                  current:
-                      details?.resource === 'storage'
-                          ? `${Math.round((details.current || 0) / (1024 * 1024))} MB`
-                          : details?.current,
+                      'All {{seats}} seats of your plan are in use. Move to a bigger Team plan to add more people.',
+                  seats: (details?.limit || 0) + 1,
               });
+
+    const message =
+        code === 'PLAN_LIMIT_REACHED' && details?.resource === 'member'
+            ? memberMessage()
+            : code === 'FEATURE_NOT_IN_PLAN'
+              ? t('billing.featureNotInPlan', {
+                    defaultValue:
+                        'Your {{plan}} plan does not include {{feature}}.',
+                    plan: details?.plan,
+                    feature: featureLabel(details?.feature),
+                })
+              : t('billing.limitReached', {
+                    defaultValue:
+                        'Your {{plan}} plan allows {{limit}} {{resource}}. You are at {{current}}.',
+                    plan: details?.plan,
+                    limit:
+                        details?.resource === 'storage'
+                            ? `${Math.round((details.limit || 0) / (1024 * 1024))} MB`
+                            : details?.limit,
+                    resource: resourceLabel(details?.resource),
+                    current:
+                        details?.resource === 'storage'
+                            ? `${Math.round((details.current || 0) / (1024 * 1024))} MB`
+                            : details?.current,
+                });
 
     return (
         <div

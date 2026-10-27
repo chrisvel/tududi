@@ -272,7 +272,59 @@ describe('Landing page', () => {
         expect(belowHero).toContain('https://github.com/chrisvel/tududi');
     });
 
-    it('sends self-hosters to GitHub instead of a section of its own', async () => {
+    it('sells Pro and every Team size from one card with a picker', async () => {
+        for (const url of ['/', '/cloud']) {
+            const res = await request(app).get(url).set('Host', 'tududi.com');
+            const from = res.text.indexOf('data-plan-picker>');
+            const card = res.text.slice(
+                from,
+                res.text.indexOf('</script>', from)
+            );
+            expect(res.text.match(/data-plan-picker>/g)).toHaveLength(1);
+            expect(res.text).not.toContain('plan-grid-duo');
+            expect(card).toContain('<option value="1"');
+            expect(card).toContain('>Just me</option>');
+            for (const n of [3, 5, 10, 15, 20, 25, 30, 40]) {
+                expect(card).toContain(`>Team of ${n}</option>`);
+            }
+            // Each option carries its own totals: 5 seats at €5 and €50.
+            expect(card).toMatch(
+                /value="5"\s+data-monthly="€25"\s+data-annual="€250"/
+            );
+            expect(card).toContain(
+                'Sold in sizes of 3, 5, 10, 15, 20, 25, 30, 40 seats, you included. A team of 5 is €25 a month.'
+            );
+            expect(card).toContain('More than 40 people?');
+            expect(card).toContain('href="/contact"');
+        }
+    });
+
+    it('announces a decided price rise until the day it starts', async () => {
+        const next = config.landing.pricing.next;
+        try {
+            config.landing.pricing.next = {
+                monthly: 7,
+                annual: 70,
+                from: '2999-01-01',
+            };
+            const upcoming = await request(app)
+                .get('/cloud')
+                .set('Host', 'tududi.com');
+            expect(upcoming.text).toContain(
+                'From 1 January 2999 the price per person goes to €7 a month or €70 a year.'
+            );
+
+            config.landing.pricing.next = { ...next, from: '2000-01-01' };
+            const started = await request(app)
+                .get('/cloud')
+                .set('Host', 'tududi.com');
+            expect(started.text).not.toContain('the price per person goes to');
+        } finally {
+            config.landing.pricing.next = next;
+        }
+    });
+
+    it('leaves self-hosting out of the page', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         expect(res.text).not.toContain('id="self-host"');
         expect(res.text).not.toContain('href="#self-host"');
@@ -280,12 +332,8 @@ describe('Landing page', () => {
         expect(res.text).not.toContain('id="faq-requirements"');
         expect(res.text).not.toContain('Prefer to run it on your own server?');
 
-        // One quiet line under the fine print, not a card of its own.
         const pricing = res.text.slice(res.text.indexOf('id="pricing"'));
-        expect(pricing).toMatch(
-            /href="https:\/\/github\.com\/chrisvel\/tududi" class="plan-selfhost-link"/
-        );
-        expect(pricing).toContain(
+        expect(pricing).not.toContain(
             'tududi is open source and can be run on your own server'
         );
         expect(pricing).not.toContain('Self-host (advanced)');
@@ -576,9 +624,9 @@ describe('Landing page', () => {
         expect(res.text).not.toContain('The trial includes the AI assistant');
         expect(res.text).not.toContain('Start free trial');
 
-        // Self-hosting is still possible, and only the fine print says so.
+        // Nothing on the page offers a free self-hosted way round the price.
         expect(res.text).not.toMatch(/free, if you run the server yourself/i);
-        expect(res.text).toContain('can be run on your own server');
+        expect(res.text).not.toContain('can be run on your own server');
     });
 
     it('sells no Business Licence anywhere on the page', async () => {

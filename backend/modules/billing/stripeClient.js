@@ -2,6 +2,7 @@
 
 const { getConfig } = require('../../config/config');
 const { BillingNotConfiguredError } = require('../../shared/errors');
+const { buildCatalog, lookupPrice } = require('./providers/priceCatalog');
 
 // The Stripe SDK is only loaded when a hosted instance has a key. Self-hosted
 // installs never require it.
@@ -30,26 +31,24 @@ function getStripe() {
     return client;
 }
 
-function configuredPrices() {
-    const prices = stripeConfig().prices || {};
-    return {
-        month: prices.proMonthly || null,
-        year: prices.proAnnual || null,
-    };
+// Price ids by plan: { pro: { month, year }, team_5: { month, year }, … }.
+function configuredPlans() {
+    return buildCatalog(stripeConfig().prices || {});
 }
 
-// Which plan a Stripe price id belongs to. One paid tier for now.
+function configuredPrices(plan = 'pro') {
+    return configuredPlans()[plan] || { month: null, year: null };
+}
+
+// Which plan a Stripe price id belongs to.
 function planForPrice(priceId) {
-    const prices = configuredPrices();
-    if (priceId && (priceId === prices.month || priceId === prices.year)) {
-        return 'pro';
-    }
-    return null;
+    return lookupPrice(configuredPlans(), priceId).plan;
 }
 
 module.exports = {
     getStripe,
     isBillingConfigured,
+    configuredPlans,
     configuredPrices,
     planForPrice,
     _reset: () => {

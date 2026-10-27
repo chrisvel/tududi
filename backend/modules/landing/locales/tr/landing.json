@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Fiyatlar",
-    "title": "tududi'yi nasıl kullanacağınızı seçin",
+    "title": "Kendiniz için ya da ekibiniz için ödeyin",
     "mostPopular": "EN ÇOK SEÇİLEN",
     "earlyBird": "ERKEN KAYIT",
     "perYear": "/yıl, kişi başı",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "veya",
         "launchNote": "Erken kayıt yıllık fiyatı, abone kaldığınız sürece sizin.",
         "action": "Başlayın →",
         "features": [
           "Kurulacak sunucu olmadan bir dakikada çalışır",
           "Sınırsız görev, proje ve not, ayrıca ekler",
-          "Aile üyelerini veya ekip arkadaşlarını ekleyin, her biri aynı fiyattan bir koltuk",
+          "Tek kişilik. Başkalarını eklemek mi istiyorsunuz? Bir Ekip planı seçin",
           "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
           "Sizin için halledilmiş güncellemeler ve günlük yedeklemeler, {{proStorageGb}} GB depolama ile",
           "Her şeyi istediğiniz zaman dışa aktarın, hesabınızı kendiniz silin"
@@ -258,13 +259,35 @@
         "actionTrial": "Ücretsiz dene →",
         "priceNoteTrial": "{{days}} gün ücretsiz, kart gerekmez. İstediğin zaman iptal et.",
         "trialNote": "Deneme süresi, daha küçük bir kullanım hakkıyla AI asistanını ve ekleyebileceğin bir üyeyi içerir. Herkese açık not bağlantıları abone olunca açılır."
+      },
+      "team": {
+        "name": "Ekip",
+        "perPersonMonth": "/ay, kişi başı",
+        "perPersonYear": "/yıl, kişi başı",
+        "sizes": "Siz dahil {{sizes}} koltukluk büyüklüklerde satılır. 5 kişilik bir ekip aylık {{example}}.",
+        "moreThan": "{{max}} kişiden fazla mısınız?",
+        "contact": "Bize ulaşın",
+        "action": "Ekibinizi başlatın →",
+        "features": [
+          "Pro'daki her şey, ekipteki herkes için",
+          "Büyüklüğünüze kadar kişi ekleyin, istediğiniz zaman daha büyüğüne geçin",
+          "Ortak projeler, gruplar ve kimin ne yaptığını gösteren bir Herkes panosu",
+          "Herkes kendi özel görevlerini ve notlarını korur",
+          "Tek abonelik, hesap sahibi öder"
+        ]
+      },
+      "picker": {
+        "label": "Kimin için?",
+        "solo": "Sadece ben",
+        "team": "{{n}} kişilik ekip",
+        "perMonth": "/ay",
+        "perYear": "/yıl"
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 14 gün para iade garantisi, soru sorulmaz.",
     "perMonth": "/ay, kişi başı",
-    "sub": "Kademe yok, ek paket yok, saklanan özellik yok. Ücretsiz deneyin, sonra tek fiyat.",
-    "selfHostNote": "Geliştiriciler: tududi açık kaynaklıdır ve kendi sunucunuzda çalıştırılabilir.",
-    "selfHostLink": "Kılavuzu okuyun"
+    "nextPrice": "{{date}} tarihinden itibaren kişi başı fiyat aylık {{monthly}} ya da yıllık {{annual}} olacak. Bugünkü fiyatı abone kaldığınız sürece korumak için bu tarihten önce abone olun.",
+    "sub": "Her planda tüm özellikler var. Pro tek kişilik; Ekip planı sabit bir büyüklükte gelir ve bu büyüklüğe kadar kişi eklersiniz."
   },
   "compare": {
     "title": "Hızlı karşılaştırma",
@@ -336,9 +359,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Hayır. Cloud kişi başı ayda {{monthly}} veya yılda {{price}}'dır, ve bu tüm fiyat listesi: ücretsiz katman yok, deneme saati yok, daha sonra sessizce faturalandırmaya başlayan bir şey için tahsil edilen kart yok. Size uymadığı ortaya çıkarsa 14 günlük para geri garantisi var, ve önce bakmak isterseniz bu sayfada canlı bir demo var. tududi'yi kullanmanın ücretsiz yolu, aynı uygulama olan kendi sunucunuzda çalıştırmaktır.",
+        "a": "Hayır. Pro tek kişi için aylık {{monthly}} ya da yıllık {{price}}, Ekip planları ise sabit büyüklüklerde kişi başı aynı fiyattır. Ücretsiz katman yok, deneme sayacı yok, sonradan sessizce ücret çekilmeye başlanan kart yok. Size uymazsa 14 günlük para iade garantisi var ve önce göz atmak isterseniz bu sayfada canlı bir demo var.",
         "q": "tududi Cloud'da ücretsiz bir plan veya deneme var mı?",
-        "aTrial": "Ücretsiz plan yok, ama her yeni hesap kart gerektirmeyen {{days}} günlük ücretsiz deneme alır. Deneme, daha küçük bir kullanım hakkıyla yapay zeka asistanını ve ekleyebileceğin bir üyeyi içerir. Herkese açık not bağlantıları abone olunca açılır. Abone olmazsan hesap, verilerini dışa aktarabilmen için 30 gün salt okunur olur ve ardından silinir. Denemeden sonra Cloud kişi başı aylık {{monthly}} ya da yıllık {{price}}. tududi'yi ücretsiz kullanmanın yolu onu kendi sunucunda çalıştırmak, aynı uygulama."
+        "aTrial": "Ücretsiz plan yok, ama her yeni hesap kart gerektirmeyen {{days}} günlük ücretsiz deneme alır. Deneme, daha küçük bir kullanım hakkıyla yapay zeka asistanını ve ekleyebileceğin bir üyeyi içerir. Herkese açık not bağlantıları abone olunca açılır. Abone olmazsan hesap, verilerini dışa aktarabilmen için 30 gün salt okunur olur ve ardından silinir. Denemeden sonra Pro aylık {{monthly}} ya da yıllık {{price}}, Ekip planları ise kişi başı aynı fiyat."
       },
       "leaving": {
         "q": "Ayrılabilir miyim, verilerime ne olur?",
@@ -388,7 +411,7 @@
     "ctaPrimary": "Başlayın",
     "includes": [
       "Sınırsız görev, proje ve not",
-      "Aile üyelerini veya ekip arkadaşlarını ekleyin, her biri aynı fiyattan bir koltuk",
+      "Tek kişilik. Ekip planları sabit büyüklüklerde kişi ekler",
       "Ekler ve dosya yüklemeleri",
       "Yapay zekâyla gün planı, MCP, takvim beslemeleri, CalDAV ve Telegram botu",
       "Günlük yedeklemeler ve yönetilen güncellemeler",
@@ -396,13 +419,13 @@
       "Her şeyi istediğiniz zaman dışa aktarın"
     ],
     "lede": "Her iki durumda da aynı sistem. Fark, onu gece üçte çalışır, güncel ve yedeklenmiş tutan kişidir.",
-    "metaDescription": "tududi Cloud, sunucularımızda çalışan, güncellemeleri, yedeklemeleri ve e-postayı sizin için hallettiğimiz aynı açık kaynak sistemdir. Bir plan, aylık veya yıllık, istediğiniz zaman iptal edilebilir.",
+    "metaDescription": "tududi Cloud, aynı açık kaynak sistemin sunucularımızda çalışan hâlidir; güncellemeler, yedeklemeler ve e-posta sizin yerinize halledilir. Tek kişi için Pro ya da bir grup için Ekip planı, aylık ya da yıllık, istediğiniz zaman iptal edin.",
     "metaTitle": "tududi Cloud: sizin için işletilen, barındırılan tududi",
     "note": "Aynı MIT lisanslı uygulama. Her şeyi istediğiniz zaman dışa aktarın.",
     "orAnnual": "veya",
     "priceNote": "Ödeme sağlayıcımız tarafından faturalandırılır. Fiyatlara geçerli vergiler dahil değildir.",
     "pricingSub": "Her şey dahil. İstediğiniz zaman iptal edin.",
-    "pricingTitle": "Bir plan, iki ödeme yolu",
+    "pricingTitle": "Size Pro, herkese Ekip",
     "reasons": {
       "backups": {
         "body": "Veritabanı her gece dökülür ve size hizmet veren makinenin dışında saklanır. İstediğiniz zaman her şeyi kendiniz de dışa aktarabilirsiniz.",

@@ -2558,7 +2558,8 @@
       "note": "notes",
       "storage": "attachment storage",
       "ai": "AI requests this month",
-      "aiCredits": "AI credits this month"
+      "aiCredits": "AI credits this month",
+      "member": "members"
     },
     "feature": {
       "ai": "the AI assistant",
@@ -2572,7 +2573,20 @@
     },
     "seatCovered": "Your seat is paid by {{name}}.",
     "workspaceOwner": "the workspace owner",
-    "seats": "{{count}} seats on your subscription: you and {{members}} more."
+    "teamName": "Team ({{seats}} seats)",
+    "seatsUsed": "{{used}} of {{seats}} seats in use.",
+    "seatsFullHint": "For more, move to a bigger Team plan in \"Manage subscription\".",
+    "justMe": "Just me",
+    "team": "Team",
+    "teamSize": "Team size",
+    "upToSeats": "Up to {{seats}} people",
+    "pricePerMonth": "{{price}} a month",
+    "pricePerYear": "{{price}} a year",
+    "perSeatNote": "({{seats}} seats, you included)",
+    "membersNeedTeam": "Pro is for one person. A Team plan lets you add members, from 3 seats up.",
+    "seatsFull": "All {{seats}} seats of your plan are in use. Move to a bigger Team plan to add more people.",
+    "changePlan": "Change plan",
+    "planChanged": "Your plan was changed."
   },
   "shares": {
     "shareProject": "Share project",
@@ -2983,7 +2997,11 @@
       "members": "Adding members is not part of the free trial. Subscribe to add family members or teammates.",
       "webhooks": "Webhooks are not part of the free trial. Subscribe to send events to your own services."
     },
-    "lockedWebhooks": "Webhooks are part of the paid plan."
+    "lockedWebhooks": "Webhooks are part of the paid plan.",
+    "whoFor": "Who is it for?",
+    "justMe": "Just me (Pro)",
+    "teamOf": "A team of up to {{seats}} people",
+    "perSeat": "{{price}} per person a month, {{seats}} seats including you"
   },
   "demo": {
     "opening": "Opening the demo...",
@@ -3057,13 +3075,13 @@
     "giveAccount": "Give account",
     "nameRequiredWithoutEmail": "Enter a name when there is no email",
     "failedToAdd": "Failed to add member",
-    "seatNote": "Each member is one more seat on your subscription. The change is prorated on your next invoice, and removing a member gives the seat back.",
+    "seatNote": "Each member takes a seat of your plan. Removing a member frees the seat for someone else.",
     "editTitle": "Edit member",
     "nameRequired": "Enter a name",
     "failedToUpdate": "Failed to update member",
     "addEmailHint": "Adding an email sends them an invitation to set a password. It cannot be changed afterwards.",
     "remove": "Remove member",
-    "removeConfirm": "Remove {{name}}? Their account and everything in it is deleted, and this cannot be undone. On tududi Cloud their seat is taken off your subscription.",
+    "removeConfirm": "Remove {{name}}? Their account and everything in it is deleted, and this cannot be undone. On tududi Cloud their seat becomes free for someone else.",
     "removed": "Member removed",
     "updated": "Member updated",
     "invitationSent": "Invitation sent",

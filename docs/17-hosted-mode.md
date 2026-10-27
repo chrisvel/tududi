@@ -20,15 +20,21 @@ until `TUDUDI_HOSTED_MODE=true`.
 
 The catalog lives in `backend/config/plans.js`:
 
-| | Free | Pro |
-|---|---|---|
-| Active tasks (not done, archived or cancelled) | 200 | unlimited |
-| Projects | 10 | unlimited |
-| Notes | 50 | unlimited |
-| Attachment storage | 50 MB | 5 GB |
-| AI requests per month | 0 | 200 |
-| Members an owner may add, each a paid seat (`max_members`) | 0 | 10 |
-| AI assistant, MCP, CalDAV, backup import | no | yes |
+| | Free | Pro | Team (`team_N`) |
+|---|---|---|---|
+| Active tasks (not done, archived or cancelled) | 200 | unlimited | unlimited |
+| Projects | 10 | unlimited | unlimited |
+| Notes | 50 | unlimited | unlimited |
+| Attachment storage | 50 MB | 5 GB | 5 GB |
+| AI requests per month | 0 | 200 | 200 |
+| Members an owner may add (`max_members`) | 0 | 0 | N minus 1 |
+| AI assistant, MCP, CalDAV, backup import | no | yes | yes |
+
+Pro is one person. Team plans are sold in fixed seat buckets, like
+monday.com: `team_3`, `team_5`, `team_10`, `team_15`, `team_20`, `team_25`,
+`team_30` and `team_40` (`TEAM_SEATS` in `plans.js`). Each is Pro for everyone
+in it, and the owner holds one of the seats, so `team_5` adds 4 members.
+Larger teams are sold by hand with an override (below).
 
 `null` means unlimited. Override any number with `TUDUDI_PLANS_JSON`, a JSON
 object deep-merged over the defaults:
@@ -66,8 +72,8 @@ someone who signed up only to misuse them.
 - **Limited AI** (30 requests and 10 credits a month, against Pro's 200 and
   50), **one member** (`max_members: 1`) and **no public note links**
   (`features.public_notes: false`; turning a link off still works). A member
-  added on a trial shares the owner's trial while it runs, and becomes a paid
-  seat if the owner subscribes. A feature the trial leaves out answers
+  added on a trial shares the owner's trial while it runs, and keeps access
+  if the owner subscribes to a Team plan. A feature the trial leaves out answers
   `402 FEATURE_NOT_IN_PLAN` with `details.plan: "trial"`, and the app sends
   the browser to `/subscription/new?feature=<name>`. Set any of these to `0`
   or `false` with `TUDUDI_PLANS_JSON` to take them out again.
@@ -152,25 +158,30 @@ owns one) and groups join their creator's account. Accounts the superadmin
 creates stand on their own. When an owner's account is deleted its members
 stay and each gets an account of its own.
 
-Each member is one more seat, paid by the account owner whichever admin added
-it. The owner's subscription quantity is the owner plus the other members of
-its account (`billing_accounts.seat_quantity`, the provider line item in
-`provider_subscription_item_id`), kept in line by
+Each member takes a seat of the account owner's plan, whichever admin added
+it. Seats come from the plan (a Team bucket), never from a quantity on the
+subscription, so the app never changes a subscription itself.
 `backend/services/seatsService.js`:
 
-- **Adding** a member raises the quantity first, through the provider
-  (`updateSeats`, `PATCH /subscription-items/:id` on Lemon Squeezy). If the
-  provider refuses, nothing is created. The change is prorated onto the next
-  invoice, so nothing is charged on the spot.
-- **Removing** a member (`DELETE /api/members/:id`, the member deleting
-  their own account, or an admin deleting it) lowers the quantity again. A
-  failed decrease is logged and corrected by the next sync.
-- **Webhooks**: a new or changed subscription is brought up to the members
-  the owner already has, so an owner who resubscribes is billed for them.
+- **Adding** a member checks `max_members` of the owner's plan
+  (`assertCanAddSeat`). The owner counts as one seat. Nothing reaches the
+  payment provider.
+- **Removing** a member frees its seat for someone else. There is no refund
+  before the renewal.
+- **A bigger team** moves to a bigger bucket through checkout or the
+  provider's portal, so the customer approves the change (this also works for
+  PayPal subscriptions, which a merchant cannot change). The
+  `subscription_plan_changed` webhook stores the new plan.
+- **A smaller bucket** than the members already added keeps them; adding is
+  refused until there is room again.
 - **Who may add**: an admin of an account whose owner has a subscription, its
-  grace window, or an admin override, and only up to `max_members`. Without one the request
-  answers `402 SUBSCRIPTION_REQUIRED`; past the limit `402
-  PLAN_LIMIT_REACHED`.
+  grace window, or an admin override. Without one the request answers `402
+  SUBSCRIPTION_REQUIRED`; past the plan's seats `402 PLAN_LIMIT_REACHED` with
+  `details.resource: "member"`, which the app shows as "All N seats are in
+  use".
+- **Invoiced teams**: set an override to a `team_N` plan with an expiry in
+  Admin > Billing. `billing_accounts.seat_quantity` is kept for reference and
+  not used.
 
 A member with nothing of its own is covered by its account owner: `getEntitlements`
 returns the owner's plan with `reason: 'seat'` and `seat_owner`. When the
@@ -208,14 +219,60 @@ All three are removed with the account by `services/accountErasureService.js`.
 
 ## Payments
 
-Pro is sold through one of two providers, chosen by `BILLING_PROVIDER`
-(`stripe` or `lemonsqueezy`; when unset, Lemon Squeezy is used if only its
-key is present, Stripe otherwise). tududi never sees card details with
-either. The billing tab, the webhook endpoint and the admin page are the
-same for both; only the credentials differ.
+Plans are sold through one of three providers, chosen by `BILLING_PROVIDER`
+(`paddle`, `lemonsqueezy` or `stripe`; when unset, Paddle is used if
+`PADDLE_API_KEY` is set, then Lemon Squeezy if only its key is present,
+Stripe otherwise). tududi never sees card details with any of them. The
+billing tab, the webhook endpoint and the admin page are the same for all;
+only the credentials differ.
 
-**Lemon Squeezy** is a merchant of record: it charges VAT and issues the
-invoices itself, which is why it is the provider of the hosted tududi.
+Only the selling provider takes new checkouts, but a subscription bought
+through another configured provider stays there: while it is live, its
+billing tab, "Manage subscription", sync and cancellation go to the
+provider in `billing_accounts.provider`, and that provider's webhooks are
+still applied. The one webhook URL tells providers apart by their signature
+header. Once such a subscription ends, the next checkout goes through the
+selling provider. The hosted tududi sells through Paddle and keeps its
+earlier Lemon Squeezy subscriptions this way.
+
+**Paddle** (Paddle Billing) is a merchant of record: it charges VAT and
+issues the invoices. Each plan is a product with a monthly and a yearly
+price.
+
+| Variable | Meaning |
+|---|---|
+| `PADDLE_API_KEY` | server-side API key (`pdl_live_apikey_…`) |
+| `PADDLE_CLIENT_TOKEN` | client-side token for Paddle.js (`live_…`, or `test_…` in sandbox) |
+| `PADDLE_WEBHOOK_SECRET` | secret key of the notification destination below |
+| `PADDLE_PRICES_JSON` | price ids by plan, `{"pro":{"month":"pri_…","year":"pri_…"},"team_5":{…}}` |
+| `PADDLE_ENVIRONMENT` | `sandbox` for sandbox-api.paddle.com; production otherwise |
+
+Checkout: the server finds or creates the Paddle customer by email and
+opens a transaction for the price with the user's uid in `custom_data`
+(Paddle copies it to the subscription). Its checkout url is the default
+payment link plus `?_ptxn=`; set the link to `https://your-host/billing/pay`
+on a domain approved under Checkout > Website approval. The browser goes
+there, Paddle.js opens the checkout, and afterwards returns it to the
+billing tab with the transaction id, which the sync reads. The same page
+serves Paddle's emails (pay an invoice, replace a failed card) without a
+sign-in. Paddle's review refuses a domain that opens on a sign-in page, so
+the hosted tududi uses `https://tududi.com/billing/pay`, served by the same
+app as `app.tududi.com`. Without a default payment link, the overlay opens
+over the billing tab instead, which needs the app's own domain approved.
+Add a notification destination at `https://your-host/api/billing/webhook`
+with `subscription.created`, `subscription.updated`,
+`subscription.activated`, `subscription.trialing`,
+`subscription.paused`, `subscription.resumed`, `subscription.canceled`,
+`subscription.past_due` and `transaction.completed`. A cancellation
+scheduled for the period end keeps the plan until `subscription.canceled`,
+which drops to Free. "Manage subscription" opens Paddle's customer portal
+(payment method, invoices, cancelling). Paddle's portal cannot switch
+plans, so the billing tab offers the other plans at the same interval and
+`POST /api/billing/plan` moves the subscription (prorated immediately); a
+plan with fewer seats than are in use is refused.
+
+**Lemon Squeezy** is a merchant of record too, and sold the hosted tududi
+before Paddle.
 
 | Variable | Meaning |
 |---|---|
@@ -224,6 +281,7 @@ invoices itself, which is why it is the provider of the hosted tududi.
 | `LEMONSQUEEZY_WEBHOOK_SECRET` | signing secret of the webhook below |
 | `LEMONSQUEEZY_VARIANT_PRO_MONTHLY` | variant id of the monthly Pro subscription |
 | `LEMONSQUEEZY_VARIANT_PRO_ANNUAL` | variant id of the annual Pro subscription |
+| `LEMONSQUEEZY_TEAM_VARIANTS_JSON` | Team variants, `{"team_5":{"month":"123","year":"456"}}`; put them in the same product as Pro so the portal offers them as plan changes |
 
 Create one product ("tududi Pro") with a subscription variant per
 interval, then a webhook at `https://your-host/api/billing/webhook` with the
@@ -245,6 +303,7 @@ the billing tab reloads.
 | `STRIPE_WEBHOOK_SECRET` | signing secret of the webhook endpoint below |
 | `STRIPE_PRICE_PRO_MONTHLY` | price id of the monthly Pro price |
 | `STRIPE_PRICE_PRO_ANNUAL` | price id of the annual Pro price |
+| `STRIPE_TEAM_PRICES_JSON` | Team prices, `{"team_5":{"month":"price_…","year":"price_…"}}` |
 
 Point a Stripe webhook at `https://your-host/api/billing/webhook` with the
 events `checkout.session.completed`, `customer.subscription.created`,
@@ -253,10 +312,10 @@ events `checkout.session.completed`, `customer.subscription.created`,
 `stripe listen --forward-to localhost:3002/api/billing/webhook` and
 `stripe trigger checkout.session.completed`.
 
-For both, the endpoint reads the raw body, verifies the signature, records
+For all of them, the endpoint reads the raw body, verifies the signature, records
 every event id in `billing_events` (a redelivered event is acknowledged and
-not applied twice; Lemon Squeezy sends no event id, so the resource id plus
-its `updated_at` stands in), drops an update older than the last one
+not applied twice; Paddle's is its `event_id`, and Lemon Squeezy
+sends none, so the resource id plus its `updated_at` stands in), drops an update older than the last one
 applied, and answers 500 on an internal fault so the provider retries.
 
 Endpoints (all 404 on a self-hosted instance):
@@ -265,7 +324,8 @@ Endpoints (all 404 on a self-hosted instance):
 |---|---|
 | `GET /api/billing` | plan, status, usage, the provider, and what the UI may offer |
 | `GET /api/billing/plans` | the catalog, without price ids |
-| `POST /api/billing/checkout` `{ interval: "month" \| "year" }` | checkout URL |
+| `POST /api/billing/checkout` `{ interval: "month" \| "year", plan? }` | checkout URL, or for Paddle the transaction for the overlay (`plan` defaults to `pro`) |
+| `POST /api/billing/plan` `{ plan }` | move a live subscription to another plan (providers that allow it: Paddle) |
 | `POST /api/billing/portal` | customer portal URL |
 | `POST /api/billing/sync` `{ session_id? }` | re-read the subscription from the provider (the checkout redirect can beat the webhook) |
 | `GET /api/admin/billing` | overview and account list, each with this month's AI request/token usage (admin) |

@@ -2,9 +2,10 @@
 
 const { getConfig } = require('../../../config/config');
 const { logError } = require('../../../services/logService');
-const { ForbiddenError, NotFoundError } = require('../../../shared/errors');
+const { ForbiddenError } = require('../../../shared/errors');
 const {
     getStripe,
+    configuredPlans,
     configuredPrices,
     planForPrice,
 } = require('../stripeClient');
@@ -41,6 +42,7 @@ function refFromObject(object) {
 async function createCheckout({
     user,
     account,
+    plan = 'pro',
     interval,
     successUrl,
     cancelUrl,
@@ -59,7 +61,7 @@ async function createCheckout({
         mode: 'subscription',
         customer: customerId,
         client_reference_id: user.uid,
-        line_items: [{ price: configuredPrices()[interval], quantity: 1 }],
+        line_items: [{ price: configuredPrices(plan)[interval], quantity: 1 }],
         allow_promotion_codes: true,
         subscription_data: {
             metadata: { user_id: String(user.id), user_uid: user.uid },
@@ -204,28 +206,13 @@ function validateConfig() {
         problems.push(
             'No STRIPE_PRICE_PRO_MONTHLY or STRIPE_PRICE_PRO_ANNUAL configured: nothing to sell'
         );
+    const team = getConfig().hosted.stripe?.prices?.team || {};
+    const unknown = Object.keys(team).filter((key) => !configuredPlans()[key]);
+    if (unknown.length > 0)
+        problems.push(
+            `STRIPE_TEAM_PRICES_JSON has entries that are not Team plans or have no price ids: ${unknown.join(', ')}`
+        );
     return problems;
-}
-
-// Sets the number of paid seats on the subscription's single line item.
-// Stripe prorates the change onto the next invoice by default.
-async function updateSeats({ account, quantity }) {
-    if (!account.provider_subscription_id) {
-        throw new NotFoundError('No subscription to add seats to');
-    }
-    const stripe = getStripe();
-    const sub = await stripe.subscriptions.retrieve(
-        account.provider_subscription_id
-    );
-    const item = sub.items?.data?.[0];
-    if (!item) throw new NotFoundError('No subscription to add seats to');
-    const updated = await stripe.subscriptionItems.update(item.id, {
-        quantity,
-    });
-    return {
-        provider_subscription_item_id: item.id,
-        seat_quantity: updated.quantity ?? quantity,
-    };
 }
 
 module.exports = {
@@ -233,9 +220,9 @@ module.exports = {
     displayName: 'Stripe',
     signatureHeader: 'stripe-signature',
     isConfigured,
+    configuredPlans,
     configuredPrices,
     planForPrice,
-    updateSeats,
     canOpenPortal: (account) => !!account?.provider_customer_id,
     createCheckout,
     createPortal,

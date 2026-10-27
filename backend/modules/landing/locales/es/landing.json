@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Precios",
-    "title": "Elige cómo usar tududi",
+    "title": "Paga solo por ti o por tu equipo",
     "mostPopular": "MÁS ELEGIDO",
     "earlyBird": "LANZAMIENTO",
     "perYear": "/año por persona",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "o",
         "launchNote": "Precio anual early bird, tuyo mientras sigas suscrito.",
         "action": "Empezar →",
         "features": [
           "Funcionando en un minuto, sin servidor que configurar",
           "Tareas, proyectos y notas ilimitados, más adjuntos",
-          "Añade a tu familia o a tu equipo, cada persona es una plaza al mismo precio",
+          "Para una persona. ¿Quieres añadir a más gente? Elige un plan Equipo",
           "Planificación con IA, MCP, calendarios, CalDAV y el bot de Telegram",
           "Actualizaciones y copias de seguridad diarias gestionadas por nosotros, con {{proStorageGb}} GB de almacenamiento",
           "Exporta todo cuando quieras, elimina tu cuenta tú mismo"
@@ -258,13 +259,35 @@
         "actionTrial": "Empezar prueba gratuita →",
         "priceNoteTrial": "{{days}} días gratis, sin tarjeta. Cancela cuando quieras.",
         "trialNote": "La prueba incluye el asistente de IA con un límite menor y un miembro que puedes añadir. Los enlaces públicos a notas se activan cuando te suscribes."
+      },
+      "team": {
+        "name": "Equipo",
+        "perPersonMonth": "/mes por persona",
+        "perPersonYear": "/año por persona",
+        "sizes": "Disponible en tamaños de {{sizes}} plazas, tú incluido. Un equipo de 5 cuesta {{example}} al mes.",
+        "moreThan": "¿Más de {{max}} personas?",
+        "contact": "Escríbenos",
+        "action": "Crea tu equipo →",
+        "features": [
+          "Todo lo de Pro, para cada persona del equipo",
+          "Añade personas hasta tu tamaño y pasa a uno mayor cuando quieras",
+          "Proyectos compartidos, grupos y un tablero Todos para ver quién hace qué",
+          "Cada persona conserva sus propias tareas y notas privadas",
+          "Una sola suscripción, pagada por el titular de la cuenta"
+        ]
+      },
+      "picker": {
+        "label": "¿Para quién es?",
+        "solo": "Solo para mí",
+        "team": "Equipo de {{n}}",
+        "perMonth": "/mes",
+        "perYear": "/año"
       }
     },
     "fineprint": "Cancela cuando quieras y exporta todo. Si tududi Cloud cerrara algún día, recibirás tus datos y una guía para migrar a autoalojado. Se aplica uso razonable al almacenamiento y al volumen de API. Garantía de devolución de 14 días, sin preguntas.",
     "perMonth": "/mes por persona",
-    "sub": "Sin niveles, sin extras, sin funciones retenidas. Pruébalo gratis, luego un solo precio.",
-    "selfHostNote": "Desarrolladores: tududi es de código abierto y puede ejecutarse en tu propio servidor.",
-    "selfHostLink": "Leer la guía"
+    "nextPrice": "A partir del {{date}} el precio por persona pasa a {{monthly}} al mes o {{annual}} al año. Suscríbete antes para mantener el precio de hoy mientras sigas suscrito.",
+    "sub": "Todos los planes tienen todas las funciones. Pro es para una persona; un plan Equipo tiene un tamaño fijo y añades personas hasta completarlo."
   },
   "compare": {
     "title": "Comparativa rápida",
@@ -336,9 +359,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "No. Cloud cuesta {{monthly}} al mes o {{price}} al año por persona, y esa es toda la lista de precios: sin plan gratuito, sin reloj de prueba, sin tarjeta cobrada por algo que empieza a facturarse discretamente más adelante. Hay una garantía de devolución de 14 días si resulta que no te conviene, y hay una demo en vivo en esta página si quieres echar un vistazo primero. La forma gratuita de usar tududi es ejecutarlo en tu propio servidor, que es la misma aplicación.",
+        "a": "No. Pro cuesta {{monthly}} al mes o {{price}} al año para una persona, y los planes Equipo cuestan lo mismo por persona en tamaños fijos. No hay nivel gratuito, ni reloj de prueba, ni tarjeta que empiece a cobrarse en silencio más adelante. Hay una garantía de devolución de 14 días si al final no te convence, y en esta página tienes una demo en vivo si quieres echar un vistazo primero.",
         "q": "¿Hay un plan gratuito o una prueba en tududi Cloud?",
-        "aTrial": "No hay plan gratuito, pero cada cuenta nueva tiene una prueba gratuita de {{days}} días, sin tarjeta. La prueba incluye el asistente de IA con un límite menor y un miembro que puedes añadir. Los enlaces públicos de notas se activan cuando te suscribes. Si no te suscribes, la cuenta pasa a solo lectura durante 30 días para que puedas exportar tus datos, y después se elimina. Tras la prueba, Cloud cuesta {{monthly}} al mes o {{price}} al año por persona. La forma gratuita de usar tududi es ejecutarlo en tu propio servidor, que es la misma aplicación."
+        "aTrial": "No hay plan gratuito, pero cada cuenta nueva tiene una prueba gratuita de {{days}} días, sin tarjeta. La prueba incluye el asistente de IA con un límite menor y un miembro que puedes añadir. Los enlaces públicos de notas se activan cuando te suscribes. Si no te suscribes, la cuenta pasa a solo lectura durante 30 días para que puedas exportar tus datos, y después se elimina. Tras la prueba, Pro cuesta {{monthly}} al mes o {{price}} al año, y los planes Equipo cuestan lo mismo por persona. La forma gratuita de usar tududi es ejecutarlo en tu propio servidor, que es la misma aplicación."
       },
       "leaving": {
         "q": "¿Puedo irme? ¿Qué pasa con mis datos?",
@@ -388,7 +411,7 @@
     "ctaPrimary": "Empezar",
     "includes": [
       "Tareas, proyectos y notas ilimitados",
-      "Añade a tu familia o a tu equipo, cada persona es una plaza al mismo precio",
+      "Para una persona. Los planes Equipo añaden personas en tamaños fijos",
       "Adjuntos y subida de archivos",
       "Planificación con IA, MCP, calendarios, CalDAV y el bot de Telegram",
       "Copias de seguridad diarias y actualizaciones gestionadas",
@@ -396,13 +419,13 @@
       "Exporta todo, cuando quieras"
     ],
     "lede": "El mismo sistema en ambos casos. La diferencia es quién lo mantiene funcionando, parcheado y respaldado a las tres de la madrugada.",
-    "metaDescription": "tududi Cloud es el mismo sistema de código abierto, ejecutándose en nuestros servidores con actualizaciones, copias de seguridad y correo gestionados por nosotros. Un solo plan, mensual o anual, cancelable en cualquier momento.",
+    "metaDescription": "tududi Cloud es el mismo sistema de código abierto, funcionando en nuestros servidores, con actualizaciones, copias de seguridad y correo resueltos por ti. Pro para una persona o un plan Equipo para un grupo, mensual o anual, cancela cuando quieras.",
     "metaTitle": "tududi Cloud: el tududi alojado, gestionado por nosotros",
     "note": "La misma aplicación con licencia MIT. Exporta todo, cuando quieras.",
     "orAnnual": "o",
     "priceNote": "Facturado por nuestro proveedor de pagos. Los precios no incluyen los impuestos correspondientes.",
     "pricingSub": "Todo incluido. Cancela cuando quieras.",
-    "pricingTitle": "Un plan, dos formas de pagar",
+    "pricingTitle": "Pro para ti, Equipo para todos",
     "reasons": {
       "backups": {
         "body": "La base de datos se vuelca cada noche y se guarda fuera de la máquina que te da servicio. También puedes exportarlo todo tú mismo cuando quieras.",

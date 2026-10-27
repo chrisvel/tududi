@@ -285,6 +285,7 @@ async function getEntitlements(userId, { includeUsage = false } = {}) {
             hosted: true,
             plan: r.plan.key,
             planName: r.plan.name,
+            seats: r.plan.seats || 1,
             status: r.status,
             reason: r.reason,
             limits: r.plan.limits,

@@ -62,14 +62,20 @@ export interface BillingStatus {
     read_only_until?: string | null;
     // Set for a member whose seat is paid by the account that added it.
     seat_owner?: { id: number; name: string | null } | null;
-    // On a hosted instance: this account's members and the seats billed.
-    seats?: { members: number; needed: number; billed: number | null } | null;
+    // On a hosted instance: the seats of this account's plan and how many
+    // are taken, the owner included.
+    seats?: { members: number; used: number; seats: number } | null;
     billing_configured: boolean;
     pricing: { currency: string; monthly: number; annual: number };
     provider: { name: string; display_name: string };
     checkout_available: boolean;
     portal_available: boolean;
+    // Whether the app can move the subscription to another plan itself
+    // (Paddle); otherwise "Manage subscription" does it.
+    plan_change_available?: boolean;
     intervals: { month: boolean; year: boolean };
+    // Pro and the Team buckets that can be bought, smallest first.
+    plans_available?: PurchasablePlan[];
     subscription: {
         status: string;
         interval: string | null;
@@ -79,15 +85,23 @@ export interface BillingStatus {
     } | null;
 }
 
+export interface PurchasablePlan {
+    key: PlanKey;
+    seats: number;
+    intervals: { month: boolean; year: boolean };
+}
+
 export interface BillingPlan {
     key: PlanKey;
     name: string;
+    seats?: number;
     limits: PlanLimits;
     features: PlanFeatures;
 }
 
 export interface BillingCatalog {
     plans: BillingPlan[];
+    purchasable?: PurchasablePlan[];
     intervals: { month: boolean; year: boolean };
     trial_days: number;
 }

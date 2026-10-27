@@ -2605,7 +2605,8 @@
       "note": "notas",
       "storage": "almacenamiento de adjuntos",
       "ai": "solicitudes de IA hoy",
-      "aiCredits": "Créditos de IA este mes"
+      "aiCredits": "Créditos de IA este mes",
+      "member": "miembros"
     },
     "feature": {
       "ai": "el asistente de IA",
@@ -2619,7 +2620,20 @@
     },
     "seatCovered": "Tu plaza la paga {{name}}.",
     "workspaceOwner": "la persona propietaria del espacio de trabajo",
-    "seats": "{{count}} plazas en tu suscripción: tú y {{members}} más."
+    "teamName": "Equipo ({{seats}} plazas)",
+    "seatsUsed": "{{used}} de {{seats}} plazas en uso.",
+    "seatsFullHint": "Para más, cambia a un plan Equipo mayor en «Gestionar suscripción».",
+    "justMe": "Solo yo",
+    "team": "Equipo",
+    "teamSize": "Tamaño del equipo",
+    "upToSeats": "Hasta {{seats}} personas",
+    "pricePerMonth": "{{price}} al mes",
+    "pricePerYear": "{{price}} al año",
+    "perSeatNote": "({{seats}} plazas, tú incluido)",
+    "membersNeedTeam": "Pro es para una persona. Un plan Equipo te permite añadir miembros, desde 3 plazas.",
+    "seatsFull": "Las {{seats}} plazas de tu plan están en uso. Cambia a un plan Equipo mayor para añadir más personas.",
+    "changePlan": "Cambiar de plan",
+    "planChanged": "Tu plan se ha cambiado."
   },
   "subscription": {
     "title": "Suscripción",
@@ -2654,7 +2668,11 @@
     "trialLock": {
       "webhooks": "Los webhooks no forman parte de la prueba gratuita. Suscríbete para enviar eventos a tus propios servicios."
     },
-    "lockedWebhooks": "Los webhooks forman parte del plan de pago."
+    "lockedWebhooks": "Los webhooks forman parte del plan de pago.",
+    "whoFor": "¿Para quién es?",
+    "justMe": "Solo yo (Pro)",
+    "teamOf": "Un equipo de hasta {{seats}} personas",
+    "perSeat": "{{price}} por persona al mes, {{seats}} plazas contándote a ti"
   },
   "demo": {
     "opening": "Abriendo la demostración...",
@@ -2720,13 +2738,13 @@
     "giveAccount": "Dar cuenta",
     "nameRequiredWithoutEmail": "Escribe un nombre cuando no hay correo",
     "failedToAdd": "No se pudo añadir el miembro",
-    "seatNote": "Cada miembro es una plaza más en tu suscripción. El cambio se prorratea en tu próxima factura, y al quitar a un miembro se libera la plaza.",
+    "seatNote": "Cada miembro ocupa una plaza de tu plan. Al quitar a un miembro, la plaza queda libre para otra persona.",
     "editTitle": "Editar miembro",
     "nameRequired": "Escribe un nombre",
     "failedToUpdate": "No se pudo actualizar el miembro",
     "addEmailHint": "Al añadir un correo se le envía una invitación para crear una contraseña. Después no se puede cambiar.",
     "remove": "Quitar miembro",
-    "removeConfirm": "¿Quitar a {{name}}? Se eliminan su cuenta y todo su contenido, y no se puede deshacer. En tududi Cloud su plaza se retira de tu suscripción.",
+    "removeConfirm": "¿Quitar a {{name}}? Se eliminan su cuenta y todo su contenido, y no se puede deshacer. En tududi Cloud su plaza queda libre para otra persona.",
     "removed": "Miembro quitado",
     "updated": "Miembro actualizado",
     "invitationSent": "Invitación enviada",
