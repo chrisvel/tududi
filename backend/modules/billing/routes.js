@@ -18,6 +18,7 @@ router.use(['/billing', '/admin/billing'], requireHosted);
 router.get('/billing', controller.status);
 router.get('/billing/plans', controller.catalog);
 router.post('/billing/checkout', controller.checkout);
+router.post('/billing/plan', controller.changePlan);
 router.post('/billing/portal', controller.portal);
 router.post('/billing/sync', controller.sync);
 

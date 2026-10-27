@@ -2615,7 +2615,8 @@
       "note": "notities",
       "storage": "opslag voor bijlagen",
       "ai": "AI-verzoeken vandaag",
-      "aiCredits": "AI-credits deze maand"
+      "aiCredits": "AI-credits deze maand",
+      "member": "leden"
     },
     "feature": {
       "ai": "de AI-assistent",
@@ -2629,7 +2630,20 @@
     },
     "seatCovered": "Je plek wordt betaald door {{name}}.",
     "workspaceOwner": "de eigenaar van de werkruimte",
-    "seats": "{{count}} plekken in je abonnement: jij en {{members}} anderen."
+    "teamName": "Team ({{seats}} plekken)",
+    "seatsUsed": "{{used}} van {{seats}} plekken in gebruik.",
+    "seatsFullHint": "Wil je meer, stap dan over op een groter Team-abonnement via 'Abonnement beheren'.",
+    "justMe": "Alleen ik",
+    "team": "Team",
+    "teamSize": "Teamgrootte",
+    "upToSeats": "Tot {{seats}} personen",
+    "pricePerMonth": "{{price}} per maand",
+    "pricePerYear": "{{price}} per jaar",
+    "perSeatNote": "({{seats}} plekken, jij inbegrepen)",
+    "membersNeedTeam": "Pro is voor één persoon. Met een Team-abonnement kun je leden toevoegen, vanaf 3 plekken.",
+    "seatsFull": "Alle {{seats}} plekken van je abonnement zijn in gebruik. Stap over op een groter Team-abonnement om meer mensen toe te voegen.",
+    "changePlan": "Abonnement wijzigen",
+    "planChanged": "Je abonnement is gewijzigd."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2664,7 +2678,11 @@
     "trialLock": {
       "webhooks": "Webhooks zitten niet in de gratis proefperiode. Neem een abonnement om gebeurtenissen naar je eigen diensten te sturen."
     },
-    "lockedWebhooks": "Webhooks horen bij het betaalde abonnement."
+    "lockedWebhooks": "Webhooks horen bij het betaalde abonnement.",
+    "whoFor": "Voor wie is het?",
+    "justMe": "Alleen ik (Pro)",
+    "teamOf": "Een team van maximaal {{seats}} personen",
+    "perSeat": "{{price}} per persoon per maand, {{seats}} plekken inclusief jou"
   },
   "demo": {
     "opening": "De demo wordt geopend...",
@@ -2730,13 +2748,13 @@
     "giveAccount": "Account geven",
     "nameRequiredWithoutEmail": "Voer een naam in als er geen e-mailadres is",
     "failedToAdd": "Lid toevoegen mislukt",
-    "seatNote": "Elk lid is een extra plek in je abonnement. De wijziging wordt naar rato verrekend op je volgende factuur, en een lid verwijderen geeft de plek terug.",
+    "seatNote": "Elk lid neemt een plek van je abonnement in. Een lid verwijderen maakt de plek vrij voor iemand anders.",
     "editTitle": "Lid bewerken",
     "nameRequired": "Vul een naam in",
     "failedToUpdate": "Lid bijwerken mislukt",
     "addEmailHint": "Met een e-mailadres krijgt deze persoon een uitnodiging om een wachtwoord in te stellen. Het kan daarna niet meer worden gewijzigd.",
     "remove": "Lid verwijderen",
-    "removeConfirm": "{{name}} verwijderen? Het account en alles erin wordt verwijderd, en dit kan niet ongedaan worden gemaakt. Bij tududi Cloud gaat de plek van je abonnement af.",
+    "removeConfirm": "{{name}} verwijderen? Het account en alles erin wordt verwijderd, en dit kan niet ongedaan worden gemaakt. Bij tududi Cloud komt de plek vrij voor iemand anders.",
     "removed": "Lid verwijderd",
     "updated": "Lid bijgewerkt",
     "invitationSent": "Uitnodiging verstuurd",

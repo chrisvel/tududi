@@ -2618,7 +2618,8 @@
       "note": "notas",
       "storage": "armazenamento de anexos",
       "ai": "pedidos de IA hoje",
-      "aiCredits": "Créditos de IA este mês"
+      "aiCredits": "Créditos de IA este mês",
+      "member": "membros"
     },
     "feature": {
       "ai": "o assistente de IA",
@@ -2632,7 +2633,20 @@
     },
     "seatCovered": "O seu lugar é pago por {{name}}.",
     "workspaceOwner": "o titular do espaço de trabalho",
-    "seats": "{{count}} lugares na sua assinatura: você e mais {{members}}."
+    "teamName": "Equipe ({{seats}} lugares)",
+    "seatsUsed": "{{used}} de {{seats}} lugares em uso.",
+    "seatsFullHint": "Para mais, mude para um plano Equipe maior em «Gerir subscrição».",
+    "justMe": "Só eu",
+    "team": "Equipe",
+    "teamSize": "Tamanho da equipe",
+    "upToSeats": "Até {{seats}} pessoas",
+    "pricePerMonth": "{{price}} por mês",
+    "pricePerYear": "{{price}} por ano",
+    "perSeatNote": "({{seats}} lugares, incluindo você)",
+    "membersNeedTeam": "O Pro é para uma pessoa. Um plano Equipe permite adicionar membros, a partir de 3 lugares.",
+    "seatsFull": "Todos os {{seats}} lugares do seu plano estão em uso. Mude para um plano Equipe maior para adicionar mais pessoas.",
+    "changePlan": "Mudar de plano",
+    "planChanged": "O seu plano foi alterado."
   },
   "subscription": {
     "title": "Assinatura",
@@ -2667,7 +2681,11 @@
     "trialLock": {
       "webhooks": "Webhooks não fazem parte do teste grátis. Assine para enviar eventos para seus próprios serviços."
     },
-    "lockedWebhooks": "Webhooks fazem parte do plano pago."
+    "lockedWebhooks": "Webhooks fazem parte do plano pago.",
+    "whoFor": "Para quem é?",
+    "justMe": "Só eu (Pro)",
+    "teamOf": "Uma equipe de até {{seats}} pessoas",
+    "perSeat": "{{price}} por pessoa por mês, {{seats}} lugares incluindo você"
   },
   "demo": {
     "opening": "Abrindo a demonstração...",
@@ -2733,13 +2751,13 @@
     "giveAccount": "Dar conta",
     "nameRequiredWithoutEmail": "Introduza um nome quando não há e-mail",
     "failedToAdd": "Falha ao adicionar o membro",
-    "seatNote": "Cada membro é mais um lugar na sua assinatura. A alteração é cobrada proporcionalmente na próxima fatura, e remover um membro devolve o lugar.",
+    "seatNote": "Cada membro ocupa um lugar do seu plano. Remover um membro libera o lugar para outra pessoa.",
     "editTitle": "Editar membro",
     "nameRequired": "Introduza um nome",
     "failedToUpdate": "Não foi possível atualizar o membro",
     "addEmailHint": "Adicionar um email envia-lhe um convite para definir uma palavra-passe. Não pode ser alterado depois.",
     "remove": "Remover membro",
-    "removeConfirm": "Remover {{name}}? A conta e tudo o que contém são eliminados, e isto não pode ser desfeito. No tududi Cloud o lugar é retirado da sua assinatura.",
+    "removeConfirm": "Remover {{name}}? A conta e tudo o que contém são eliminados, e isto não pode ser desfeito. No tududi Cloud o lugar fica livre para outra pessoa.",
     "removed": "Membro removido",
     "updated": "Membro atualizado",
     "invitationSent": "Convite enviado",

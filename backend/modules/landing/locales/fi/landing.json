@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Hinnat",
-    "title": "Valitse miten käytät tududia",
+    "title": "Maksa itsestäsi tai tiimistäsi",
     "mostPopular": "SUOSITUIN",
     "earlyBird": "ENNAKKOHINTA",
     "perYear": "/vuosi per henkilö",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "tai",
         "launchNote": "Early bird -vuosihinta, sinun niin kauan kuin pysyt tilaajana.",
         "action": "Aloita →",
         "features": [
           "Käynnissä minuutissa, ei palvelinta pystytettäväksi",
           "Rajattomat tehtävät, projektit ja muistiinpanot, plus liitteet",
-          "Lisää perheenjäseniä tai työkavereita, jokainen paikka samaan hintaan",
+          "Yhdelle henkilölle. Haluatko lisätä muita? Valitse Tiimi-tilaus",
           "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
           "Päivitykset ja päivittäiset varmuuskopiot hoidettuna puolestasi, ja {{proStorageGb}} GB tallennustilaa",
           "Vie kaikki milloin tahansa, poista tilisi itse"
@@ -258,13 +259,35 @@
         "actionTrial": "Kokeile ilmaiseksi →",
         "priceNoteTrial": "{{days}} päivää ilmaiseksi, ei maksukorttia. Peru milloin tahansa.",
         "trialNote": "Kokeilujaksoon sisältyy tekoälyavustaja pienemmällä käyttökiintiöllä ja yksi jäsen, jonka voit lisätä. Julkiset muistiinpanolinkit avautuvat, kun tilaat."
+      },
+      "team": {
+        "name": "Tiimi",
+        "perPersonMonth": "/kk per henkilö",
+        "perPersonYear": "/vuosi per henkilö",
+        "sizes": "Saatavilla {{sizes}} paikan kokoina, sinä mukaan lukien. 5 hengen tiimi maksaa {{example}} kuukaudessa.",
+        "moreThan": "Yli {{max}} henkeä?",
+        "contact": "Ota yhteyttä",
+        "action": "Aloita tiimisi →",
+        "features": [
+          "Kaikki mitä Prossa on, jokaiselle tiimin jäsenelle",
+          "Lisää ihmisiä kokoosi asti ja vaihda isompaan kokoon milloin tahansa",
+          "Jaetut projektit, ryhmät ja Kaikki-taulu siitä, kuka tekee mitä",
+          "Jokainen pitää omat yksityiset tehtävänsä ja muistiinpanonsa",
+          "Yksi tilaus, jonka tilin omistaja maksaa"
+        ]
+      },
+      "picker": {
+        "label": "Kenelle?",
+        "solo": "Vain minulle",
+        "team": "{{n}} hengen tiimi",
+        "perMonth": "/kk",
+        "perYear": "/vuosi"
       }
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",
     "perMonth": "/kk per henkilö",
-    "sub": "Ei tasoja, ei lisäosia, ei pidätettyjä ominaisuuksia. Kokeile ilmaiseksi, sitten yksi hinta.",
-    "selfHostNote": "Kehittäjille: tududi on avointa lähdekoodia ja sitä voi ajaa omalla palvelimella.",
-    "selfHostLink": "Lue ohje"
+    "nextPrice": "Hinta per henkilö on {{date}} alkaen {{monthly}} kuukaudessa tai {{annual}} vuodessa. Tilaa ennen sitä, niin pidät tämänpäiväisen hinnan niin kauan kuin tilaus jatkuu.",
+    "sub": "Jokaisessa tilauksessa on kaikki ominaisuudet. Pro on yhdelle henkilölle, ja Tiimi-tilaus on kiinteän kokoinen, ja lisäät ihmisiä siihen asti."
   },
   "compare": {
     "title": "Nopea vertailu",
@@ -336,9 +359,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Ei. Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa henkilöltä, ja se on koko hinnasto: ei ilmaistasoa, ei kokeiluaikaa, ei korttia veloitettuna jostain, joka alkaa hiljaa laskuttaa myöhemmin. Tarjolla on 14 päivän rahat takaisin -takuu, jos se ei osoittaudu sopivaksi, ja tällä sivulla on live-demo, jos haluat vilkaista ensin. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimellasi, joka on samat sovellus.",
+        "a": "Ei. Pro maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa yhdeltä henkilöltä, ja Tiimi-tilaukset maksavat saman verran per henkilö kiinteinä kokoina. Ilmaista tasoa ei ole, ei kokeilukelloa eikä korttia, jota aletaan myöhemmin hiljaa veloittaa. Jos palvelu ei sovi sinulle, käytössä on 14 päivän rahat takaisin -takuu, ja tällä sivulla on live-demo, jos haluat ensin katsella ympärillesi.",
         "q": "Onko tududi Cloudissa ilmaistaso tai kokeilua?",
-        "aTrial": "Ilmaista tilausta ei ole, mutta jokainen uusi tili saa {{days}} päivän ilmaisen kokeilun ilman maksukorttia. Kokeiluun sisältyy AI-avustaja pienemmällä käyttökiintiöllä ja yksi jäsen, jonka voit lisätä. Julkiset muistiinpanolinkit avautuvat, kun tilaat. Jos et tilaa, tili muuttuu vain luku -tilaan 30 päiväksi, jotta voit viedä tietosi, ja poistetaan sen jälkeen. Kokeilun jälkeen Cloud maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa henkilöltä. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimella, se on sama sovellus."
+        "aTrial": "Ilmaista tilausta ei ole, mutta jokainen uusi tili saa {{days}} päivän ilmaisen kokeilun ilman maksukorttia. Kokeiluun sisältyy AI-avustaja pienemmällä käyttökiintiöllä ja yksi jäsen, jonka voit lisätä. Julkiset muistiinpanolinkit avautuvat, kun tilaat. Jos et tilaa, tili muuttuu vain luku -tilaan 30 päiväksi, jotta voit viedä tietosi, ja poistetaan sen jälkeen. Kokeilun jälkeen Pro maksaa {{monthly}} kuukaudessa tai {{price}} vuodessa, ja Tiimi-tilaukset maksavat saman verran per henkilö. Ilmainen tapa käyttää tududia on ajaa sitä omalla palvelimella, se on sama sovellus."
       },
       "leaving": {
         "q": "Voinko lähteä, ja mitä tiedoilleni tapahtuu?",
@@ -388,7 +411,7 @@
     "ctaPrimary": "Aloita",
     "includes": [
       "Rajattomat tehtävät, projektit ja muistiinpanot",
-      "Lisää perheenjäseniä tai työkavereita, jokainen paikka samaan hintaan",
+      "Yhdelle henkilölle. Tiimi-tilaukset lisäävät ihmisiä kiinteinä kokoina",
       "Liitteet ja tiedostojen lataus",
       "Päivän suunnittelu tekoälyllä, MCP, kalenterisyötteet, CalDAV ja Telegram-botti",
       "Päivittäiset varmuuskopiot ja hallitut päivitykset",
@@ -396,13 +419,13 @@
       "Vie kaikki, milloin tahansa"
     ],
     "lede": "Sama järjestelmä molemmissa tapauksissa. Ero on siinä, kuka pitää sen käynnissä, päivitettynä ja varmuuskopioituna kolmelta yöllä.",
-    "metaDescription": "tududi Cloud on sama avoimen lähdekoodin järjestelmä, joka toimii palvelimillamme, ja päivitykset, varmuuskopiot ja sähköposti on hoidettu puolestasi. Yksi paketti, kuukausittain tai vuosittain, peruutettavissa milloin tahansa.",
+    "metaDescription": "tududi Cloud on sama avoimen lähdekoodin järjestelmä palvelimillamme, ja hoidamme päivitykset, varmuuskopiot ja sähköpostin puolestasi. Pro yhdelle henkilölle tai Tiimi-tilaus ryhmälle, kuukausittain tai vuosittain, peru milloin tahansa.",
     "metaTitle": "tududi Cloud: isännöity tududi, ylläpidettynä puolestasi",
     "note": "Samat MIT-lisensoidut sovellus. Vie kaikki, milloin tahansa.",
     "orAnnual": "tai",
     "priceNote": "Maksunvälittäjämme laskuttaa. Hinnat eivät sisällä sovellettavia veroja.",
     "pricingSub": "Kaikki mukana. Peruuta milloin haluat.",
-    "pricingTitle": "Yksi paketti, kaksi tapaa maksaa",
+    "pricingTitle": "Pro sinulle, Tiimi kaikille",
     "reasons": {
       "backups": {
         "body": "Tietokanta varmuuskopioidaan joka yö ja säilytetään erillään koneesta, joka palvelee sinua. Voit myös viedä kaiken itse milloin tahansa.",

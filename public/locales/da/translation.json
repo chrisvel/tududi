@@ -2615,7 +2615,8 @@
       "note": "noter",
       "storage": "lagerplads til vedhæftninger",
       "ai": "AI-forespørgsler i dag",
-      "aiCredits": "AI-kreditter denne måned"
+      "aiCredits": "AI-kreditter denne måned",
+      "member": "medlemmer"
     },
     "feature": {
       "ai": "AI-assistenten",
@@ -2629,7 +2630,20 @@
     },
     "seatCovered": "Din plads betales af {{name}}.",
     "workspaceOwner": "ejeren af arbejdsområdet",
-    "seats": "{{count}} pladser i dit abonnement: dig og {{members}} mere."
+    "teamName": "Team ({{seats}} pladser)",
+    "seatsUsed": "{{used}} af {{seats}} pladser i brug.",
+    "seatsFullHint": "Vil du have flere, så skift til et større Team-abonnement under \"Administrer abonnement\".",
+    "justMe": "Kun mig",
+    "team": "Team",
+    "teamSize": "Teamstørrelse",
+    "upToSeats": "Op til {{seats}} personer",
+    "pricePerMonth": "{{price}} om måneden",
+    "pricePerYear": "{{price}} om året",
+    "perSeatNote": "({{seats}} pladser, inklusive dig)",
+    "membersNeedTeam": "Pro er til én person. Med et Team-abonnement kan du tilføje medlemmer, fra 3 pladser og op.",
+    "seatsFull": "Alle {{seats}} pladser i dit abonnement er i brug. Skift til et større Team-abonnement for at tilføje flere personer.",
+    "changePlan": "Skift abonnement",
+    "planChanged": "Dit abonnement er ændret."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2664,7 +2678,11 @@
     "trialLock": {
       "webhooks": "Webhooks er ikke en del af den gratis prøveperiode. Abonner for at sende hændelser til dine egne tjenester."
     },
-    "lockedWebhooks": "Webhooks er en del af det betalte abonnement."
+    "lockedWebhooks": "Webhooks er en del af det betalte abonnement.",
+    "whoFor": "Hvem er det til?",
+    "justMe": "Kun mig (Pro)",
+    "teamOf": "Et team på op til {{seats}} personer",
+    "perSeat": "{{price}} pr. person om måneden, {{seats}} pladser inklusive dig"
   },
   "demo": {
     "opening": "Åbner demoen...",
@@ -2730,13 +2748,13 @@
     "giveAccount": "Giv konto",
     "nameRequiredWithoutEmail": "Angiv et navn, når der ikke er nogen e-mail",
     "failedToAdd": "Kunne ikke tilføje medlemmet",
-    "seatNote": "Hvert medlem er en plads mere i dit abonnement. Ændringen afregnes forholdsmæssigt på din næste faktura, og når du fjerner et medlem, frigives pladsen.",
+    "seatNote": "Hvert medlem bruger en plads i dit abonnement. Når du fjerner et medlem, bliver pladsen fri til en anden.",
     "editTitle": "Rediger medlem",
     "nameRequired": "Skriv et navn",
     "failedToUpdate": "Kunne ikke opdatere medlemmet",
     "addEmailHint": "Når du tilføjer en e-mail, får personen en invitation til at vælge en adgangskode. Den kan ikke ændres bagefter.",
     "remove": "Fjern medlem",
-    "removeConfirm": "Fjern {{name}}? Kontoen og alt i den slettes, og det kan ikke fortrydes. På tududi Cloud fjernes pladsen fra dit abonnement.",
+    "removeConfirm": "Fjern {{name}}? Kontoen og alt i den slettes, og det kan ikke fortrydes. På tududi Cloud bliver pladsen fri til en anden.",
     "removed": "Medlemmet blev fjernet",
     "updated": "Medlemmet blev opdateret",
     "invitationSent": "Invitation sendt",

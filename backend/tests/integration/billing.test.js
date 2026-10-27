@@ -7,6 +7,7 @@ const mockStripe = {
     subscriptions: {},
     sessions: {},
     created: [],
+    checkouts: [],
     cancelled: [],
 };
 jest.mock('stripe', () => {
@@ -53,11 +54,14 @@ jest.mock('stripe', () => {
             },
             checkout: {
                 sessions: {
-                    create: async (params) => ({
-                        id: 'cs_test_1',
-                        url: 'https://checkout.stripe.test/cs_test_1',
-                        ...params,
-                    }),
+                    create: async (params) => {
+                        mockStripe.checkouts.push(params);
+                        return {
+                            id: 'cs_test_1',
+                            url: 'https://checkout.stripe.test/cs_test_1',
+                            ...params,
+                        };
+                    },
                     retrieve: async (id) => mockStripe.sessions[id],
                 },
             },
@@ -82,6 +86,7 @@ const { createTestUser } = require('../helpers/testUtils');
 const config = getConfig();
 const PRICE_MONTH = 'price_month';
 const PRICE_YEAR = 'price_year';
+const PRICE_TEAM3_YEAR = 'price_team3_year';
 
 const login = async (user) => {
     const agent = request.agent(app);
@@ -126,6 +131,7 @@ function enableHostedBilling() {
     config.hosted.stripe.webhookSecret = 'whsec_x';
     config.hosted.stripe.prices.proMonthly = PRICE_MONTH;
     config.hosted.stripe.prices.proAnnual = PRICE_YEAR;
+    config.hosted.stripe.prices.team = { team_3: { year: PRICE_TEAM3_YEAR } };
     stripeClient._reset();
     entitlements.invalidate();
 }
@@ -137,6 +143,7 @@ function disableHostedBilling() {
     config.hosted.stripe.webhookSecret = undefined;
     config.hosted.stripe.prices.proMonthly = undefined;
     config.hosted.stripe.prices.proAnnual = undefined;
+    config.hosted.stripe.prices.team = {};
     stripeClient._reset();
     entitlements.invalidate();
 }
@@ -173,6 +180,7 @@ describe('Billing with hosted mode on', () => {
         mockStripe.subscriptions = {};
         mockStripe.sessions = {};
         mockStripe.created = [];
+        mockStripe.checkouts = [];
         mockStripe.cancelled = [];
         user = await createTestUser({
             email: `bill_${Date.now()}@example.com`,
@@ -201,8 +209,21 @@ describe('Billing with hosted mode on', () => {
                 'free',
                 'pro',
                 'trial',
+                'team_3',
+                'team_5',
+                'team_10',
+                'team_15',
+                'team_20',
+                'team_25',
+                'team_30',
+                'team_40',
+            ]);
+            expect(res.body.purchasable.map((p) => p.key)).toEqual([
+                'pro',
+                'team_3',
             ]);
             expect(JSON.stringify(res.body)).not.toContain(PRICE_MONTH);
+            expect(JSON.stringify(res.body)).not.toContain(PRICE_TEAM3_YEAR);
         });
     });
 
@@ -220,6 +241,16 @@ describe('Billing with hosted mode on', () => {
                 where: { user_id: user.id },
             });
             expect(account.provider_customer_id).toBe('cus_1');
+        });
+
+        it('checks out a Team plan with its own price at quantity one', async () => {
+            const res = await agent
+                .post('/api/billing/checkout')
+                .send({ interval: 'year', plan: 'team_3' });
+            expect(res.status).toBe(200);
+            expect(mockStripe.checkouts[0].line_items).toEqual([
+                { price: PRICE_TEAM3_YEAR, quantity: 1 },
+            ]);
         });
 
         it('refuses checkout while a subscription is active', async () => {

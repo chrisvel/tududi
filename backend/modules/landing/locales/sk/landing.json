@@ -238,14 +238,15 @@
   },
   "pricing": {
     "eyebrow": "Cenník",
-    "title": "Vyberte si, ako budete tududi používať",
-    "sub": "Žiadne úrovne, žiadne doplnky, žiadne zadržané funkcie. Vyskúšajte zadarmo, potom jedna cena.",
+    "title": "Plaťte za seba alebo za svoj tím",
+    "sub": "Každý plán má všetky funkcie. Pro je pre jednu osobu, plán Tím má pevnú veľkosť a pridávate ľudí až do nej.",
     "mostPopular": "NAJOBĽÚBENEJŠÍ",
     "earlyBird": "ZAVÁDZACIA CENA",
     "perYear": "/rok",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "alebo",
         "launchNote": "Zavádzacia ročná cena, ktorá vám zostane, kým budete predplatiteľom.",
         "priceNote": "Všetko v cene. Zrušiť môžete kedykoľvek.",
@@ -254,19 +255,41 @@
         "features": [
           "Spustené za minútu, bez nastavovania servera",
           "Neobmedzené úlohy, projekty a poznámky, plus prílohy",
-          "Pridajte členov rodiny alebo kolegov, každý ako miesto za rovnakú cenu",
+          "Pre jednu osobu. Chcete pridať ďalších ľudí? Vyberte si plán Tím",
           "Plánovanie dňa s AI, MCP, kalendárové feedy, CalDAV a Telegram bot",
           "Aktualizácie a denné zálohy za vás, s úložiskom {{proStorageGb}} GB",
           "Všetko kedykoľvek exportujete a účet si zrušíte sami"
         ],
         "action": "Začať →",
         "actionTrial": "Vyskúšať zadarmo →"
+      },
+      "team": {
+        "name": "Tím",
+        "perPersonMonth": "/osoba mesačne",
+        "perPersonYear": "/osoba ročne",
+        "sizes": "Predáva sa vo veľkostiach {{sizes}} miest, vrátane vás. Tím s 5 ľuďmi stojí {{example}} mesačne.",
+        "moreThan": "Viac ako {{max}} ľudí?",
+        "contact": "Napíšte nám",
+        "action": "Založiť tím →",
+        "features": [
+          "Všetko z Pro, pre každého v tíme",
+          "Pridávajte ľudí až do svojej veľkosti a kedykoľvek prejdite na väčšiu",
+          "Zdieľané projekty, skupiny a nástenka Všetci s prehľadom, kto čo robí",
+          "Každý si ponechá vlastné súkromné úlohy a poznámky",
+          "Jedno predplatné, ktoré platí vlastník účtu"
+        ]
+      },
+      "picker": {
+        "label": "Pre koho?",
+        "solo": "Len pre mňa",
+        "team": "Tím s {{n}} ľuďmi",
+        "perMonth": "/mesiac",
+        "perYear": "/rok"
       }
     },
     "fineprint": "Zrušiť môžete kedykoľvek a všetko si exportovať. Ak by tududi Cloud niekedy skončil, dostanete svoje dáta a návod na migráciu na vlastný server. Na úložisko a objem API sa vzťahuje primerané používanie. 14-dňová záruka vrátenia peňazí bez otázok.",
     "perMonth": "/mesiac",
-    "selfHostNote": "Pre vývojárov: tududi je open source a môže bežať na vlastnom serveri.",
-    "selfHostLink": "Prečítajte si návod"
+    "nextPrice": "Od {{date}} sa cena za osobu zvýši na {{monthly}} mesačne alebo {{annual}} ročne. Predplaťte si skôr a dnešná cena vám zostane, kým budete predplatiteľom."
   },
   "compare": {
     "title": "Rýchle porovnanie",
@@ -330,8 +353,8 @@
       },
       "freePlan": {
         "q": "Existuje v tududi Cloud bezplatný plán alebo skúšobná verzia?",
-        "a": "Nie. Cloud stojí {{monthly}} mesačne alebo {{price}} ročne a to je celý cenník: žiadna bezplatná úroveň, žiadne odpočítavanie skúšobnej doby, žiadna karta zadaná za niečo, čo vám neskôr potichu začne účtovať. Ak vám služba nebude vyhovovať, platí 14-dňová záruka vrátenia peňazí, a ak sa chcete najprv poobzerať, na tejto stránke nájdete živé demo. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia.",
-        "aTrial": "Bezplatná úroveň neexistuje, ale každý nový účet dostane {{days}}-dňovú skúšobnú verziu zadarmo, bez platobnej karty. Skúšobná verzia obsahuje AI asistenta s menším limitom a jedného člena, ktorého môžete pridať. Verejné odkazy na poznámky sa sprístupnia po zaplatení predplatného. Ak si predplatné nezaplatíte, účet bude 30 dní len na čítanie, aby ste si mohli exportovať dáta, a potom sa vymaže. Po skúšobnej dobe stojí Cloud {{monthly}} mesačne alebo {{price}} ročne na osobu. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri – je to tá istá aplikácia."
+        "a": "Nie. Pro stojí {{monthly}} mesačne alebo {{price}} ročne pre jednu osobu a plány Tím stoja na osobu rovnako, v pevných veľkostiach. Žiadna bezplatná úroveň, žiadne odpočítavanie skúšobnej doby, žiadna karta, z ktorej sa neskôr potichu začne strhávať platba. Platí 14-dňová záruka vrátenia peňazí, ak vám to nebude vyhovovať, a na tejto stránke je živé demo, ak sa chcete najprv poobzerať.",
+        "aTrial": "Bezplatná úroveň neexistuje, ale každý nový účet dostane {{days}}-dňovú skúšobnú verziu zadarmo, bez platobnej karty. Skúšobná verzia obsahuje AI asistenta s menším limitom a jedného člena, ktorého môžete pridať. Verejné odkazy na poznámky sa sprístupnia po zaplatení predplatného. Ak si predplatné nezaplatíte, účet bude 30 dní len na čítanie, aby ste si mohli exportovať dáta, a potom sa vymaže. Po skúšobnej dobe stojí Pro {{monthly}} mesačne alebo {{price}} ročne a plány Tím stoja na osobu rovnako. Bezplatný spôsob, ako používať tududi, je prevádzkovať ho na vlastnom serveri, je to tá istá aplikácia."
       },
       "leaving": {
         "q": "Môžem odísť a čo sa stane s mojimi dátami?",
@@ -381,7 +404,7 @@
   },
   "cloud": {
     "metaTitle": "tududi Cloud: hostované tududi, ktoré prevádzkujeme za vás",
-    "metaDescription": "tududi Cloud je ten istý open source systém, ktorý beží na našich serveroch a o aktualizácie, zálohy a e-maily sa postaráme za vás. Jeden plán, mesačne alebo ročne, zrušiť môžete kedykoľvek.",
+    "metaDescription": "tududi Cloud je ten istý open source systém, bežiaci na našich serveroch, s aktualizáciami, zálohami a e-mailom vybavenými za vás. Pro pre jednu osobu alebo plán Tím pre skupinu, mesačne alebo ročne, zrušiť môžete kedykoľvek.",
     "title": "Prečo používať tududi Cloud?",
     "lede": "Systém je v oboch prípadoch rovnaký. Rozdiel je v tom, kto ho o tretej ráno udržiava v chode, aktualizuje a zálohuje.",
     "ctaPrimary": "Začať",
@@ -416,13 +439,14 @@
         "body": "Žiadne funkcie iba pre Cloud a žiadna osekaná verzia na vlastný server. Ak by sme službu niekedy ukončili, dostanete svoje dáta a návod na migráciu."
       }
     },
-    "pricingTitle": "Jeden plán, dva spôsoby platby",
+    "pricingTitle": "Pro pre vás, Tím pre všetkých",
     "pricingSub": "Všetko v cene. Zrušiť môžete, kedykoľvek chcete.",
     "pricingSubTrial": "Vyskúšajte {{days}} dní zadarmo, bez platobnej karty. Potom je všetko v cene a zrušiť môžete, kedykoľvek chcete.",
     "orAnnual": "alebo",
     "priceNote": "Účtuje náš platobný poskytovateľ. Ceny sú bez príslušných daní.",
     "includes": [
       "Neobmedzené úlohy, projekty a poznámky",
+      "Pre jednu osobu. Plány Tím pridávajú ľudí v pevných veľkostiach",
       "Prílohy a nahrávanie súborov",
       "Plánovanie dňa s AI, MCP, kalendárové feedy, CalDAV a Telegram bot",
       "Denné zálohy a spravované aktualizácie",

@@ -67,6 +67,9 @@ class BillingService {
         });
         const account = await repository.findAccountByUserId(userId);
         const provider = this.provider();
+        // Who manages this account's subscription, which can be a provider
+        // that no longer sells (a Lemon Squeezy subscription, say).
+        const manager = providers.providerFor(account);
         const configured = providers.isBillingConfigured();
         const prices = provider.configuredPrices();
         return {
@@ -80,8 +83,8 @@ class BillingService {
                 annual: getConfig().pricing.annual,
             },
             provider: {
-                name: provider.name,
-                display_name: provider.displayName,
+                name: manager.name,
+                display_name: manager.displayName,
             },
             // A member whose seat is paid by its owner has nothing to buy.
             checkout_available:
@@ -89,11 +92,16 @@ class BillingService {
                 !!(prices.month || prices.year) &&
                 !ACTIVE_STATUSES.has(account?.status) &&
                 ent.reason !== 'seat',
-            portal_available: configured && provider.canOpenPortal(account),
+            portal_available: configured && manager.canOpenPortal(account),
+            // Whether the app can move this subscription to another plan
+            // itself (Paddle); otherwise the provider's portal does it.
+            plan_change_available:
+                configured && !!manager.canChangePlan?.(account),
             intervals: {
                 month: !!prices.month,
                 year: !!prices.year,
             },
+            plans_available: this.purchasablePlans(),
             seats: await seats.describeSeats(userId),
             subscription: account
                 ? {
@@ -107,6 +115,20 @@ class BillingService {
         };
     }
 
+    // The plans that can be bought here: Pro and whichever Team buckets have
+    // a price, smallest first, with the intervals each one is sold in.
+    purchasablePlans() {
+        const plans = getPlans();
+        return Object.entries(this.provider().configuredPlans())
+            .filter(([key, ids]) => plans[key] && (ids.month || ids.year))
+            .map(([key, ids]) => ({
+                key,
+                seats: plans[key].seats,
+                intervals: { month: !!ids.month, year: !!ids.year },
+            }))
+            .sort((a, b) => a.seats - b.seats);
+    }
+
     // Public catalog: names, limits and features, never price ids.
     getCatalog() {
         const prices = this.provider().configuredPrices();
@@ -114,19 +136,24 @@ class BillingService {
             plans: Object.values(getPlans()).map((plan) => ({
                 key: plan.key,
                 name: plan.name,
+                seats: plan.seats,
                 limits: plan.limits,
                 features: plan.features,
             })),
+            purchasable: this.purchasablePlans(),
             intervals: { month: !!prices.month, year: !!prices.year },
             trial_days: getConfig().hosted.trialDays,
         };
     }
 
-    async createCheckoutSession(userId, interval) {
+    async createCheckoutSession(userId, interval, plan = 'pro') {
         if (!providers.isBillingConfigured())
             throw new BillingNotConfiguredError();
         const provider = this.provider();
-        if (!provider.configuredPrices()[interval]) {
+        if (!provider.configuredPlans()[plan]) {
+            throw new ValidationError(`The ${plan} plan cannot be bought here`);
+        }
+        if (!provider.configuredPrices(plan)[interval]) {
             throw new ValidationError(
                 `No ${interval === 'year' ? 'annual' : 'monthly'} price is configured`
             );
@@ -144,6 +171,7 @@ class BillingService {
         const checkout = await provider.createCheckout({
             user,
             account,
+            plan,
             interval,
             successUrl: billingTabUrl('&checkout=success'),
             cancelUrl: billingTabUrl('&checkout=cancel'),
@@ -157,14 +185,52 @@ class BillingService {
                 provider_customer_id: checkout.customerId,
             });
         }
-        return { url: checkout.url, id: checkout.id };
+        return {
+            url: checkout.url,
+            id: checkout.id,
+            ...(checkout.paddle ? { paddle: checkout.paddle } : {}),
+        };
+    }
+
+    // Moves a live subscription to another plan at its current interval,
+    // where the provider allows the app to (Paddle). A smaller plan than the
+    // seats already in use is refused, so nobody loses access by surprise.
+    async changePlan(userId, plan) {
+        if (!providers.isBillingConfigured())
+            throw new BillingNotConfiguredError();
+        const account = await repository.findAccountByUserId(userId);
+        const provider = providers.providerFor(account);
+        if (!provider.canChangePlan?.(account)) {
+            throw new ValidationError(
+                'This subscription is changed from "Manage subscription"'
+            );
+        }
+        const target = getPlans()[plan];
+        const priceId =
+            provider.configuredPrices(plan)[account.billing_interval];
+        if (!target || !priceId) {
+            throw new ValidationError(`The ${plan} plan cannot be bought here`);
+        }
+        if (plan === account.plan) return this.getStatus(userId);
+        const { used } = await seats.describeSeats(userId);
+        if (used > (target.seats || 1)) {
+            throw new ValidationError(
+                `${used} seats are in use; remove members before moving to a plan with ${target.seats || 1}`
+            );
+        }
+        const from = account.plan;
+        const fields = await provider.changePlan({ account, priceId });
+        await account.update({ ...fields, provider: provider.name });
+        entitlements.invalidate(userId);
+        logInfo(`User ${userId} changed plan from ${from} to ${plan}`);
+        return this.getStatus(userId);
     }
 
     async createPortalSession(userId) {
         if (!providers.isBillingConfigured())
             throw new BillingNotConfiguredError();
         const account = await repository.findAccountByUserId(userId);
-        const provider = this.provider();
+        const provider = providers.providerFor(account);
         if (!provider.canOpenPortal(account)) {
             throw new ValidationError('No billing account to manage yet');
         }
@@ -181,7 +247,11 @@ class BillingService {
         const user = await repository.findUserById(userId);
         if (!user) throw new NotFoundError('User not found');
 
-        const provider = this.provider();
+        // Right after a checkout the new subscription is at the selling
+        // provider, whatever the account was on before.
+        const provider = checkoutRef
+            ? this.provider()
+            : providers.providerFor(account);
         const fields = await provider.sync({ user, account, checkoutRef });
         if (fields) {
             await account.update({ provider: provider.name, ...fields });
@@ -213,10 +283,11 @@ class BillingService {
     }
 
     async handleWebhook(rawBody, headers) {
-        if (!providers.isBillingConfigured())
-            throw new BillingNotConfiguredError();
-        const provider = this.provider();
+        if (!this.isHosted()) throw new BillingNotConfiguredError();
+        const provider = providers.providerForWebhook(headers);
+        if (!provider) throw new BillingNotConfiguredError();
         const event = await provider.parseWebhook(rawBody, headers);
+        event.provider = provider.name;
 
         const record = await repository.recordEvent(event.id, event.rawType);
         if (!record) {
@@ -247,7 +318,7 @@ class BillingService {
         }
         const account = await this.resolveAccount(event.ref);
         if (!account) return { handled: false, reason: 'unknown_user' };
-        const providerName = this.provider().name;
+        const providerName = event.provider || this.provider().name;
         const stamp = {
             provider: providerName,
             last_provider_event_at: event.createdAt,
@@ -298,14 +369,6 @@ class BillingService {
         }
 
         entitlements.invalidate(account.user_id);
-        if (
-            event.type === 'checkout.completed' ||
-            event.type === 'subscription.updated'
-        ) {
-            // A new or resumed subscription starts at one seat; bring it up
-            // to the members this owner already has.
-            await seats.reconcile(account.user_id);
-        }
         return { handled: true, userId: account.user_id };
     }
 
@@ -441,7 +504,7 @@ class BillingService {
         try {
             const account = await repository.findAccountByUserId(userId);
             if (!account) return;
-            const provider = this.provider();
+            const provider = providers.providerFor(account);
             if (
                 account.provider_subscription_id &&
                 !ACTIVE_STATUSES.has(account.status)

@@ -22,7 +22,6 @@ const {
     ConflictError,
 } = require('../../shared/errors');
 const rolesService = require('../../services/rolesService');
-const seatsService = require('../../services/seatsService');
 const accountsService = require('../../services/accountsService');
 const { isAdmin } = rolesService;
 const { sequelize } = require('../../models');
@@ -360,10 +359,6 @@ class AdminService {
             return null;
         }
 
-        const target = await adminRepository.findUserById(id);
-        const payerId = target
-            ? await accountsService.getOwnerId(target.id)
-            : null;
         const result = await adminRepository.deleteUserWithData(id);
 
         if (!result.success) {
@@ -371,11 +366,6 @@ class AdminService {
                 throw new NotFoundError(result.error);
             }
             throw new ValidationError(result.error);
-        }
-
-        // Deleting a member frees its seat on the owner's subscription.
-        if (payerId != null && payerId !== id) {
-            await seatsService.reconcile(payerId);
         }
 
         return null;

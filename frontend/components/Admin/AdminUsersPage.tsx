@@ -17,6 +17,8 @@ import {
 } from '@heroicons/react/24/outline';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getApiPath } from '../../config/paths';
+import { handlePlanLimit } from '../../utils/planLimits';
+import { PlanLimitShownError } from '../../utils/membersService';
 import { useToast } from '../Shared/ToastContext';
 import { fetchWithCsrf } from '../../utils/csrfService';
 import { fetchPeople } from '../../utils/peopleService';
@@ -119,6 +121,7 @@ const createAdminUser = async (
     if (res.status === 403) throw new Error(t('admin.forbidden', 'Forbidden'));
     if (res.status === 409)
         throw new Error(t('admin.emailAlreadyExists', 'Email already exists'));
+    if (await handlePlanLimit(res)) throw new PlanLimitShownError();
     if (!res.ok) {
         let message = t('admin.failedToCreateUser', 'Failed to create user');
         try {
@@ -383,6 +386,10 @@ const AddUserModal: React.FC<{
             }
             onClose();
         } catch (err: any) {
+            if (err instanceof PlanLimitShownError) {
+                onClose();
+                return;
+            }
             setError(
                 err.message ||
                     (editingUser

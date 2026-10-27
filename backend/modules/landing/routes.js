@@ -3,7 +3,7 @@ const express = require('express');
 const ejs = require('ejs');
 const rateLimit = require('express-rate-limit');
 const { ipKeyGenerator } = require('express-rate-limit');
-const { getPlans } = require('../../config/plans');
+const { getPlans, TEAM_SEATS } = require('../../config/plans');
 const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
 const { getStats } = require('./stats');
@@ -190,6 +190,26 @@ function createLandingRouter(landing) {
             maximumFractionDigits: 0,
         }).format(amount);
 
+    // A decided price rise (config pricing.next), announced under the
+    // pricing cards until the day it starts. Null once it has started.
+    const nextPriceFor = (locale) => {
+        const next = landing.pricing.next;
+        if (!next?.from) return null;
+        const from = new Date(`${next.from}T00:00:00Z`);
+        if (Number.isNaN(from.getTime()) || from <= new Date()) return null;
+        return {
+            // Day before month in English too: the prices are in euros.
+            date: new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : locale, {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                timeZone: 'UTC',
+            }).format(from),
+            monthly: money(next.monthly),
+            annual: money(next.annual),
+        };
+    };
+
     // Absolute URL of one page in one locale: '/', '/fr', '/cloud',
     // '/fr/cloud'. localeUrl alone cannot build the sub-pages, since it
     // returns a bare origin for English and no trailing slash for the rest.
@@ -224,7 +244,9 @@ function createLandingRouter(landing) {
                     proStorageGb: Math.round(
                         plans.pro.limits.storage_mb / 1000
                     ),
+                    teamSeats: TEAM_SEATS,
                 },
+                nextPrice: nextPriceFor(locale),
                 trialDays: cloudTrialDays(),
                 appUrl,
                 siteOrigin: siteOrigin.replace(/\/$/, ''),
@@ -285,7 +307,9 @@ function createLandingRouter(landing) {
                     proStorageGb: Math.round(
                         plans.pro.limits.storage_mb / 1000
                     ),
+                    teamSeats: TEAM_SEATS,
                 },
+                nextPrice: nextPriceFor(locale),
                 trialDays: cloudTrialDays(),
                 appUrl,
                 siteOrigin: siteOrigin.replace(/\/$/, ''),

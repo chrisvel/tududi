@@ -15,7 +15,7 @@ const DEFAULT_PLANS = {
             storage_mb: 50,
             ai_requests_per_month: 0,
             ai_credits_per_month: 0,
-            // Members an owner may add, each a paid seat on its subscription.
+            // Members an owner may add; a Team plan sets it to its seats minus one.
             max_members: 0,
         },
         features: {
@@ -38,7 +38,8 @@ const DEFAULT_PLANS = {
             storage_mb: 5000,
             ai_requests_per_month: 200,
             ai_credits_per_month: 50,
-            max_members: 10,
+            // One person. Members come with a Team plan.
+            max_members: 0,
         },
         features: {
             ai: true,
@@ -78,6 +79,20 @@ const DEFAULT_PLANS = {
         },
     },
 };
+
+// Team plans are sold in fixed seat buckets, like monday.com: a team of four
+// buys team_5 and may add a fifth person at no extra cost. Each bucket is
+// Pro for everyone in it, and the owner holds one of the seats.
+const TEAM_SEATS = [3, 5, 10, 15, 20, 25, 30, 40];
+
+for (const seats of TEAM_SEATS) {
+    DEFAULT_PLANS[`team_${seats}`] = {
+        name: `Team (${seats} seats)`,
+        seats,
+        limits: { ...DEFAULT_PLANS.pro.limits, max_members: seats - 1 },
+        features: { ...DEFAULT_PLANS.pro.features },
+    };
+}
 
 const LIMIT_KEYS = Object.keys(DEFAULT_PLANS.free.limits);
 const FEATURE_KEYS = Object.keys(DEFAULT_PLANS.free.features);
@@ -144,6 +159,7 @@ function getPlans(env = process.env) {
         plans[key] = {
             key,
             name: plan.name || key,
+            seats: plan.seats || 1,
             limits: { ...UNLIMITED.limits, ...(plan.limits || {}) },
             features: {
                 ...Object.fromEntries(FEATURE_KEYS.map((k) => [k, false])),
@@ -162,6 +178,7 @@ function getPlan(key, env = process.env) {
 
 module.exports = {
     DEFAULT_PLANS,
+    TEAM_SEATS,
     UNLIMITED,
     LIMIT_KEYS,
     FEATURE_KEYS,

@@ -15,9 +15,14 @@ describe('plans catalog', () => {
         plans._resetCache();
     });
 
-    it('ships free, pro and trial plans with every limit and feature key', () => {
+    it('ships free, pro, trial and the Team buckets with every limit and feature key', () => {
         const all = plans.getPlans();
-        expect(Object.keys(all)).toEqual(['free', 'pro', 'trial']);
+        expect(Object.keys(all)).toEqual([
+            'free',
+            'pro',
+            'trial',
+            ...plans.TEAM_SEATS.map((n) => `team_${n}`),
+        ]);
         for (const key of plans.LIMIT_KEYS) {
             expect(all.free.limits).toHaveProperty(key);
             expect(all.pro.limits).toHaveProperty(key);
@@ -26,6 +31,18 @@ describe('plans catalog', () => {
             expect(typeof all.free.features[key]).toBe('boolean');
         }
         expect(all.pro.limits.max_tasks).toBeNull();
+    });
+
+    it('makes Pro one person and gives each Team bucket its seats', () => {
+        const all = plans.getPlans();
+        expect(all.pro.seats).toBe(1);
+        expect(all.pro.limits.max_members).toBe(0);
+        expect(plans.TEAM_SEATS).toEqual([3, 5, 10, 15, 20, 25, 30, 40]);
+        expect(all.team_5.seats).toBe(5);
+        expect(all.team_5.limits.max_members).toBe(4);
+        expect(all.team_40.limits.max_members).toBe(39);
+        expect(all.team_5.features).toEqual(all.pro.features);
+        expect(all.team_5.limits.storage_mb).toBe(all.pro.limits.storage_mb);
     });
 
     it('deep-merges TUDUDI_PLANS_JSON over the defaults', () => {

@@ -67,57 +67,34 @@
         </div>
     </section>
 
-    <!-- Pricing: one paid plan, monthly or annual. -->
+    <!-- Pricing: one card, sized for one person or a Team. -->
     <section id="cloud-pricing" class="section" style="background:#f3f4f6;">
-        <div class="container-sm">
+        <div class="container">
             <div class="section-head">
                 <span class="eyebrow"><%= t('pricing.eyebrow') %></span>
                 <h2 class="section-title"><%= t('cloud.pricingTitle') %></h2>
                 <p class="section-sub"><%= trialDays > 0 ? t('cloud.pricingSubTrial', { days: trialDays }) : t('cloud.pricingSub') %></p>
             </div>
 
-            <div class="plan-grid" style="grid-template-columns:minmax(0,1fr); max-width:520px; margin:0 auto;">
-                <div class="plan plan-featured">
-                    <div class="plan-head">
-                        <div class="plan-icon"><i class="fas fa-cloud"></i></div>
-                        <h3><%= t('pricing.plans.cloud.name') %></h3>
-                    </div>
-                    <%# Same shape as the pricing card on the homepage: one paid
-                        plan, monthly or yearly. The two pages disagreeing about
-                        whether Cloud has a free tier is worse than either answer
-                        on its own, so they are kept identical by hand. %>
-                    <div class="plan-price">
-                        <div class="plan-amount">
-                            <span><%= money(pricing.monthly) %></span>
-                            <span><%= t('pricing.perMonth') %></span>
-                        </div>
-                        <div class="plan-pro-line">
-                            <span class="plan-pro-sep"><%= t('cloud.orAnnual') %></span>
-                            <strong><%= money(personalPrice) %></strong><%= t('pricing.perYear') %>
-                            <% if (pricing.launchActive) { %>
-                            <span class="plan-tag"><%= t('pricing.earlyBird') %></span>
-                            <% } %>
-                        </div>
-                        <div class="plan-price-note"><%= t('cloud.priceNote') %></div>
-                        <% if (trialDays > 0) { %>
-                        <div class="plan-launch-note"><%= t('pricing.plans.cloud.trialNote') %></div>
-                        <% } %>
-                    </div>
-                    <ul class="plan-features">
-                        <% i18n.tList('cloud.includes').forEach(function (feature) { %>
-                        <li><i class="fas fa-check"></i><%= feature %></li>
-                        <% }); %>
-                    </ul>
-                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('cloud.ctaPrimary') %></a>
-                </div>
+            <%# The same card as the homepage pricing section, from one
+                partial so the two pages cannot disagree about the price. %>
+            <div class="plan-grid plan-grid-solo">
+                <%- include('partials/plan-picker', {
+                    soloFeatures: i18n.tList('cloud.includes'),
+                    teamFeatures: i18n.tList('pricing.plans.team.features'),
+                    soloAction: trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('cloud.ctaPrimary'),
+                    teamAction: trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('pricing.plans.team.action'),
+                    soloNote: t('cloud.priceNote'),
+                    orLabel: t('cloud.orAnnual'),
+                }) %>
             </div>
 
-            <%# The same quiet self-host footnote as the homepage pricing card.
-                This page exists to explain why somebody would let us run it;
-                anything louder than fine print is arguing against itself. %>
-            <div class="closing">
-                <p class="plan-fineprint plan-selfhost-note" style="text-align:center;"><%= t('pricing.selfHostNote') %> <a href="https://github.com/chrisvel/tududi" class="plan-selfhost-link"><%= t('pricing.selfHostLink') %> &rarr;</a></p>
+            <% if (nextPrice) { %>
+            <div class="plan-notes plan-grid-solo">
+                <p class="plan-fineprint plan-next-price"><%= t('pricing.nextPrice', nextPrice) %></p>
             </div>
+            <% } %>
+
         </div>
     </section>
 

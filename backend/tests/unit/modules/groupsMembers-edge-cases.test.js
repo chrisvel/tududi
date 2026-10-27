@@ -2,10 +2,6 @@ jest.mock('../../../services/logService', () => ({
     ...jest.requireActual('../../../services/logService'),
     logError: jest.fn(),
 }));
-jest.mock('../../../services/seatsService', () => ({
-    ...jest.requireActual('../../../services/seatsService'),
-    reconcile: jest.fn(),
-}));
 
 const { UniqueConstraintError } = require('sequelize');
 const groupsService = require('../../../modules/groups/service');
@@ -13,7 +9,6 @@ const groupsRepository = require('../../../modules/groups/repository');
 const membersService = require('../../../modules/members/service');
 const registrationService = require('../../../modules/auth/registrationService');
 const passwordResetService = require('../../../modules/auth/passwordResetService');
-const seatsService = require('../../../services/seatsService');
 const { logError } = require('../../../services/logService');
 const { Person, Role, User, UserGroup } = require('../../../models');
 const { getConfig } = require('../../../config/config');
@@ -220,16 +215,13 @@ describe('members service edge cases', () => {
         ).rejects.toBe(failure);
     });
 
-    it('frees no seat when a self-hosted member is removed', async () => {
+    it('removes a self-hosted member', async () => {
         const member = await membersService.createMember(admin.id, {
             name: 'Kid',
         });
-        seatsService.reconcile.mockClear();
-
         await membersService.removeMember(admin.id, member.id);
 
         expect(await User.findByPk(member.id)).toBeNull();
-        expect(seatsService.reconcile).not.toHaveBeenCalled();
     });
 
     it('keeps the account when the emails cannot be sent', async () => {

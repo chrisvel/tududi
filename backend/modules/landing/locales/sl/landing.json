@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Cene",
-    "title": "Izberite, kako boste uporabljali tududi",
+    "title": "Plačajte zase ali za svojo ekipo",
     "mostPopular": "NAJPOGOSTEJŠA",
     "earlyBird": "UVAJALNA CENA",
     "perYear": "/leto na osebo",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "ali",
         "launchNote": "Letna cena early bird, vaša, dokler ostanete naročeni.",
         "action": "Začni →",
         "features": [
           "Deluje v minuti, brez strežnika za namestitev",
           "Neomejene naloge, projekti in opombe, plus priloge",
-          "Dodajte družinske člane ali sodelavce, vsak je mesto po enaki ceni",
+          "Za eno osebo. Želite dodati druge? Izberite paket Ekipa",
           "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
           "Posodobitve in dnevne varnostne kopije, poskrbljene za vas, z {{proStorageGb}} GB prostora",
           "Izvozite vse kadarkoli, izbrišite svoj račun sami"
@@ -258,13 +259,35 @@
         "actionTrial": "Preizkusite brezplačno →",
         "priceNoteTrial": "{{days}} dni brezplačno, brez kartice. Odpoved kadar koli.",
         "trialNote": "Preizkus vključuje pomočnika AI z manjšo količino uporabe in enega člana, ki ga lahko dodate. Javne povezave do zapiskov se odprejo, ko se naročite."
+      },
+      "team": {
+        "name": "Ekipa",
+        "perPersonMonth": "/mesec na osebo",
+        "perPersonYear": "/leto na osebo",
+        "sizes": "Na voljo v velikostih {{sizes}} mest, vključno z vami. Ekipa 5 oseb stane {{example}} na mesec.",
+        "moreThan": "Več kot {{max}} oseb?",
+        "contact": "Pišite nam",
+        "action": "Ustvarite ekipo →",
+        "features": [
+          "Vse iz paketa Pro, za vsako osebo v ekipi",
+          "Dodajajte osebe do svoje velikosti in kadar koli preidite na večjo",
+          "Skupni projekti, skupine in tabla Vsi s pregledom, kdo kaj dela",
+          "Vsak obdrži svoja zasebna opravila in zapiske",
+          "Ena naročnina, ki jo plača lastnik računa"
+        ]
+      },
+      "picker": {
+        "label": "Za koga?",
+        "solo": "Samo zame",
+        "team": "Ekipa z {{n}} osebami",
+        "perMonth": "/mesec",
+        "perYear": "/leto"
       }
     },
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",
     "perMonth": "/mesec na osebo",
-    "sub": "Brez stopenj, brez dodatkov, brez zadržanih funkcij. Poskusi brezplačno, potem ena cena.",
-    "selfHostNote": "Za razvijalce: tududi je odprtokoden in lahko teče na vašem strežniku.",
-    "selfHostLink": "Preberi navodila"
+    "nextPrice": "Od {{date}} bo cena na osebo {{monthly}} na mesec ali {{annual}} na leto. Naročite se prej, da ohranite današnjo ceno, dokler ostanete naročeni.",
+    "sub": "Vsak paket ima vse funkcije. Pro je za eno osebo, paket Ekipa pa ima stalno velikost, do katere dodajate osebe."
   },
   "compare": {
     "title": "Hitra primerjava",
@@ -336,9 +359,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Ne. Cloud stane {{monthly}} na mesec ali {{price}} na leto na osebo, in to je celoten cenik: brez brezplačne stopnje, brez preizkusne ure, brez kartice, obremenjene za nekaj, kar se tiho začne zaračunavati kasneje. Obstaja 14-dnevna garancija vračila denarja, če se izkaže, da vam ne ustreza, in obstaja živa predstavitev na tej strani, če želite najprej pogledati. Brezplačen način uporabe tududi je zagon na vašem lastnem strežniku, kar je enaka aplikacija.",
+        "a": "Ne. Pro stane {{monthly}} na mesec ali {{price}} na leto za eno osebo, paketi Ekipa pa stanejo enako na osebo v stalnih velikostih. Ni brezplačne ravni, ni odštevanja preizkusa in ni kartice, ki bi jo pozneje potiho začeli bremeniti. Na voljo je 14-dnevno jamstvo vračila denarja, če se izkaže, da vam ne ustreza, na tej strani pa je demo v živo, če si želite najprej ogledati.",
         "q": "Ali obstaja brezplačen paket ali preizkusna doba na tududi Cloud?",
-        "aTrial": "Brezplačnega paketa ni, vsak nov račun pa dobi brezplačen {{days}}-dnevni preizkus, brez kartice. Preizkus vključuje pomočnika AI z manjšo količino uporabe in enega člana, ki ga lahko dodate. Javne povezave do zapiskov se odprejo, ko se naročite. Če se ne naročite, je račun 30 dni samo za branje, da lahko izvozite podatke, nato pa se izbriše. Po preizkusu Cloud stane {{monthly}} na mesec ali {{price}} na leto na osebo. Brezplačen način uporabe tududi je, da ga poganjate na svojem strežniku, gre za isto aplikacijo."
+        "aTrial": "Brezplačnega paketa ni, vsak nov račun pa dobi brezplačen {{days}}-dnevni preizkus, brez kartice. Preizkus vključuje pomočnika AI z manjšo količino uporabe in enega člana, ki ga lahko dodate. Javne povezave do zapiskov se odprejo, ko se naročite. Če se ne naročite, je račun 30 dni samo za branje, da lahko izvozite podatke, nato pa se izbriše. Po preizkusu Pro stane {{monthly}} na mesec ali {{price}} na leto, paketi Ekipa pa stanejo enako na osebo. Brezplačen način uporabe tududi je, da ga poganjate na svojem strežniku, gre za isto aplikacijo."
       },
       "leaving": {
         "q": "Lahko odidem in kaj se zgodi z mojimi podatki?",
@@ -388,7 +411,7 @@
     "ctaPrimary": "Začni",
     "includes": [
       "Neomejene naloge, projekti in opombe",
-      "Dodajte družinske člane ali sodelavce, vsak je mesto po enaki ceni",
+      "Za eno osebo. Paketi Ekipa dodajajo osebe v stalnih velikostih",
       "Priloge in nalaganje datotek",
       "Načrtovanje dneva z UI, MCP, koledarski viri, CalDAV in Telegram bot",
       "Dnevne varnostne kopije in upravljane posodobitve",
@@ -396,13 +419,13 @@
       "Izvozite vse, kadarkoli"
     ],
     "lede": "Enak sistem v obeh primerih. Razlika je, kdo ga vzdržuje delujočega, popravljenega in varnostno kopiranega ob treh zjutraj.",
-    "metaDescription": "tududi Cloud je enak odprtokodni sistem, ki teče na naših strežnikih, s posodobitvami, varnostnimi kopijami in e-pošto, poskrbljenimi za vas. En paket, mesečno ali letno, preklic kadarkoli.",
+    "metaDescription": "tududi Cloud je isti odprtokodni sistem, ki teče na naših strežnikih, posodobitve, varnostne kopije in e-pošto pa uredimo namesto vas. Pro za eno osebo ali paket Ekipa za skupino, mesečno ali letno, prekličete kadar koli.",
     "metaTitle": "tududi Cloud: gostovani tududi, upravljan za vas",
     "note": "Enaka aplikacija z licenco MIT. Izvozite vse, kadarkoli.",
     "orAnnual": "ali",
     "priceNote": "Zaračuna naš ponudnik plačil. Cene ne vključujejo veljavnih davkov.",
     "pricingSub": "Vse vključeno. Prekličite, kadar želite.",
-    "pricingTitle": "En paket, dva načina plačila",
+    "pricingTitle": "Pro za vas, Ekipa za vse",
     "reasons": {
       "backups": {
         "body": "Podatkovna baza se izvozi vsako noč in hrani ločeno od stroja, ki vas streže. Vse lahko tudi sami izvozite kadarkoli.",

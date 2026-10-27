@@ -2618,7 +2618,8 @@
       "note": "note",
       "storage": "spazio per gli allegati",
       "ai": "richieste IA oggi",
-      "aiCredits": "Crediti IA questo mese"
+      "aiCredits": "Crediti IA questo mese",
+      "member": "membri"
     },
     "feature": {
       "ai": "l'assistente IA",
@@ -2632,7 +2633,20 @@
     },
     "seatCovered": "Il tuo posto è pagato da {{name}}.",
     "workspaceOwner": "il titolare dell'area di lavoro",
-    "seats": "{{count}} posti nel tuo abbonamento: tu e altri {{members}}."
+    "teamName": "Team ({{seats}} posti)",
+    "seatsUsed": "{{used}} posti su {{seats}} in uso.",
+    "seatsFullHint": "Per averne di più, passa a un piano Team più grande da «Gestisci abbonamento».",
+    "justMe": "Solo io",
+    "team": "Team",
+    "teamSize": "Dimensione del team",
+    "upToSeats": "Fino a {{seats}} persone",
+    "pricePerMonth": "{{price}} al mese",
+    "pricePerYear": "{{price}} all'anno",
+    "perSeatNote": "({{seats}} posti, tu incluso)",
+    "membersNeedTeam": "Pro è per una persona. Un piano Team ti permette di aggiungere membri, a partire da 3 posti.",
+    "seatsFull": "Tutti i {{seats}} posti del tuo piano sono in uso. Passa a un piano Team più grande per aggiungere altre persone.",
+    "changePlan": "Cambia piano",
+    "planChanged": "Il tuo piano è stato cambiato."
   },
   "subscription": {
     "title": "Abbonamento",
@@ -2667,7 +2681,11 @@
     "trialLock": {
       "webhooks": "I webhook non sono inclusi nella prova gratuita. Abbonati per inviare eventi ai tuoi servizi."
     },
-    "lockedWebhooks": "I webhook fanno parte del piano a pagamento."
+    "lockedWebhooks": "I webhook fanno parte del piano a pagamento.",
+    "whoFor": "Per chi è?",
+    "justMe": "Solo io (Pro)",
+    "teamOf": "Un team fino a {{seats}} persone",
+    "perSeat": "{{price}} a persona al mese, {{seats}} posti te compreso"
   },
   "demo": {
     "opening": "Apertura della demo...",
@@ -2733,13 +2751,13 @@
     "giveAccount": "Dai un account",
     "nameRequiredWithoutEmail": "Inserisci un nome quando non c'è un'email",
     "failedToAdd": "Impossibile aggiungere il membro",
-    "seatNote": "Ogni membro è un posto in più nel tuo abbonamento. La modifica viene calcolata in proporzione sulla prossima fattura, e rimuovere un membro libera il posto.",
+    "seatNote": "Ogni membro occupa un posto del tuo piano. Rimuovere un membro libera il posto per qualcun altro.",
     "editTitle": "Modifica membro",
     "nameRequired": "Inserisci un nome",
     "failedToUpdate": "Impossibile aggiornare il membro",
     "addEmailHint": "Aggiungere un'email invia un invito a impostare una password. Non può essere cambiata in seguito.",
     "remove": "Rimuovi membro",
-    "removeConfirm": "Rimuovere {{name}}? L'account e tutto il suo contenuto vengono eliminati, e non si può annullare. Su tududi Cloud il posto viene tolto dal tuo abbonamento.",
+    "removeConfirm": "Rimuovere {{name}}? L'account e tutto il suo contenuto vengono eliminati, e non si può annullare. Su tududi Cloud il suo posto si libera per qualcun altro.",
     "removed": "Membro rimosso",
     "updated": "Membro aggiornato",
     "invitationSent": "Invito inviato",

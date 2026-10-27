@@ -2278,7 +2278,8 @@
             "note": "poznámky",
             "storage": "úložisko pre prílohy",
             "ai": "AI požiadavky tento mesiac",
-            "aiCredits": "AI kredity tento mesiac"
+            "aiCredits": "AI kredity tento mesiac",
+            "member": "členov"
         },
         "feature": {
             "ai": "AI asistenta",
@@ -2287,7 +2288,21 @@
             "telegram": "Telegram bota",
             "backups_import": "import záloh",
             "attachments": "prílohy"
-        }
+        },
+        "teamName": "Tím ({{seats}} miest)",
+        "seatsUsed": "Obsadené miesta: {{used}} z {{seats}}.",
+        "seatsFullHint": "Ak potrebujete viac, prejdite na väčší plán Tím v časti „Spravovať predplatné“.",
+        "justMe": "Len ja",
+        "team": "Tím",
+        "teamSize": "Veľkosť tímu",
+        "upToSeats": "Až {{seats}} ľudí",
+        "pricePerMonth": "{{price}} mesačne",
+        "pricePerYear": "{{price}} ročne",
+        "perSeatNote": "(miesta: {{seats}}, vrátane vás)",
+        "membersNeedTeam": "Pro je pre jednu osobu. Plán Tím vám umožní pridávať členov, od 3 miest vyššie.",
+        "seatsFull": "Všetky miesta vášho plánu ({{seats}}) sú obsadené. Prejdite na väčší plán Tím, aby ste mohli pridať ďalších ľudí.",
+        "changePlan": "Zmeniť plán",
+        "planChanged": "Váš plán bol zmenený."
     },
     "shares": {
         "shareProject": "Zdieľať projekt",
@@ -2669,7 +2684,11 @@
         "trialLock": {
             "webhooks": "Webhooky nie sú súčasťou bezplatnej skúšobnej verzie. Predplaťte si, ak chcete posielať udalosti do vlastných služieb."
         },
-        "lockedWebhooks": "Webhooky sú súčasťou plateného plánu."
+        "lockedWebhooks": "Webhooky sú súčasťou plateného plánu.",
+        "whoFor": "Pre koho je?",
+        "justMe": "Len ja (Pro)",
+        "teamOf": "Tím až pre {{seats}} ľudí",
+        "perSeat": "{{price}} za osobu mesačne, miesta: {{seats}}, vrátane vás"
     },
     "demo": {
         "opening": "Otvára sa demo...",
@@ -2734,7 +2753,9 @@
         "add": "Pridať člena",
         "giveAccount": "Vytvoriť účet",
         "nameRequiredWithoutEmail": "Ak nie je zadaný e-mail, zadajte meno",
-        "failedToAdd": "Člena sa nepodarilo pridať"
+        "failedToAdd": "Člena sa nepodarilo pridať",
+        "seatNote": "Každý člen zaberá jedno miesto vášho plánu. Odstránením člena sa miesto uvoľní pre niekoho iného.",
+        "removeConfirm": "Odstrániť {{name}}? Jeho účet a všetko v ňom sa vymaže a túto akciu nie je možné vrátiť späť. V tududi Cloud sa jeho miesto uvoľní pre niekoho iného."
     },
     "signInLink": {
         "action": "Prihlasovací odkaz",

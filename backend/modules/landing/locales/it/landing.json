@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Prezzi",
-    "title": "Scegli come usare tududi",
+    "title": "Paga per te, o per il tuo team",
     "mostPopular": "PIÙ SCELTO",
     "earlyBird": "OFFERTA LANCIO",
     "perYear": "/anno a persona",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "oppure",
         "launchNote": "Prezzo annuale early bird, tuo finché resti abbonato.",
         "action": "Inizia →",
         "features": [
           "Operativo in un minuto, senza server da configurare",
           "Attività, progetti e note illimitati, più allegati",
-          "Aggiungi familiari o colleghi, ognuno un posto allo stesso prezzo",
+          "Per una persona. Vuoi aggiungere altre persone? Scegli un piano Team",
           "Pianificazione con IA, MCP, calendari, CalDAV e il bot Telegram",
           "Aggiornamenti e backup giornalieri gestiti per te, con {{proStorageGb}} GB di spazio",
           "Esporta tutto in qualsiasi momento, elimina l'account da solo"
@@ -258,13 +259,35 @@
         "actionTrial": "Inizia la prova gratuita →",
         "priceNoteTrial": "{{days}} giorni gratis, senza carta. Disdici quando vuoi.",
         "trialNote": "La prova include l'assistente IA con un limite più basso e un membro che puoi aggiungere. I link pubblici alle note si sbloccano quando ti abboni."
+      },
+      "team": {
+        "name": "Team",
+        "perPersonMonth": "/mese a persona",
+        "perPersonYear": "/anno a persona",
+        "sizes": "Disponibile in dimensioni da {{sizes}} posti, tu incluso. Un team di 5 costa {{example}} al mese.",
+        "moreThan": "Più di {{max}} persone?",
+        "contact": "Contattaci",
+        "action": "Avvia il tuo team →",
+        "features": [
+          "Tutto quello che c'è in Pro, per ogni persona del team",
+          "Aggiungi persone fino alla tua dimensione e passa a una più grande quando vuoi",
+          "Progetti condivisi, gruppi e una bacheca Tutti per vedere chi fa cosa",
+          "Ognuno tiene le proprie attività e note private",
+          "Un solo abbonamento, pagato dal titolare dell'account"
+        ]
+      },
+      "picker": {
+        "label": "Per chi è?",
+        "solo": "Solo per me",
+        "team": "Team da {{n}}",
+        "perMonth": "/mese",
+        "perYear": "/anno"
       }
     },
     "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 14 giorni, senza domande.",
     "perMonth": "/mese a persona",
-    "sub": "Nessun livello, nessun extra, nessuna funzione trattenuta. Provalo gratis, poi un solo prezzo.",
-    "selfHostNote": "Sviluppatori: tududi è open source e può girare sul vostro server.",
-    "selfHostLink": "Leggi la guida"
+    "nextPrice": "Dal {{date}} il prezzo a persona passa a {{monthly}} al mese o {{annual}} all'anno. Abbonati prima per mantenere il prezzo di oggi finché resti abbonato.",
+    "sub": "Ogni piano ha tutte le funzioni. Pro è per una persona; un piano Team ha una dimensione fissa e aggiungi persone fino a riempirla."
   },
   "compare": {
     "title": "Confronto rapido",
@@ -336,9 +359,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "No. Cloud costa {{monthly}} al mese o {{price}} all'anno a persona, e questo è tutto il listino: nessun piano gratuito, nessun orologio di prova, nessuna carta addebitata per qualcosa che inizia silenziosamente a fatturare più avanti. C'è una garanzia di rimborso di 14 giorni se scopri che non ti si adatta, e c'è una demo dal vivo su questa pagina se vuoi prima dare un'occhiata. Il modo gratuito di usare tududi è farlo funzionare sul tuo server, che è la stessa applicazione.",
+        "a": "No. Pro costa {{monthly}} al mese o {{price}} all'anno per una persona, e i piani Team costano lo stesso a persona in dimensioni fisse. Nessun livello gratuito, nessun conto alla rovescia di prova, nessuna carta addebitata in silenzio più avanti. C'è una garanzia di rimborso di 14 giorni se poi non fa per te, e in questa pagina c'è una demo dal vivo se vuoi prima dare un'occhiata.",
         "q": "C'è un piano gratuito o una prova su tududi Cloud?",
-        "aTrial": "Non esiste un piano gratuito, ma ogni nuovo account riceve una prova gratuita di {{days}} giorni, senza carta. La prova include l'assistente IA con un limite più basso e un membro che puoi aggiungere. I link pubblici alle note si sbloccano quando ti abboni. Se non ti abboni, l'account passa in sola lettura per 30 giorni così puoi esportare i tuoi dati, poi viene eliminato. Dopo la prova, Cloud costa {{monthly}} al mese o {{price}} all'anno a persona. Il modo gratuito per usare tududi è installarlo sul tuo server, ed è la stessa applicazione."
+        "aTrial": "Non esiste un piano gratuito, ma ogni nuovo account riceve una prova gratuita di {{days}} giorni, senza carta. La prova include l'assistente IA con un limite più basso e un membro che puoi aggiungere. I link pubblici alle note si sbloccano quando ti abboni. Se non ti abboni, l'account passa in sola lettura per 30 giorni così puoi esportare i tuoi dati, poi viene eliminato. Dopo la prova, Pro costa {{monthly}} al mese o {{price}} all'anno, e i piani Team costano lo stesso a persona. Il modo gratuito per usare tududi è installarlo sul tuo server, ed è la stessa applicazione."
       },
       "leaving": {
         "q": "Posso andarmene, e che fine fanno i miei dati?",
@@ -388,7 +411,7 @@
     "ctaPrimary": "Inizia",
     "includes": [
       "Attività, progetti e note illimitati",
-      "Aggiungi familiari o colleghi, ognuno un posto allo stesso prezzo",
+      "Per una persona. I piani Team aggiungono persone in dimensioni fisse",
       "Allegati e caricamento file",
       "Pianificazione con IA, MCP, calendari, CalDAV e il bot Telegram",
       "Backup giornalieri e aggiornamenti gestiti",
@@ -396,13 +419,13 @@
       "Esporta tutto, in qualsiasi momento"
     ],
     "lede": "Lo stesso sistema in entrambi i casi. La differenza è chi lo mantiene attivo, aggiornato e con backup alle tre di notte.",
-    "metaDescription": "tududi Cloud è lo stesso sistema open source, in esecuzione sui nostri server con aggiornamenti, backup ed email gestiti per te. Un solo piano, mensile o annuale, cancellabile in qualsiasi momento.",
+    "metaDescription": "tududi Cloud è lo stesso sistema open source, in esecuzione sui nostri server, con aggiornamenti, backup ed email gestiti per te. Pro per una persona o un piano Team per un gruppo, mensile o annuale, annulli quando vuoi.",
     "metaTitle": "tududi Cloud: il tududi ospitato, gestito per te",
     "note": "Stessa app con licenza MIT. Esporta tutto, in qualsiasi momento.",
     "orAnnual": "o",
     "priceNote": "Fatturato dal nostro fornitore di pagamenti. I prezzi escludono le tasse applicabili.",
     "pricingSub": "Tutto incluso. Cancella quando vuoi.",
-    "pricingTitle": "Un piano, due modi di pagare",
+    "pricingTitle": "Pro per te, Team per tutti",
     "reasons": {
       "backups": {
         "body": "Il database viene esportato ogni notte e conservato lontano dalla macchina che ti serve. Puoi anche esportare tutto tu stesso in qualsiasi momento.",

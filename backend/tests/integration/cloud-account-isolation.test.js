@@ -99,9 +99,8 @@ const subscribe = (userId) =>
         provider: 'lemonsqueezy',
         provider_subscription_id: `sub_${userId}`,
         provider_subscription_item_id: `item_${userId}`,
-        seat_quantity: 1,
         status: 'active',
-        plan: 'pro',
+        plan: 'team_5',
     });
 
 const tokenFor = async (userId) =>
