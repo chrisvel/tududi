@@ -4,6 +4,11 @@ const entitlements = require('../../../services/entitlementsService');
 const { sequelize, Project, Area, Tag, Goal } = require('../../../models');
 const { Op } = require('sequelize');
 const projectsRepository = require('../../projects/repository');
+const {
+    validateVisibility,
+    prepareVisibilityChange,
+    syncContainerShares,
+} = require('../../projects/service');
 const permissionsService = require('../../../services/permissionsService');
 const rolesService = require('../../../services/rolesService');
 const {
@@ -60,6 +65,15 @@ const goalInputProperties = {
         type: 'boolean',
         description:
             'Mark as a maintenance project (keeps something running, not goal-directed). Setting true unlinks any goal; linking a goal clears it.',
+    },
+};
+
+const visibilityInputProperty = {
+    visibility: {
+        type: 'string',
+        enum: ['area', 'restricted'],
+        description:
+            "Who sees the project. 'area' (default): everyone its area or goal is shared with. 'restricted': only the owner, the area owner and people the project itself is shared with.",
     },
 };
 
@@ -171,6 +185,8 @@ function registerProjectTools(server, context, tools) {
                     area: proj.Area ? proj.Area.name : null,
                     goal: serializeGoal(proj.Goal),
                     is_maintenance: !!proj.is_maintenance,
+                    visibility: proj.visibility,
+                    visibility: proj.visibility,
                     tags: proj.Tags ? proj.Tags.map((t) => t.name) : [],
                     due_date_at: proj.due_date_at,
                     start_date_at: proj.start_date_at,
@@ -244,6 +260,7 @@ function registerProjectTools(server, context, tools) {
                 area: proj.Area ? proj.Area.name : null,
                 goal: serializeGoal(proj.Goal),
                 is_maintenance: !!proj.is_maintenance,
+                visibility: proj.visibility,
                 tags: proj.Tags ? proj.Tags.map((t) => t.name) : [],
                 due_date_at: proj.due_date_at,
                 completed_at: proj.completed_at,
@@ -313,6 +330,7 @@ function registerProjectTools(server, context, tools) {
                         'Image URL (upload via POST /api/upload/project-image first)',
                 },
                 ...goalInputProperties,
+                ...visibilityInputProperty,
             },
             required: ['name'],
         },
@@ -330,6 +348,10 @@ function registerProjectTools(server, context, tools) {
                 image_url: params.image_url || null,
                 goal_id: goalId || null,
                 is_maintenance: params.is_maintenance === true,
+                visibility:
+                    params.visibility === undefined
+                        ? 'area'
+                        : validateVisibility(params.visibility),
                 ...startAttrs(params, context.user?.timezone),
             };
 
@@ -370,6 +392,7 @@ function registerProjectTools(server, context, tools) {
                 area: reloadedProject.Area ? reloadedProject.Area.name : null,
                 goal: serializeGoal(reloadedProject.Goal),
                 is_maintenance: !!reloadedProject.is_maintenance,
+                visibility: reloadedProject.visibility,
                 tags: reloadedProject.Tags
                     ? reloadedProject.Tags.map((t) => t.name)
                     : [],
@@ -444,6 +467,7 @@ function registerProjectTools(server, context, tools) {
                         'Image URL (upload via POST /api/upload/project-image first)',
                 },
                 ...goalInputProperties,
+                ...visibilityInputProperty,
             },
             required: ['uid'],
         },
@@ -507,14 +531,29 @@ function registerProjectTools(server, context, tools) {
                 throw new Error('Only the project owner can change its goal');
             }
 
+            if (
+                updates.area_id !== undefined &&
+                project.user_id !== context.userId
+            ) {
+                throw new Error('Only the project owner can change its area');
+            }
+
+            const before = {
+                area_id: project.area_id,
+                goal_id: project.goal_id,
+                visibility: project.visibility,
+            };
+            const nextVisibility = await prepareVisibilityChange(
+                project,
+                context.userId,
+                params.visibility
+            );
+            if (nextVisibility !== undefined)
+                updates.visibility = nextVisibility;
+
             await project.update(updates);
 
-            if (
-                project.user_id === context.userId &&
-                (updates.area_id !== undefined || updates.goal_id !== undefined)
-            ) {
-                await syncProjectSharesFromContainer(project.id);
-            }
+            await syncContainerShares(project.id, before, updates);
 
             const reloadedProject = await Project.findByPk(project.id, {
                 include: projectIncludes,
@@ -530,6 +569,7 @@ function registerProjectTools(server, context, tools) {
                 area: reloadedProject.Area ? reloadedProject.Area.name : null,
                 goal: serializeGoal(reloadedProject.Goal),
                 is_maintenance: !!reloadedProject.is_maintenance,
+                visibility: reloadedProject.visibility,
                 tags: reloadedProject.Tags
                     ? reloadedProject.Tags.map((t) => t.name)
                     : [],

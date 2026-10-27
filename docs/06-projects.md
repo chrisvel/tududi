@@ -492,6 +492,13 @@ The project page has an **Attachments** tab next to Tasks and Notes. It holds fi
   - All notes in the project
   - All subtasks of tasks in the project
 
+### Projects in a Shared Area
+
+A project kept in a shared area (or linked to a shared goal) is shared with everyone that area or goal is shared with. Two things change that:
+
+- **Moving the project out** of the area or goal takes that access back. Shares made on the project itself, directly or with a group, stay.
+- **Restricting the project** (`visibility: 'restricted'`) takes the area and goal access back and keeps the project out of them from then on. Only its owner, the owner of its area and people the project itself is shared with see it. The project owner or the area owner can restrict a project, or open it back up (`visibility: 'area'`, the default), which shares it with the area again.
+
 ### Shared Projects Behavior
 
 **For shared users:**
@@ -500,6 +507,7 @@ The project page has an **Attachments** tab next to Tasks and Notes. It holds fi
 - Shared indicator shown on project card
 - Can file the project under one of their own areas: the placement is stored per user (`user_project_areas`) and does not move the project for the owner or anyone else
 - Cannot delete project (only owner can)
+- Tasks in the project show up in their Today, Upcoming and plan suggestions only when they own them or the task is assigned to them; the rest stay on the project page (see [Today Page Sections](02-today-page-sections.md))
 
 **Notifications:**
 - Project owner sees share count badge

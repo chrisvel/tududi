@@ -121,8 +121,13 @@ Area: "Health"
      collaborators), but an area **can be shared**: the share cascades to every
      project the owner keeps in the area (and their tasks and notes), through
      the same invite-and-accept flow as project sharing. Projects added to the
-     area later are shared automatically. See
-     [Projects](06-projects.md#project-sharing-and-collaboration).
+     area later are shared automatically, and a project moved out of the area
+     stops being shared through it (a share made on the project itself stays).
+     Tasks filed straight into a shared area, without a project, are shared
+     with it too. A project marked **Restricted** is left out: only its
+     owner, the area owner and people the project itself is shared with see
+     it. The area owner sees every project kept in their area, restricted or
+     not. See [Projects](06-projects.md#project-sharing-and-collaboration).
 
 ---
 

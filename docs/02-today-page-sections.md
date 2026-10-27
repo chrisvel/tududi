@@ -17,6 +17,8 @@ The Today page is divided into **four main sections** that organize your tasks:
 
 Each section follows specific rules to show the right tasks without duplication.
 
+**Only your own work.** Every section, the Today and Upcoming lists, the planner's suggestions and the AI brief take tasks you own or that are assigned to you. Tasks you can see only because a project or area is shared with you stay on that project or area page, the Tasks page and search, so a shared area does not fill everyone's day with each other's tasks. Assign a task to yourself to bring it into your Today.
+
 Around these sections the page can also show panels that do not own tasks: the AI Daily Brief, the daily quote, metrics, Area Balance, Active Projects and a **today** list of open tasks carrying the `today` system tag (see [Other Panels](#other-panels)).
 
 ---

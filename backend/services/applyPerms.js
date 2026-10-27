@@ -35,7 +35,13 @@ async function applyPerms(tx, changes) {
             await existing.update(
                 {
                     access_level: nextLevel,
-                    propagation: u.propagation || existing.propagation,
+                    // A direct share stays direct when an area or goal
+                    // grant later reaches the same row, so taking the
+                    // container's access back leaves it in place.
+                    propagation:
+                        existing.propagation === 'direct'
+                            ? 'direct'
+                            : u.propagation || existing.propagation,
                     granted_by_user_id: u.grantedByUserId,
                     source_action_id:
                         u.sourceActionId || existing.source_action_id || null,

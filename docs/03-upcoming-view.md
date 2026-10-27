@@ -49,6 +49,8 @@ The **Upcoming view** is a forward-looking calendar that shows tasks scheduled f
 
 ### Tasks Included
 
+Upcoming lists only your own work: tasks you own or that are assigned to you. Tasks you see only through a shared project or area stay on that page (see [Today Page Sections](02-today-page-sections.md)).
+
 A task appears in Upcoming if it matches **any** of these conditions:
 
 1. **Regular tasks with due dates**
