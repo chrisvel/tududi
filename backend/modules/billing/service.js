@@ -93,6 +93,10 @@ class BillingService {
                 !ACTIVE_STATUSES.has(account?.status) &&
                 ent.reason !== 'seat',
             portal_available: configured && manager.canOpenPortal(account),
+            // Whether the app can move this subscription to another plan
+            // itself (Paddle); otherwise the provider's portal does it.
+            plan_change_available:
+                configured && !!manager.canChangePlan?.(account),
             intervals: {
                 month: !!prices.month,
                 year: !!prices.year,
@@ -181,7 +185,45 @@ class BillingService {
                 provider_customer_id: checkout.customerId,
             });
         }
-        return { url: checkout.url, id: checkout.id };
+        return {
+            url: checkout.url,
+            id: checkout.id,
+            ...(checkout.paddle ? { paddle: checkout.paddle } : {}),
+        };
+    }
+
+    // Moves a live subscription to another plan at its current interval,
+    // where the provider allows the app to (Paddle). A smaller plan than the
+    // seats already in use is refused, so nobody loses access by surprise.
+    async changePlan(userId, plan) {
+        if (!providers.isBillingConfigured())
+            throw new BillingNotConfiguredError();
+        const account = await repository.findAccountByUserId(userId);
+        const provider = providers.providerFor(account);
+        if (!provider.canChangePlan?.(account)) {
+            throw new ValidationError(
+                'This subscription is changed from "Manage subscription"'
+            );
+        }
+        const target = getPlans()[plan];
+        const priceId =
+            provider.configuredPrices(plan)[account.billing_interval];
+        if (!target || !priceId) {
+            throw new ValidationError(`The ${plan} plan cannot be bought here`);
+        }
+        if (plan === account.plan) return this.getStatus(userId);
+        const { used } = await seats.describeSeats(userId);
+        if (used > (target.seats || 1)) {
+            throw new ValidationError(
+                `${used} seats are in use; remove members before moving to a plan with ${target.seats || 1}`
+            );
+        }
+        const from = account.plan;
+        const fields = await provider.changePlan({ account, priceId });
+        await account.update({ ...fields, provider: provider.name });
+        entitlements.invalidate(userId);
+        logInfo(`User ${userId} changed plan from ${from} to ${plan}`);
+        return this.getStatus(userId);
     }
 
     async createPortalSession(userId) {

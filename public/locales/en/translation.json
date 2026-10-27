@@ -2576,7 +2576,9 @@
     "pricePerYear": "{{price}} a year",
     "perSeatNote": "({{seats}} seats, you included)",
     "membersNeedTeam": "Pro is for one person. A Team plan lets you add members, from 3 seats up.",
-    "seatsFull": "All {{seats}} seats of your plan are in use. Move to a bigger Team plan to add more people."
+    "seatsFull": "All {{seats}} seats of your plan are in use. Move to a bigger Team plan to add more people.",
+    "changePlan": "Change plan",
+    "planChanged": "Your plan was changed."
   },
   "shares": {
     "shareProject": "Share project",

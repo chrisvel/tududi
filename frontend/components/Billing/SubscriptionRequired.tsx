@@ -7,7 +7,7 @@ import { detachPushForLogout } from '../../utils/pushService';
 import {
     fetchBillingStatus,
     fetchBillingCatalog,
-    startCheckout,
+    goToCheckout,
     syncCheckout,
 } from '../../utils/billingService';
 import type { BillingCatalog, BillingStatus } from '../../entities/Billing';
@@ -82,8 +82,7 @@ const SubscriptionRequired: React.FC = () => {
         setBusy(true);
         setError(null);
         try {
-            const url = await startCheckout(interval, planKey);
-            window.location.assign(url);
+            await goToCheckout(interval, planKey, () => setBusy(false));
         } catch (err: any) {
             setError(err.message || 'Could not start the checkout');
             setBusy(false);

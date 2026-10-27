@@ -194,25 +194,27 @@ const config = {
                 team: parseJsonEnv(process.env.LEMONSQUEEZY_TEAM_VARIANTS_JSON),
             },
         },
-        polar: {
-            accessToken: process.env.POLAR_ACCESS_TOKEN,
-            webhookSecret: process.env.POLAR_WEBHOOK_SECRET,
-            // "sandbox" for sandbox-api.polar.sh; production otherwise.
-            server: process.env.POLAR_SERVER || 'production',
-            apiBase: process.env.POLAR_API_BASE || undefined,
-            // Product ids by plan:
-            // {"pro":{"month":"…","year":"…"},"team_5":{"month":"…","year":"…"}}
-            products: parseJsonEnv(process.env.POLAR_PRODUCTS_JSON),
+        paddle: {
+            apiKey: process.env.PADDLE_API_KEY,
+            // Client-side token (live_… or test_…) for Paddle.js; public.
+            clientToken: process.env.PADDLE_CLIENT_TOKEN,
+            webhookSecret: process.env.PADDLE_WEBHOOK_SECRET,
+            // "sandbox" for sandbox-api.paddle.com; production otherwise.
+            environment: process.env.PADDLE_ENVIRONMENT || 'production',
+            apiBase: process.env.PADDLE_API_BASE || undefined,
+            // Price ids by plan:
+            // {"pro":{"month":"pri_…","year":"pri_…"},"team_5":{…}}
+            prices: parseJsonEnv(process.env.PADDLE_PRICES_JSON),
         },
         // Which provider sells new subscriptions. Explicit BILLING_PROVIDER
-        // wins; otherwise Polar when it has a token, then Lemon Squeezy when
+        // wins; otherwise Paddle when it has a key, then Lemon Squeezy when
         // it has a key and Stripe does not, else Stripe. Subscriptions bought
         // through another configured provider are still managed there.
         billing: {
             provider:
                 process.env.BILLING_PROVIDER ||
-                (process.env.POLAR_ACCESS_TOKEN
-                    ? 'polar'
+                (process.env.PADDLE_API_KEY
+                    ? 'paddle'
                     : process.env.LEMONSQUEEZY_API_KEY &&
                         !process.env.STRIPE_SECRET_KEY
                       ? 'lemonsqueezy'

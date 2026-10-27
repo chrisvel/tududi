@@ -2636,7 +2636,9 @@
     "pricePerYear": "{{price}} por ano",
     "perSeatNote": "({{seats}} lugares, incluindo você)",
     "membersNeedTeam": "O Pro é para uma pessoa. Um plano Equipe permite adicionar membros, a partir de 3 lugares.",
-    "seatsFull": "Todos os {{seats}} lugares do seu plano estão em uso. Mude para um plano Equipe maior para adicionar mais pessoas."
+    "seatsFull": "Todos os {{seats}} lugares do seu plano estão em uso. Mude para um plano Equipe maior para adicionar mais pessoas.",
+    "changePlan": "Mudar de plano",
+    "planChanged": "O seu plano foi alterado."
   },
   "subscription": {
     "title": "Assinatura",

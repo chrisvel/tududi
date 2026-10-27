@@ -46,6 +46,18 @@ const billingController = {
         }
     },
 
+    async changePlan(req, res, next) {
+        try {
+            const plan = req.body?.plan;
+            if (typeof plan !== 'string') {
+                throw new ValidationError('plan must be a string');
+            }
+            res.json(await billingService.changePlan(requireUserId(req), plan));
+        } catch (error) {
+            next(error);
+        }
+    },
+
     async portal(req, res, next) {
         try {
             res.json(

@@ -70,6 +70,9 @@ export interface BillingStatus {
     provider: { name: string; display_name: string };
     checkout_available: boolean;
     portal_available: boolean;
+    // Whether the app can move the subscription to another plan itself
+    // (Paddle); otherwise "Manage subscription" does it.
+    plan_change_available?: boolean;
     intervals: { month: boolean; year: boolean };
     // Pro and the Team buckets that can be bought, smallest first.
     plans_available?: PurchasablePlan[];

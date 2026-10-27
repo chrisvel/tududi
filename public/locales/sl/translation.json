@@ -2641,7 +2641,9 @@
     "pricePerYear": "{{price}} na leto",
     "perSeatNote": "(mesta: {{seats}}, vključno z vami)",
     "membersNeedTeam": "Pro je za eno osebo. S paketom Ekipa lahko dodajate člane, od 3 mest naprej.",
-    "seatsFull": "Vsa mesta vašega paketa ({{seats}}) so zasedena. Preidite na večji paket Ekipa, da dodate več oseb."
+    "seatsFull": "Vsa mesta vašega paketa ({{seats}}) so zasedena. Preidite na večji paket Ekipa, da dodate več oseb.",
+    "changePlan": "Zamenjaj paket",
+    "planChanged": "Vaš paket je bil zamenjan."
   },
   "subscription": {
     "title": "Naročnina",

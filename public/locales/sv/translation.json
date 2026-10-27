@@ -2633,7 +2633,9 @@
     "pricePerYear": "{{price}} om året",
     "perSeatNote": "({{seats}} platser, du inräknad)",
     "membersNeedTeam": "Pro är för en person. Med ett Team-abonnemang kan du lägga till medlemmar, från 3 platser och uppåt.",
-    "seatsFull": "Alla {{seats}} platser i ditt abonnemang används. Byt till ett större Team-abonnemang för att lägga till fler personer."
+    "seatsFull": "Alla {{seats}} platser i ditt abonnemang används. Byt till ett större Team-abonnemang för att lägga till fler personer.",
+    "changePlan": "Byt abonnemang",
+    "planChanged": "Ditt abonnemang har ändrats."
   },
   "subscription": {
     "title": "Prenumeration",

@@ -10,7 +10,8 @@ import type { BillingStatus, BillingCatalog } from '../../../entities/Billing';
 import {
     fetchBillingStatus,
     fetchBillingCatalog,
-    startCheckout,
+    goToCheckout,
+    changePlan,
     openPortal,
     syncCheckout,
     formatBytes,
@@ -37,7 +38,9 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
     const [status, setStatus] = useState<BillingStatus | null>(null);
     const [catalog, setCatalog] = useState<BillingCatalog | null>(null);
     const [loading, setLoading] = useState(false);
-    const [busy, setBusy] = useState<'month' | 'year' | 'portal' | null>(null);
+    const [busy, setBusy] = useState<
+        'month' | 'year' | 'portal' | 'plan' | null
+    >(null);
     const [interval, setInterval] = useState<'month' | 'year'>('year');
     const [planKey, setPlanKey] = useState('pro');
 
@@ -99,10 +102,23 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
     const onUpgrade = async (chosen: 'month' | 'year') => {
         setBusy(chosen);
         try {
-            const url = await startCheckout(chosen, planKey);
-            window.location.assign(url);
+            await goToCheckout(chosen, planKey, () => setBusy(null));
         } catch (err: any) {
             showErrorToast(err.message || 'Checkout failed');
+            setBusy(null);
+        }
+    };
+
+    const onChangePlan = async (key: string) => {
+        setBusy('plan');
+        try {
+            setStatus(await changePlan(key));
+            showSuccessToast(
+                t('billing.planChanged', 'Your plan was changed.')
+            );
+        } catch (err: any) {
+            showErrorToast(err.message || 'Could not change the plan');
+        } finally {
             setBusy(null);
         }
     };
@@ -245,7 +261,8 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                                                     seats: status.seats.seats,
                                                 })}
                                                 {seatsFull &&
-                                                    status.portal_available && (
+                                                    status.portal_available &&
+                                                    !status.plan_change_available && (
                                                         <span className="ml-1">
                                                             {t(
                                                                 'billing.seatsFullHint',
@@ -257,20 +274,59 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                                         )}
                                 </div>
                             </div>
-                            {status.portal_available && (
-                                <button
-                                    type="button"
-                                    onClick={onPortal}
-                                    disabled={busy !== null}
-                                    className="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-60"
-                                    data-testid="billing-portal"
-                                >
-                                    {t(
-                                        'billing.manageSubscription',
-                                        'Manage subscription'
-                                    )}
-                                </button>
-                            )}
+                            <div className="flex items-center">
+                                {status.plan_change_available && (
+                                    <select
+                                        value={status.plan}
+                                        onChange={(e) =>
+                                            onChangePlan(e.target.value)
+                                        }
+                                        disabled={busy !== null}
+                                        className="mr-2 px-2 py-2 rounded text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 disabled:opacity-60"
+                                        aria-label={t(
+                                            'billing.changePlan',
+                                            'Change plan'
+                                        )}
+                                        data-testid="billing-change-plan"
+                                    >
+                                        {plans
+                                            .filter(
+                                                (p) =>
+                                                    p.key === status.plan ||
+                                                    (status.subscription
+                                                        ?.interval === 'year'
+                                                        ? p.intervals.year
+                                                        : p.intervals.month)
+                                            )
+                                            .map((p) => (
+                                                <option
+                                                    key={p.key}
+                                                    value={p.key}
+                                                >
+                                                    {planLabel(
+                                                        t,
+                                                        p.key,
+                                                        p.seats
+                                                    )}
+                                                </option>
+                                            ))}
+                                    </select>
+                                )}
+                                {status.portal_available && (
+                                    <button
+                                        type="button"
+                                        onClick={onPortal}
+                                        disabled={busy !== null}
+                                        className="px-4 py-2 rounded border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-60"
+                                        data-testid="billing-portal"
+                                    >
+                                        {t(
+                                            'billing.manageSubscription',
+                                            'Manage subscription'
+                                        )}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
 

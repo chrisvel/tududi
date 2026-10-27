@@ -2642,7 +2642,9 @@
     "pricePerYear": "{{price}} pro Jahr",
     "perSeatNote": "({{seats}} Plätze, du eingeschlossen)",
     "membersNeedTeam": "Pro ist für eine Person. Mit einem Team-Tarif kannst du Mitglieder hinzufügen, ab 3 Plätzen.",
-    "seatsFull": "Alle {{seats}} Plätze deines Tarifs sind belegt. Wechsle zu einem größeren Team-Tarif, um weitere Personen hinzuzufügen."
+    "seatsFull": "Alle {{seats}} Plätze deines Tarifs sind belegt. Wechsle zu einem größeren Team-Tarif, um weitere Personen hinzuzufügen.",
+    "changePlan": "Plan ändern",
+    "planChanged": "Dein Plan wurde geändert."
   },
   "subscription": {
     "title": "Abonnement",

@@ -2633,7 +2633,9 @@
     "pricePerYear": "{{price}} per jaar",
     "perSeatNote": "({{seats}} plekken, jij inbegrepen)",
     "membersNeedTeam": "Pro is voor één persoon. Met een Team-abonnement kun je leden toevoegen, vanaf 3 plekken.",
-    "seatsFull": "Alle {{seats}} plekken van je abonnement zijn in gebruik. Stap over op een groter Team-abonnement om meer mensen toe te voegen."
+    "seatsFull": "Alle {{seats}} plekken van je abonnement zijn in gebruik. Stap over op een groter Team-abonnement om meer mensen toe te voegen.",
+    "changePlan": "Abonnement wijzigen",
+    "planChanged": "Je abonnement is gewijzigd."
   },
   "subscription": {
     "title": "Abonnement",

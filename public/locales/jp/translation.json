@@ -2631,7 +2631,9 @@
     "pricePerYear": "年 {{price}}",
     "perSeatNote": "（あなたを含めて {{seats}} 席）",
     "membersNeedTeam": "Pro は 1 人用です。チームプランならメンバーを追加できます（3 席から）。",
-    "seatsFull": "プランの {{seats}} 席はすべて使用中です。さらに人を追加するには、大きいチームプランに変更してください。"
+    "seatsFull": "プランの {{seats}} 席はすべて使用中です。さらに人を追加するには、大きいチームプランに変更してください。",
+    "changePlan": "プランを変更",
+    "planChanged": "プランを変更しました。"
   },
   "subscription": {
     "title": "サブスクリプション",

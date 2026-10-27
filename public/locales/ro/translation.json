@@ -2639,7 +2639,9 @@
     "pricePerYear": "{{price}} pe an",
     "perSeatNote": "({{seats}} locuri, inclusiv tu)",
     "membersNeedTeam": "Pro este pentru o singură persoană. Un plan Echipă îți permite să adaugi membri, de la 3 locuri în sus.",
-    "seatsFull": "Toate cele {{seats}} locuri din planul tău sunt ocupate. Treci la un plan Echipă mai mare ca să adaugi mai multe persoane."
+    "seatsFull": "Toate cele {{seats}} locuri din planul tău sunt ocupate. Treci la un plan Echipă mai mare ca să adaugi mai multe persoane.",
+    "changePlan": "Schimbă planul",
+    "planChanged": "Planul tău a fost schimbat."
   },
   "subscription": {
     "title": "Abonament",

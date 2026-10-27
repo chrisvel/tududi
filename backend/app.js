@@ -61,10 +61,20 @@ app.use(
                     "'unsafe-inline'",
                     "'unsafe-eval'",
                     'https://challenges.cloudflare.com',
+                    // Paddle.js, the checkout overlay of hosted billing
+                    'https://cdn.paddle.com',
                 ],
-                styleSrc: ["'self'", "'unsafe-inline'"],
+                styleSrc: [
+                    "'self'",
+                    "'unsafe-inline'",
+                    'https://cdn.paddle.com',
+                ],
                 imgSrc: ["'self'", 'data:', 'https:'],
-                connectSrc: ["'self'"],
+                connectSrc: [
+                    "'self'",
+                    'https://checkout-service.paddle.com',
+                    'https://sandbox-checkout-service.paddle.com',
+                ],
                 fontSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
@@ -74,6 +84,8 @@ app.use(
                     "'self'",
                     'https://challenges.cloudflare.com',
                     'https://www.youtube-nocookie.com',
+                    'https://buy.paddle.com',
+                    'https://sandbox-buy.paddle.com',
                 ],
                 upgradeInsecureRequests:
                     process.env.UPGRADE_INSECURE_REQUESTS === 'true'

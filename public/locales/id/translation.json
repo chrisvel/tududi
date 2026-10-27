@@ -2631,7 +2631,9 @@
     "pricePerYear": "{{price}} per tahun",
     "perSeatNote": "({{seats}} kursi, termasuk Anda)",
     "membersNeedTeam": "Pro untuk satu orang. Paket Tim memungkinkan Anda menambah anggota, mulai dari 3 kursi.",
-    "seatsFull": "Semua {{seats}} kursi di paket Anda sudah terpakai. Pindah ke paket Tim yang lebih besar untuk menambah orang."
+    "seatsFull": "Semua {{seats}} kursi di paket Anda sudah terpakai. Pindah ke paket Tim yang lebih besar untuk menambah orang.",
+    "changePlan": "Ganti paket",
+    "planChanged": "Paket Anda telah diganti."
   },
   "subscription": {
     "title": "Langganan",

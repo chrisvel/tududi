@@ -2641,7 +2641,9 @@
     "pricePerYear": "{{price}} rocznie",
     "perSeatNote": "(miejsca: {{seats}}, łącznie z Tobą)",
     "membersNeedTeam": "Pro jest dla jednej osoby. Plan Zespół pozwala dodawać członków, od 3 miejsc wzwyż.",
-    "seatsFull": "Wszystkie miejsca w Twoim planie ({{seats}}) są zajęte. Przejdź na większy plan Zespół, aby dodać więcej osób."
+    "seatsFull": "Wszystkie miejsca w Twoim planie ({{seats}}) są zajęte. Przejdź na większy plan Zespół, aby dodać więcej osób.",
+    "changePlan": "Zmień plan",
+    "planChanged": "Twój plan został zmieniony."
   },
   "subscription": {
     "title": "Subskrypcja",

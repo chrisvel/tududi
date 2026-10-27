@@ -5,7 +5,8 @@ import BillingTab from '../BillingTab';
 import {
     fetchBillingStatus,
     fetchBillingCatalog,
-    startCheckout,
+    goToCheckout,
+    changePlan,
 } from '../../../../utils/billingService';
 
 jest.mock('react-i18next', () => ({
@@ -35,14 +36,16 @@ jest.mock('../../../../utils/billingService', () => ({
     ...jest.requireActual('../../../../utils/billingService'),
     fetchBillingStatus: jest.fn(),
     fetchBillingCatalog: jest.fn(),
-    startCheckout: jest.fn(),
+    goToCheckout: jest.fn(),
+    changePlan: jest.fn(),
     openPortal: jest.fn(),
     syncCheckout: jest.fn(),
 }));
 
 const mockStatus = fetchBillingStatus as jest.Mock;
 const mockCatalog = fetchBillingCatalog as jest.Mock;
-const mockCheckout = startCheckout as jest.Mock;
+const mockCheckout = goToCheckout as jest.Mock;
+const mockChangePlan = changePlan as jest.Mock;
 
 const limits = {
     max_tasks: null,
@@ -94,7 +97,7 @@ describe('BillingTab', () => {
             intervals: { month: true, year: true },
             trial_days: 7,
         });
-        mockCheckout.mockResolvedValue('https://checkout.example/x');
+        mockCheckout.mockResolvedValue(undefined);
     });
 
     it('checks out Pro by default', async () => {
@@ -104,7 +107,11 @@ describe('BillingTab', () => {
         fireEvent.click(await screen.findByTestId('billing-upgrade'));
 
         await waitFor(() =>
-            expect(mockCheckout).toHaveBeenCalledWith('year', 'pro')
+            expect(mockCheckout).toHaveBeenCalledWith(
+                'year',
+                'pro',
+                expect.any(Function)
+            )
         );
     });
 
@@ -122,7 +129,11 @@ describe('BillingTab', () => {
 
         fireEvent.click(screen.getByTestId('billing-upgrade'));
         await waitFor(() =>
-            expect(mockCheckout).toHaveBeenCalledWith('year', 'team_5')
+            expect(mockCheckout).toHaveBeenCalledWith(
+                'year',
+                'team_5',
+                expect.any(Function)
+            )
         );
     });
 
@@ -147,6 +158,36 @@ describe('BillingTab', () => {
             'bigger Team plan'
         );
         expect(screen.queryByTestId('billing-upgrade')).toBeNull();
+    });
+
+    it('moves a Paddle subscription to another plan from the plan box', async () => {
+        const subscribed = status({
+            plan: 'pro',
+            planName: 'Pro',
+            reason: 'subscription',
+            status: 'active',
+            checkout_available: false,
+            portal_available: true,
+            plan_change_available: true,
+            subscription: {
+                status: 'active',
+                interval: 'year',
+                current_period_end: null,
+                cancel_at_period_end: false,
+                last_payment_failed_at: null,
+            },
+        });
+        mockStatus.mockResolvedValue(subscribed);
+        mockChangePlan.mockResolvedValue({ ...subscribed, plan: 'team_5' });
+        renderTab();
+
+        fireEvent.change(await screen.findByTestId('billing-change-plan'), {
+            target: { value: 'team_5' },
+        });
+
+        await waitFor(() =>
+            expect(mockChangePlan).toHaveBeenCalledWith('team_5')
+        );
     });
 
     it('offers only Pro when no Team plan is on sale', async () => {

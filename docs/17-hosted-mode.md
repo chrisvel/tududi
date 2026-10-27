@@ -220,8 +220,8 @@ All three are removed with the account by `services/accountErasureService.js`.
 ## Payments
 
 Plans are sold through one of three providers, chosen by `BILLING_PROVIDER`
-(`polar`, `lemonsqueezy` or `stripe`; when unset, Polar is used if
-`POLAR_ACCESS_TOKEN` is set, then Lemon Squeezy if only its key is present,
+(`paddle`, `lemonsqueezy` or `stripe`; when unset, Paddle is used if
+`PADDLE_API_KEY` is set, then Lemon Squeezy if only its key is present,
 Stripe otherwise). tududi never sees card details with any of them. The
 billing tab, the webhook endpoint and the admin page are the same for all;
 only the credentials differ.
@@ -232,33 +232,41 @@ billing tab, "Manage subscription", sync and cancellation go to the
 provider in `billing_accounts.provider`, and that provider's webhooks are
 still applied. The one webhook URL tells providers apart by their signature
 header. Once such a subscription ends, the next checkout goes through the
-selling provider. The hosted tududi sells through Polar and keeps its
+selling provider. The hosted tududi sells through Paddle and keeps its
 earlier Lemon Squeezy subscriptions this way.
 
-**Polar** is a merchant of record: it charges VAT and issues the invoices.
-Each plan and interval is its own product.
+**Paddle** (Paddle Billing) is a merchant of record: it charges VAT and
+issues the invoices. Each plan is a product with a monthly and a yearly
+price.
 
 | Variable | Meaning |
 |---|---|
-| `POLAR_ACCESS_TOKEN` | organization access token |
-| `POLAR_WEBHOOK_SECRET` | signing secret (`whsec_…`) of the webhook below |
-| `POLAR_PRODUCTS_JSON` | product ids by plan, `{"pro":{"month":"…","year":"…"},"team_5":{"month":"…","year":"…"}}` |
-| `POLAR_SERVER` | `sandbox` for sandbox-api.polar.sh; production otherwise |
+| `PADDLE_API_KEY` | server-side API key (`pdl_live_apikey_…`) |
+| `PADDLE_CLIENT_TOKEN` | client-side token for Paddle.js (`live_…`, or `test_…` in sandbox) |
+| `PADDLE_WEBHOOK_SECRET` | secret key of the notification destination below |
+| `PADDLE_PRICES_JSON` | price ids by plan, `{"pro":{"month":"pri_…","year":"pri_…"},"team_5":{…}}` |
+| `PADDLE_ENVIRONMENT` | `sandbox` for sandbox-api.paddle.com; production otherwise |
 
-Create a monthly and a yearly product per plan, turn on "Enable
-subscription plan changes" under Settings > Customer portal so customers
-move between Team sizes themselves, and add a webhook (format Raw) at
-`https://your-host/api/billing/webhook` with the events
-`subscription.created`, `subscription.updated`, `subscription.active`,
-`subscription.canceled`, `subscription.uncanceled`, `subscription.revoked`,
-`subscription.past_due` and `order.paid`. The checkout sets the customer's
-external id to the user's uid, which is how webhooks and sync find the
-user; the success redirect carries the checkout id. A subscription
-canceled at period end keeps its plan until it is revoked, which drops it
-to Free. "Manage subscription" opens the Polar customer portal.
+Checkout: the server finds or creates the Paddle customer by email, opens
+a transaction for the price with the user's uid in `custom_data` (Paddle
+copies it to the subscription), and the browser opens Paddle's overlay on
+that transaction; afterwards Paddle sends it back to the billing tab with
+the transaction id, which the sync reads. The checkout domain must be
+approved in Paddle (Checkout > Website approval) and a default payment link
+set. Add a notification destination at `https://your-host/api/billing/webhook`
+with `subscription.created`, `subscription.updated`,
+`subscription.activated`, `subscription.trialing`,
+`subscription.paused`, `subscription.resumed`, `subscription.canceled`,
+`subscription.past_due` and `transaction.completed`. A cancellation
+scheduled for the period end keeps the plan until `subscription.canceled`,
+which drops to Free. "Manage subscription" opens Paddle's customer portal
+(payment method, invoices, cancelling). Paddle's portal cannot switch
+plans, so the billing tab offers the other plans at the same interval and
+`POST /api/billing/plan` moves the subscription (prorated immediately); a
+plan with fewer seats than are in use is refused.
 
 **Lemon Squeezy** is a merchant of record too, and sold the hosted tududi
-before Polar.
+before Paddle.
 
 | Variable | Meaning |
 |---|---|
@@ -300,7 +308,7 @@ events `checkout.session.completed`, `customer.subscription.created`,
 
 For all of them, the endpoint reads the raw body, verifies the signature, records
 every event id in `billing_events` (a redelivered event is acknowledged and
-not applied twice; Polar's is the `webhook-id` header, and Lemon Squeezy
+not applied twice; Paddle's is its `event_id`, and Lemon Squeezy
 sends none, so the resource id plus its `updated_at` stands in), drops an update older than the last one
 applied, and answers 500 on an internal fault so the provider retries.
 
@@ -310,7 +318,8 @@ Endpoints (all 404 on a self-hosted instance):
 |---|---|
 | `GET /api/billing` | plan, status, usage, the provider, and what the UI may offer |
 | `GET /api/billing/plans` | the catalog, without price ids |
-| `POST /api/billing/checkout` `{ interval: "month" \| "year", plan? }` | checkout URL (`plan` defaults to `pro`) |
+| `POST /api/billing/checkout` `{ interval: "month" \| "year", plan? }` | checkout URL, or for Paddle the transaction for the overlay (`plan` defaults to `pro`) |
+| `POST /api/billing/plan` `{ plan }` | move a live subscription to another plan (providers that allow it: Paddle) |
 | `POST /api/billing/portal` | customer portal URL |
 | `POST /api/billing/sync` `{ session_id? }` | re-read the subscription from the provider (the checkout redirect can beat the webhook) |
 | `GET /api/admin/billing` | overview and account list, each with this month's AI request/token usage (admin) |

@@ -2633,7 +2633,9 @@
     "pricePerYear": "Yıllık {{price}}",
     "perSeatNote": "(siz dahil {{seats}} koltuk)",
     "membersNeedTeam": "Pro tek kişiliktir. Ekip planı, 3 koltuktan başlayarak üye eklemenizi sağlar.",
-    "seatsFull": "Planınızdaki {{seats}} koltuğun hepsi kullanımda. Daha fazla kişi eklemek için daha büyük bir Ekip planına geçin."
+    "seatsFull": "Planınızdaki {{seats}} koltuğun hepsi kullanımda. Daha fazla kişi eklemek için daha büyük bir Ekip planına geçin.",
+    "changePlan": "Planı değiştir",
+    "planChanged": "Planınız değiştirildi."
   },
   "subscription": {
     "title": "Abonelik",

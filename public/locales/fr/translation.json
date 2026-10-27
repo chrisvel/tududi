@@ -2636,7 +2636,9 @@
     "pricePerYear": "{{price}} par an",
     "perSeatNote": "({{seats}} places, vous compris)",
     "membersNeedTeam": "Pro est pour une personne. Un forfait Équipe vous permet d'ajouter des membres, à partir de 3 places.",
-    "seatsFull": "Les {{seats}} places de votre forfait sont utilisées. Passez à un forfait Équipe plus grand pour ajouter d'autres personnes."
+    "seatsFull": "Les {{seats}} places de votre forfait sont utilisées. Passez à un forfait Équipe plus grand pour ajouter d'autres personnes.",
+    "changePlan": "Changer de formule",
+    "planChanged": "Votre formule a été modifiée."
   },
   "subscription": {
     "title": "Abonnement",

@@ -2636,7 +2636,9 @@
     "pricePerYear": "{{price}} all'anno",
     "perSeatNote": "({{seats}} posti, tu incluso)",
     "membersNeedTeam": "Pro è per una persona. Un piano Team ti permette di aggiungere membri, a partire da 3 posti.",
-    "seatsFull": "Tutti i {{seats}} posti del tuo piano sono in uso. Passa a un piano Team più grande per aggiungere altre persone."
+    "seatsFull": "Tutti i {{seats}} posti del tuo piano sono in uso. Passa a un piano Team più grande per aggiungere altre persone.",
+    "changePlan": "Cambia piano",
+    "planChanged": "Il tuo piano è stato cambiato."
   },
   "subscription": {
     "title": "Abbonamento",

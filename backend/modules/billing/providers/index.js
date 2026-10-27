@@ -3,7 +3,7 @@
 const { getConfig } = require('../../../config/config');
 
 // The payment providers behind hosted-mode billing: Stripe (Checkout +
-// Customer Portal), and Lemon Squeezy and Polar (merchants of record that
+// Customer Portal), and Lemon Squeezy and Paddle (merchants of record that
 // handle VAT and invoices). One of them sells new subscriptions; a
 // subscription bought through another keeps being managed, synced and
 // cancelled there, and its webhooks keep being applied. Each exposes the
@@ -16,7 +16,12 @@ const { getConfig } = require('../../../config/config');
 //   planForPrice(id)                       plan key for a price id, or null
 //   canOpenPortal(account)                 whether "Manage subscription" works
 //   createCheckout({ user, account, plan, interval, successUrl, cancelUrl })
-//                                          -> { url, id, customerId? }
+//                                          -> { url, id, customerId?, paddle? }
+//                                          (paddle: what the browser needs to
+//                                          open the overlay instead of a url)
+//   canChangePlan(account), changePlan({ account, priceId })
+//                                          optional: move a live subscription
+//                                          to another plan -> account fields
 //   createPortal({ account, returnUrl })   -> { url }
 //   sync({ user, account, checkoutRef })   -> account fields, or null
 //   parseWebhook(rawBody, headers)         -> normalized event (below)
@@ -43,7 +48,7 @@ class WebhookSignatureError extends Error {
 const PROVIDERS = {
     stripe: () => require('./stripe'),
     lemonsqueezy: () => require('./lemonsqueezy'),
-    polar: () => require('./polar'),
+    paddle: () => require('./paddle'),
 };
 
 // Statuses of a subscription that still lives at its provider.

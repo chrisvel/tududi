@@ -2292,7 +2292,9 @@
         "pricePerYear": "{{price}} ročne",
         "perSeatNote": "(miesta: {{seats}}, vrátane vás)",
         "membersNeedTeam": "Pro je pre jednu osobu. Plán Tím vám umožní pridávať členov, od 3 miest vyššie.",
-        "seatsFull": "Všetky miesta vášho plánu ({{seats}}) sú obsadené. Prejdite na väčší plán Tím, aby ste mohli pridať ďalších ľudí."
+        "seatsFull": "Všetky miesta vášho plánu ({{seats}}) sú obsadené. Prejdite na väčší plán Tím, aby ste mohli pridať ďalších ľudí.",
+        "changePlan": "Zmeniť plán",
+        "planChanged": "Váš plán bol zmenený."
     },
     "shares": {
         "shareProject": "Zdieľať projekt",

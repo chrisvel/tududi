@@ -2631,7 +2631,9 @@
     "pricePerYear": "{{price}} mỗi năm",
     "perSeatNote": "({{seats}} chỗ, tính cả bạn)",
     "membersNeedTeam": "Pro dành cho một người. Gói Nhóm cho phép bạn thêm thành viên, từ 3 chỗ trở lên.",
-    "seatsFull": "Cả {{seats}} chỗ trong gói của bạn đều đang được dùng. Chuyển sang gói Nhóm lớn hơn để thêm người."
+    "seatsFull": "Cả {{seats}} chỗ trong gói của bạn đều đang được dùng. Chuyển sang gói Nhóm lớn hơn để thêm người.",
+    "changePlan": "Đổi gói",
+    "planChanged": "Gói của bạn đã được đổi."
   },
   "subscription": {
     "title": "Đăng ký",

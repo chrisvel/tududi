@@ -2633,7 +2633,9 @@
     "pricePerYear": "{{price}} om året",
     "perSeatNote": "({{seats}} pladser, inklusive dig)",
     "membersNeedTeam": "Pro er til én person. Med et Team-abonnement kan du tilføje medlemmer, fra 3 pladser og op.",
-    "seatsFull": "Alle {{seats}} pladser i dit abonnement er i brug. Skift til et større Team-abonnement for at tilføje flere personer."
+    "seatsFull": "Alle {{seats}} pladser i dit abonnement er i brug. Skift til et større Team-abonnement for at tilføje flere personer.",
+    "changePlan": "Skift abonnement",
+    "planChanged": "Dit abonnement er ændret."
   },
   "subscription": {
     "title": "Abonnement",

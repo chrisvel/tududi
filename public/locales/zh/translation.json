@@ -2631,7 +2631,9 @@
     "pricePerYear": "每年 {{price}}",
     "perSeatNote": "（{{seats}} 个席位，含你自己）",
     "membersNeedTeam": "Pro 仅供一人使用。团队套餐可让你添加成员，3 个席位起。",
-    "seatsFull": "你套餐中的 {{seats}} 个席位已全部占用。换成更大的团队套餐即可添加更多人。"
+    "seatsFull": "你套餐中的 {{seats}} 个席位已全部占用。换成更大的团队套餐即可添加更多人。",
+    "changePlan": "更改方案",
+    "planChanged": "你的方案已更改。"
   },
   "subscription": {
     "title": "订阅",

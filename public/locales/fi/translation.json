@@ -2633,7 +2633,9 @@
     "pricePerYear": "{{price}} vuodessa",
     "perSeatNote": "({{seats}} paikkaa, sinä mukaan lukien)",
     "membersNeedTeam": "Pro on yhdelle henkilölle. Tiimi-tilauksella voit lisätä jäseniä, 3 paikasta alkaen.",
-    "seatsFull": "Kaikki tilauksesi {{seats}} paikkaa ovat käytössä. Vaihda isompaan Tiimi-tilaukseen lisätäksesi ihmisiä."
+    "seatsFull": "Kaikki tilauksesi {{seats}} paikkaa ovat käytössä. Vaihda isompaan Tiimi-tilaukseen lisätäksesi ihmisiä.",
+    "changePlan": "Vaihda tilausta",
+    "planChanged": "Tilauksesi on vaihdettu."
   },
   "subscription": {
     "title": "Tilauksen",
