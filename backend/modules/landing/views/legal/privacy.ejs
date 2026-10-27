@@ -26,7 +26,8 @@
 <p>We use a small number of service providers, each only for the purpose listed:</p>
 <ul>
     <li><strong><%= operator.host %></strong>: servers and storage where the service and its database run<%= operator.hostRegion ? ' (' + operator.hostRegion + ')' : '' %>.</li>
-    <li><strong>Lemon Squeezy</strong>: checkout, payments, invoices and tax, as merchant of record. See <a href="https://www.lemonsqueezy.com/privacy">their privacy policy</a>.</li>
+    <li><strong>Polar</strong>: checkout, payments, invoices and tax, as merchant of record. See <a href="https://polar.sh/legal/privacy">their privacy policy</a>.</li>
+    <li><strong>Lemon Squeezy</strong>: the same, for subscriptions started there before November 2026. See <a href="https://www.lemonsqueezy.com/privacy">their privacy policy</a>.</li>
     <li><strong>Resend</strong>: sending account and notification email.</li>
     <li><strong>Cloudflare Turnstile</strong>: bot protection on the sign-up and password reset forms.</li>
     <li><strong>Google Sign-In</strong>: only if you choose to sign in with Google. Google confirms who you are and shares your name, email address and whether it is verified; we never see your Google password. See <a href="https://policies.google.com/privacy">Google's privacy policy</a>.</li>
@@ -47,7 +48,7 @@
     <% } %>
     <li>Backups: database backups are kept for up to <%= operator.backupDays %> days, after which deleted data is gone from them too.</li>
     <li>Request and security logs: only as long as needed to investigate problems, then rotated out.</li>
-    <li>Billing records: as long as tax law requires (Lemon Squeezy holds the invoices).</li>
+    <li>Billing records: as long as tax law requires (Polar, or Lemon Squeezy for older subscriptions, holds the invoices).</li>
     <li>Mailing list: until you unsubscribe.</li>
 </ul>
 

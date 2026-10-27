@@ -2,10 +2,12 @@
 
 const { getConfig } = require('../../../config/config');
 
-// The payment provider behind hosted-mode billing. Two exist: Stripe
-// (Checkout + Customer Portal) and Lemon Squeezy (a merchant of record that
-// handles VAT and invoices). Both expose the same surface to the billing
-// service:
+// The payment providers behind hosted-mode billing: Stripe (Checkout +
+// Customer Portal), and Lemon Squeezy and Polar (merchants of record that
+// handle VAT and invoices). One of them sells new subscriptions; a
+// subscription bought through another keeps being managed, synced and
+// cancelled there, and its webhooks keep being applied. Each exposes the
+// same surface to the billing service:
 //
 //   name, displayName, signatureHeader
 //   isConfigured()                         keys and at least one price present
@@ -38,13 +40,60 @@ class WebhookSignatureError extends Error {
     }
 }
 
+const PROVIDERS = {
+    stripe: () => require('./stripe'),
+    lemonsqueezy: () => require('./lemonsqueezy'),
+    polar: () => require('./polar'),
+};
+
+// Statuses of a subscription that still lives at its provider.
+const LIVE_STATUSES = new Set([
+    'active',
+    'trialing',
+    'past_due',
+    'unpaid',
+    'paused',
+    'incomplete',
+]);
+
 function providerName() {
     return getConfig().hosted?.billing?.provider || 'stripe';
 }
 
-function getProvider() {
-    if (providerName() === 'lemonsqueezy') return require('./lemonsqueezy');
-    return require('./stripe');
+// The provider that sells new subscriptions, or a named one.
+function getProvider(name = providerName()) {
+    return (PROVIDERS[name] || PROVIDERS.stripe)();
+}
+
+// The provider that manages this account's subscription: the one it was
+// bought through while it is still live there, else the selling provider.
+function providerFor(account) {
+    const name = account?.provider;
+    if (
+        name &&
+        PROVIDERS[name] &&
+        name !== providerName() &&
+        LIVE_STATUSES.has(account.status)
+    ) {
+        const provider = PROVIDERS[name]();
+        if (provider.isConfigured()) return provider;
+    }
+    return getProvider();
+}
+
+// The configured provider whose signature header a webhook carries.
+function providerForWebhook(headers = {}) {
+    const names = [
+        providerName(),
+        ...Object.keys(PROVIDERS).filter((n) => n !== providerName()),
+    ];
+    for (const name of names) {
+        const provider = getProvider(name);
+        if (headers[provider.signatureHeader] && provider.isConfigured()) {
+            return provider;
+        }
+    }
+    return null;
 }
 
 function isBillingConfigured() {
@@ -56,6 +105,8 @@ module.exports = {
     WebhookSignatureError,
     providerName,
     getProvider,
+    providerFor,
+    providerForWebhook,
     isBillingConfigured,
     configuredPlans: () => getProvider().configuredPlans(),
     configuredPrices: (plan) => getProvider().configuredPrices(plan),

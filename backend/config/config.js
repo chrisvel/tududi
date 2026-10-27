@@ -194,15 +194,29 @@ const config = {
                 team: parseJsonEnv(process.env.LEMONSQUEEZY_TEAM_VARIANTS_JSON),
             },
         },
-        // Which provider sells Pro. Explicit BILLING_PROVIDER wins; otherwise
-        // whichever one has credentials, Stripe when both or neither do.
+        polar: {
+            accessToken: process.env.POLAR_ACCESS_TOKEN,
+            webhookSecret: process.env.POLAR_WEBHOOK_SECRET,
+            // "sandbox" for sandbox-api.polar.sh; production otherwise.
+            server: process.env.POLAR_SERVER || 'production',
+            apiBase: process.env.POLAR_API_BASE || undefined,
+            // Product ids by plan:
+            // {"pro":{"month":"…","year":"…"},"team_5":{"month":"…","year":"…"}}
+            products: parseJsonEnv(process.env.POLAR_PRODUCTS_JSON),
+        },
+        // Which provider sells new subscriptions. Explicit BILLING_PROVIDER
+        // wins; otherwise Polar when it has a token, then Lemon Squeezy when
+        // it has a key and Stripe does not, else Stripe. Subscriptions bought
+        // through another configured provider are still managed there.
         billing: {
             provider:
                 process.env.BILLING_PROVIDER ||
-                (process.env.LEMONSQUEEZY_API_KEY &&
-                !process.env.STRIPE_SECRET_KEY
-                    ? 'lemonsqueezy'
-                    : 'stripe'),
+                (process.env.POLAR_ACCESS_TOKEN
+                    ? 'polar'
+                    : process.env.LEMONSQUEEZY_API_KEY &&
+                        !process.env.STRIPE_SECRET_KEY
+                      ? 'lemonsqueezy'
+                      : 'stripe'),
         },
     },
 

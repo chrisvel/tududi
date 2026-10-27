@@ -219,14 +219,46 @@ All three are removed with the account by `services/accountErasureService.js`.
 
 ## Payments
 
-Pro is sold through one of two providers, chosen by `BILLING_PROVIDER`
-(`stripe` or `lemonsqueezy`; when unset, Lemon Squeezy is used if only its
-key is present, Stripe otherwise). tududi never sees card details with
-either. The billing tab, the webhook endpoint and the admin page are the
-same for both; only the credentials differ.
+Plans are sold through one of three providers, chosen by `BILLING_PROVIDER`
+(`polar`, `lemonsqueezy` or `stripe`; when unset, Polar is used if
+`POLAR_ACCESS_TOKEN` is set, then Lemon Squeezy if only its key is present,
+Stripe otherwise). tududi never sees card details with any of them. The
+billing tab, the webhook endpoint and the admin page are the same for all;
+only the credentials differ.
 
-**Lemon Squeezy** is a merchant of record: it charges VAT and issues the
-invoices itself, which is why it is the provider of the hosted tududi.
+Only the selling provider takes new checkouts, but a subscription bought
+through another configured provider stays there: while it is live, its
+billing tab, "Manage subscription", sync and cancellation go to the
+provider in `billing_accounts.provider`, and that provider's webhooks are
+still applied. The one webhook URL tells providers apart by their signature
+header. Once such a subscription ends, the next checkout goes through the
+selling provider. The hosted tududi sells through Polar and keeps its
+earlier Lemon Squeezy subscriptions this way.
+
+**Polar** is a merchant of record: it charges VAT and issues the invoices.
+Each plan and interval is its own product.
+
+| Variable | Meaning |
+|---|---|
+| `POLAR_ACCESS_TOKEN` | organization access token |
+| `POLAR_WEBHOOK_SECRET` | signing secret (`whsec_…`) of the webhook below |
+| `POLAR_PRODUCTS_JSON` | product ids by plan, `{"pro":{"month":"…","year":"…"},"team_5":{"month":"…","year":"…"}}` |
+| `POLAR_SERVER` | `sandbox` for sandbox-api.polar.sh; production otherwise |
+
+Create a monthly and a yearly product per plan, turn on "Enable
+subscription plan changes" under Settings > Customer portal so customers
+move between Team sizes themselves, and add a webhook (format Raw) at
+`https://your-host/api/billing/webhook` with the events
+`subscription.created`, `subscription.updated`, `subscription.active`,
+`subscription.canceled`, `subscription.uncanceled`, `subscription.revoked`,
+`subscription.past_due` and `order.paid`. The checkout sets the customer's
+external id to the user's uid, which is how webhooks and sync find the
+user; the success redirect carries the checkout id. A subscription
+canceled at period end keeps its plan until it is revoked, which drops it
+to Free. "Manage subscription" opens the Polar customer portal.
+
+**Lemon Squeezy** is a merchant of record too, and sold the hosted tududi
+before Polar.
 
 | Variable | Meaning |
 |---|---|
@@ -266,10 +298,10 @@ events `checkout.session.completed`, `customer.subscription.created`,
 `stripe listen --forward-to localhost:3002/api/billing/webhook` and
 `stripe trigger checkout.session.completed`.
 
-For both, the endpoint reads the raw body, verifies the signature, records
+For all of them, the endpoint reads the raw body, verifies the signature, records
 every event id in `billing_events` (a redelivered event is acknowledged and
-not applied twice; Lemon Squeezy sends no event id, so the resource id plus
-its `updated_at` stands in), drops an update older than the last one
+not applied twice; Polar's is the `webhook-id` header, and Lemon Squeezy
+sends none, so the resource id plus its `updated_at` stands in), drops an update older than the last one
 applied, and answers 500 on an internal fault so the provider retries.
 
 Endpoints (all 404 on a self-hosted instance):
@@ -278,7 +310,7 @@ Endpoints (all 404 on a self-hosted instance):
 |---|---|
 | `GET /api/billing` | plan, status, usage, the provider, and what the UI may offer |
 | `GET /api/billing/plans` | the catalog, without price ids |
-| `POST /api/billing/checkout` `{ interval: "month" \| "year" }` | checkout URL |
+| `POST /api/billing/checkout` `{ interval: "month" \| "year", plan? }` | checkout URL (`plan` defaults to `pro`) |
 | `POST /api/billing/portal` | customer portal URL |
 | `POST /api/billing/sync` `{ session_id? }` | re-read the subscription from the provider (the checkout redirect can beat the webhook) |
 | `GET /api/admin/billing` | overview and account list, each with this month's AI request/token usage (admin) |

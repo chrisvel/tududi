@@ -74,8 +74,8 @@ const billingController = {
 
     // Raw body, no session, no CSRF: the provider signs the payload instead.
     async webhook(req, res) {
-        const provider = providers.getProvider();
-        if (!req.headers[provider.signatureHeader]) {
+        // Each provider signs with its own header, which also says who sent it.
+        if (!providers.providerForWebhook(req.headers)) {
             return res.status(400).json({ error: 'Missing webhook signature' });
         }
         try {

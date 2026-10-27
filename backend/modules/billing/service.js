@@ -67,6 +67,9 @@ class BillingService {
         });
         const account = await repository.findAccountByUserId(userId);
         const provider = this.provider();
+        // Who manages this account's subscription, which can be a provider
+        // that no longer sells (a Lemon Squeezy subscription, say).
+        const manager = providers.providerFor(account);
         const configured = providers.isBillingConfigured();
         const prices = provider.configuredPrices();
         return {
@@ -80,8 +83,8 @@ class BillingService {
                 annual: getConfig().pricing.annual,
             },
             provider: {
-                name: provider.name,
-                display_name: provider.displayName,
+                name: manager.name,
+                display_name: manager.displayName,
             },
             // A member whose seat is paid by its owner has nothing to buy.
             checkout_available:
@@ -89,7 +92,7 @@ class BillingService {
                 !!(prices.month || prices.year) &&
                 !ACTIVE_STATUSES.has(account?.status) &&
                 ent.reason !== 'seat',
-            portal_available: configured && provider.canOpenPortal(account),
+            portal_available: configured && manager.canOpenPortal(account),
             intervals: {
                 month: !!prices.month,
                 year: !!prices.year,
@@ -185,7 +188,7 @@ class BillingService {
         if (!providers.isBillingConfigured())
             throw new BillingNotConfiguredError();
         const account = await repository.findAccountByUserId(userId);
-        const provider = this.provider();
+        const provider = providers.providerFor(account);
         if (!provider.canOpenPortal(account)) {
             throw new ValidationError('No billing account to manage yet');
         }
@@ -202,7 +205,11 @@ class BillingService {
         const user = await repository.findUserById(userId);
         if (!user) throw new NotFoundError('User not found');
 
-        const provider = this.provider();
+        // Right after a checkout the new subscription is at the selling
+        // provider, whatever the account was on before.
+        const provider = checkoutRef
+            ? this.provider()
+            : providers.providerFor(account);
         const fields = await provider.sync({ user, account, checkoutRef });
         if (fields) {
             await account.update({ provider: provider.name, ...fields });
@@ -234,10 +241,11 @@ class BillingService {
     }
 
     async handleWebhook(rawBody, headers) {
-        if (!providers.isBillingConfigured())
-            throw new BillingNotConfiguredError();
-        const provider = this.provider();
+        if (!this.isHosted()) throw new BillingNotConfiguredError();
+        const provider = providers.providerForWebhook(headers);
+        if (!provider) throw new BillingNotConfiguredError();
         const event = await provider.parseWebhook(rawBody, headers);
+        event.provider = provider.name;
 
         const record = await repository.recordEvent(event.id, event.rawType);
         if (!record) {
@@ -268,7 +276,7 @@ class BillingService {
         }
         const account = await this.resolveAccount(event.ref);
         if (!account) return { handled: false, reason: 'unknown_user' };
-        const providerName = this.provider().name;
+        const providerName = event.provider || this.provider().name;
         const stamp = {
             provider: providerName,
             last_provider_event_at: event.createdAt,
@@ -454,7 +462,7 @@ class BillingService {
         try {
             const account = await repository.findAccountByUserId(userId);
             if (!account) return;
-            const provider = this.provider();
+            const provider = providers.providerFor(account);
             if (
                 account.provider_subscription_id &&
                 !ACTIVE_STATUSES.has(account.status)
