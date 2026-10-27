@@ -48,6 +48,7 @@ import NewItemButton from '../Shared/NewItemButton';
 import { onCaptureSaved, openCapture } from '../../utils/captureUi';
 import BannerEditModal from './BannerEditModal';
 import ProjectShareModal from './ProjectShareModal';
+import ProjectModal from './ProjectModal';
 import ProjectTasksSection from './ProjectTasksSection';
 import ProjectTimeline from './Timeline/ProjectTimeline';
 import ProjectOverviewRail from './ProjectOverviewRail';
@@ -119,6 +120,7 @@ const ProjectDetails: React.FC = () => {
     const [aiInsightsActive, setAiInsightsActive] = useState(false);
     const aiInsightsRef = useRef<ProjectAIInsightsHandle>(null);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
     const sortOptions = useMemo(
         () => [
             {
@@ -742,6 +744,7 @@ const ProjectDetails: React.FC = () => {
                     templatesEnabled ? handleSaveAsTemplate : undefined
                 }
                 onEditBannerClick={handleEditBannerClick}
+                onEditClick={() => setIsEditPanelOpen(true)}
                 onTogglePin={handleTogglePin}
                 onImportClick={() => setIsImportOpen(true)}
                 onExport={(format) =>
@@ -1014,6 +1017,17 @@ const ProjectDetails: React.FC = () => {
                         onSave={handleSaveBanner}
                         currentImageUrl={project.image_url}
                     />
+
+                    {isEditPanelOpen && (
+                        <ProjectModal
+                            isOpen={isEditPanelOpen}
+                            onClose={() => setIsEditPanelOpen(false)}
+                            onSave={handleUpdateProject}
+                            onDelete={handleDeleteProject}
+                            project={project}
+                            areas={areas}
+                        />
+                    )}
 
                     {isShareModalOpen && (
                         <ProjectShareModal
