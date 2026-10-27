@@ -1,5 +1,6 @@
 'use strict';
 
+const { withReason } = require('./errors');
 const ExcelJS = require('exceljs');
 const iconv = require('iconv-lite');
 const { parse: parseCsv } = require('csv-parse/sync');
@@ -86,8 +87,11 @@ function finishSheet(name, entries, budget = { chars: MAX_TOTAL_CHARS }) {
         // bytes each.
         budget.chars -= JSON.stringify(values).length;
         if (budget.chars < 0) {
-            throw new ValidationError(
-                'The file holds too much text to import at once. Split it into smaller files.'
+            throw withReason(
+                new ValidationError(
+                    'The file holds too much text to import at once. Split it into smaller files.'
+                ),
+                'too_much_text'
             );
         }
         rows.push(values);
@@ -134,7 +138,10 @@ const ENCODINGS = [
 function decodeText(buffer, encoding) {
     if (encoding && encoding !== 'auto') {
         if (!ENCODINGS.includes(encoding)) {
-            throw new ValidationError('Unknown text encoding.');
+            throw withReason(
+                new ValidationError('Unknown text encoding.'),
+                'bad_encoding'
+            );
         }
         return { text: iconv.decode(buffer, encoding), encoding };
     }
@@ -207,8 +214,11 @@ function readCsv(buffer, requested) {
             to: MAX_ROWS + 2,
         });
     } catch (error) {
-        throw new ValidationError(
-            `Could not read the CSV file: ${error.message}`
+        throw withReason(
+            new ValidationError(
+                `Could not read the CSV file: ${error.message}`
+            ),
+            'csv_unreadable'
         );
     }
     return {
@@ -232,8 +242,11 @@ let xlsxInProgress = 0;
 async function readXlsx(buffer) {
     checkXlsxArchive(buffer);
     if (xlsxInProgress >= MAX_PARALLEL_XLSX) {
-        throw new ServiceUnavailableError(
-            'Busy reading other files. Try again in a moment.'
+        throw withReason(
+            new ServiceUnavailableError(
+                'Busy reading other files. Try again in a moment.'
+            ),
+            'busy'
         );
     }
     xlsxInProgress++;
@@ -250,7 +263,10 @@ async function parseXlsx(buffer) {
     try {
         await workbook.xlsx.load(buffer);
     } catch {
-        throw new ValidationError('Could not read the Excel file.');
+        throw withReason(
+            new ValidationError('Could not read the Excel file.'),
+            'xlsx_unreadable'
+        );
     }
 
     const sheets = [];
@@ -295,15 +311,21 @@ async function readSpreadsheet(buffer, fileName = '', { encoding } = {}) {
     const lowerName = fileName.toLowerCase();
     const isZip = buffer[0] === 0x50 && buffer[1] === 0x4b;
     if (lowerName.endsWith('.xls') && !isZip) {
-        throw new ValidationError(
-            'Old .xls files are not supported. Save the file as .xlsx or .csv and try again.'
+        throw withReason(
+            new ValidationError(
+                'Old .xls files are not supported. Save the file as .xlsx or .csv and try again.'
+            ),
+            'old_xls'
         );
     }
     const result = isZip
         ? { sheets: await readXlsx(buffer), encoding: null }
         : readCsv(buffer, encoding);
     if (result.sheets.length === 0 || result.sheets[0].rows.length === 0) {
-        throw new ValidationError('The file has no rows.');
+        throw withReason(
+            new ValidationError('The file has no rows.'),
+            'no_rows'
+        );
     }
     return result;
 }

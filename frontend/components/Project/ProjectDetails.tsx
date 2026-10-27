@@ -43,6 +43,7 @@ import { getApiPath } from '../../config/paths';
 import ProjectHero from './ProjectHero';
 import ImportWizard from '../Spreadsheet/ImportWizard';
 import { exportTasks } from '../../utils/spreadsheetService';
+import { spreadsheetErrorText } from '../Spreadsheet/errorText';
 import NewItemButton from '../Shared/NewItemButton';
 import { onCaptureSaved, openCapture } from '../../utils/captureUi';
 import BannerEditModal from './BannerEditModal';
@@ -745,7 +746,7 @@ const ProjectDetails: React.FC = () => {
                 onImportClick={() => setIsImportOpen(true)}
                 onExport={(format) =>
                     exportTasks(format, { project_uid: project.uid }).catch(
-                        (e: Error) => showErrorToast(e.message)
+                        (e: Error) => showErrorToast(spreadsheetErrorText(t, e))
                     )
                 }
             />

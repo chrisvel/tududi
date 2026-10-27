@@ -1,5 +1,6 @@
 'use strict';
 
+const { withReason } = require('./core/errors');
 const { Op } = require('sequelize');
 const { ValidationError } = require('../../shared/errors');
 const { Task, Project, Area, Tag, User } = require('../../models');
@@ -79,7 +80,11 @@ function choiceMap(raw, check) {
 function normalizeOptions(sheets, raw = {}) {
     const sheetIndex = Number.isInteger(raw.sheet) ? raw.sheet : 0;
     const sheet = sheets[sheetIndex];
-    if (!sheet) throw new ValidationError('Unknown sheet.');
+    if (!sheet)
+        throw withReason(
+            new ValidationError('Unknown sheet.'),
+            'unknown_sheet'
+        );
     const headerRow = Number.isInteger(raw.header_row)
         ? Math.min(Math.max(raw.header_row, 0), sheet.rows.length - 1)
         : detectHeaderRow(sheet.rows);

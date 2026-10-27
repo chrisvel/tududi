@@ -1,5 +1,6 @@
 'use strict';
 
+const { withReason } = require('./errors');
 const zlib = require('zlib');
 const { ValidationError } = require('../../../shared/errors');
 
@@ -17,13 +18,19 @@ const CENTRAL_SIGNATURE = 0x02014b50;
 const LOCAL_SIGNATURE = 0x04034b50;
 
 function tooBig() {
-    return new ValidationError(
-        'The Excel file is too large once unpacked. Save it as .csv or split it into smaller files.'
+    return withReason(
+        new ValidationError(
+            'The Excel file is too large once unpacked. Save it as .csv or split it into smaller files.'
+        ),
+        'xlsx_too_large'
     );
 }
 
 function unreadable() {
-    return new ValidationError('Could not read the Excel file.');
+    return withReason(
+        new ValidationError('Could not read the Excel file.'),
+        'xlsx_unreadable'
+    );
 }
 
 function findEndOfCentralDirectory(buffer) {
@@ -68,8 +75,11 @@ function checkXlsxArchive(buffer) {
         offset += 46 + nameLength + extraLength + commentLength;
 
         if (flags & 0x1) {
-            throw new ValidationError(
-                'The Excel file is password protected. Remove the password and try again.'
+            throw withReason(
+                new ValidationError(
+                    'The Excel file is password protected. Remove the password and try again.'
+                ),
+                'xlsx_encrypted'
             );
         }
         if (

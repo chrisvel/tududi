@@ -1,5 +1,6 @@
 'use strict';
 
+const { withReason } = require('./core/errors');
 const { Op } = require('sequelize');
 const {
     ImportJob,
@@ -117,21 +118,31 @@ async function findJob(userId, uid) {
     const job = await ImportJob.findOne({
         where: { uid: String(uid), user_id: userId },
     });
-    if (!job) throw new NotFoundError('Import not found.');
+    if (!job)
+        throw withReason(
+            new NotFoundError('Import not found.'),
+            'import_not_found'
+        );
     return job;
 }
 
 async function findParsedJob(userId, uid) {
     const job = await findJob(userId, uid);
     if (job.status !== 'parsed' || !job.sheets) {
-        throw new ConflictError('This import has already run.');
+        throw withReason(
+            new ConflictError('This import has already run.'),
+            'already_ran'
+        );
     }
     return job;
 }
 
 async function upload(user, file, { encoding } = {}) {
     if (!file?.buffer?.length) {
-        throw new ValidationError('Choose a CSV or Excel file to import.');
+        throw withReason(
+            new ValidationError('Choose a CSV or Excel file to import.'),
+            'no_file'
+        );
     }
     // Uploads nobody finished are only worth keeping for a day.
     await ImportJob.destroy({
@@ -173,7 +184,11 @@ async function upload(user, file, { encoding } = {}) {
 async function columns(user, uid, { sheet = 0, header_row } = {}) {
     const job = await findParsedJob(user.id, uid);
     const chosen = Number.isInteger(sheet) ? job.sheets[sheet] : undefined;
-    if (!chosen) throw new ValidationError('Unknown sheet.');
+    if (!chosen)
+        throw withReason(
+            new ValidationError('Unknown sheet.'),
+            'unknown_sheet'
+        );
     const headerRow = Number.isInteger(header_row)
         ? Math.min(Math.max(header_row, 0), chosen.rows.length - 1)
         : detectHeaderRow(chosen.rows);
@@ -257,7 +272,10 @@ async function claim(job, from, to) {
         { where: { id: job.id, status: from } }
     );
     if (changed !== 1) {
-        throw new ConflictError('This import is already running or has run.');
+        throw withReason(
+            new ConflictError('This import is already running or has run.'),
+            'already_ran'
+        );
     }
 }
 
@@ -272,12 +290,18 @@ async function commit(user, uid, options) {
     const job = await findParsedJob(user.id, uid);
     const plan = await analyze(user, job.sheets, options);
     if (plan.problems.length > 0) {
-        throw new ValidationError(
-            'The import cannot run until the problems shown are fixed.'
+        throw withReason(
+            new ValidationError(
+                'The import cannot run until the problems shown are fixed.'
+            ),
+            'has_problems'
         );
     }
     if (plan.counts.create + plan.counts.update === 0) {
-        throw new ValidationError('There are no rows to import.');
+        throw withReason(
+            new ValidationError('There are no rows to import.'),
+            'no_rows_to_import'
+        );
     }
 
     await claim(job, 'parsed', 'committing');
@@ -493,7 +517,10 @@ async function projectUids(result, plan) {
 async function undo(user, uid) {
     const job = await findJob(user.id, uid);
     if (!canUndo(job)) {
-        throw new ConflictError('This import can no longer be undone.');
+        throw withReason(
+            new ConflictError('This import can no longer be undone.'),
+            'undo_expired'
+        );
     }
     await claim(job, 'committed', 'undoing');
     try {

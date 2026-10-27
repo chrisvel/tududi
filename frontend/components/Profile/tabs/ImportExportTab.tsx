@@ -11,6 +11,7 @@ import {
     listImports,
     undoImport,
 } from '../../../utils/spreadsheetService';
+import { spreadsheetErrorText } from '../../Spreadsheet/errorText';
 
 interface ImportExportTabProps {
     isActive: boolean;
@@ -45,7 +46,7 @@ const ImportExportTab: React.FC<ImportExportTabProps> = ({ isActive }) => {
         try {
             await exportTasks(format, { include_completed: includeCompleted });
         } catch (e) {
-            showErrorToast((e as Error).message);
+            showErrorToast(spreadsheetErrorText(t, e));
         } finally {
             setExporting(null);
         }
@@ -66,7 +67,7 @@ const ImportExportTab: React.FC<ImportExportTabProps> = ({ isActive }) => {
             );
             loadHistory();
         } catch (e) {
-            showErrorToast((e as Error).message);
+            showErrorToast(spreadsheetErrorText(t, e));
         } finally {
             setUndoing(null);
         }
@@ -114,7 +115,7 @@ const ImportExportTab: React.FC<ImportExportTabProps> = ({ isActive }) => {
                             className={buttonClass}
                             onClick={() =>
                                 downloadImportTemplate('xlsx').catch((e) =>
-                                    showErrorToast(e.message)
+                                    showErrorToast(spreadsheetErrorText(t, e))
                                 )
                             }
                         >

@@ -184,9 +184,38 @@ export interface ImportHistoryItem {
     can_undo: boolean;
 }
 
+// An error from these calls keeps the server's reason code, which the UI
+// translates; the message is the English fallback.
+export class SpreadsheetError extends Error {
+    reason: string;
+
+    constructor(message: string, reason: string) {
+        super(message);
+        this.reason = reason;
+    }
+}
+
+const fallbackReasons: Record<string, string> = {
+    'Could not export the tasks': 'export_failed',
+    'Could not download the template': 'export_failed',
+    'Could not read the file': 'read_failed',
+    'Could not read the columns': 'read_failed',
+    'Could not check the file': 'check_failed',
+    'Could not import the file': 'import_failed',
+    'Could not undo the import': 'undo_failed',
+    'Could not cancel the import': 'request_failed',
+    'Could not load imports': 'request_failed',
+};
+
 const readError = async (response: Response, fallback: string) => {
     const data = await response.json().catch(() => ({}));
-    return data.error || data.message || fallback;
+    return new SpreadsheetError(
+        data.error || data.message || fallback,
+        data.reason ||
+            (response.status === 429
+                ? 'rate_limited'
+                : fallbackReasons[fallback] || 'request_failed')
+    );
 };
 
 const send = async <T>(
@@ -209,7 +238,7 @@ const send = async <T>(
         ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
     });
     if (!response.ok) {
-        throw new Error(await readError(response, fallback));
+        throw await readError(response, fallback);
     }
     return response.status === 204 ? (undefined as T) : response.json();
 };
@@ -219,7 +248,7 @@ const download = async (path: string, fallback: string) => {
         credentials: 'include',
     });
     if (!response.ok) {
-        throw new Error(await readError(response, fallback));
+        throw await readError(response, fallback);
     }
     const disposition = response.headers.get('Content-Disposition') || '';
     const fileName = /filename="([^"]+)"/.exec(disposition)?.[1] || 'tasks';
@@ -271,7 +300,7 @@ export const uploadImportFile = async (
         body: formData,
     });
     if (!response.ok) {
-        throw new Error(await readError(response, 'Could not read the file'));
+        throw await readError(response, 'Could not read the file');
     }
     return response.json();
 };

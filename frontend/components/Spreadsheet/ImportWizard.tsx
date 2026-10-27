@@ -39,6 +39,7 @@ import {
     undoImport,
     uploadImportFile,
 } from '../../utils/spreadsheetService';
+import { spreadsheetErrorText } from './errorText';
 
 interface ImportWizardProps {
     onClose: () => void;
@@ -184,7 +185,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
             setOptions(startOptions(first, 0));
             setStep('columns');
         } catch (e) {
-            setError((e as Error).message);
+            setError(spreadsheetErrorText(t, e));
         } finally {
             setBusy(false);
         }
@@ -202,7 +203,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
                 target: prev?.target || startOptions(next, sheet).target,
             }));
         } catch (e) {
-            setError((e as Error).message);
+            setError(spreadsheetErrorText(t, e));
         } finally {
             setBusy(false);
         }
@@ -217,7 +218,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
             setPreview(await previewImport(job.uid, next));
             setStep('review');
         } catch (e) {
-            setError((e as Error).message);
+            setError(spreadsheetErrorText(t, e));
         } finally {
             setBusy(false);
         }
@@ -233,7 +234,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
             setStep('done');
             onImported?.(done);
         } catch (e) {
-            setError((e as Error).message);
+            setError(spreadsheetErrorText(t, e));
         } finally {
             setBusy(false);
         }
@@ -248,7 +249,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
             setUndone(true);
             onImported?.(result);
         } catch (e) {
-            setError((e as Error).message);
+            setError(spreadsheetErrorText(t, e));
         } finally {
             setBusy(false);
         }
@@ -506,7 +507,10 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
                                     className="text-blue-600 hover:underline dark:text-blue-400"
                                     onClick={() =>
                                         downloadImportTemplate('xlsx').catch(
-                                            (e) => setError(e.message)
+                                            (e) =>
+                                                setError(
+                                                    spreadsheetErrorText(t, e)
+                                                )
                                         )
                                     }
                                 >
@@ -518,7 +522,10 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
                                     className="text-blue-600 hover:underline dark:text-blue-400"
                                     onClick={() =>
                                         downloadImportTemplate('csv').catch(
-                                            (e) => setError(e.message)
+                                            (e) =>
+                                                setError(
+                                                    spreadsheetErrorText(t, e)
+                                                )
                                         )
                                     }
                                 >
@@ -617,7 +624,10 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
                                                     key={option.value}
                                                     value={option.value}
                                                 >
-                                                    {option.label}
+                                                    {t(
+                                                        `spreadsheet.encodings.${option.value}`,
+                                                        option.label
+                                                    )}
                                                 </option>
                                             ))}
                                         </select>

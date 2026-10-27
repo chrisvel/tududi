@@ -1,5 +1,6 @@
 'use strict';
 
+const { withReason } = require('./core/errors');
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
@@ -18,7 +19,12 @@ const upload = multer({
         if (ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext))) {
             return cb(null, true);
         }
-        cb(new ValidationError('Choose a .csv or .xlsx file.'));
+        cb(
+            withReason(
+                new ValidationError('Choose a .csv or .xlsx file.'),
+                'wrong_type'
+            )
+        );
     },
 });
 
@@ -26,7 +32,12 @@ function receiveFile(req, res, next) {
     upload.single('file')(req, res, (error) => {
         if (error?.code === 'LIMIT_FILE_SIZE') {
             return next(
-                new ValidationError('The file is too large (5 MB at most).')
+                withReason(
+                    new ValidationError(
+                        'The file is too large (5 MB at most).'
+                    ),
+                    'file_too_large'
+                )
             );
         }
         next(error);

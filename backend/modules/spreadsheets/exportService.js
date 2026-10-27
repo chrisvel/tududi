@@ -1,5 +1,6 @@
 'use strict';
 
+const { withReason } = require('./core/errors');
 const { Op } = require('sequelize');
 const moment = require('moment-timezone');
 const { Task, Project, Area, Tag, Person } = require('../../models');
@@ -129,14 +130,21 @@ async function resolveProject(userId, projectUid) {
         where: { uid: String(projectUid) },
         attributes: ['id', 'uid', 'name', 'user_id'],
     });
-    if (!project) throw new NotFoundError('Project not found.');
+    if (!project)
+        throw withReason(
+            new NotFoundError('Project not found.'),
+            'project_not_found'
+        );
     const access = await permissionsService.getAccess(
         userId,
         'project',
         project.uid
     );
     if (access === permissionsService.ACCESS.NONE) {
-        throw new NotFoundError('Project not found.');
+        throw withReason(
+            new NotFoundError('Project not found.'),
+            'project_not_found'
+        );
     }
     return project;
 }
@@ -324,7 +332,10 @@ async function render(format, { language, columns, rows, sheetName, extra }) {
 function checkFormat(format) {
     const value = String(format || 'xlsx').toLowerCase();
     if (!FORMATS.includes(value)) {
-        throw new ValidationError('format must be csv or xlsx');
+        throw withReason(
+            new ValidationError('format must be csv or xlsx'),
+            'bad_format'
+        );
     }
     return value;
 }
@@ -347,7 +358,10 @@ async function exportTasks(user, query = {}) {
             ? await permissionsService.getAccess(user.id, 'area', area.uid)
             : permissionsService.ACCESS.NONE;
         if (access === permissionsService.ACCESS.NONE) {
-            throw new NotFoundError('Area not found.');
+            throw withReason(
+                new NotFoundError('Area not found.'),
+                'area_not_found'
+            );
         }
         areaId = area.id;
     }

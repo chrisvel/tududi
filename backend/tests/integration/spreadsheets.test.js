@@ -408,6 +408,8 @@ describe('Spreadsheet import and export', () => {
                 );
             expect(xls.status).toBe(400);
             expect(xls.body.error).toContain('.xlsx');
+            expect(xls.body.reason).toBe('old_xls');
+            expect(pdf.body.reason).toBe('wrong_type');
         });
 
         it('cleans up the staged file once committed', async () => {
