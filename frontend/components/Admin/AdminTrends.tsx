@@ -217,9 +217,14 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
         );
     }
     reach.push(
-        count('signups', t('admin.trends.signups', 'Signups'), trends.signups, {
-            spark: trends.days.map((d) => d.signups),
-        }),
+        count(
+            'signups',
+            t('admin.trends.signupsRow', 'Signups'),
+            trends.signups,
+            {
+                spark: trends.days.map((d) => d.signups),
+            }
+        ),
         count(
             'waitlist',
             t('admin.trends.waitlist', 'Waitlist joins'),
@@ -242,7 +247,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
     }
     newUsers.push({
         key: 'activation',
-        label: t('admin.trends.createdSomething', 'Created anything'),
+        label: t('admin.trends.createdAnything', 'Created anything'),
         now: ofTotal(activation.activated, activation.new_users),
     });
     if (onboarding) {
@@ -250,14 +255,14 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
             {
                 key: 'first-plan',
                 label: t('admin.trends.firstPlan', 'Planned a first day'),
-                hint: t('admin.trends.firstPlanHint', '3+ tasks'),
+                hint: t('admin.trends.firstPlanShort', '3+ tasks'),
                 now: ofTotal(onboarding.first_plan, onboarding.new_users),
             },
             {
                 key: 'three-days',
                 label: t('admin.trends.threeDays', 'Kept planning'),
                 hint: t(
-                    'admin.trends.threeDaysHint',
+                    'admin.trends.threeDaysShort',
                     "last week's signups, 3 days in their first week"
                 ),
                 now: ofTotal(onboarding.three_days, onboarding.cohort),
@@ -266,7 +271,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
     }
     groups.push({
         key: 'new-users',
-        title: t('admin.trends.newUsers', "This week's signups"),
+        title: t('admin.trends.newUsersGroup', "This week's signups"),
         rows: newUsers,
     });
 
@@ -295,8 +300,8 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
     }
     usage.push({
         key: 'creators',
-        label: t('admin.trends.active', 'Created something'),
-        hint: t('admin.trends.activeHint', 'users, any kind of item'),
+        label: t('admin.trends.creators', 'Created something'),
+        hint: t('admin.trends.creatorsHint', 'users, any kind of item'),
         now: trends.active_users_7d,
     });
     if (trends.tasks) {
