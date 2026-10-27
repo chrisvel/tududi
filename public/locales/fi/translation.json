@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Valitse vähintään yksi päivä",
       "deferUntilPlaceholder": "Valitse viivytyspäivämäärä ja -aika",
-      "notePlaceholder": "Lisää muistiinpano..."
+      "notePlaceholder": "Lisää muistiinpano...",
+      "startDatePlaceholder": "Valitse aloituspäivä"
     },
     "noteTitle": "Muistion Otsikko",
     "noteContent": "Muistion Sisältö",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Tavoitepäivä",
     "color": "Väri",
     "goalArea": "Alue",
-    "noArea": "Ei aluetta"
+    "noArea": "Ei aluetta",
+    "startDate": "Alkaa"
   },
   "auth": {
     "login": "Kirjaudu",
@@ -1101,7 +1103,8 @@
     "completeTitle": "Merkitäänkö \"{{name}}\" valmiiksi?",
     "completeOpenTasks": "Projektissa on vielä avoimia tehtäviä. Merkitäänkö nekin tehdyiksi vai jätetäänkö avoimiksi? Toistuvat tehtävät säilyttävät aikataulunsa joka tapauksessa.",
     "leaveTasksOpen": "Jätä avoimiksi",
-    "completeTasksToo": "Merkitse nekin tehdyiksi"
+    "completeTasksToo": "Merkitse nekin tehdyiksi",
+    "startsOn": "Alkaa {{date}}"
   },
   "errors": {
     "required": "Tämä kenttä on pakollinen",
@@ -1390,7 +1393,12 @@
     "estimateHint": "Suunnilleen kuinka kauan? Käytetään päivän suunnittelussa.",
     "estimateClearHint": "Tyhjennä napsauttamalla uudelleen",
     "estimateError": "Arvion päivittäminen epäonnistui",
-    "noGoal": "Liitä tavoitteeseen"
+    "noGoal": "Liitä tavoitteeseen",
+    "startDate": "Alkaa",
+    "noStartDate": "Ei aloituspäivää",
+    "startDateUpdated": "Aloituspäivä päivitetty",
+    "startDateUpdateError": "Aloituspäivän päivitys epäonnistui",
+    "startAfterDueError": "Aloitus ei voi olla eräpäivän jälkeen"
   },
   "projects": {
     "loading": "Ladataan projekteja...",
@@ -3099,5 +3107,47 @@
       "weekend": "Viikonloppu",
       "nextWeek": "Ensi viikko"
     }
+  },
+  "projectTimeline": {
+    "title": "Aikajana",
+    "days": "Päivät",
+    "weeks": "Viikot",
+    "months": "Kuukaudet",
+    "scale": "Mittakaava",
+    "highlightPath": "Korosta polku",
+    "empty": "Ei vielä päivättyjä tehtäviä",
+    "noDates": "Ei vielä päivämääriä",
+    "dragHint": "Vedä tehtävä aikajanalle ajoittaaksesi sen",
+    "spareDays": "{{count}} päivää pelivaraa",
+    "projectStart": "Projektin alku",
+    "projectDue": "Projektin eräpäivä",
+    "legendRange": "Alku → Eräpäivä",
+    "legendDue": "Vain eräpäivä",
+    "legendBlocks": "Estää",
+    "legendOverdue": "Myöhässä",
+    "saveError": "Tehtävää ei voitu siirtää",
+    "dueOn": "Erääntyy {{date}}",
+    "startsOn": "Alkaa {{date}}",
+    "noLinks": "Merkitse tehtäviä muita estäviksi nähdäksesi polun loppuun"
+  },
+  "everyoneTimeline": {
+    "view": "Näkymä",
+    "board": "Taulu",
+    "subtitle": "Kuka tekee mitäkin tulevina viikkoina",
+    "earlier": "Aiemmin",
+    "later": "Myöhemmin",
+    "twoWeeks": "2 viikkoa",
+    "fourWeeks": "4 viikkoa",
+    "loadError": "Aikajanaa ei voitu ladata.",
+    "planned": "{{hours}} suunniteltu",
+    "daysOver": "{{count}} päivää yli",
+    "loadTitle": "{{hours}} / {{capacity}} suunniteltu",
+    "legendLoad": "Tunnit tehtävien arvioista, jaettuna alusta eräpäivään",
+    "legendOver": "Enemmän kuin {{hours}} suunnittelupäiväsi",
+    "dragHint": "Vedä palkkia siirtääksesi sen, sen päitä muuttaaksesi päivämääriä tai toisen henkilön kohdalle antaaksesi sen hänelle",
+    "oneWeek": "1 viikko",
+    "eightWeeks": "8 viikkoa",
+    "zoomIn": "Lähennä",
+    "zoomOut": "Loitonna"
   }
 }

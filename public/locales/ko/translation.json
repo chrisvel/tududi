@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "하루 이상 선택해 주세요",
       "deferUntilPlaceholder": "연기할 날짜와 시간을 선택하세요",
-      "notePlaceholder": "메모 추가..."
+      "notePlaceholder": "메모 추가...",
+      "startDatePlaceholder": "시작일 선택"
     },
     "noteTitle": "노트 제목",
     "noteContent": "노트 내용",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "목표 날짜",
     "color": "색상",
     "goalArea": "영역",
-    "noArea": "영역 없음"
+    "noArea": "영역 없음",
+    "startDate": "시작"
   },
   "auth": {
     "login": "로그인",
@@ -1100,7 +1102,8 @@
     "completeTitle": "\"{{name}}\"을(를) 완료할까요?",
     "completeOpenTasks": "이 프로젝트에 아직 열린 작업이 있습니다. 함께 완료로 표시할까요, 아니면 열어 둘까요? 반복 작업은 어느 쪽이든 일정이 유지됩니다.",
     "leaveTasksOpen": "열어 두기",
-    "completeTasksToo": "함께 완료"
+    "completeTasksToo": "함께 완료",
+    "startsOn": "{{date}} 시작"
   },
   "errors": {
     "required": "이 필드는 필수입니다",
@@ -1389,7 +1392,12 @@
     "estimateHint": "대략 얼마나 걸리나요? 하루를 계획할 때 사용됩니다.",
     "estimateClearHint": "다시 클릭하면 지워집니다",
     "estimateError": "예상 시간을 업데이트할 수 없습니다",
-    "noGoal": "목표에 할당"
+    "noGoal": "목표에 할당",
+    "startDate": "시작",
+    "noStartDate": "시작일 없음",
+    "startDateUpdated": "시작일이 업데이트되었습니다",
+    "startDateUpdateError": "시작일을 업데이트하지 못했습니다",
+    "startAfterDueError": "시작일은 마감일 이후일 수 없습니다"
   },
   "projects": {
     "loading": "프로젝트 로딩 중...",
@@ -3096,5 +3104,47 @@
       "weekend": "주말",
       "nextWeek": "다음 주"
     }
+  },
+  "projectTimeline": {
+    "title": "타임라인",
+    "days": "일",
+    "weeks": "주",
+    "months": "월",
+    "scale": "배율",
+    "highlightPath": "경로 강조",
+    "empty": "아직 날짜가 있는 작업이 없습니다",
+    "noDates": "아직 날짜 없음",
+    "dragHint": "타임라인으로 끌어 일정을 잡으세요",
+    "spareDays": "{{count}}일 여유",
+    "projectStart": "프로젝트 시작",
+    "projectDue": "프로젝트 마감",
+    "legendRange": "시작 → 마감",
+    "legendDue": "마감일만",
+    "legendBlocks": "차단",
+    "legendOverdue": "기한 지남",
+    "saveError": "작업을 옮기지 못했습니다",
+    "dueOn": "마감 {{date}}",
+    "startsOn": "시작 {{date}}",
+    "noLinks": "작업을 다른 작업의 차단 작업으로 지정하면 완료까지의 경로를 볼 수 있습니다"
+  },
+  "everyoneTimeline": {
+    "view": "보기",
+    "board": "보드",
+    "subtitle": "앞으로 몇 주 동안 누가 무엇을 하는지",
+    "earlier": "이전",
+    "later": "이후",
+    "twoWeeks": "2주",
+    "fourWeeks": "4주",
+    "loadError": "타임라인을 불러오지 못했습니다.",
+    "planned": "{{hours}} 계획됨",
+    "daysOver": "{{count}}일 초과",
+    "loadTitle": "{{capacity}} 중 {{hours}} 계획됨",
+    "legendLoad": "작업 예상 시간을 시작부터 마감까지 나눈 시간",
+    "legendOver": "{{hours}} 계획 시간 초과",
+    "dragHint": "막대를 끌어 이동하고, 끝을 끌어 날짜를 바꾸거나, 다른 사람에게 끌어 배정하세요",
+    "oneWeek": "1주",
+    "eightWeeks": "8주",
+    "zoomIn": "확대",
+    "zoomOut": "축소"
   }
 }

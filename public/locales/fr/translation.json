@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Veuillez sélectionner au moins un jour",
       "deferUntilPlaceholder": "Sélectionnez la date et l'heure de report",
-      "notePlaceholder": "Ajouter une note..."
+      "notePlaceholder": "Ajouter une note...",
+      "startDatePlaceholder": "Choisir la date de début"
     },
     "noteTitle": "Titre de la note",
     "noteContent": "Contenu de la note",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Date cible",
     "color": "Couleur",
     "goalArea": "Zone",
-    "noArea": "Aucune zone"
+    "noArea": "Aucune zone",
+    "startDate": "Début"
   },
   "auth": {
     "login": "Connexion",
@@ -1102,7 +1104,8 @@
     "completeTitle": "Terminer « {{name}} » ?",
     "completeOpenTasks": "Ce projet a encore des tâches ouvertes. Les marquer aussi comme faites, ou les laisser ouvertes ? Les tâches récurrentes gardent leur planification dans tous les cas.",
     "leaveTasksOpen": "Les laisser ouvertes",
-    "completeTasksToo": "Les marquer comme faites"
+    "completeTasksToo": "Les marquer comme faites",
+    "startsOn": "Commence le {{date}}"
   },
   "errors": {
     "required": "Ce champ est requis",
@@ -1391,7 +1394,12 @@
     "estimateHint": "Combien de temps environ ? Utilisé pour planifier votre journée.",
     "estimateClearHint": "Cliquez à nouveau pour effacer",
     "estimateError": "Impossible de mettre à jour l'estimation",
-    "noGoal": "Associer à un objectif"
+    "noGoal": "Associer à un objectif",
+    "startDate": "Début",
+    "noStartDate": "Aucune date de début",
+    "startDateUpdated": "Date de début mise à jour",
+    "startDateUpdateError": "Impossible de mettre à jour la date de début",
+    "startAfterDueError": "Le début ne peut pas être après l'échéance"
   },
   "projects": {
     "loading": "Chargement des projets...",
@@ -3102,5 +3110,47 @@
       "weekend": "Week-end",
       "nextWeek": "Semaine prochaine"
     }
+  },
+  "projectTimeline": {
+    "title": "Chronologie",
+    "days": "Jours",
+    "weeks": "Semaines",
+    "months": "Mois",
+    "scale": "Échelle",
+    "highlightPath": "Mettre en évidence le chemin",
+    "empty": "Aucune tâche datée pour l'instant",
+    "noDates": "Pas encore de dates",
+    "dragHint": "Faites-en glisser une sur la chronologie pour la planifier",
+    "spareDays": "{{count}} jours de marge",
+    "projectStart": "Début du projet",
+    "projectDue": "Échéance du projet",
+    "legendRange": "Début → Échéance",
+    "legendDue": "Échéance seule",
+    "legendBlocks": "Bloque",
+    "legendOverdue": "En retard",
+    "saveError": "Impossible de déplacer la tâche",
+    "dueOn": "Échéance {{date}}",
+    "startsOn": "Commence {{date}}",
+    "noLinks": "Marquez des tâches comme bloquant d'autres tâches pour voir le chemin jusqu'à la fin"
+  },
+  "everyoneTimeline": {
+    "view": "Vue",
+    "board": "Tableau",
+    "subtitle": "Qui fait quoi dans les semaines à venir",
+    "earlier": "Plus tôt",
+    "later": "Plus tard",
+    "twoWeeks": "2 semaines",
+    "fourWeeks": "4 semaines",
+    "loadError": "Impossible de charger la chronologie.",
+    "planned": "{{hours}} prévues",
+    "daysOver": "{{count}} jours en surcharge",
+    "loadTitle": "{{hours}} sur {{capacity}} prévues",
+    "legendLoad": "Heures des estimations, réparties du début à l'échéance",
+    "legendOver": "Plus que votre journée de planification de {{hours}}",
+    "dragHint": "Faites glisser une barre pour la déplacer, ses extrémités pour changer les dates, ou sur une autre personne pour l'assigner",
+    "oneWeek": "1 semaine",
+    "eightWeeks": "8 semaines",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière"
   }
 }

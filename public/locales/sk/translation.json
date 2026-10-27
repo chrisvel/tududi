@@ -1000,7 +1000,8 @@
                 "noVerb": "Aký konkrétny krok musíte urobiť? Skúste začať slovesom.",
                 "vague": "Skúste začať akčným slovesom, napríklad „Zavolať“, „Napísať“, „Naplánovať“ alebo „Preskúmať“"
             },
-            "notePlaceholder": "Pridajte poznámku..."
+            "notePlaceholder": "Pridajte poznámku...",
+            "startDatePlaceholder": "Vyberte dátum začiatku"
         },
         "noteTitle": "Názov poznámky",
         "noteContent": "Obsah poznámky",
@@ -1024,7 +1025,8 @@
         "goalTargetDate": "Cieľový dátum",
         "color": "Farba",
         "goalArea": "Oblasť",
-        "noArea": "Bez oblasti"
+        "noArea": "Bez oblasti",
+        "startDate": "Začiatok"
     },
     "auth": {
         "login": "Prihlásiť sa",
@@ -1133,7 +1135,8 @@
         "completeTitle": "Dokončiť „{{name}}“?",
         "completeOpenTasks": "Tento projekt má ešte otvorené úlohy. Označiť ich tiež ako hotové, alebo ich nechať otvorené? Opakujúce sa úlohy si v každom prípade zachovajú svoj plán.",
         "leaveTasksOpen": "Nechať otvorené",
-        "completeTasksToo": "Označiť aj ako hotové"
+        "completeTasksToo": "Označiť aj ako hotové",
+        "startsOn": "Začína {{date}}"
     },
     "errors": {
         "required": "Toto pole je povinné",
@@ -1419,7 +1422,12 @@
         "estimateHint": "Približne ako dlho? Použije sa pri plánovaní dňa.",
         "estimateClearHint": "Kliknutím znova vymažete",
         "estimateError": "Odhad sa nepodarilo aktualizovať",
-        "noGoal": "Priradiť k cieľu"
+        "noGoal": "Priradiť k cieľu",
+        "startDate": "Začiatok",
+        "noStartDate": "Bez dátumu začiatku",
+        "startDateUpdated": "Dátum začiatku bol aktualizovaný",
+        "startDateUpdateError": "Dátum začiatku sa nepodarilo aktualizovať",
+        "startAfterDueError": "Začiatok nemôže byť po termíne"
     },
     "subtasks": {
         "placeholder": "Pridajte podúlohu..."
@@ -3121,5 +3129,47 @@
             "weekend": "Víkend",
             "nextWeek": "Budúci týždeň"
         }
+    },
+    "projectTimeline": {
+        "title": "Časová os",
+        "days": "Dni",
+        "weeks": "Týždne",
+        "months": "Mesiace",
+        "scale": "Mierka",
+        "highlightPath": "Zvýrazniť cestu",
+        "empty": "Zatiaľ žiadne úlohy s dátumami",
+        "noDates": "Zatiaľ bez dátumov",
+        "dragHint": "Presuňte úlohu na časovú os a naplánujte ju",
+        "spareDays": "{{count}} dní rezervy",
+        "projectStart": "Začiatok projektu",
+        "projectDue": "Termín projektu",
+        "legendRange": "Začiatok → Termín",
+        "legendDue": "Len termín",
+        "legendBlocks": "Blokuje",
+        "legendOverdue": "Po termíne",
+        "saveError": "Úlohu sa nepodarilo presunúť",
+        "dueOn": "Termín {{date}}",
+        "startsOn": "Začína {{date}}",
+        "noLinks": "Označte úlohy ako blokujúce iné úlohy, aby ste videli cestu do konca"
+    },
+    "everyoneTimeline": {
+        "view": "Zobrazenie",
+        "board": "Tabuľa",
+        "subtitle": "Kto čo robí v nasledujúcich týždňoch",
+        "earlier": "Skôr",
+        "later": "Neskôr",
+        "twoWeeks": "2 týždne",
+        "fourWeeks": "4 týždne",
+        "loadError": "Časovú os sa nepodarilo načítať.",
+        "planned": "{{hours}} naplánované",
+        "daysOver": "{{count}} dní nad",
+        "loadTitle": "{{hours}} z {{capacity}} naplánované",
+        "legendLoad": "Hodiny z odhadov úloh, rozložené od začiatku po termín",
+        "legendOver": "Viac ako váš plánovací deň {{hours}}",
+        "dragHint": "Potiahnite pruh na presun, jeho okraje na zmenu dátumov alebo na inú osobu na priradenie",
+        "oneWeek": "1 týždeň",
+        "eightWeeks": "8 týždňov",
+        "zoomIn": "Priblížiť",
+        "zoomOut": "Oddialiť"
     }
 }

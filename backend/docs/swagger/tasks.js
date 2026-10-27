@@ -232,6 +232,14 @@
  *                 type: string
  *                 format: date-time
  *                 description: Task due date
+ *               start_date:
+ *                 type: string
+ *                 format: date
+ *                 description: When work begins (YYYY-MM-DD, user's timezone)
+ *               start_time:
+ *                 type: string
+ *                 example: "09:30"
+ *                 description: Optional start time (HH:mm, user's timezone); omit for a whole-day start
  *               project_id:
  *                 type: integer
  *                 description: Associated project ID
@@ -355,6 +363,14 @@
  *                 type: string
  *                 format: date-time
  *                 description: Task due date
+ *               start_date:
+ *                 type: string
+ *                 format: date
+ *                 description: When work begins (YYYY-MM-DD, user's timezone)
+ *               start_time:
+ *                 type: string
+ *                 example: "09:30"
+ *                 description: Optional start time (HH:mm, user's timezone); omit for a whole-day start
  *               project_id:
  *                 type: integer
  *                 description: Associated project ID

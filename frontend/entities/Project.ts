@@ -39,6 +39,10 @@ export interface Project {
     notes?: Note[];
     Notes?: Note[]; // Sequelize association naming (capitalized)
     due_date_at?: string | null;
+    start_date?: string | null;
+    start_time?: string | null;
+    // "blocks" links between this project's tasks, for the timeline
+    task_links?: { from_uid: string; to_uid: string }[];
     image_url?: string;
     color?: string;
     task_show_completed?: boolean;

@@ -9,6 +9,7 @@ const {
 const {
     calculateInitialDueDate,
     applyDueTime,
+    applyStart,
     applyReminderAt,
 } = require('../../tasks/core/builders');
 const { parseEstimatedMinutes } = require('../../tasks/core/parsers');
@@ -405,6 +406,16 @@ function registerTaskTools(server, context, tools) {
                     description:
                         "Optional time of day (HH:mm, 24-hour) in the user's timezone, applied to due_date. Requires due_date. Omit for a whole-day due date.",
                 },
+                start_date: {
+                    type: 'string',
+                    description:
+                        "Start date (YYYY-MM-DD) in the user's timezone: when work on the task begins.",
+                },
+                start_time: {
+                    type: 'string',
+                    description:
+                        "Optional start time (HH:mm, 24-hour) in the user's timezone. Requires start_date. Omit for a whole-day start.",
+                },
                 reminder_at: {
                     type: 'string',
                     description:
@@ -497,6 +508,9 @@ function registerTaskTools(server, context, tools) {
             const reminderAttrs = {};
             applyReminderAt(reminderAttrs, params);
 
+            const startAttrs = {};
+            applyStart(startAttrs, params, context.user.timezone);
+
             const taskData = {
                 ...reminderAttrs,
                 user_id: context.userId,
@@ -509,6 +523,7 @@ function registerTaskTools(server, context, tools) {
                 due_date: dueDate,
                 due_has_time: dueAttrs.due_has_time ?? false,
                 defer_until: deferUntil,
+                ...startAttrs,
                 project_id: resolvedProjectId,
                 area_id: resolvedAreaId,
                 assigned_to: assignedTo,
@@ -641,6 +656,16 @@ function registerTaskTools(server, context, tools) {
             description:
                 "Time of day (HH:mm, 24-hour) in the user's timezone to apply to the due date. Set null to clear the time and keep the whole day.",
         },
+        start_date: {
+            type: ['string', 'null'],
+            description:
+                "New start date (YYYY-MM-DD) in the user's timezone. Pass null to clear it.",
+        },
+        start_time: {
+            type: ['string', 'null'],
+            description:
+                "Start time (HH:mm, 24-hour) in the user's timezone. Set null to keep a whole-day start.",
+        },
         reminder_at: {
             type: 'string',
             description:
@@ -759,6 +784,7 @@ function registerTaskTools(server, context, tools) {
                 );
             }
             applyDueTime(updates, params, context.user.timezone, task.due_date);
+            applyStart(updates, params, context.user.timezone, task.start_date);
             applyReminderAt(updates, params);
             if (params.defer_until !== undefined) {
                 updates.defer_until = processDeferUntilForStorage(

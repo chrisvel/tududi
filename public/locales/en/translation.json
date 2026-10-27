@@ -1002,7 +1002,8 @@
         "noVerb": "What specific action do you need to take? Try starting with a verb.",
         "vague": "Try starting with an action verb like \"Call\", \"Write\", \"Schedule\", or \"Research\""
       },
-      "notePlaceholder": "Add a note..."
+      "notePlaceholder": "Add a note...",
+      "startDatePlaceholder": "Select start date"
     },
     "noteTitle": "Note Title",
     "noteContent": "Note Content",
@@ -1026,7 +1027,8 @@
     "goalTargetDate": "Target Date",
     "color": "Color",
     "goalArea": "Area",
-    "noArea": "No area"
+    "noArea": "No area",
+    "startDate": "Start"
   },
   "auth": {
     "login": "Login",
@@ -1187,7 +1189,8 @@
     "completeTitle": "Complete \"{{name}}\"?",
     "completeOpenTasks": "This project still has open tasks. Mark them done too, or leave them open? Recurring tasks keep their schedule either way.",
     "leaveTasksOpen": "Leave them open",
-    "completeTasksToo": "Mark them done too"
+    "completeTasksToo": "Mark them done too",
+    "startsOn": "Starts {{date}}"
   },
   "errors": {
     "required": "This field is required",
@@ -1477,7 +1480,12 @@
     "noGoal": "Assign to a goal",
     "skipOccurrence": "Skip this occurrence",
     "occurrenceSkipped": "Occurrence skipped",
-    "skipOccurrenceError": "Failed to skip occurrence"
+    "skipOccurrenceError": "Failed to skip occurrence",
+    "startDate": "Start",
+    "noStartDate": "No start date",
+    "startDateUpdated": "Start date updated",
+    "startDateUpdateError": "Failed to update start date",
+    "startAfterDueError": "Start cannot be after the due date"
   },
   "subtasks": {
     "placeholder": "Add a subtask..."
@@ -3498,5 +3506,47 @@
       "weekend": "Weekend",
       "nextWeek": "Next week"
     }
+  },
+  "projectTimeline": {
+    "title": "Timeline",
+    "days": "Days",
+    "weeks": "Weeks",
+    "months": "Months",
+    "scale": "Scale",
+    "highlightPath": "Highlight the path",
+    "empty": "No tasks with dates yet",
+    "noDates": "No dates yet",
+    "dragHint": "Drag one onto the timeline to schedule it",
+    "spareDays": "{{count}} days spare",
+    "projectStart": "Project start",
+    "projectDue": "Project due",
+    "legendRange": "Start → Due",
+    "legendDue": "Due date only",
+    "legendBlocks": "Blocks",
+    "legendOverdue": "Overdue",
+    "saveError": "Could not move the task",
+    "dueOn": "Due {{date}}",
+    "startsOn": "Starts {{date}}",
+    "noLinks": "Mark tasks as blocking other tasks to see the path to the finish"
+  },
+  "everyoneTimeline": {
+    "view": "View",
+    "board": "Board",
+    "subtitle": "Who is doing what over the coming weeks",
+    "earlier": "Earlier",
+    "later": "Later",
+    "twoWeeks": "2 weeks",
+    "fourWeeks": "4 weeks",
+    "loadError": "Could not load the timeline.",
+    "planned": "{{hours}} planned",
+    "daysOver": "{{count}} days over",
+    "loadTitle": "{{hours}} of {{capacity}} planned",
+    "legendLoad": "Hours from task estimates, spread from start to due",
+    "legendOver": "More than your {{hours}} planning day",
+    "dragHint": "Drag a bar to move it, its ends to change the dates, or onto another person to assign it",
+    "oneWeek": "1 week",
+    "eightWeeks": "8 weeks",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   }
 }

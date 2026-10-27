@@ -978,7 +978,8 @@
       },
       "selectAtLeastOneDay": "Te rugăm să selectezi cel puțin o zi",
       "deferUntilPlaceholder": "Selectați data și ora până la care să amânați",
-      "notePlaceholder": "Adaugă o notă..."
+      "notePlaceholder": "Adaugă o notă...",
+      "startDatePlaceholder": "Alege data de început"
     },
     "noteTitle": "Titlul notei",
     "noteContent": "Conținutul notei",
@@ -1002,7 +1003,8 @@
     "goalTargetDate": "Data țintă",
     "color": "Culoare",
     "goalArea": "Arie",
-    "noArea": "Nicio arie"
+    "noArea": "Nicio arie",
+    "startDate": "Început"
   },
   "auth": {
     "login": "Conectare",
@@ -1104,7 +1106,8 @@
     "completeTitle": "Finalizezi „{{name}}”?",
     "completeOpenTasks": "Acest proiect mai are sarcini deschise. Le marchezi și pe ele ca făcute sau le lași deschise? Sarcinile recurente își păstrează programul oricum.",
     "leaveTasksOpen": "Lasă-le deschise",
-    "completeTasksToo": "Marchează-le ca făcute"
+    "completeTasksToo": "Marchează-le ca făcute",
+    "startsOn": "Începe pe {{date}}"
   },
   "errors": {
     "required": "Acest câmp este obligatoriu",
@@ -1393,7 +1396,12 @@
     "estimateHint": "Cât durează aproximativ? Se folosește la planificarea zilei.",
     "estimateClearHint": "Apasă din nou pentru a șterge",
     "estimateError": "Estimarea nu a putut fi actualizată",
-    "noGoal": "Atribuie unui obiectiv"
+    "noGoal": "Atribuie unui obiectiv",
+    "startDate": "Început",
+    "noStartDate": "Fără dată de început",
+    "startDateUpdated": "Data de început a fost actualizată",
+    "startDateUpdateError": "Data de început nu a putut fi actualizată",
+    "startAfterDueError": "Începutul nu poate fi după termen"
   },
   "projects": {
     "loading": "Se încarcă proiectele...",
@@ -3106,5 +3114,47 @@
       "weekend": "Weekend",
       "nextWeek": "Săptămâna viitoare"
     }
+  },
+  "projectTimeline": {
+    "title": "Cronologie",
+    "days": "Zile",
+    "weeks": "Săptămâni",
+    "months": "Luni",
+    "scale": "Scară",
+    "highlightPath": "Evidențiază drumul",
+    "empty": "Încă nu există sarcini cu date",
+    "noDates": "Încă fără date",
+    "dragHint": "Trage una pe cronologie pentru a o programa",
+    "spareDays": "{{count}} zile rezervă",
+    "projectStart": "Început proiect",
+    "projectDue": "Termen proiect",
+    "legendRange": "Început → Termen",
+    "legendDue": "Doar termen",
+    "legendBlocks": "Blochează",
+    "legendOverdue": "Întârziate",
+    "saveError": "Sarcina nu a putut fi mutată",
+    "dueOn": "Termen {{date}}",
+    "startsOn": "Începe {{date}}",
+    "noLinks": "Marchează sarcinile ca blocând alte sarcini pentru a vedea drumul până la final"
+  },
+  "everyoneTimeline": {
+    "view": "Vizualizare",
+    "board": "Panou",
+    "subtitle": "Cine ce face în săptămânile următoare",
+    "earlier": "Mai devreme",
+    "later": "Mai târziu",
+    "twoWeeks": "2 săptămâni",
+    "fourWeeks": "4 săptămâni",
+    "loadError": "Cronologia nu a putut fi încărcată.",
+    "planned": "{{hours}} planificate",
+    "daysOver": "{{count}} zile peste",
+    "loadTitle": "{{hours}} din {{capacity}} planificate",
+    "legendLoad": "Ore din estimările sarcinilor, împărțite de la început la termen",
+    "legendOver": "Mai mult decât ziua ta de planificare de {{hours}}",
+    "dragHint": "Trage o bară pentru a o muta, capetele ei pentru a schimba datele sau peste altă persoană pentru a i-o atribui",
+    "oneWeek": "1 săptămână",
+    "eightWeeks": "8 săptămâni",
+    "zoomIn": "Mărește",
+    "zoomOut": "Micșorează"
   }
 }

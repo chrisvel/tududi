@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Vänligen välj minst en dag",
       "deferUntilPlaceholder": "Välj datum och tid för uppskjutning",
-      "notePlaceholder": "Lägg till en anteckning..."
+      "notePlaceholder": "Lägg till en anteckning...",
+      "startDatePlaceholder": "Välj startdatum"
     },
     "noteTitle": "Anteckningsitel",
     "noteContent": "Anteckningsinnehåll",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Måldatum",
     "color": "Färg",
     "goalArea": "Område",
-    "noArea": "Inget område"
+    "noArea": "Inget område",
+    "startDate": "Start"
   },
   "auth": {
     "login": "Logga in",
@@ -1101,7 +1103,8 @@
     "completeTitle": "Slutföra \"{{name}}\"?",
     "completeOpenTasks": "Projektet har fortfarande öppna uppgifter. Ska de också markeras som klara, eller lämnas öppna? Återkommande uppgifter behåller sitt schema oavsett.",
     "leaveTasksOpen": "Lämna dem öppna",
-    "completeTasksToo": "Markera dem som klara"
+    "completeTasksToo": "Markera dem som klara",
+    "startsOn": "Börjar {{date}}"
   },
   "errors": {
     "required": "Detta fält är obligatoriskt",
@@ -1390,7 +1393,12 @@
     "estimateHint": "Ungefär hur lång tid? Används när du planerar dagen.",
     "estimateClearHint": "Klicka igen för att rensa",
     "estimateError": "Det gick inte att uppdatera uppskattningen",
-    "noGoal": "Koppla till ett mål"
+    "noGoal": "Koppla till ett mål",
+    "startDate": "Start",
+    "noStartDate": "Inget startdatum",
+    "startDateUpdated": "Startdatum uppdaterat",
+    "startDateUpdateError": "Det gick inte att uppdatera startdatum",
+    "startAfterDueError": "Start kan inte vara efter förfallodatumet"
   },
   "projects": {
     "loading": "Laddar projekt...",
@@ -3099,5 +3107,47 @@
       "weekend": "Helg",
       "nextWeek": "Nästa vecka"
     }
+  },
+  "projectTimeline": {
+    "title": "Tidslinje",
+    "days": "Dagar",
+    "weeks": "Veckor",
+    "months": "Månader",
+    "scale": "Skala",
+    "highlightPath": "Markera vägen",
+    "empty": "Inga uppgifter med datum än",
+    "noDates": "Inga datum än",
+    "dragHint": "Dra en till tidslinjen för att schemalägga den",
+    "spareDays": "{{count}} dagars marginal",
+    "projectStart": "Projektstart",
+    "projectDue": "Projektets förfallodag",
+    "legendRange": "Start → Förfallodag",
+    "legendDue": "Bara förfallodag",
+    "legendBlocks": "Blockerar",
+    "legendOverdue": "Försenade",
+    "saveError": "Det gick inte att flytta uppgiften",
+    "dueOn": "Förfaller {{date}}",
+    "startsOn": "Börjar {{date}}",
+    "noLinks": "Markera uppgifter som blockerande för andra för att se vägen till målet"
+  },
+  "everyoneTimeline": {
+    "view": "Vy",
+    "board": "Tavla",
+    "subtitle": "Vem gör vad de kommande veckorna",
+    "earlier": "Tidigare",
+    "later": "Senare",
+    "twoWeeks": "2 veckor",
+    "fourWeeks": "4 veckor",
+    "loadError": "Det gick inte att läsa in tidslinjen.",
+    "planned": "{{hours}} planerat",
+    "daysOver": "{{count}} dagar över",
+    "loadTitle": "{{hours}} av {{capacity}} planerat",
+    "legendLoad": "Timmar från uppgiftsuppskattningar, fördelade från start till förfallodag",
+    "legendOver": "Mer än din planeringsdag på {{hours}}",
+    "dragHint": "Dra en stapel för att flytta den, dess ändar för att ändra datumen, eller till en annan person för att tilldela den",
+    "oneWeek": "1 vecka",
+    "eightWeeks": "8 veckor",
+    "zoomIn": "Zooma in",
+    "zoomOut": "Zooma ut"
   }
 }

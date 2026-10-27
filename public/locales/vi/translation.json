@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Vui lòng chọn ít nhất một ngày",
       "deferUntilPlaceholder": "Chọn ngày và giờ hoãn đến",
-      "notePlaceholder": "Thêm ghi chú..."
+      "notePlaceholder": "Thêm ghi chú...",
+      "startDatePlaceholder": "Chọn ngày bắt đầu"
     },
     "noteTitle": "Tiêu đề ghi chú",
     "noteContent": "Nội dung ghi chú",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Ngày mục tiêu",
     "color": "Màu",
     "goalArea": "Khu vực",
-    "noArea": "Không có khu vực"
+    "noArea": "Không có khu vực",
+    "startDate": "Bắt đầu"
   },
   "auth": {
     "login": "Đăng Nhập",
@@ -1100,7 +1102,8 @@
     "completeTitle": "Hoàn thành \"{{name}}\"?",
     "completeOpenTasks": "Dự án này vẫn còn công việc chưa xong. Đánh dấu chúng là xong luôn, hay để mở? Công việc lặp lại vẫn giữ lịch của chúng trong cả hai trường hợp.",
     "leaveTasksOpen": "Để mở",
-    "completeTasksToo": "Đánh dấu xong luôn"
+    "completeTasksToo": "Đánh dấu xong luôn",
+    "startsOn": "Bắt đầu {{date}}"
   },
   "errors": {
     "required": "Trường này là bắt buộc",
@@ -1389,7 +1392,12 @@
     "estimateHint": "Khoảng bao lâu? Dùng khi bạn lên kế hoạch cho ngày.",
     "estimateClearHint": "Nhấn lần nữa để xóa",
     "estimateError": "Không thể cập nhật ước tính",
-    "noGoal": "Gán vào mục tiêu"
+    "noGoal": "Gán vào mục tiêu",
+    "startDate": "Bắt đầu",
+    "noStartDate": "Không có ngày bắt đầu",
+    "startDateUpdated": "Đã cập nhật ngày bắt đầu",
+    "startDateUpdateError": "Không thể cập nhật ngày bắt đầu",
+    "startAfterDueError": "Ngày bắt đầu không thể sau hạn chót"
   },
   "projects": {
     "loading": "Đang tải dự án...",
@@ -3096,5 +3104,47 @@
       "weekend": "Cuối tuần",
       "nextWeek": "Tuần sau"
     }
+  },
+  "projectTimeline": {
+    "title": "Dòng thời gian",
+    "days": "Ngày",
+    "weeks": "Tuần",
+    "months": "Tháng",
+    "scale": "Tỷ lệ",
+    "highlightPath": "Làm nổi bật đường đi",
+    "empty": "Chưa có công việc nào có ngày",
+    "noDates": "Chưa có ngày",
+    "dragHint": "Kéo một mục vào dòng thời gian để lên lịch",
+    "spareDays": "Dư {{count}} ngày",
+    "projectStart": "Bắt đầu dự án",
+    "projectDue": "Hạn dự án",
+    "legendRange": "Bắt đầu → Hạn",
+    "legendDue": "Chỉ có hạn",
+    "legendBlocks": "Chặn",
+    "legendOverdue": "Quá hạn",
+    "saveError": "Không thể di chuyển công việc",
+    "dueOn": "Hạn {{date}}",
+    "startsOn": "Bắt đầu {{date}}",
+    "noLinks": "Đánh dấu công việc là chặn công việc khác để xem đường đến đích"
+  },
+  "everyoneTimeline": {
+    "view": "Chế độ xem",
+    "board": "Bảng",
+    "subtitle": "Ai làm gì trong những tuần tới",
+    "earlier": "Trước",
+    "later": "Sau",
+    "twoWeeks": "2 tuần",
+    "fourWeeks": "4 tuần",
+    "loadError": "Không thể tải dòng thời gian.",
+    "planned": "Đã lên kế hoạch {{hours}}",
+    "daysOver": "Quá tải {{count}} ngày",
+    "loadTitle": "{{hours}} / {{capacity}} đã lên kế hoạch",
+    "legendLoad": "Số giờ từ ước tính công việc, chia từ ngày bắt đầu đến hạn",
+    "legendOver": "Nhiều hơn ngày làm việc {{hours}} của bạn",
+    "dragHint": "Kéo thanh để di chuyển, kéo hai đầu để đổi ngày, hoặc thả vào người khác để giao việc",
+    "oneWeek": "1 tuần",
+    "eightWeeks": "8 tuần",
+    "zoomIn": "Phóng to",
+    "zoomOut": "Thu nhỏ"
   }
 }

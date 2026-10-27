@@ -115,6 +115,8 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 21. **Each person has a colour, and dragging a task onto another column assigns it to them.** A person's own colour is used when set; others get distinct colours from a fixed set. The task keeps its due date. The drop goes through the same assignee check as the task page, so a person who can't see the task's project is refused and the board reloads. Group pages use the same board.
 
+22. **The Timeline view lays the same people out over time.** Switch the Everyone page from Board to Timeline to see a lane per person for 2 or 4 weeks: bars run from a task's start date to its due date, and a row under each lane adds up task estimates per day (each estimate spread evenly over its days), turning orange past your planning day (Profile > Planning). Your own lane also holds your private tasks, which only you see; other people's lanes follow the board's rules. Drag a bar sideways to move its dates or onto another lane to assign it.
+
 ---
 
 ## API summary
@@ -129,6 +131,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 | `GET /api/shares/candidates` | The workspace members the Share dialog offers (`id`, `uid`, `name`). `POST /api/shares` takes one as `target_user_id`; an id outside your workspace is a `404` |
 | `POST`, `PATCH`, `DELETE /api/people[/:uid]` | Add, change or remove one of your contacts. Adding needs `create_people` |
 | `GET /api/everyone` | The Everyone board |
+| `GET /api/everyone/timeline?from=YYYY-MM-DD&days=14` | The Timeline view: `lanes` (person, `is_self`, dated `tasks`) for tasks whose start or due date falls in the window, plus the viewer's `day_hours`. `days` is 1 to 62 |
 | `GET /api/groups/:uid` | One group's board: a column per member (group members and managing admins only, see [User Groups](18-user-groups.md)) |
 | `GET /api/admin/roles` | The three roles, their default capabilities and how many accounts hold each (admin) |
 | `POST /api/admin/users`, `PUT /api/admin/users/:id` | Create or change an account, including `role`, `capabilities` and an optional email (admin) |

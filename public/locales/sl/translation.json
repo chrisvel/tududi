@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Prosimo, izberite vsaj en dan",
       "deferUntilPlaceholder": "Izberite datum in čas odloga",
-      "notePlaceholder": "Dodaj opombo..."
+      "notePlaceholder": "Dodaj opombo...",
+      "startDatePlaceholder": "Izberite datum začetka"
     },
     "noteTitle": "Naslov opombe",
     "noteContent": "Vsebina opombe",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Ciljni datum",
     "color": "Barva",
     "goalArea": "Področje",
-    "noArea": "Brez področja"
+    "noArea": "Brez področja",
+    "startDate": "Začetek"
   },
   "auth": {
     "login": "Prijava",
@@ -1103,7 +1105,8 @@
     "completeTitle": "Zaključim »{{name}}«?",
     "completeOpenTasks": "Ta projekt ima še odprta opravila. Jih označim tudi kot opravljena ali pustim odprta? Ponavljajoča se opravila v vsakem primeru ohranijo svoj urnik.",
     "leaveTasksOpen": "Pusti jih odprta",
-    "completeTasksToo": "Označi jih kot opravljena"
+    "completeTasksToo": "Označi jih kot opravljena",
+    "startsOn": "Začne se {{date}}"
   },
   "errors": {
     "required": "To polje je obvezno",
@@ -1392,7 +1395,12 @@
     "estimateHint": "Približno koliko časa? Uporabi se pri načrtovanju dneva.",
     "estimateClearHint": "Klikni znova za brisanje",
     "estimateError": "Ocene ni bilo mogoče posodobiti",
-    "noGoal": "Dodeli cilju"
+    "noGoal": "Dodeli cilju",
+    "startDate": "Začetek",
+    "noStartDate": "Brez datuma začetka",
+    "startDateUpdated": "Datum začetka posodobljen",
+    "startDateUpdateError": "Datuma začetka ni bilo mogoče posodobiti",
+    "startAfterDueError": "Začetek ne more biti po roku"
   },
   "projects": {
     "loading": "Nalagam projekte...",
@@ -3109,5 +3117,47 @@
       "weekend": "Vikend",
       "nextWeek": "Naslednji teden"
     }
+  },
+  "projectTimeline": {
+    "title": "Časovnica",
+    "days": "Dnevi",
+    "weeks": "Tedni",
+    "months": "Meseci",
+    "scale": "Merilo",
+    "highlightPath": "Poudari pot",
+    "empty": "Še ni opravil z datumi",
+    "noDates": "Še brez datumov",
+    "dragHint": "Povlecite ga na časovnico, da ga načrtujete",
+    "spareDays": "{{count}} dni rezerve",
+    "projectStart": "Začetek projekta",
+    "projectDue": "Rok projekta",
+    "legendRange": "Začetek → Rok",
+    "legendDue": "Samo rok",
+    "legendBlocks": "Blokira",
+    "legendOverdue": "Zamujeno",
+    "saveError": "Opravila ni bilo mogoče premakniti",
+    "dueOn": "Rok {{date}}",
+    "startsOn": "Začne se {{date}}",
+    "noLinks": "Označite opravila kot blokirajoča za druga, da vidite pot do konca"
+  },
+  "everyoneTimeline": {
+    "view": "Pogled",
+    "board": "Tabla",
+    "subtitle": "Kdo dela kaj v prihodnjih tednih",
+    "earlier": "Prej",
+    "later": "Pozneje",
+    "twoWeeks": "2 tedna",
+    "fourWeeks": "4 tedni",
+    "loadError": "Časovnice ni bilo mogoče naložiti.",
+    "planned": "{{hours}} načrtovano",
+    "daysOver": "{{count}} dni preveč",
+    "loadTitle": "{{hours}} od {{capacity}} načrtovano",
+    "legendLoad": "Ure iz ocen opravil, razporejene od začetka do roka",
+    "legendOver": "Več kot vaš načrtovalni dan {{hours}}",
+    "dragHint": "Povlecite vrstico, da jo premaknete, njene konce, da spremenite datume, ali na drugo osebo, da jo dodelite",
+    "oneWeek": "1 teden",
+    "eightWeeks": "8 tednov",
+    "zoomIn": "Povečaj",
+    "zoomOut": "Pomanjšaj"
   }
 }

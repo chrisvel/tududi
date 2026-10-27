@@ -43,6 +43,8 @@ export interface Task {
     due_date?: string;
     due_time?: string | null;
     due_has_time?: boolean;
+    start_date?: string | null;
+    start_time?: string | null;
     defer_until?: string;
     reminder_at?: string;
     estimated_minutes?: number | null;

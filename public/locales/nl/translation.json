@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "Selecteer alstublieft minimaal één dag",
       "deferUntilPlaceholder": "Selecteer uitstel tot datum en tijd",
-      "notePlaceholder": "Voeg een notitie toe..."
+      "notePlaceholder": "Voeg een notitie toe...",
+      "startDatePlaceholder": "Kies een startdatum"
     },
     "noteTitle": "Notitietitel",
     "noteContent": "Notitie-inhoud",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "Streefdatum",
     "color": "Kleur",
     "goalArea": "Gebied",
-    "noArea": "Geen gebied"
+    "noArea": "Geen gebied",
+    "startDate": "Start"
   },
   "auth": {
     "login": "Inloggen",
@@ -1101,7 +1103,8 @@
     "completeTitle": "\"{{name}}\" voltooien?",
     "completeOpenTasks": "Dit project heeft nog open taken. Ook afronden of open laten? Terugkerende taken houden hoe dan ook hun schema.",
     "leaveTasksOpen": "Open laten",
-    "completeTasksToo": "Ook afronden"
+    "completeTasksToo": "Ook afronden",
+    "startsOn": "Begint {{date}}"
   },
   "errors": {
     "required": "Dit veld is verplicht",
@@ -1390,7 +1393,12 @@
     "estimateHint": "Hoe lang ongeveer? Wordt gebruikt bij het plannen van je dag.",
     "estimateClearHint": "Klik nogmaals om te wissen",
     "estimateError": "Schatting bijwerken mislukt",
-    "noGoal": "Aan een doel koppelen"
+    "noGoal": "Aan een doel koppelen",
+    "startDate": "Start",
+    "noStartDate": "Geen startdatum",
+    "startDateUpdated": "Startdatum bijgewerkt",
+    "startDateUpdateError": "Startdatum bijwerken mislukt",
+    "startAfterDueError": "De start kan niet na de vervaldatum liggen"
   },
   "projects": {
     "loading": "Projecten laden...",
@@ -3099,5 +3107,47 @@
       "weekend": "Weekend",
       "nextWeek": "Volgende week"
     }
+  },
+  "projectTimeline": {
+    "title": "Tijdlijn",
+    "days": "Dagen",
+    "weeks": "Weken",
+    "months": "Maanden",
+    "scale": "Schaal",
+    "highlightPath": "Pad markeren",
+    "empty": "Nog geen taken met datums",
+    "noDates": "Nog geen datums",
+    "dragHint": "Sleep er een naar de tijdlijn om hem in te plannen",
+    "spareDays": "{{count}} dagen speling",
+    "projectStart": "Projectstart",
+    "projectDue": "Projectdeadline",
+    "legendRange": "Start → Deadline",
+    "legendDue": "Alleen deadline",
+    "legendBlocks": "Blokkeert",
+    "legendOverdue": "Te laat",
+    "saveError": "Kon de taak niet verplaatsen",
+    "dueOn": "Deadline {{date}}",
+    "startsOn": "Begint {{date}}",
+    "noLinks": "Markeer taken als blokkerend voor andere taken om het pad naar het einde te zien"
+  },
+  "everyoneTimeline": {
+    "view": "Weergave",
+    "board": "Bord",
+    "subtitle": "Wie doet wat in de komende weken",
+    "earlier": "Eerder",
+    "later": "Later",
+    "twoWeeks": "2 weken",
+    "fourWeeks": "4 weken",
+    "loadError": "Kon de tijdlijn niet laden.",
+    "planned": "{{hours}} gepland",
+    "daysOver": "{{count}} dagen te veel",
+    "loadTitle": "{{hours}} van {{capacity}} gepland",
+    "legendLoad": "Uren uit taakschattingen, verdeeld van start tot deadline",
+    "legendOver": "Meer dan je planningsdag van {{hours}}",
+    "dragHint": "Sleep een balk om hem te verplaatsen, de uiteinden om de datums te wijzigen, of naar een ander persoon om hem toe te wijzen",
+    "oneWeek": "1 week",
+    "eightWeeks": "8 weken",
+    "zoomIn": "Inzoomen",
+    "zoomOut": "Uitzoomen"
   }
 }

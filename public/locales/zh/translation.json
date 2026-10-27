@@ -976,7 +976,8 @@
       },
       "selectAtLeastOneDay": "请至少选择一天",
       "deferUntilPlaceholder": "选择延迟至的日期和时间",
-      "notePlaceholder": "添加备注..."
+      "notePlaceholder": "添加备注...",
+      "startDatePlaceholder": "选择开始日期"
     },
     "noteTitle": "笔记标题",
     "noteContent": "笔记内容",
@@ -1000,7 +1001,8 @@
     "goalTargetDate": "目标日期",
     "color": "颜色",
     "goalArea": "区域",
-    "noArea": "无区域"
+    "noArea": "无区域",
+    "startDate": "开始"
   },
   "auth": {
     "login": "登录",
@@ -1100,7 +1102,8 @@
     "completeTitle": "完成“{{name}}”？",
     "completeOpenTasks": "此项目仍有未完成的任务。要一并标记为完成，还是保留？重复任务无论如何都会保留其计划。",
     "leaveTasksOpen": "保留未完成",
-    "completeTasksToo": "一并标记完成"
+    "completeTasksToo": "一并标记完成",
+    "startsOn": "{{date}} 开始"
   },
   "errors": {
     "required": "此字段为必填项",
@@ -1389,7 +1392,12 @@
     "estimateHint": "大约需要多久?用于规划一天。",
     "estimateClearHint": "再次点击即可清除",
     "estimateError": "无法更新预估",
-    "noGoal": "分配到目标"
+    "noGoal": "分配到目标",
+    "startDate": "开始",
+    "noStartDate": "无开始日期",
+    "startDateUpdated": "开始日期已更新",
+    "startDateUpdateError": "无法更新开始日期",
+    "startAfterDueError": "开始时间不能晚于截止日期"
   },
   "projects": {
     "loading": "加载项目中...",
@@ -3096,5 +3104,47 @@
       "weekend": "周末",
       "nextWeek": "下周"
     }
+  },
+  "projectTimeline": {
+    "title": "时间线",
+    "days": "天",
+    "weeks": "周",
+    "months": "月",
+    "scale": "比例",
+    "highlightPath": "突出显示路径",
+    "empty": "还没有带日期的任务",
+    "noDates": "尚无日期",
+    "dragHint": "拖到时间线上即可安排",
+    "spareDays": "余量 {{count}} 天",
+    "projectStart": "项目开始",
+    "projectDue": "项目截止",
+    "legendRange": "开始 → 截止",
+    "legendDue": "仅截止日期",
+    "legendBlocks": "阻塞",
+    "legendOverdue": "已逾期",
+    "saveError": "无法移动任务",
+    "dueOn": "截止 {{date}}",
+    "startsOn": "开始 {{date}}",
+    "noLinks": "将任务标记为阻塞其他任务，即可查看到完成的路径"
+  },
+  "everyoneTimeline": {
+    "view": "视图",
+    "board": "看板",
+    "subtitle": "接下来几周谁在做什么",
+    "earlier": "更早",
+    "later": "更晚",
+    "twoWeeks": "2 周",
+    "fourWeeks": "4 周",
+    "loadError": "无法加载时间线。",
+    "planned": "已计划 {{hours}}",
+    "daysOver": "超出 {{count}} 天",
+    "loadTitle": "已计划 {{hours}} / {{capacity}}",
+    "legendLoad": "按任务预估计算的小时数，从开始到截止平均分配",
+    "legendOver": "超过你 {{hours}} 的计划工作日",
+    "dragHint": "拖动条形以移动，拖动两端以更改日期，或拖到其他人以分配",
+    "oneWeek": "1 周",
+    "eightWeeks": "8 周",
+    "zoomIn": "放大",
+    "zoomOut": "缩小"
   }
 }

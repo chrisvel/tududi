@@ -955,7 +955,8 @@
       },
       "selectAtLeastOneDay": "少なくとも1日を選択してください",
       "deferUntilPlaceholder": "延期する日付と時間を選択",
-      "notePlaceholder": "メモを追加..."
+      "notePlaceholder": "メモを追加...",
+      "startDatePlaceholder": "開始日を選択"
     },
     "areaName": "エリア名",
     "areaDescription": "エリアの説明",
@@ -975,7 +976,8 @@
     "goalTargetDate": "目標日",
     "color": "色",
     "goalArea": "エリア",
-    "noArea": "エリアなし"
+    "noArea": "エリアなし",
+    "startDate": "開始"
   },
   "auth": {
     "login": "ログイン",
@@ -1482,7 +1484,8 @@
     "completeTitle": "「{{name}}」を完了しますか？",
     "completeOpenTasks": "このプロジェクトにはまだ未完了のタスクがあります。あわせて完了にしますか、それとも残しますか？繰り返しタスクはどちらの場合もスケジュールを維持します。",
     "leaveTasksOpen": "未完了のまま残す",
-    "completeTasksToo": "あわせて完了にする"
+    "completeTasksToo": "あわせて完了にする",
+    "startsOn": "{{date}} に開始"
   },
   "task": {
     "suggestions": {
@@ -1611,7 +1614,12 @@
     "estimateHint": "だいたいどれくらいかかりますか?一日の計画に使われます。",
     "estimateClearHint": "もう一度クリックすると解除",
     "estimateError": "見積もりを更新できませんでした",
-    "noGoal": "目標に割り当てる"
+    "noGoal": "目標に割り当てる",
+    "startDate": "開始",
+    "noStartDate": "開始日なし",
+    "startDateUpdated": "開始日を更新しました",
+    "startDateUpdateError": "開始日を更新できませんでした",
+    "startAfterDueError": "開始日は期限より後にできません"
   },
   "calendar": {
     "month": "月",
@@ -3096,5 +3104,47 @@
       "weekend": "週末",
       "nextWeek": "来週"
     }
+  },
+  "projectTimeline": {
+    "title": "タイムライン",
+    "days": "日",
+    "weeks": "週",
+    "months": "月",
+    "scale": "スケール",
+    "highlightPath": "パスを強調",
+    "empty": "日付のあるタスクはまだありません",
+    "noDates": "日付未設定",
+    "dragHint": "タイムラインにドラッグして予定を立てる",
+    "spareDays": "{{count}} 日の余裕",
+    "projectStart": "プロジェクト開始",
+    "projectDue": "プロジェクト期限",
+    "legendRange": "開始 → 期限",
+    "legendDue": "期限のみ",
+    "legendBlocks": "ブロック",
+    "legendOverdue": "期限切れ",
+    "saveError": "タスクを移動できませんでした",
+    "dueOn": "期限 {{date}}",
+    "startsOn": "開始 {{date}}",
+    "noLinks": "タスクを他のタスクのブロッカーに設定すると、完了までの経路が表示されます"
+  },
+  "everyoneTimeline": {
+    "view": "表示",
+    "board": "ボード",
+    "subtitle": "今後数週間で誰が何をするか",
+    "earlier": "前へ",
+    "later": "次へ",
+    "twoWeeks": "2週間",
+    "fourWeeks": "4週間",
+    "loadError": "タイムラインを読み込めませんでした。",
+    "planned": "{{hours}} 予定",
+    "daysOver": "{{count}} 日超過",
+    "loadTitle": "{{capacity}} 中 {{hours}} 予定",
+    "legendLoad": "タスク見積もりの時間を開始から期限まで配分",
+    "legendOver": "{{hours}} の計画日を超えています",
+    "dragHint": "バーをドラッグして移動、端をドラッグして日付を変更、別の人にドラッグして割り当て",
+    "oneWeek": "1週間",
+    "eightWeeks": "8週間",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小"
   }
 }

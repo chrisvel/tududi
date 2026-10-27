@@ -74,7 +74,9 @@ const PERSON_PALETTE = [
     '#84cc16',
 ];
 
-const columnColors = (columns: EveryoneColumn[]): Record<string, string> => {
+export const columnColors = (
+    columns: { person: { uid: string; color: string | null } }[]
+): Record<string, string> => {
     const taken = new Set(
         columns
             .map((c) => c.person.color?.toLowerCase())
@@ -98,7 +100,7 @@ const initials = (name: string): string => {
     return (first + last).toUpperCase();
 };
 
-const PersonAvatar: React.FC<{ name: string; color: string }> = ({
+export const PersonAvatar: React.FC<{ name: string; color: string }> = ({
     name,
     color,
 }) => (

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     FlagIcon,
+    PlayIcon,
     CalendarIcon,
     ClockIcon,
     FolderIcon,
@@ -120,6 +121,25 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
                         />
                     )
                 }
+            />
+
+            {/* Start */}
+            <DateTimePicker
+                value={fromDueParts(task.start_date, task.start_time)}
+                onChange={(iso) => {
+                    const parts = toDueParts(iso);
+                    void setters.setStart(parts.date, parts.time);
+                }}
+                renderTrigger={({ onClick, isOpen, displayValue }) => (
+                    <ToolbarButton
+                        onClick={onClick}
+                        open={isOpen}
+                        active={!!task.start_date}
+                        label={t('forms.startDate', 'Start')}
+                        badge={displayValue}
+                        icon={<PlayIcon className="h-4 w-4" />}
+                    />
+                )}
             />
 
             {/* Due date */}

@@ -329,7 +329,8 @@
       },
       "selectAtLeastOneDay": "Bitte wählen Sie mindestens einen Tag aus",
       "deferUntilPlaceholder": "Wählen Sie das Datum und die Uhrzeit für das Aufschieben aus",
-      "notePlaceholder": "Eine Notiz hinzufügen..."
+      "notePlaceholder": "Eine Notiz hinzufügen...",
+      "startDatePlaceholder": "Startdatum wählen"
     },
     "noteTitle": "Notiz-Titel",
     "noteContent": "Notiz-Inhalt",
@@ -359,7 +360,8 @@
     "goalTargetDate": "Zieldatum",
     "color": "Farbe",
     "goalArea": "Bereich",
-    "noArea": "Kein Bereich"
+    "noArea": "Kein Bereich",
+    "startDate": "Beginn"
   },
   "modals": {
     "updateNote": "Notiz aktualisieren",
@@ -643,7 +645,8 @@
     "completeTitle": "„{{name}}“ abschließen?",
     "completeOpenTasks": "Dieses Projekt hat noch offene Aufgaben. Sollen sie ebenfalls erledigt werden oder offen bleiben? Wiederkehrende Aufgaben behalten in jedem Fall ihren Zeitplan.",
     "leaveTasksOpen": "Offen lassen",
-    "completeTasksToo": "Ebenfalls erledigen"
+    "completeTasksToo": "Ebenfalls erledigen",
+    "startsOn": "Beginnt am {{date}}"
   },
   "profile": {
     "title": "Profil-Einstellungen",
@@ -1344,7 +1347,12 @@
     "estimateHint": "Wie lange ungefähr? Wird bei der Tagesplanung verwendet.",
     "estimateClearHint": "Zum Entfernen erneut klicken",
     "estimateError": "Die Schätzung konnte nicht aktualisiert werden",
-    "noGoal": "Einem Ziel zuordnen"
+    "noGoal": "Einem Ziel zuordnen",
+    "startDate": "Beginn",
+    "noStartDate": "Kein Startdatum",
+    "startDateUpdated": "Startdatum aktualisiert",
+    "startDateUpdateError": "Startdatum konnte nicht aktualisiert werden",
+    "startAfterDueError": "Der Beginn darf nicht nach dem Fälligkeitsdatum liegen"
   },
   "calendar": {
     "month": "Monat",
@@ -3108,5 +3116,47 @@
       "weekend": "Wochenende",
       "nextWeek": "Nächste Woche"
     }
+  },
+  "projectTimeline": {
+    "title": "Zeitleiste",
+    "days": "Tage",
+    "weeks": "Wochen",
+    "months": "Monate",
+    "scale": "Maßstab",
+    "highlightPath": "Pfad hervorheben",
+    "empty": "Noch keine Aufgaben mit Datum",
+    "noDates": "Noch ohne Datum",
+    "dragHint": "Auf die Zeitleiste ziehen, um sie einzuplanen",
+    "spareDays": "{{count}} Tage Puffer",
+    "projectStart": "Projektbeginn",
+    "projectDue": "Projektfälligkeit",
+    "legendRange": "Beginn → Fällig",
+    "legendDue": "Nur Fälligkeitsdatum",
+    "legendBlocks": "Blockiert",
+    "legendOverdue": "Überfällig",
+    "saveError": "Die Aufgabe konnte nicht verschoben werden",
+    "dueOn": "Fällig {{date}}",
+    "startsOn": "Beginnt {{date}}",
+    "noLinks": "Markiere Aufgaben als blockierend, um den Weg zum Ziel zu sehen"
+  },
+  "everyoneTimeline": {
+    "view": "Ansicht",
+    "board": "Board",
+    "subtitle": "Wer in den nächsten Wochen woran arbeitet",
+    "earlier": "Früher",
+    "later": "Später",
+    "twoWeeks": "2 Wochen",
+    "fourWeeks": "4 Wochen",
+    "loadError": "Die Zeitleiste konnte nicht geladen werden.",
+    "planned": "{{hours}} geplant",
+    "daysOver": "{{count}} Tage zu viel",
+    "loadTitle": "{{hours}} von {{capacity}} geplant",
+    "legendLoad": "Stunden aus Aufgabenschätzungen, verteilt von Beginn bis Fälligkeit",
+    "legendOver": "Mehr als dein Planungstag von {{hours}}",
+    "dragHint": "Balken ziehen zum Verschieben, an den Enden ziehen für neue Daten, auf eine andere Person zum Zuweisen",
+    "oneWeek": "1 Woche",
+    "eightWeeks": "8 Wochen",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern"
   }
 }

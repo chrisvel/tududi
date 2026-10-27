@@ -95,6 +95,14 @@ This document explains how tasks work in tududi from a user behavior perspective
     - Due today tasks appear in "Suggested" section (if not in Planned status)
     - No automatic status changes when due date passes
 
+### Start Date
+
+- **Start date is optional:** when work on the task begins. Pick a day, and optionally a time.
+- **Whole-day starts** are stored as the start of that day in the user's timezone; a time is stored as that moment.
+- **API:** `start_date` (YYYY-MM-DD) and `start_time` (HH:mm), both in the user's timezone. Changing `start_date` alone drops the time; sending `start_time` alone keeps the day. `start_date: null` clears it.
+- **Start cannot be after the due date** in the web UI (a whole-day due date lasts until the end of its day). The API does not enforce this.
+- **Different from Defer Until:** the start does not hide the task. It places the task on timelines.
+
 ### Defer Until
 
 14. **Defer Until hides tasks until a specific time:**

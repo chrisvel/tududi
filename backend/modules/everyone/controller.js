@@ -18,6 +18,21 @@ const everyoneController = {
             next(err);
         }
     },
+
+    async timeline(req, res, next) {
+        try {
+            const userId = getAuthenticatedUserId(req);
+            if (!userId) throw new UnauthorizedError('Authentication required');
+            const data = await everyoneService.getEveryoneTimeline(
+                req.currentUser,
+                req.currentUser?.timezone,
+                { from: req.query.from, days: req.query.days }
+            );
+            res.json(data);
+        } catch (err) {
+            next(err);
+        }
+    },
 };
 
 module.exports = everyoneController;
