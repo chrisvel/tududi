@@ -20,15 +20,21 @@ until `TUDUDI_HOSTED_MODE=true`.
 
 The catalog lives in `backend/config/plans.js`:
 
-| | Free | Pro |
-|---|---|---|
-| Active tasks (not done, archived or cancelled) | 200 | unlimited |
-| Projects | 10 | unlimited |
-| Notes | 50 | unlimited |
-| Attachment storage | 50 MB | 5 GB |
-| AI requests per month | 0 | 200 |
-| Members an owner may add, each a paid seat (`max_members`) | 0 | 10 |
-| AI assistant, MCP, CalDAV, backup import | no | yes |
+| | Free | Pro | Team (`team_N`) |
+|---|---|---|---|
+| Active tasks (not done, archived or cancelled) | 200 | unlimited | unlimited |
+| Projects | 10 | unlimited | unlimited |
+| Notes | 50 | unlimited | unlimited |
+| Attachment storage | 50 MB | 5 GB | 5 GB |
+| AI requests per month | 0 | 200 | 200 |
+| Members an owner may add (`max_members`) | 0 | 0 | N minus 1 |
+| AI assistant, MCP, CalDAV, backup import | no | yes | yes |
+
+Pro is one person. Team plans are sold in fixed seat buckets, like
+monday.com: `team_3`, `team_5`, `team_10`, `team_15`, `team_20`, `team_25`,
+`team_30` and `team_40` (`TEAM_SEATS` in `plans.js`). Each is Pro for everyone
+in it, and the owner holds one of the seats, so `team_5` adds 4 members.
+Larger teams are sold by hand with an override (below).
 
 `null` means unlimited. Override any number with `TUDUDI_PLANS_JSON`, a JSON
 object deep-merged over the defaults:
@@ -66,8 +72,8 @@ someone who signed up only to misuse them.
 - **Limited AI** (30 requests and 10 credits a month, against Pro's 200 and
   50), **one member** (`max_members: 1`) and **no public note links**
   (`features.public_notes: false`; turning a link off still works). A member
-  added on a trial shares the owner's trial while it runs, and becomes a paid
-  seat if the owner subscribes. A feature the trial leaves out answers
+  added on a trial shares the owner's trial while it runs, and keeps access
+  if the owner subscribes to a Team plan. A feature the trial leaves out answers
   `402 FEATURE_NOT_IN_PLAN` with `details.plan: "trial"`, and the app sends
   the browser to `/subscription/new?feature=<name>`. Set any of these to `0`
   or `false` with `TUDUDI_PLANS_JSON` to take them out again.
@@ -152,25 +158,30 @@ owns one) and groups join their creator's account. Accounts the superadmin
 creates stand on their own. When an owner's account is deleted its members
 stay and each gets an account of its own.
 
-Each member is one more seat, paid by the account owner whichever admin added
-it. The owner's subscription quantity is the owner plus the other members of
-its account (`billing_accounts.seat_quantity`, the provider line item in
-`provider_subscription_item_id`), kept in line by
+Each member takes a seat of the account owner's plan, whichever admin added
+it. Seats come from the plan (a Team bucket), never from a quantity on the
+subscription, so the app never changes a subscription itself.
 `backend/services/seatsService.js`:
 
-- **Adding** a member raises the quantity first, through the provider
-  (`updateSeats`, `PATCH /subscription-items/:id` on Lemon Squeezy). If the
-  provider refuses, nothing is created. The change is prorated onto the next
-  invoice, so nothing is charged on the spot.
-- **Removing** a member (`DELETE /api/members/:id`, the member deleting
-  their own account, or an admin deleting it) lowers the quantity again. A
-  failed decrease is logged and corrected by the next sync.
-- **Webhooks**: a new or changed subscription is brought up to the members
-  the owner already has, so an owner who resubscribes is billed for them.
+- **Adding** a member checks `max_members` of the owner's plan
+  (`assertCanAddSeat`). The owner counts as one seat. Nothing reaches the
+  payment provider.
+- **Removing** a member frees its seat for someone else. There is no refund
+  before the renewal.
+- **A bigger team** moves to a bigger bucket through checkout or the
+  provider's portal, so the customer approves the change (this also works for
+  PayPal subscriptions, which a merchant cannot change). The
+  `subscription_plan_changed` webhook stores the new plan.
+- **A smaller bucket** than the members already added keeps them; adding is
+  refused until there is room again.
 - **Who may add**: an admin of an account whose owner has a subscription, its
-  grace window, or an admin override, and only up to `max_members`. Without one the request
-  answers `402 SUBSCRIPTION_REQUIRED`; past the limit `402
-  PLAN_LIMIT_REACHED`.
+  grace window, or an admin override. Without one the request answers `402
+  SUBSCRIPTION_REQUIRED`; past the plan's seats `402 PLAN_LIMIT_REACHED` with
+  `details.resource: "member"`, which the app shows as "All N seats are in
+  use".
+- **Invoiced teams**: set an override to a `team_N` plan with an expiry in
+  Admin > Billing. `billing_accounts.seat_quantity` is kept for reference and
+  not used.
 
 A member with nothing of its own is covered by its account owner: `getEntitlements`
 returns the owner's plan with `reason: 'seat'` and `seat_owner`. When the
@@ -224,6 +235,7 @@ invoices itself, which is why it is the provider of the hosted tududi.
 | `LEMONSQUEEZY_WEBHOOK_SECRET` | signing secret of the webhook below |
 | `LEMONSQUEEZY_VARIANT_PRO_MONTHLY` | variant id of the monthly Pro subscription |
 | `LEMONSQUEEZY_VARIANT_PRO_ANNUAL` | variant id of the annual Pro subscription |
+| `LEMONSQUEEZY_TEAM_VARIANTS_JSON` | Team variants, `{"team_5":{"month":"123","year":"456"}}`; put them in the same product as Pro so the portal offers them as plan changes |
 
 Create one product ("tududi Pro") with a subscription variant per
 interval, then a webhook at `https://your-host/api/billing/webhook` with the
@@ -245,6 +257,7 @@ the billing tab reloads.
 | `STRIPE_WEBHOOK_SECRET` | signing secret of the webhook endpoint below |
 | `STRIPE_PRICE_PRO_MONTHLY` | price id of the monthly Pro price |
 | `STRIPE_PRICE_PRO_ANNUAL` | price id of the annual Pro price |
+| `STRIPE_TEAM_PRICES_JSON` | Team prices, `{"team_5":{"month":"price_…","year":"price_…"}}` |
 
 Point a Stripe webhook at `https://your-host/api/billing/webhook` with the
 events `checkout.session.completed`, `customer.subscription.created`,

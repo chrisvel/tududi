@@ -67,25 +67,25 @@
         </div>
     </section>
 
-    <!-- Pricing: one paid plan, monthly or annual. -->
+    <!-- Pricing: Pro for one person, Team in fixed seat sizes. -->
     <section id="cloud-pricing" class="section" style="background:#f3f4f6;">
-        <div class="container-sm">
+        <div class="container">
             <div class="section-head">
                 <span class="eyebrow"><%= t('pricing.eyebrow') %></span>
                 <h2 class="section-title"><%= t('cloud.pricingTitle') %></h2>
                 <p class="section-sub"><%= trialDays > 0 ? t('cloud.pricingSubTrial', { days: trialDays }) : t('cloud.pricingSub') %></p>
             </div>
 
-            <div class="plan-grid" style="grid-template-columns:minmax(0,1fr); max-width:520px; margin:0 auto;">
-                <div class="plan plan-featured">
+            <div class="plan-grid plan-grid-duo">
+                <div class="plan">
                     <div class="plan-head">
-                        <div class="plan-icon"><i class="fas fa-cloud"></i></div>
-                        <h3><%= t('pricing.plans.cloud.name') %></h3>
+                        <div class="plan-icon"><i class="fas fa-user"></i></div>
+                        <h3><%= t('pricing.plans.cloud.soloName') %></h3>
                     </div>
-                    <%# Same shape as the pricing card on the homepage: one paid
-                        plan, monthly or yearly. The two pages disagreeing about
-                        whether Cloud has a free tier is worse than either answer
-                        on its own, so they are kept identical by hand. %>
+                    <%# Same two cards as the homepage pricing section. The two
+                        pages disagreeing about what Cloud costs is worse than
+                        either answer on its own, so they are kept identical by
+                        hand. %>
                     <div class="plan-price">
                         <div class="plan-amount">
                             <span><%= money(pricing.monthly) %></span>
@@ -108,9 +108,40 @@
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('cloud.ctaPrimary') %></a>
+                    <a href="<%= appUrl %>/register" class="plan-action"><%= trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('cloud.ctaPrimary') %></a>
+                </div>
+
+                <div class="plan plan-featured">
+                    <div class="plan-head">
+                        <div class="plan-icon"><i class="fas fa-users"></i></div>
+                        <h3><%= t('pricing.plans.team.name') %></h3>
+                    </div>
+                    <div class="plan-price">
+                        <div class="plan-amount">
+                            <span><%= money(pricing.monthly) %></span>
+                            <span><%= t('pricing.plans.team.perPersonMonth') %></span>
+                        </div>
+                        <div class="plan-pro-line">
+                            <span class="plan-pro-sep"><%= t('cloud.orAnnual') %></span>
+                            <strong><%= money(personalPrice) %></strong><%= t('pricing.plans.team.perPersonYear') %>
+                        </div>
+                        <div class="plan-price-note"><%= t('pricing.plans.team.sizes', { sizes: plans.teamSeats.join(', '), example: money(pricing.monthly * 5) }) %></div>
+                        <div class="plan-launch-note"><%= t('pricing.plans.team.moreThan', { max: plans.teamSeats[plans.teamSeats.length - 1] }) %> <a href="<%= localePath(i18n.locale, '/contact') %>" class="plan-selfhost-link"><%= t('pricing.plans.team.contact') %> &rarr;</a></div>
+                    </div>
+                    <ul class="plan-features">
+                        <% i18n.tList('pricing.plans.team.features').forEach(function (feature) { %>
+                        <li><i class="fas fa-check"></i><%= feature %></li>
+                        <% }); %>
+                    </ul>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('cloud.ctaTrial', { days: trialDays }) : t('pricing.plans.team.action') %></a>
                 </div>
             </div>
+
+            <% if (nextPrice) { %>
+            <div class="plan-notes plan-grid-duo">
+                <p class="plan-fineprint plan-next-price"><%= t('pricing.nextPrice', nextPrice) %></p>
+            </div>
+            <% } %>
 
             <%# The same quiet self-host footnote as the homepage pricing card.
                 This page exists to explain why somebody would let us run it;

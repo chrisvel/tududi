@@ -909,8 +909,12 @@
            leaving the fineprint 1180px wide under a 520px card. */
         .plan-grid.plan-grid-solo,
         .plan-notes.plan-grid-solo { max-width: 520px; grid-template-columns: minmax(0, 1fr); }
+        /* Pro beside Team: two cards side by side, stacked on a phone. */
+        .plan-grid.plan-grid-duo { max-width: 1000px; }
+        .plan-notes.plan-grid-duo { max-width: 1000px; grid-template-columns: minmax(0, 1fr); }
+        .plan-next-price { font-weight: 600; color: #374151; }
         .plan {
-            background: #fcfbf9;
+            background: #ffffff;
             border-radius: 24px;
             padding: 36px 32px;
             border: 1px solid #ececee;

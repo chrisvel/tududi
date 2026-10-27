@@ -703,22 +703,22 @@
                 <p class="section-sub"><%= t('pricing.sub') %></p>
             </div>
 
-            <%# One card. The self-host card that used to sit beside it was a
-                second offer on a page that has exactly one, and it told every
-                visitor there was a free version before they had tried this one.
-                Self-hosting is still real and still free; it is a footnote
-                under the fine print now, for the developer who came looking. %>
-            <div class="plan-grid plan-grid-solo">
-                <div class="plan plan-featured">
+            <%# Two cards: Pro for one person and Team for a group, sold in
+                fixed seat sizes like monday.com. The self-host card that used
+                to sit here told every visitor there was a free version before
+                they had tried this one; self-hosting is a footnote under the
+                fine print now, for the developer who came looking. %>
+            <div class="plan-grid plan-grid-duo">
+                <div class="plan">
                     <div class="plan-head">
-                        <div class="plan-icon"><i class="fas fa-cloud"></i></div>
-                        <h3><%= t('pricing.plans.cloud.name') %></h3>
+                        <div class="plan-icon"><i class="fas fa-user"></i></div>
+                        <h3><%= t('pricing.plans.cloud.soloName') %></h3>
                     </div>
                     <div class="plan-price">
-                        <%# One plan, and it is paid. There is no free tier; the
-                            trial is mentioned only when TUDUDI_TRIAL_DAYS turns
-                            it on (trialDays), so nothing here may imply a way
-                            in without a card that the instance does not offer. %>
+                        <%# Paid, with no free tier; the trial is mentioned only
+                            when TUDUDI_TRIAL_DAYS turns it on (trialDays), so
+                            nothing here may imply a way in without a card that
+                            the instance does not offer. %>
                         <div class="plan-amount"><span><%= money(pricing.monthly) %></span><span><%= t('pricing.perMonth') %></span></div>
                         <div class="plan-pro-line">
                             <span class="plan-pro-sep"><%= t('pricing.plans.cloud.or') %></span>
@@ -745,11 +745,36 @@
                         <li><i class="fas fa-check"></i><%= feature %></li>
                         <% }); %>
                     </ul>
-                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('pricing.plans.cloud.actionTrial', faqVars) : t('pricing.plans.cloud.action') %></a>
+                    <a href="<%= appUrl %>/register" class="plan-action"><%= trialDays > 0 ? t('pricing.plans.cloud.actionTrial', faqVars) : t('pricing.plans.cloud.action') %></a>
+                </div>
+
+                <div class="plan plan-featured">
+                    <div class="plan-head">
+                        <div class="plan-icon"><i class="fas fa-users"></i></div>
+                        <h3><%= t('pricing.plans.team.name') %></h3>
+                    </div>
+                    <div class="plan-price">
+                        <div class="plan-amount"><span><%= money(pricing.monthly) %></span><span><%= t('pricing.plans.team.perPersonMonth') %></span></div>
+                        <div class="plan-pro-line">
+                            <span class="plan-pro-sep"><%= t('pricing.plans.cloud.or') %></span>
+                            <strong><%= money(personalPrice) %></strong><%= t('pricing.plans.team.perPersonYear') %>
+                        </div>
+                        <div class="plan-price-note"><%= t('pricing.plans.team.sizes', { sizes: plans.teamSeats.join(', '), example: money(pricing.monthly * 5) }) %></div>
+                        <div class="plan-launch-note"><%= t('pricing.plans.team.moreThan', { max: plans.teamSeats[plans.teamSeats.length - 1] }) %> <a href="<%= localePath(i18n.locale, '/contact') %>" class="plan-selfhost-link"><%= t('pricing.plans.team.contact') %> &rarr;</a></div>
+                    </div>
+                    <ul class="plan-features">
+                        <% i18n.tList('pricing.plans.team.features', faqVars).forEach(function (feature) { %>
+                        <li><i class="fas fa-check"></i><%= feature %></li>
+                        <% }); %>
+                    </ul>
+                    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary"><%= trialDays > 0 ? t('pricing.plans.cloud.actionTrial', faqVars) : t('pricing.plans.team.action') %></a>
                 </div>
             </div>
 
-            <div class="plan-notes plan-grid-solo">
+            <div class="plan-notes plan-grid-duo">
+                <% if (nextPrice) { %>
+                <p class="plan-fineprint plan-next-price"><%= t('pricing.nextPrice', nextPrice) %></p>
+                <% } %>
                 <p class="plan-fineprint">
                     <%= t('pricing.fineprint') %>
                 </p>

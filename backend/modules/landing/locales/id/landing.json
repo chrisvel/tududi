@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Harga",
-    "title": "Pilih cara Anda memakai tududi",
+    "title": "Bayar untuk diri sendiri, atau untuk tim Anda",
     "mostPopular": "PALING DIPILIH",
     "earlyBird": "HARGA PERDANA",
     "perYear": "/tahun per orang",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "atau",
         "launchNote": "Harga tahunan early bird, tetap milik Anda selama berlangganan.",
         "action": "Mulai →",
         "features": [
           "Berjalan dalam satu menit, tanpa server yang perlu disiapkan",
           "Tugas, proyek, dan catatan tak terbatas, plus lampiran",
-          "Tambahkan anggota keluarga atau rekan kerja, masing-masing satu kursi dengan harga yang sama",
+          "Untuk satu orang. Ingin menambah orang? Pilih paket Tim",
           "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
           "Pembaruan dan cadangan harian yang diurus untuk Anda, dengan {{proStorageGb}} GB penyimpanan",
           "Ekspor semuanya kapan saja, hapus akun Anda sendiri"
@@ -258,11 +259,28 @@
         "actionTrial": "Coba gratis →",
         "priceNoteTrial": "{{days}} hari gratis, tanpa kartu. Batalkan kapan saja.",
         "trialNote": "Uji coba mencakup asisten AI dengan kuota lebih kecil dan satu anggota yang bisa Anda tambahkan. Tautan catatan publik terbuka setelah Anda berlangganan."
+      },
+      "team": {
+        "name": "Tim",
+        "perPersonMonth": "/bulan per orang",
+        "perPersonYear": "/tahun per orang",
+        "sizes": "Tersedia dalam ukuran {{sizes}} kursi, termasuk Anda. Tim berisi 5 orang seharga {{example}} per bulan.",
+        "moreThan": "Lebih dari {{max}} orang?",
+        "contact": "Hubungi kami",
+        "action": "Mulai tim Anda →",
+        "features": [
+          "Semua yang ada di Pro, untuk setiap orang di tim",
+          "Tambah orang sampai ukuran Anda, dan pindah ke ukuran lebih besar kapan saja",
+          "Proyek bersama, grup, dan papan Semua orang untuk melihat siapa mengerjakan apa",
+          "Setiap orang tetap punya tugas dan catatan pribadinya sendiri",
+          "Satu langganan, dibayar oleh pemilik akun"
+        ]
       }
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
     "perMonth": "/bulan per orang",
-    "sub": "Tanpa tingkatan, tanpa tambahan, tanpa fitur yang ditahan. Coba gratis, lalu satu harga.",
+    "nextPrice": "Mulai {{date}} harga per orang menjadi {{monthly}} per bulan atau {{annual}} per tahun. Berlangganan sebelum itu untuk mempertahankan harga hari ini selama Anda tetap berlangganan.",
+    "sub": "Setiap paket punya semua fitur. Pro untuk satu orang; paket Tim punya ukuran tetap dan Anda menambah orang sampai batas itu.",
     "selfHostNote": "Untuk pengembang: tududi bersifat open source dan dapat dijalankan di server Anda sendiri.",
     "selfHostLink": "Baca panduan"
   },
@@ -336,9 +354,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Tidak. Cloud berharga {{monthly}} per bulan atau {{price}} per tahun per orang, dan itulah seluruh daftar harganya: tidak ada tingkat gratis, tidak ada jam percobaan, tidak ada kartu yang dikenai biaya untuk sesuatu yang diam-diam mulai menagih nanti. Ada garansi uang kembali 14 hari jika ternyata tidak sesuai untuk Anda, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu. Cara gratis untuk menggunakan tududi adalah menjalankannya di server Anda sendiri, yang merupakan aplikasi yang sama.",
+        "a": "Tidak. Pro seharga {{monthly}} per bulan atau {{price}} per tahun untuk satu orang, dan paket Tim berharga sama per orang dalam ukuran tetap. Tidak ada tingkat gratis, tidak ada hitungan mundur uji coba, tidak ada kartu yang diam-diam mulai ditagih nanti. Ada jaminan uang kembali 14 hari jika ternyata tidak cocok, dan ada demo langsung di halaman ini jika Anda ingin melihat-lihat dulu.",
         "q": "Apakah ada paket gratis atau percobaan di tududi Cloud?",
-        "aTrial": "Tidak ada paket gratis, tetapi setiap akun baru mendapat uji coba gratis {{days}} hari, tanpa kartu. Uji coba mencakup asisten AI dengan kuota lebih kecil dan satu anggota yang bisa Anda tambahkan. Tautan catatan publik terbuka setelah Anda berlangganan. Jika Anda tidak berlangganan, akun menjadi hanya-baca selama 30 hari agar Anda bisa mengekspor data, lalu dihapus. Setelah uji coba, Cloud seharga {{monthly}} per bulan atau {{price}} per tahun per orang. Cara gratis memakai tududi adalah menjalankannya di server Anda sendiri, aplikasinya sama."
+        "aTrial": "Tidak ada paket gratis, tetapi setiap akun baru mendapat uji coba gratis {{days}} hari, tanpa kartu. Uji coba mencakup asisten AI dengan kuota lebih kecil dan satu anggota yang bisa Anda tambahkan. Tautan catatan publik terbuka setelah Anda berlangganan. Jika Anda tidak berlangganan, akun menjadi hanya-baca selama 30 hari agar Anda bisa mengekspor data, lalu dihapus. Setelah uji coba, Pro seharga {{monthly}} per bulan atau {{price}} per tahun, dan paket Tim berharga sama per orang. Cara gratis memakai tududi adalah menjalankannya di server Anda sendiri, aplikasinya sama."
       },
       "leaving": {
         "q": "Bisakah saya pergi, dan apa yang terjadi pada data saya?",
@@ -388,7 +406,7 @@
     "ctaPrimary": "Mulai",
     "includes": [
       "Tugas, proyek, dan catatan tak terbatas",
-      "Tambahkan anggota keluarga atau rekan kerja, masing-masing satu kursi dengan harga yang sama",
+      "Untuk satu orang. Paket Tim menambah orang dalam ukuran tetap",
       "Lampiran dan unggahan file",
       "Perencanaan hari dengan AI, MCP, kalender, CalDAV, dan bot Telegram",
       "Cadangan harian dan pembaruan yang dikelola",
@@ -396,13 +414,13 @@
       "Ekspor semuanya, kapan saja"
     ],
     "lede": "Sistem yang sama pada kedua kasus. Bedanya adalah siapa yang menjaganya tetap berjalan, ditambal, dan dicadangkan pada pukul tiga pagi.",
-    "metaDescription": "tududi Cloud adalah sistem sumber terbuka yang sama, berjalan di server kami dengan pembaruan, cadangan, dan email yang diurus untuk Anda. Satu paket, bulanan atau tahunan, dapat dibatalkan kapan saja.",
+    "metaDescription": "tududi Cloud adalah sistem open source yang sama, berjalan di server kami dengan pembaruan, cadangan, dan email yang kami urus untuk Anda. Pro untuk satu orang atau paket Tim untuk kelompok, bulanan atau tahunan, batalkan kapan saja.",
     "metaTitle": "tududi Cloud: tududi yang dihosting, dijalankan untuk Anda",
     "note": "Aplikasi berlisensi MIT yang sama. Ekspor semuanya, kapan saja.",
     "orAnnual": "atau",
     "priceNote": "Ditagih oleh penyedia pembayaran kami. Harga belum termasuk pajak yang berlaku.",
     "pricingSub": "Semuanya termasuk. Batalkan kapan pun Anda mau.",
-    "pricingTitle": "Satu paket, dua cara membayar",
+    "pricingTitle": "Pro untuk Anda, Tim untuk semua",
     "reasons": {
       "backups": {
         "body": "Basis data di-dump setiap malam dan disimpan di luar mesin yang melayani Anda. Anda juga bisa mengekspor semuanya sendiri kapan saja.",

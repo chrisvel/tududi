@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Giá",
-    "title": "Chọn cách bạn dùng tududi",
+    "title": "Trả cho riêng bạn, hoặc cho cả nhóm",
     "mostPopular": "ĐƯỢC CHỌN NHẤT",
     "earlyBird": "ƯU ĐÃI SỚM",
     "perYear": "/năm mỗi người",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "hoặc",
         "launchNote": "Giá năm ưu đãi sớm, giữ nguyên chừng nào bạn còn đăng ký.",
         "action": "Bắt đầu →",
         "features": [
           "Hoạt động trong một phút, không cần máy chủ để thiết lập",
           "Nhiệm vụ, dự án và ghi chú không giới hạn, cộng với tệp đính kèm",
-          "Thêm người thân hoặc đồng đội, mỗi người là một chỗ với cùng mức giá",
+          "Dành cho một người. Muốn thêm người? Hãy chọn gói Nhóm",
           "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
           "Các bản cập nhật và sao lưu hàng ngày được xử lý cho bạn, với {{proStorageGb}} GB dung lượng lưu trữ",
           "Xuất mọi thứ bất cứ lúc nào, tự xóa tài khoản của mình"
@@ -258,11 +259,28 @@
         "actionTrial": "Dùng thử miễn phí →",
         "priceNoteTrial": "{{days}} ngày miễn phí, không cần thẻ. Hủy bất cứ lúc nào.",
         "trialNote": "Bản dùng thử có trợ lý AI với hạn mức thấp hơn và một thành viên bạn có thể thêm. Liên kết ghi chú công khai sẽ mở khi bạn đăng ký."
+      },
+      "team": {
+        "name": "Nhóm",
+        "perPersonMonth": "/tháng mỗi người",
+        "perPersonYear": "/năm mỗi người",
+        "sizes": "Bán theo quy mô {{sizes}} chỗ, tính cả bạn. Nhóm 5 người có giá {{example}} mỗi tháng.",
+        "moreThan": "Hơn {{max}} người?",
+        "contact": "Liên hệ chúng tôi",
+        "action": "Bắt đầu nhóm của bạn →",
+        "features": [
+          "Mọi thứ trong Pro, cho từng người trong nhóm",
+          "Thêm người đến đủ quy mô, và chuyển sang quy mô lớn hơn bất cứ lúc nào",
+          "Dự án chung, nhóm và bảng Mọi người cho biết ai đang làm gì",
+          "Mỗi người giữ công việc và ghi chú riêng tư của mình",
+          "Một gói đăng ký, do chủ tài khoản thanh toán"
+        ]
       }
     },
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 14 ngày, không cần lý do.",
     "perMonth": "/tháng mỗi người",
-    "sub": "Không phân cấp, không gói bổ sung, không giữ lại tính năng. Dùng thử miễn phí, sau đó một mức giá.",
+    "nextPrice": "Từ {{date}}, giá mỗi người sẽ là {{monthly}} mỗi tháng hoặc {{annual}} mỗi năm. Đăng ký trước ngày đó để giữ giá hôm nay trong suốt thời gian bạn còn đăng ký.",
+    "sub": "Gói nào cũng có đủ mọi tính năng. Pro dành cho một người; gói Nhóm có quy mô cố định và bạn thêm người cho đến mức đó.",
     "selfHostNote": "Dành cho lập trình viên: tududi là mã nguồn mở và có thể chạy trên máy chủ của bạn.",
     "selfHostLink": "Đọc hướng dẫn"
   },
@@ -336,9 +354,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Không. Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho mỗi người, và đó là toàn bộ bảng giá: không có mức miễn phí, không có đồng hồ thử nghiệm, không có thẻ bị tính phí cho thứ mà sau này lặng lẽ bắt đầu tính tiền. Có bảo đảm hoàn tiền trong 14 ngày nếu nó không phù hợp với bạn, và có một bản demo trực tiếp trên trang này nếu bạn muốn xem trước. Cách miễn phí để dùng tududi là chạy nó trên máy chủ riêng của bạn, đó là cùng một ứng dụng.",
+        "a": "Không. Pro có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho một người, và gói Nhóm có cùng giá cho mỗi người theo quy mô cố định. Không có gói miễn phí, không có đồng hồ dùng thử, không có thẻ lặng lẽ bị trừ tiền về sau. Có bảo đảm hoàn tiền trong 14 ngày nếu dịch vụ không hợp với bạn, và có bản demo trực tiếp trên trang này nếu bạn muốn xem qua trước.",
         "q": "Có gói miễn phí hoặc bản thử nghiệm nào trên tududi Cloud không?",
-        "aTrial": "Không có gói miễn phí, nhưng mỗi tài khoản mới được dùng thử miễn phí {{days}} ngày, không cần thẻ. Bản dùng thử có trợ lý AI với hạn mức thấp hơn và một thành viên bạn có thể thêm. Liên kết ghi chú công khai sẽ mở khi bạn đăng ký. Nếu bạn không đăng ký, tài khoản chuyển sang chỉ đọc trong 30 ngày để bạn xuất dữ liệu, sau đó bị xóa. Sau thời gian dùng thử, Cloud có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm cho mỗi người. Cách miễn phí để dùng tududi là chạy nó trên máy chủ của bạn, đó là cùng một ứng dụng."
+        "aTrial": "Không có gói miễn phí, nhưng mỗi tài khoản mới được dùng thử miễn phí {{days}} ngày, không cần thẻ. Bản dùng thử có trợ lý AI với hạn mức thấp hơn và một thành viên bạn có thể thêm. Liên kết ghi chú công khai sẽ mở khi bạn đăng ký. Nếu bạn không đăng ký, tài khoản chuyển sang chỉ đọc trong 30 ngày để bạn xuất dữ liệu, sau đó bị xóa. Sau thời gian dùng thử, Pro có giá {{monthly}} mỗi tháng hoặc {{price}} mỗi năm, và gói Nhóm có cùng giá cho mỗi người. Cách miễn phí để dùng tududi là chạy nó trên máy chủ của bạn, đó là cùng một ứng dụng."
       },
       "leaving": {
         "q": "Tôi có thể rời đi không, và dữ liệu của tôi sẽ ra sao?",
@@ -388,7 +406,7 @@
     "ctaPrimary": "Bắt đầu",
     "includes": [
       "Nhiệm vụ, dự án và ghi chú không giới hạn",
-      "Thêm người thân hoặc đồng đội, mỗi người là một chỗ với cùng mức giá",
+      "Dành cho một người. Gói Nhóm thêm người theo quy mô cố định",
       "Tệp đính kèm và tải lên tệp",
       "Lập kế hoạch ngày bằng AI, MCP, lịch, CalDAV và bot Telegram",
       "Sao lưu hàng ngày và cập nhật được quản lý",
@@ -396,13 +414,13 @@
       "Xuất mọi thứ, bất cứ lúc nào"
     ],
     "lede": "Cùng một hệ thống trong cả hai trường hợp. Sự khác biệt là ai giữ cho nó chạy, được vá lỗi và sao lưu vào lúc ba giờ sáng.",
-    "metaDescription": "tududi Cloud là cùng một hệ thống mã nguồn mở, chạy trên máy chủ của chúng tôi với các bản cập nhật, sao lưu và email được xử lý cho bạn. Một gói duy nhất, hàng tháng hoặc hàng năm, có thể hủy bất cứ lúc nào.",
+    "metaDescription": "tududi Cloud là cùng một hệ thống mã nguồn mở, chạy trên máy chủ của chúng tôi, với cập nhật, sao lưu và email được lo sẵn cho bạn. Pro cho một người hoặc gói Nhóm cho một nhóm, theo tháng hoặc theo năm, hủy bất cứ lúc nào.",
     "metaTitle": "tududi Cloud: tududi được lưu trữ, vận hành cho bạn",
     "note": "Cùng một ứng dụng có bản quyền MIT. Xuất mọi thứ, bất cứ lúc nào.",
     "orAnnual": "hoặc",
     "priceNote": "Được lập hóa đơn bởi nhà cung cấp thanh toán của chúng tôi. Giá chưa bao gồm các loại thuế áp dụng.",
     "pricingSub": "Mọi thứ đều được bao gồm. Hủy bất cứ khi nào bạn muốn.",
-    "pricingTitle": "Một gói, hai cách thanh toán",
+    "pricingTitle": "Pro cho bạn, Nhóm cho mọi người",
     "reasons": {
       "backups": {
         "body": "Cơ sở dữ liệu được xuất ra mỗi đêm và được lưu giữ tách biệt với máy phục vụ bạn. Bạn cũng có thể tự xuất mọi thứ bất cứ lúc nào.",

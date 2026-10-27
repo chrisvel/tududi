@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Prijzen",
-    "title": "Kies hoe je tududi gebruikt",
+    "title": "Betaal voor jezelf, of voor je team",
     "mostPopular": "MEEST GEKOZEN",
     "earlyBird": "VROEGBOEK",
     "perYear": "/jaar per persoon",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "of",
         "launchNote": "Early-bird jaarprijs, van jou zolang je geabonneerd blijft.",
         "action": "Aan de slag →",
         "features": [
           "Binnen een minuut draaiend, zonder server om op te zetten",
           "Onbeperkte taken, projecten en notities, plus bijlagen",
-          "Voeg gezinsleden of collega's toe, elk een plek voor dezelfde prijs",
+          "Voor één persoon. Wil je mensen toevoegen? Kies een Team-abonnement",
           "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
           "Updates en dagelijkse backups voor je verzorgd, met {{proStorageGb}} GB opslag",
           "Exporteer alles op elk moment, verwijder je account zelf"
@@ -258,11 +259,28 @@
         "actionTrial": "Gratis proberen →",
         "priceNoteTrial": "{{days}} dagen gratis, geen creditcard nodig. Altijd opzegbaar.",
         "trialNote": "De proefperiode bevat de AI-assistent met een kleiner tegoed en één lid dat je kunt toevoegen. Openbare notitielinks gaan open zodra je een abonnement neemt."
+      },
+      "team": {
+        "name": "Team",
+        "perPersonMonth": "/maand per persoon",
+        "perPersonYear": "/jaar per persoon",
+        "sizes": "Verkrijgbaar in groottes van {{sizes}} plekken, jij inbegrepen. Een team van 5 kost {{example}} per maand.",
+        "moreThan": "Meer dan {{max}} personen?",
+        "contact": "Neem contact op",
+        "action": "Start je team →",
+        "features": [
+          "Alles uit Pro, voor iedereen in het team",
+          "Voeg mensen toe tot je grootte en stap op elk moment over op een grotere grootte",
+          "Gedeelde projecten, groepen en een Iedereen-bord van wie wat doet",
+          "Iedereen houdt zijn eigen privétaken en notities",
+          "Eén abonnement, betaald door de accounteigenaar"
+        ]
       }
     },
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 14 dagen geld-terug-garantie, zonder vragen.",
     "perMonth": "/maand per persoon",
-    "sub": "Geen niveaus, geen add-ons, geen achtergehouden functies. Probeer gratis, daarna één prijs.",
+    "nextPrice": "Vanaf {{date}} gaat de prijs per persoon naar {{monthly}} per maand of {{annual}} per jaar. Neem vóór die tijd een abonnement om de prijs van vandaag te houden zolang je abonnee blijft.",
+    "sub": "Elk abonnement heeft alle functies. Pro is voor één persoon; een Team-abonnement heeft een vaste grootte en je voegt mensen toe tot die grootte.",
     "selfHostNote": "Ontwikkelaars: tududi is open source en kan op je eigen server draaien.",
     "selfHostLink": "Lees de handleiding"
   },
@@ -336,9 +354,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nee. Cloud kost {{monthly}} per maand of {{price}} per jaar per persoon, en dat is de hele prijslijst: geen gratis laag, geen proefklok, geen kaart belast voor iets dat later stilletjes begint te factureren. Er is een geld-terug-garantie van 14 dagen als het niet blijkt te passen, en er is een live demo op deze pagina als je eerst wilt rondkijken. De gratis manier om tududi te gebruiken is het op je eigen server te draaien, wat dezelfde applicatie is.",
+        "a": "Nee. Pro kost {{monthly}} per maand of {{price}} per jaar voor één persoon, en Team-abonnementen kosten hetzelfde per persoon in vaste groottes. Er is geen gratis niveau, geen aflopende proefklok en geen kaart die later stilletjes wordt belast. Er is een geld-terug-garantie van 14 dagen als het toch niet bij je past, en op deze pagina staat een live demo als je eerst wilt rondkijken.",
         "q": "Is er een gratis abonnement of een proefperiode op tududi Cloud?",
-        "aTrial": "Er is geen gratis abonnement, maar elk nieuw account krijgt een gratis proefperiode van {{days}} dagen, zonder creditcard. De proefperiode bevat de AI-assistent met een kleiner tegoed en één lid dat je kunt toevoegen. Openbare notitielinks gaan open zodra je een abonnement neemt. Neem je geen abonnement, dan wordt het account 30 dagen alleen-lezen zodat je je gegevens kunt exporteren, en daarna verwijderd. Na de proefperiode kost Cloud {{monthly}} per maand of {{price}} per jaar per persoon. Gratis gebruik je tududi door het op je eigen server te draaien, het is dezelfde applicatie."
+        "aTrial": "Er is geen gratis abonnement, maar elk nieuw account krijgt een gratis proefperiode van {{days}} dagen, zonder creditcard. De proefperiode bevat de AI-assistent met een kleiner tegoed en één lid dat je kunt toevoegen. Openbare notitielinks gaan open zodra je een abonnement neemt. Neem je geen abonnement, dan wordt het account 30 dagen alleen-lezen zodat je je gegevens kunt exporteren, en daarna verwijderd. Na de proefperiode kost Pro {{monthly}} per maand of {{price}} per jaar, en Team-abonnementen kosten hetzelfde per persoon. Gratis gebruik je tududi door het op je eigen server te draaien, het is dezelfde applicatie."
       },
       "leaving": {
         "q": "Kan ik weg, en wat gebeurt er met mijn gegevens?",
@@ -388,7 +406,7 @@
     "ctaPrimary": "Aan de slag",
     "includes": [
       "Onbeperkte taken, projecten en notities",
-      "Voeg gezinsleden of collega's toe, elk een plek voor dezelfde prijs",
+      "Voor één persoon. Team-abonnementen voegen mensen toe in vaste groottes",
       "Bijlagen en bestandsuploads",
       "Dagplanning met AI, MCP, agendafeeds, CalDAV en de Telegram-bot",
       "Dagelijkse backups en beheerde updates",
@@ -396,13 +414,13 @@
       "Exporteer alles, op elk moment"
     ],
     "lede": "Hetzelfde systeem in beide gevallen. Het verschil is wie het om drie uur 's nachts draaiend, gepatcht en gebackupt houdt.",
-    "metaDescription": "tududi Cloud is hetzelfde opensourcesysteem, draaiend op onze servers met updates, backups en e-mail voor je verzorgd. Één abonnement, maandelijks of jaarlijks, op elk moment op te zeggen.",
+    "metaDescription": "tududi Cloud is hetzelfde open source systeem, draaiend op onze servers, met updates, back-ups en e-mail voor je geregeld. Pro voor één persoon of een Team-abonnement voor een groep, per maand of per jaar, altijd opzegbaar.",
     "metaTitle": "tududi Cloud: het gehoste tududi, voor je gedraaid",
     "note": "Dezelfde MIT-gelicentieerde app. Exporteer alles, op elk moment.",
     "orAnnual": "of",
     "priceNote": "Gefactureerd door onze betalingsprovider. Prijzen zijn exclusief eventuele belastingen.",
     "pricingSub": "Alles inbegrepen. Zeg op wanneer je wilt.",
-    "pricingTitle": "Één abonnement, twee manieren van betalen",
+    "pricingTitle": "Pro voor jou, Team voor iedereen",
     "reasons": {
       "backups": {
         "body": "De database wordt elke nacht gedumpt en bewaard buiten de machine die jou bedient. Je kunt ook altijd zelf alles exporteren.",

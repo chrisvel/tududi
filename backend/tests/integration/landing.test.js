@@ -272,6 +272,45 @@ describe('Landing page', () => {
         expect(belowHero).toContain('https://github.com/chrisvel/tududi');
     });
 
+    it('offers Pro and Team, with the Team sizes and a way past 40', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        const pricing = res.text.slice(res.text.indexOf('id="pricing"'));
+        expect(pricing).toContain('plan-grid-duo');
+        expect(pricing).toContain('<h3>Pro</h3>');
+        expect(pricing).toContain('<h3>Team</h3>');
+        expect(pricing).toContain(
+            'Sold in sizes of 3, 5, 10, 15, 20, 25, 30, 40 seats, you included. A team of 5 is €25 a month.'
+        );
+        expect(pricing).toContain('More than 40 people?');
+        expect(pricing).toContain('href="/contact"');
+        expect(pricing).not.toContain('each a seat at the same price');
+    });
+
+    it('announces a decided price rise until the day it starts', async () => {
+        const next = config.landing.pricing.next;
+        try {
+            config.landing.pricing.next = {
+                monthly: 7,
+                annual: 70,
+                from: '2999-01-01',
+            };
+            const upcoming = await request(app)
+                .get('/cloud')
+                .set('Host', 'tududi.com');
+            expect(upcoming.text).toContain(
+                'From 1 January 2999 the price per person goes to €7 a month or €70 a year.'
+            );
+
+            config.landing.pricing.next = { ...next, from: '2000-01-01' };
+            const started = await request(app)
+                .get('/cloud')
+                .set('Host', 'tududi.com');
+            expect(started.text).not.toContain('the price per person goes to');
+        } finally {
+            config.landing.pricing.next = next;
+        }
+    });
+
     it('sends self-hosters to GitHub instead of a section of its own', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         expect(res.text).not.toContain('id="self-host"');

@@ -236,20 +236,21 @@
   },
   "pricing": {
     "eyebrow": "Priser",
-    "title": "Velg hvordan du bruker tududi",
+    "title": "Betal for deg selv, eller for teamet ditt",
     "mostPopular": "MEST VALGT",
     "earlyBird": "LANSERINGSPRIS",
     "perYear": "/år per person",
     "plans": {
       "cloud": {
         "name": "Cloud",
+        "soloName": "Pro",
         "or": "eller",
         "launchNote": "Early bird-årspris, din så lenge du forblir abonnent.",
         "action": "Kom i gang →",
         "features": [
           "I gang på ett minutt, uten server å sette opp",
           "Ubegrenset med oppgaver, prosjekter og notater, pluss vedlegg",
-          "Legg til familiemedlemmer eller kolleger, hver som en plass til samme pris",
+          "For én person. Vil du legge til andre? Velg et Team-abonnement",
           "Dagsplanlegging med AI, MCP, kalenderfeeder, CalDAV og Telegram-boten",
           "Oppdateringer og daglige sikkerhetskopier tatt hånd om for deg, med {{proStorageGb}} GB lagring",
           "Eksporter alt når som helst, slett kontoen din selv"
@@ -258,11 +259,28 @@
         "actionTrial": "Prøv gratis →",
         "priceNoteTrial": "{{days}} dager gratis, uten betalingskort. Si opp når som helst.",
         "trialNote": "Prøveperioden har AI-assistenten med en mindre kvote og ett medlem du kan legge til. Offentlige notatlenker åpnes når du abonnerer."
+      },
+      "team": {
+        "name": "Team",
+        "perPersonMonth": "/måned per person",
+        "perPersonYear": "/år per person",
+        "sizes": "Selges i størrelser på {{sizes}} plasser, deg inkludert. Et team på 5 koster {{example}} i måneden.",
+        "moreThan": "Flere enn {{max}} personer?",
+        "contact": "Ta kontakt",
+        "action": "Start teamet ditt →",
+        "features": [
+          "Alt i Pro, for alle på teamet",
+          "Legg til personer opp til størrelsen din, og bytt til en større størrelse når som helst",
+          "Delte prosjekter, grupper og en Alle-tavle over hvem som gjør hva",
+          "Hver person beholder sine egne private oppgaver og notater",
+          "Ett abonnement, betalt av kontoeieren"
+        ]
       }
     },
     "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 14 dagers pengene-tilbake-garanti, ingen spørsmål.",
     "perMonth": "/måned per person",
-    "sub": "Ingen nivåer, ingen tillegg, ingen tilbakeholdte funksjoner. Prøv gratis, deretter én pris.",
+    "nextPrice": "Fra {{date}} går prisen per person til {{monthly}} i måneden eller {{annual}} i året. Abonner før det for å beholde dagens pris så lenge du er abonnent.",
+    "sub": "Alle abonnementer har alle funksjoner. Pro er for én person, og et Team-abonnement har en fast størrelse som du legger til personer opp til.",
     "selfHostNote": "Utviklere: tududi er åpen kildekode og kan kjøres på din egen server.",
     "selfHostLink": "Les guiden"
   },
@@ -336,9 +354,9 @@
   "faq": {
     "items": {
       "freePlan": {
-        "a": "Nei. Cloud kostet {{monthly}} i måneden eller {{price}} i året per person, og det er hele prislisten: ingen gratis plan, ingen prøveklokke, ingen kort belastet for noe som senere stille begynner å fakturere. Det er en 14-dagers pengene-tilbake-garanti hvis det ikke passer for deg, og det er en live-demo på denne siden hvis du vil ta en titt først. Den gratis måten å bruke tududi er å kjøre det på din egen server, som er samme applikasjon.",
+        "a": "Nei. Pro koster {{monthly}} i måneden eller {{price}} i året for én person, og Team-abonnementer koster det samme per person i faste størrelser. Det finnes ingen gratisnivå, ingen prøveklokke og ikke noe kort som stille begynner å bli belastet senere. Det er 14 dagers pengene-tilbake-garanti hvis det ikke passer deg, og det er en live demo på denne siden hvis du vil se deg rundt først.",
         "q": "Finnes det en gratis plan eller prøveperiode på tududi Cloud?",
-        "aTrial": "Det finnes ingen gratisplan, men alle nye kontoer får en gratis prøveperiode på {{days}} dager, uten betalingskort. Prøveperioden har AI-assistenten med en mindre kvote og ett medlem du kan legge til. Offentlige notatlenker åpnes når du abonnerer. Abonnerer du ikke, blir kontoen skrivebeskyttet i 30 dager slik at du kan eksportere dataene dine, og slettes deretter. Etter prøveperioden koster Cloud {{monthly}} i måneden eller {{price}} i året per person. Den gratis måten å bruke tududi på er å kjøre det på din egen server, det er samme applikasjon."
+        "aTrial": "Det finnes ingen gratisplan, men alle nye kontoer får en gratis prøveperiode på {{days}} dager, uten betalingskort. Prøveperioden har AI-assistenten med en mindre kvote og ett medlem du kan legge til. Offentlige notatlenker åpnes når du abonnerer. Abonnerer du ikke, blir kontoen skrivebeskyttet i 30 dager slik at du kan eksportere dataene dine, og slettes deretter. Etter prøveperioden koster Pro {{monthly}} i måneden eller {{price}} i året, og Team-abonnementer koster det samme per person. Den gratis måten å bruke tududi på er å kjøre det på din egen server, det er samme applikasjon."
       },
       "leaving": {
         "q": "Kan jeg forlate tjenesten, og hva skjer med dataene mine?",
@@ -388,7 +406,7 @@
     "ctaPrimary": "Kom i gang",
     "includes": [
       "Ubegrenset med oppgaver, prosjekter og notater",
-      "Legg til familiemedlemmer eller kolleger, hver som en plass til samme pris",
+      "For én person. Team-abonnementer legger til personer i faste størrelser",
       "Vedlegg og filopplasting",
       "Dagsplanlegging med AI, MCP, kalenderfeeder, CalDAV og Telegram-boten",
       "Daglige sikkerhetskopier og administrerte oppdateringer",
@@ -396,13 +414,13 @@
       "Eksporter alt, når du vil"
     ],
     "lede": "Samme system begge veier. Forskjellen er hvem som holder det i gang, oppdatert og sikkerhetskopiert klokken tre om natten.",
-    "metaDescription": "tududi Cloud er det samme åpen kildekode-systemet, kjørt på våre servere med oppdateringer, sikkerhetskopier og e-post tatt hånd om for deg. Én plan, månedlig eller årlig, kan avsluttes når som helst.",
+    "metaDescription": "tududi Cloud er det samme åpen kildekode-systemet, kjørt på våre servere med oppdateringer, sikkerhetskopier og e-post håndtert for deg. Pro for én person eller et Team-abonnement for en gruppe, månedlig eller årlig, si opp når som helst.",
     "metaTitle": "tududi Cloud: det hostede tududi, driftet for deg",
     "note": "Samme MIT-lisensierte app. Eksporter alt, når du vil.",
     "orAnnual": "eller",
     "priceNote": "Fakturert av vår betalingsleverandør. Prisene inkluderer ikke gjeldende skatter.",
     "pricingSub": "Alt inkludert. Avslutt når du vil.",
-    "pricingTitle": "Én plan, to måter å betale",
+    "pricingTitle": "Pro for deg, Team for alle",
     "reasons": {
       "backups": {
         "body": "Databasen dumpes hver natt og oppbevares utenfor maskinen som betjener deg. Du kan også eksportere alt selv når du vil.",
