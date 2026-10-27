@@ -2,6 +2,7 @@
 
 const adminRepository = require('./repository');
 const { accountStatusOf } = require('./accountStatus');
+const { buildInsights } = require('./insights');
 const membersService = require('../members/service');
 const {
     validateRoleChange,
@@ -931,7 +932,7 @@ class AdminService {
             return !entry || Object.keys(entry.counts).length === 0;
         }).length;
 
-        return {
+        const summary = {
             users: {
                 total: users,
                 admins,
@@ -950,6 +951,11 @@ class AdminService {
                 subscription_required: entitlements.isSubscriptionRequired(),
                 provider: config.hosted?.billing?.provider || null,
             },
+        };
+
+        return {
+            ...summary,
+            insights: buildInsights(summary),
             instance: {
                 registration_enabled: registrationSetting
                     ? registrationSetting.value === 'true'
