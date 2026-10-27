@@ -41,7 +41,10 @@ interface ProjectHeroProps {
     onShareClick: () => void;
     onSaveAsTemplate?: () => void;
     onEditBannerClick?: () => void;
+    onEditClick?: () => void;
     onTogglePin?: () => void;
+    onImportClick?: () => void;
+    onExport?: (format: 'xlsx' | 'csv') => void;
 }
 
 const ProjectHero: React.FC<ProjectHeroProps> = ({
@@ -55,7 +58,10 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
     onShareClick,
     onSaveAsTemplate,
     onEditBannerClick,
+    onEditClick,
     onTogglePin,
+    onImportClick,
+    onExport,
 }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -508,6 +514,19 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                             </button>
                             {menuOpen && (
                                 <div className="absolute right-0 top-full z-30 mt-1 w-52 overflow-hidden rounded-md bg-white py-1 shadow-lg dark:bg-gray-800">
+                                    {onEditClick && (
+                                        <button
+                                            type="button"
+                                            className={menuItemClass}
+                                            onClick={() => {
+                                                setMenuOpen(false);
+                                                onEditClick();
+                                            }}
+                                            data-testid="project-edit"
+                                        >
+                                            {t('common.edit', 'Edit')}
+                                        </button>
+                                    )}
                                     {onSaveAsTemplate && (
                                         <button
                                             type="button"
@@ -522,6 +541,51 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                                                 'Save as Template'
                                             )}
                                         </button>
+                                    )}
+                                    {onImportClick && (
+                                        <button
+                                            type="button"
+                                            className={menuItemClass}
+                                            onClick={() => {
+                                                setMenuOpen(false);
+                                                onImportClick();
+                                            }}
+                                        >
+                                            {t(
+                                                'spreadsheet.menu.import',
+                                                'Import from spreadsheet…'
+                                            )}
+                                        </button>
+                                    )}
+                                    {onExport && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                className={menuItemClass}
+                                                onClick={() => {
+                                                    setMenuOpen(false);
+                                                    onExport('xlsx');
+                                                }}
+                                            >
+                                                {t(
+                                                    'spreadsheet.menu.exportExcel',
+                                                    'Export to Excel'
+                                                )}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={menuItemClass}
+                                                onClick={() => {
+                                                    setMenuOpen(false);
+                                                    onExport('csv');
+                                                }}
+                                            >
+                                                {t(
+                                                    'spreadsheet.menu.exportCsv',
+                                                    'Export to CSV'
+                                                )}
+                                            </button>
+                                        </>
                                     )}
                                     <button
                                         type="button"

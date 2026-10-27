@@ -438,6 +438,7 @@ const feedbackModule = require('./modules/feedback');
 const pushModule = require('./modules/push');
 const appriseModule = require('./modules/apprise');
 const webhooksModule = require('./modules/webhooks');
+const spreadsheetsModule = require('./modules/spreadsheets');
 const mfaModule = require('./modules/mfa');
 
 // Swagger documentation - enabled by default, protected by authentication
@@ -569,6 +570,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, pushModule.routes);
     app.use(basePath, appriseModule.routes);
     app.use(basePath, webhooksModule.routes);
+    app.use(basePath, spreadsheetsModule.routes);
     app.use(basePath, mfaModule.routes);
 };
 
