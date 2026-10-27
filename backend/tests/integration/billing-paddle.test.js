@@ -541,3 +541,26 @@ describe('Billing with Paddle', () => {
         expect(cancel.body).toEqual({ effective_from: 'immediately' });
     });
 });
+
+describe('Paddle default payment link', () => {
+    afterEach(() => {
+        config.hosted.enabled = false;
+        config.hosted.paddle.clientToken = undefined;
+    });
+
+    it('serves a page that opens the checkout for _ptxn without a login', async () => {
+        config.hosted.enabled = true;
+        config.hosted.paddle.clientToken = 'live_test_token';
+        const res = await request(app).get('/billing/pay?_ptxn=txn_1');
+        expect(res.status).toBe(200);
+        expect(res.text).toContain('cdn.paddle.com/paddle/v2/paddle.js');
+        expect(res.text).toContain('"token":"live_test_token"');
+        expect(res.text).not.toContain("Environment.set('sandbox')");
+    });
+
+    it('is not there without Paddle', async () => {
+        config.hosted.enabled = true;
+        const res = await request(app).get('/billing/pay');
+        expect(res.status).toBe(404);
+    });
+});

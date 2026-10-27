@@ -181,6 +181,8 @@ const billingModule = require('./modules/billing');
 ['/api', API_BASE_PATH].forEach((base) => {
     app.post(`${base}/billing/webhook`, billingModule.webhookHandler());
 });
+// Paddle's default payment link (pay an invoice, replace a failed card).
+app.get('/billing/pay', billingModule.payPage);
 
 // Body parsing (skip for CalDAV routes which need raw body access)
 app.use((req, res, next) => {

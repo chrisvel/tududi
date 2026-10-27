@@ -252,8 +252,10 @@ a transaction for the price with the user's uid in `custom_data` (Paddle
 copies it to the subscription), and the browser opens Paddle's overlay on
 that transaction; afterwards Paddle sends it back to the billing tab with
 the transaction id, which the sync reads. The checkout domain must be
-approved in Paddle (Checkout > Website approval) and a default payment link
-set. Add a notification destination at `https://your-host/api/billing/webhook`
+approved in Paddle (Checkout > Website approval), and the default payment
+link set to `https://your-host/billing/pay`: Paddle sends customers there
+with `?_ptxn=` to pay an invoice or replace a failed card, and the page
+opens the checkout without a sign-in. Add a notification destination at `https://your-host/api/billing/webhook`
 with `subscription.created`, `subscription.updated`,
 `subscription.activated`, `subscription.trialing`,
 `subscription.paused`, `subscription.resumed`, `subscription.canceled`,
