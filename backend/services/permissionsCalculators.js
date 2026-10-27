@@ -221,8 +221,8 @@ function containerRowChange(changes, action, resourceType, resourceUid) {
     }
 }
 
-// Sharing an area cascades to every project the area owner keeps in it, and each
-// project's own task/note subtree. The area row itself is 'direct' so the share
+// Sharing an area cascades to every project the area owner keeps in it (except
+// restricted ones), and each project's own task/note subtree. The area row itself is 'direct' so the share
 // list, revoke and accept/decline set-move can find it; the projects and their
 // children are 'inherited'. Projects added to the area later are covered by
 // containerShareSync.syncProjectSharesFromContainer, not here.
@@ -238,7 +238,11 @@ async function calculateAreaPerms(ctx, action) {
     containerRowChange(changes, action, 'area', area.uid);
 
     const projects = await Project.findAll({
-        where: { area_id: area.id, user_id: area.user_id },
+        where: {
+            area_id: area.id,
+            user_id: area.user_id,
+            visibility: 'area',
+        },
         attributes: ['id', 'uid', 'user_id'],
         transaction: ctx.tx,
         raw: true,
@@ -250,7 +254,8 @@ async function calculateAreaPerms(ctx, action) {
     return changes;
 }
 
-// Sharing a goal cascades to its linked projects (and their subtrees) and to
+// Sharing a goal cascades to its linked projects (and their subtrees, restricted
+// projects left out) and to
 // tasks assigned directly to the goal (plus their subtasks). Same 'direct' goal
 // row + 'inherited' children shape as area sharing.
 async function calculateGoalPerms(ctx, action) {
@@ -265,7 +270,11 @@ async function calculateGoalPerms(ctx, action) {
     containerRowChange(changes, action, 'goal', goal.uid);
 
     const projects = await Project.findAll({
-        where: { goal_id: goal.id, user_id: goal.user_id },
+        where: {
+            goal_id: goal.id,
+            user_id: goal.user_id,
+            visibility: 'area',
+        },
         attributes: ['id', 'uid', 'user_id'],
         transaction: ctx.tx,
         raw: true,

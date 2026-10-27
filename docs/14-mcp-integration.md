@@ -510,7 +510,7 @@ Get a single project by UID.
 |-----------|------|----------|-------------|
 | `uid` | string | Yes | Project UID |
 
-Project responses from `list_projects`, `get_project`, `create_project` and `update_project` include `goal` and `is_maintenance`.
+Project responses from `list_projects`, `get_project`, `create_project` and `update_project` include `goal`, `is_maintenance` and `visibility`.
 
 ---
 
@@ -531,6 +531,7 @@ Create a new project. Refused for an account whose role does not allow creating 
 | `goal_id` | number | No | Goal ID to link the project to (must be your own goal) |
 | `goal_uid` | string | No | Goal UID, as an alternative to `goal_id` |
 | `is_maintenance` | boolean | No | Mark as a maintenance project; cannot be combined with a goal |
+| `visibility` | string | No | `area` (default): shared with everyone its area or goal is shared with. `restricted`: only you, the area owner and people the project itself is shared with |
 
 ---
 
@@ -546,11 +547,12 @@ Update an existing project.
 | `description` | string | No | New description |
 | `priority` | number | No | New priority |
 | `status` | string | No | New status |
-| `area_id` | number | No | New area ID |
+| `area_id` | number | No | New area ID (owner only) |
 | `pinned` | boolean | No | Pin to sidebar |
 | `goal_id` | number | No | Link to a goal you own; `null` unlinks (owner only) |
 | `goal_uid` | string | No | Goal UID, as an alternative to `goal_id`; `null` or empty unlinks |
 | `is_maintenance` | boolean | No | `true` marks as maintenance and unlinks any goal (owner only if a goal is set); linking a goal sets it back to `false` |
+| `visibility` | string | No | `area` or `restricted` (project owner or area owner only); restricting takes back the access the area and goal gave |
 
 ---
 

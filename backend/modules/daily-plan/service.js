@@ -355,10 +355,15 @@ async function getCandidates(
         computeTaskMetrics(user.id, timezone, null, suggestions, scopeWhere),
         repository.findTasksTaggedToday(
             scopeService.withScope(
-                await permissionsService.ownershipOrPermissionWhere(
-                    'task',
-                    user.id
-                ),
+                {
+                    [Op.and]: [
+                        await permissionsService.ownershipOrPermissionWhere(
+                            'task',
+                            user.id
+                        ),
+                        await permissionsService.myWorkWhere(user.id),
+                    ],
+                },
                 scopeWhere
             )
         ),

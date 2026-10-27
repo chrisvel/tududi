@@ -108,6 +108,17 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: false,
             },
+            // 'area' lets the project's area and goal shares reach it;
+            // 'restricted' keeps it to its owner, the area owner and people
+            // added to the project itself.
+            visibility: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'area',
+                validate: {
+                    isIn: [['area', 'restricted']],
+                },
+            },
             ai_insights: {
                 type: DataTypes.JSON,
                 allowNull: true,
