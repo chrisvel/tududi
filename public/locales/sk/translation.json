@@ -3234,6 +3234,8 @@
       "instructionsOther": "Ktorýkoľvek ďalší stĺpec sa dá ponechať v poznámke úlohy, aby sa z hárka nič nestratilo."
     },
     "import": {
+      "encodingHint": "Písmená vyzerajú zle? Prečítajte súbor ako:",
+      "undoneKept": "Import bol vrátený späť. Úlohy zmenené odvtedy boli zachované: {{count}}.",
       "actionCreate": "Nová",
       "actionUpdate": "Aktualizovať",
       "actionSkip": "Preskočená",
@@ -3298,6 +3300,10 @@
       "hierarchy_auto": "zistiť automaticky"
     },
     "issues": {
+      "too_many_tags": "Zachovaných sa len prvých 20 štítkov.",
+      "too_many_new_projects": "Týmto by sa vytvorilo viac ako {{value}} projektov. Skontrolujte, či je stĺpec Projekt správny.",
+      "too_many_new_areas": "Týmto by sa vytvorilo viac ako {{value}} oblastí. Skontrolujte, či je stĺpec Oblasť správny.",
+      "too_many_new_tags": "Týmto by sa vytvorilo viac ako {{value}} štítkov. Skontrolujte, či je stĺpec Štítky správny.",
       "name_column_required": "Vyberte stĺpec s názvami úloh.",
       "target_project_invalid": "Vyberte projekt, do ktorého môžete pridávať úlohy.",
       "target_project_name_required": "Pomenujte nový projekt.",

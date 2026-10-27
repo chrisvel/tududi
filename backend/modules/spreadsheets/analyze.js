@@ -1,6 +1,7 @@
 'use strict';
 
 const { Op } = require('sequelize');
+const { ValidationError } = require('../../shared/errors');
 const { Task, Project, Area, Tag, User } = require('../../models');
 const permissionsService = require('../../services/permissionsService');
 const peopleService = require('../people/service');
@@ -15,6 +16,7 @@ const {
     parseEstimateCell,
     splitList,
     normalizeWord,
+    MAX_WORD_LENGTH,
 } = require('./core/values');
 
 const MAX_NAME_LENGTH = 255;
@@ -41,10 +43,43 @@ function detectHeaderRow(rows) {
     return Math.max(0, index);
 }
 
+const MAX_STATUS = Math.max(...Object.values(Task.STATUS));
+const MAX_PRIORITY = Math.max(...Object.values(Task.PRIORITY));
+const MAX_VALUE_MAP_ENTRIES = 500;
+const MAX_TAGS_PER_TASK = 20;
+// Distinct unrecognised words offered for matching, per field.
+const MAX_UNKNOWN_VALUES = 100;
+// What one import may add besides tasks; a sheet needing more is almost
+// always a wrongly mapped column.
+const MAX_NEW_PROJECTS = 200;
+const MAX_NEW_AREAS = 50;
+const MAX_NEW_TAGS = 500;
+
+function integerIn(value, min, max) {
+    if (value === '' || value === null) return '';
+    const n = Number(value);
+    return Number.isInteger(n) && n >= min && n <= max ? n : undefined;
+}
+
+// What the user matched unknown cell values to, as a Map so a cell saying
+// "__proto__" or "constructor" never reads anything but its own entry.
+function choiceMap(raw, check) {
+    const map = new Map();
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return map;
+    for (const [cellValue, choice] of Object.entries(raw).slice(
+        0,
+        MAX_VALUE_MAP_ENTRIES
+    )) {
+        const value = check(choice);
+        if (value !== undefined) map.set(cellValue, value);
+    }
+    return map;
+}
+
 function normalizeOptions(sheets, raw = {}) {
     const sheetIndex = Number.isInteger(raw.sheet) ? raw.sheet : 0;
     const sheet = sheets[sheetIndex];
-    if (!sheet) throw new Error('Unknown sheet.');
+    if (!sheet) throw new ValidationError('Unknown sheet.');
     const headerRow = Number.isInteger(raw.header_row)
         ? Math.min(Math.max(raw.header_row, 0), sheet.rows.length - 1)
         : detectHeaderRow(sheet.rows);
@@ -85,9 +120,16 @@ function normalizeOptions(sheets, raw = {}) {
             : 'auto',
         date_order_fallback: raw.date_order_fallback === 'mdy' ? 'mdy' : 'dmy',
         value_map: {
-            status: valueMap.status || {},
-            priority: valueMap.priority || {},
-            assignee: valueMap.assignee || {},
+            status: choiceMap(valueMap.status, (v) =>
+                integerIn(v, 0, MAX_STATUS)
+            ),
+            priority: choiceMap(valueMap.priority, (v) =>
+                integerIn(v, 0, MAX_PRIORITY)
+            ),
+            // Checked against the people the user can assign to in analyze.
+            assignee: choiceMap(valueMap.assignee, (v) =>
+                typeof v === 'string' ? v : undefined
+            ),
         },
         update_existing: raw.update_existing !== false,
         clear_blanks: raw.clear_blanks === true,
@@ -149,7 +191,7 @@ async function assigneeIndex(userId) {
             }
         }
     }
-    return { index, people };
+    return { index, people, uids: new Set(people.map((p) => p.uid)) };
 }
 
 async function writableTasksByUid(userId, uids) {
@@ -198,6 +240,7 @@ async function analyze(user, sheets, rawOptions) {
     const { mapping } = options;
 
     const headers = sheet.rows[options.header_row] || [];
+    const headerKey = headers.join('\u0000');
     const dataRows = sheet.rows
         .map((cells, i) => ({
             cells,
@@ -205,7 +248,13 @@ async function analyze(user, sheets, rawOptions) {
             level: sheet.levels?.[i] || 0,
             rowNumber: sheet.row_numbers?.[i] ?? i + 1,
         }))
-        .slice(options.header_row + 1);
+        .slice(options.header_row + 1)
+        // Exports that start every group with its own header row repeat it.
+        .filter(
+            (row) =>
+                !row.cells.some(Boolean) ||
+                row.cells.join('\u0000') !== headerKey
+        );
 
     const column = (field) => mapping.indexOf(field);
     const has = (field) => column(field) !== -1;
@@ -323,7 +372,7 @@ async function analyze(user, sheets, rawOptions) {
     // People and existing tasks the file refers to.
     const assignees = has('assignee')
         ? await assigneeIndex(userId)
-        : { index: new Map(), people: [] };
+        : { index: new Map(), people: [], uids: new Set() };
     const fileUids = has('uid')
         ? dataRows.map((r) => cell(r, 'uid')).filter(Boolean)
         : [];
@@ -346,7 +395,14 @@ async function analyze(user, sheets, rawOptions) {
     for (const row of dataRows) {
         const errors = [];
         const warnings = [];
-        const warn = (code, extra = {}) => warnings.push({ code, ...extra });
+        const warn = (code, extra = {}) =>
+            warnings.push({
+                code,
+                ...extra,
+                ...(extra.value !== undefined
+                    ? { value: String(extra.value).slice(0, 80) }
+                    : {}),
+            });
         const uid = cell(row, 'uid');
         const existing = uid ? existingByUid.get(uid) : null;
         const action =
@@ -375,12 +431,15 @@ async function analyze(user, sheets, rawOptions) {
         const statusText = take('status');
         if (statusText) {
             let status = parseStatusCell(statusText);
-            const mapped = options.value_map.status[statusText];
-            if (mapped !== undefined && mapped !== null && mapped !== '') {
-                status = Number(mapped);
-            }
+            const mapped = options.value_map.status.get(statusText);
+            if (mapped !== undefined && mapped !== '') status = mapped;
             if (status === undefined || Number.isNaN(status)) {
-                unknown.status.add(statusText);
+                if (
+                    statusText.length <= MAX_WORD_LENGTH &&
+                    unknown.status.size < MAX_UNKNOWN_VALUES
+                ) {
+                    unknown.status.add(statusText);
+                }
                 warn('unknown_status', { value: statusText });
             } else {
                 body.status = status;
@@ -392,12 +451,15 @@ async function analyze(user, sheets, rawOptions) {
         const priorityText = take('priority');
         if (priorityText) {
             let priority = parsePriorityCell(priorityText);
-            const mapped = options.value_map.priority[priorityText];
-            if (mapped !== undefined && mapped !== null && mapped !== '') {
-                priority = Number(mapped);
-            }
+            const mapped = options.value_map.priority.get(priorityText);
+            if (mapped !== undefined && mapped !== '') priority = mapped;
             if (priority === undefined || Number.isNaN(priority)) {
-                unknown.priority.add(priorityText);
+                if (
+                    priorityText.length <= MAX_WORD_LENGTH &&
+                    unknown.priority.size < MAX_UNKNOWN_VALUES
+                ) {
+                    unknown.priority.add(priorityText);
+                }
                 warn('unknown_priority', { value: priorityText });
             } else {
                 body.priority = priority;
@@ -456,8 +518,11 @@ async function analyze(user, sheets, rawOptions) {
         }
 
         const assigneeText = take('assignee');
-        if (assigneeText) {
-            const mapped = options.value_map.assignee[assigneeText];
+        if (assigneeText && assigneeText.length > MAX_WORD_LENGTH) {
+            warn('unknown_assignee', { value: assigneeText.slice(0, 40) });
+        } else if (assigneeText) {
+            let mapped = options.value_map.assignee.get(assigneeText);
+            if (mapped && !assignees.uids.has(mapped)) mapped = undefined;
             const personUid =
                 mapped !== undefined
                     ? mapped || null
@@ -465,7 +530,9 @@ async function analyze(user, sheets, rawOptions) {
             if (personUid) {
                 body.assigned_to = personUid;
             } else if (mapped === undefined) {
-                unknown.assignee.add(assigneeText);
+                if (unknown.assignee.size < MAX_UNKNOWN_VALUES) {
+                    unknown.assignee.add(assigneeText);
+                }
                 warn('unknown_assignee', { value: assigneeText });
             }
         } else if (assigneeText === '') {
@@ -482,7 +549,12 @@ async function analyze(user, sheets, rawOptions) {
                     warn('invalid_tag', { value: tag });
                     continue;
                 }
-                if (!tags.includes(validation.name)) tags.push(validation.name);
+                if (tags.includes(validation.name)) continue;
+                if (tags.length >= MAX_TAGS_PER_TASK) {
+                    warn('too_many_tags');
+                    break;
+                }
+                tags.push(validation.name);
             }
             tags.forEach((t) => tagNames.add(t));
         }
@@ -531,6 +603,7 @@ async function analyze(user, sheets, rawOptions) {
 
     resolveParents(rows, options, existingByUid, projectKey);
     await resolveParentsByName(rows, userId);
+    await dropForeignParents(rows, userId, projects);
 
     // Subtasks live in their parent's project.
     for (const row of rows) {
@@ -539,9 +612,7 @@ async function analyze(user, sheets, rawOptions) {
         const parentProject = parent.row
             ? parent.row.project
             : parent.projectId
-              ? projects.find((p) => p.id === parent.projectId) || {
-                    id: parent.projectId,
-                }
+              ? projects.find((p) => p.id === parent.projectId)
               : null;
         if (
             row.project !== undefined &&
@@ -577,6 +648,26 @@ async function analyze(user, sheets, rawOptions) {
     });
     const knownTags = new Set(existingTags.map((t) => t.name));
 
+    const newTagCount = [...tagNames].filter((t) => !knownTags.has(t)).length;
+    if (usedProjects.size > MAX_NEW_PROJECTS) {
+        problems.push({
+            code: 'too_many_new_projects',
+            value: String(MAX_NEW_PROJECTS),
+        });
+    }
+    if (usedAreas.size > MAX_NEW_AREAS) {
+        problems.push({
+            code: 'too_many_new_areas',
+            value: String(MAX_NEW_AREAS),
+        });
+    }
+    if (newTagCount > MAX_NEW_TAGS) {
+        problems.push({
+            code: 'too_many_new_tags',
+            value: String(MAX_NEW_TAGS),
+        });
+    }
+
     const counts = {
         create: rows.filter((r) => r.action === 'create').length,
         update: rows.filter((r) => r.action === 'update').length,
@@ -584,7 +675,7 @@ async function analyze(user, sheets, rawOptions) {
         warnings: rows.reduce((sum, r) => sum + r.warnings.length, 0),
         new_projects: usedProjects.size,
         new_areas: usedAreas.size,
-        new_tags: [...tagNames].filter((t) => !knownTags.has(t)).length,
+        new_tags: newTagCount,
     };
 
     return {
@@ -720,6 +811,42 @@ function resolveParents(rows, options, existingByUid, projectKey) {
     }
 }
 
+// An existing task can only take subtasks from an import when the user
+// could add a task next to it: it sits in a project they can write to, or
+// it is their own task outside any project. Being assigned a task in
+// someone else's private project is not enough. The task a subtask finally
+// hangs under (its parent's parent, after flattening) is what is checked.
+async function dropForeignParents(rows, userId, projects) {
+    const withExisting = rows.filter((r) => r.parent && !r.parent.row);
+    if (withExisting.length === 0) return;
+    const writableProjectIds = new Set(projects.map((p) => p.id));
+    const tasks = await Task.findAll({
+        where: { id: [...new Set(withExisting.map((r) => r.parent.taskId))] },
+        attributes: ['id', 'user_id', 'project_id', 'parent_task_id'],
+        raw: true,
+    });
+    const byId = new Map(tasks.map((t) => [t.id, t]));
+    for (const row of withExisting) {
+        const task = byId.get(row.parent.taskId);
+        const allowed =
+            task &&
+            !task.parent_task_id &&
+            (task.project_id
+                ? writableProjectIds.has(task.project_id)
+                : task.user_id === userId);
+        if (allowed) {
+            row.parent.projectId = task.project_id;
+            continue;
+        }
+        row.warnings = row.warnings.filter((w) => w.code !== 'flattened');
+        row.warnings.push({
+            code: 'parent_not_found',
+            value: String(row.parentText || '').slice(0, 80),
+        });
+        row.parent = undefined;
+    }
+}
+
 // Parents named in the sheet that are not rows of it: top-level tasks of
 // the same project with that name. Rows without a project look everywhere
 // the user owns.
@@ -787,8 +914,22 @@ function describeRow(row) {
     };
 }
 
+// The options as plain JSON, for responses and the stored job.
+function plainOptions(options) {
+    return {
+        ...options,
+        value_map: Object.fromEntries(
+            Object.entries(options.value_map).map(([kind, map]) => [
+                kind,
+                Object.fromEntries(map),
+            ])
+        ),
+    };
+}
+
 module.exports = {
     analyze,
+    plainOptions,
     describeRow,
     detectHeaderRow,
     normalizeOptions,

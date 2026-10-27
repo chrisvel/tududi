@@ -3212,6 +3212,8 @@
       "instructionsOther": "Qualquer outra coluna pode ser guardada na nota da tarefa, para que nada da folha se perca."
     },
     "import": {
+      "encodingHint": "As letras parecem erradas? Leia o ficheiro como:",
+      "undoneKept": "A importação foi anulada. Foram mantidas {{count}} tarefas alteradas desde então.",
       "actionCreate": "Nova",
       "actionUpdate": "Atualizar",
       "actionSkip": "Ignorada",
@@ -3276,6 +3278,10 @@
       "hierarchy_auto": "detetar"
     },
     "issues": {
+      "too_many_tags": "Só as primeiras 20 etiquetas são mantidas.",
+      "too_many_new_projects": "Isto criaria mais de {{value}} projetos. Verifique se a coluna Projeto é a correta.",
+      "too_many_new_areas": "Isto criaria mais de {{value}} áreas. Verifique se a coluna Área é a correta.",
+      "too_many_new_tags": "Isto criaria mais de {{value}} etiquetas. Verifique se a coluna Etiquetas é a correta.",
       "name_column_required": "Escolha a coluna que contém os nomes das tarefas.",
       "target_project_invalid": "Escolha um projeto onde possa adicionar tarefas.",
       "target_project_name_required": "Dê um nome ao novo projeto.",

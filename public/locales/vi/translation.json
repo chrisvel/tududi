@@ -3206,6 +3206,8 @@
       "instructionsOther": "Mọi cột khác đều có thể giữ trong ghi chú của công việc, nên không có gì trong bảng bị mất."
     },
     "import": {
+      "encodingHint": "Chữ trông bị sai? Hãy đọc tệp theo bảng mã:",
+      "undoneKept": "Đã hoàn tác việc nhập. {{count}} công việc thay đổi kể từ đó được giữ lại.",
       "actionCreate": "Mới",
       "actionUpdate": "Cập nhật",
       "actionSkip": "Bỏ qua",
@@ -3270,6 +3272,10 @@
       "hierarchy_auto": "tự phát hiện"
     },
     "issues": {
+      "too_many_tags": "Chỉ giữ 20 thẻ đầu tiên.",
+      "too_many_new_projects": "Thao tác này sẽ tạo hơn {{value}} dự án. Hãy kiểm tra cột Dự án có đúng không.",
+      "too_many_new_areas": "Thao tác này sẽ tạo hơn {{value}} khu vực. Hãy kiểm tra cột Khu vực có đúng không.",
+      "too_many_new_tags": "Thao tác này sẽ tạo hơn {{value}} thẻ. Hãy kiểm tra cột Thẻ có đúng không.",
       "name_column_required": "Hãy chọn cột chứa tên công việc.",
       "target_project_invalid": "Hãy chọn một dự án mà bạn có thể thêm công việc vào.",
       "target_project_name_required": "Hãy đặt tên cho dự án mới.",

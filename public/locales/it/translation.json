@@ -3212,6 +3212,8 @@
       "instructionsOther": "Qualsiasi altra colonna può essere conservata nella nota dell'attività, così nulla del foglio va perso."
     },
     "import": {
+      "encodingHint": "Le lettere sembrano sbagliate? Leggi il file come:",
+      "undoneKept": "L'importazione è stata annullata. Sono state mantenute {{count}} attività modificate da allora.",
       "actionCreate": "Nuova",
       "actionUpdate": "Aggiorna",
       "actionSkip": "Saltata",
@@ -3276,6 +3278,10 @@
       "hierarchy_auto": "rilevale"
     },
     "issues": {
+      "too_many_tags": "Vengono mantenuti solo i primi 20 tag.",
+      "too_many_new_projects": "Verrebbero creati più di {{value}} progetti. Controlla che la colonna Progetto sia quella giusta.",
+      "too_many_new_areas": "Verrebbero create più di {{value}} aree. Controlla che la colonna Area sia quella giusta.",
+      "too_many_new_tags": "Verrebbero creati più di {{value}} tag. Controlla che la colonna Tag sia quella giusta.",
       "name_column_required": "Scegli la colonna che contiene i nomi delle attività.",
       "target_project_invalid": "Scegli un progetto a cui puoi aggiungere attività.",
       "target_project_name_required": "Dai un nome al nuovo progetto.",

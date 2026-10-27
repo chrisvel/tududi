@@ -3206,6 +3206,8 @@
       "instructionsOther": "Kolom lain apa pun dapat disimpan di catatan tugas, sehingga tidak ada isi lembar yang hilang."
     },
     "import": {
+      "encodingHint": "Huruf terlihat salah? Baca file sebagai:",
+      "undoneKept": "Impor dibatalkan. {{count}} tugas yang berubah sejak saat itu tetap disimpan.",
       "actionCreate": "Baru",
       "actionUpdate": "Perbarui",
       "actionSkip": "Dilewati",
@@ -3270,6 +3272,10 @@
       "hierarchy_auto": "deteksi otomatis"
     },
     "issues": {
+      "too_many_tags": "Hanya 20 tag pertama yang disimpan.",
+      "too_many_new_projects": "Ini akan membuat lebih dari {{value}} proyek. Pastikan kolom Proyek sudah benar.",
+      "too_many_new_areas": "Ini akan membuat lebih dari {{value}} area. Pastikan kolom Area sudah benar.",
+      "too_many_new_tags": "Ini akan membuat lebih dari {{value}} tag. Pastikan kolom Tag sudah benar.",
       "name_column_required": "Pilih kolom yang berisi nama tugas.",
       "target_project_invalid": "Pilih proyek yang dapat Anda tambahi tugas.",
       "target_project_name_required": "Beri nama untuk proyek baru.",

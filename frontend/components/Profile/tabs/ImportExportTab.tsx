@@ -54,9 +54,15 @@ const ImportExportTab: React.FC<ImportExportTabProps> = ({ isActive }) => {
     const runUndo = async (uid: string) => {
         setUndoing(uid);
         try {
-            await undoImport(uid);
+            const { kept_changed } = await undoImport(uid);
             showSuccessToast(
-                t('spreadsheet.import.undone', 'The import was undone.')
+                kept_changed > 0
+                    ? t(
+                          'spreadsheet.import.undoneKept',
+                          'The import was undone. {{count}} tasks changed since then were kept.',
+                          { count: kept_changed }
+                      )
+                    : t('spreadsheet.import.undone', 'The import was undone.')
             );
             loadHistory();
         } catch (e) {

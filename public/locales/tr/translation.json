@@ -3209,6 +3209,8 @@
       "instructionsOther": "Diğer tüm sütunlar görevin notunda tutulabilir, böylece sayfadaki hiçbir şey kaybolmaz."
     },
     "import": {
+      "encodingHint": "Harfler yanlış mı görünüyor? Dosyayı şu şekilde okuyun:",
+      "undoneKept": "İçe aktarma geri alındı. O zamandan beri değişen {{count}} görev korundu.",
       "actionCreate": "Yeni",
       "actionUpdate": "Güncelle",
       "actionSkip": "Atlandı",
@@ -3273,6 +3275,10 @@
       "hierarchy_auto": "otomatik algıla"
     },
     "issues": {
+      "too_many_tags": "Yalnızca ilk 20 etiket tutulur.",
+      "too_many_new_projects": "Bu, {{value}} projeden fazlasını oluştururdu. Proje sütununun doğru olduğunu kontrol edin.",
+      "too_many_new_areas": "Bu, {{value}} alandan fazlasını oluştururdu. Alan sütununun doğru olduğunu kontrol edin.",
+      "too_many_new_tags": "Bu, {{value}} etiketten fazlasını oluştururdu. Etiketler sütununun doğru olduğunu kontrol edin.",
       "name_column_required": "Görev adlarını içeren sütunu seçin.",
       "target_project_invalid": "Görev ekleyebileceğiniz bir proje seçin.",
       "target_project_name_required": "Yeni projeye bir ad verin.",

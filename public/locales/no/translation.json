@@ -3214,6 +3214,8 @@
       "instructionsOther": "Alle andre kolonner kan beholdes i oppgavens notat, så ingenting i arket går tapt."
     },
     "import": {
+      "encodingHint": "Ser bokstavene feil ut? Les filen som:",
+      "undoneKept": "Importen ble angret. {{count}} oppgaver som er endret siden, ble beholdt.",
       "actionCreate": "Ny",
       "actionUpdate": "Oppdater",
       "actionSkip": "Hoppet over",
@@ -3278,6 +3280,10 @@
       "hierarchy_auto": "finn det automatisk"
     },
     "issues": {
+      "too_many_tags": "Bare de første 20 merkelappene beholdes.",
+      "too_many_new_projects": "Dette ville opprettet mer enn {{value}} prosjekter. Sjekk at kolonnen Prosjekt er den riktige.",
+      "too_many_new_areas": "Dette ville opprettet mer enn {{value}} områder. Sjekk at kolonnen Område er den riktige.",
+      "too_many_new_tags": "Dette ville opprettet mer enn {{value}} merkelapper. Sjekk at kolonnen Merkelapper er den riktige.",
       "name_column_required": "Velg kolonnen som inneholder oppgavenavnene.",
       "target_project_invalid": "Velg et prosjekt du kan legge til oppgaver i.",
       "target_project_name_required": "Gi det nye prosjektet et navn.",

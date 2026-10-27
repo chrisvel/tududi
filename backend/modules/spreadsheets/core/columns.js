@@ -38,6 +38,7 @@ const FIELDS = [
             'project name',
             'projects',
             'board',
+            'list name',
             'list',
             'development',
             'job',
@@ -47,7 +48,14 @@ const FIELDS = [
     {
         key: 'area',
         label: 'spreadsheet.columns.area',
-        synonyms: ['area', 'area name', 'space', 'folder', 'category'],
+        synonyms: [
+            'area',
+            'area name',
+            'space',
+            'folder',
+            'folder name',
+            'category',
+        ],
     },
     {
         key: 'parent',
@@ -130,6 +138,8 @@ const FIELDS = [
             'time estimate',
             'estimated hours',
             'effort',
+            'time estimate (min)',
+            'estimate (min)',
             'duration',
         ],
     },
@@ -144,6 +154,9 @@ const FIELDS = [
             'responsible',
             'person',
             'who',
+            'assignees',
+            'assignee email',
+            'owner email',
         ],
     },
     {
@@ -162,6 +175,8 @@ const FIELDS = [
             'body',
             'content',
             'comments',
+            'task content',
+            'task description',
         ],
     },
     {
@@ -186,6 +201,19 @@ const APPEND_TO_NOTE = 'note_append';
 
 // Headers that only appear in exports and carry nothing worth importing.
 const EXPORT_ONLY_LABELS = ['spreadsheet.columns.createdAt'];
+
+// Other tools export their own ids under the same headers ("Task ID"), and
+// those must not be read as tududi task UIDs.
+const TUDUDI_UID = /^[0-9a-km-z]{15}$/;
+
+function looksLikeUids(rows, column) {
+    const values = rows
+        .map((row) => String(row[column] ?? '').trim())
+        .filter(Boolean);
+    if (values.length === 0) return false;
+    const matching = values.filter((v) => TUDUDI_UID.test(v)).length;
+    return matching * 2 >= values.length;
+}
 
 function normalizeHeader(header) {
     return String(header ?? '')
@@ -248,6 +276,7 @@ function suggestMapping(headers, rows = []) {
     const takenFields = new Set();
     for (const { column, field } of candidates) {
         if (mapping[column] !== null) continue;
+        if (field === 'uid' && !looksLikeUids(rows, column)) continue;
         if (field !== IGNORE && takenFields.has(field)) continue;
         mapping[column] = field;
         if (field !== IGNORE) takenFields.add(field);

@@ -65,9 +65,32 @@ function detectDateOrder(values) {
 
 // Reads a date cell into { date: 'YYYY-MM-DD', time: 'HH:mm' | null }.
 // `order` decides 03/04/2026; returns { error } for anything unreadable.
+// Longer cells cannot be a date, estimate or status word, and the date
+// and estimate parsers slow down on long input, so they are refused first.
+const MAX_DATE_LENGTH = 64;
+const MAX_ESTIMATE_LENGTH = 32;
+const MAX_WORD_LENGTH = 100;
+
 function parseDateCell(raw, order = 'dmy') {
     const text = String(raw ?? '').trim();
     if (!text) return null;
+    if (text.length > MAX_DATE_LENGTH) return { error: 'invalid_date' };
+
+    // A date cell Excel stored without a date format reaches us as its
+    // serial number: days since 1899-12-30, the fraction being the time.
+    if (/^\d{5}(\.\d+)?$/.test(text)) {
+        const serial = Number(text);
+        if (serial >= 20000 && serial < 80000) {
+            const ms = Math.round((serial - 25569) * 86400000);
+            const d = new Date(ms);
+            const day = `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+            const time =
+                d.getUTCHours() || d.getUTCMinutes()
+                    ? `${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`
+                    : null;
+            return { date: day, time };
+        }
+    }
 
     let match = ISO_DATE.exec(text);
     if (match) {
@@ -231,6 +254,7 @@ let priorityIndex = null;
 function parseStatusCell(raw) {
     const text = String(raw ?? '').trim();
     if (!text) return null;
+    if (text.length > MAX_WORD_LENGTH) return undefined;
     statusIndex =
         statusIndex || buildWordIndex(STATUS_WORDS, STATUS_LABEL_KEYS);
     const exact = statusIndex.get(normalizeWord(text));
@@ -248,6 +272,7 @@ function parseStatusCell(raw) {
 function parsePriorityCell(raw) {
     const text = String(raw ?? '').trim();
     if (!text) return null;
+    if (text.length > MAX_WORD_LENGTH) return undefined;
     priorityIndex =
         priorityIndex || buildWordIndex(PRIORITY_WORDS, PRIORITY_LABEL_KEYS);
     const value = priorityIndex.get(normalizeWord(text));
@@ -260,6 +285,7 @@ function parseEstimateCell(raw) {
         .trim()
         .toLowerCase();
     if (!text) return null;
+    if (text.length > MAX_ESTIMATE_LENGTH) return { error: 'invalid_estimate' };
     let minutes;
     let match;
     if ((match = /^(\d+):(\d{2})$/.exec(text))) {
@@ -293,6 +319,7 @@ function splitList(raw) {
 }
 
 module.exports = {
+    MAX_WORD_LENGTH,
     STATUS_LABEL_KEYS,
     PRIORITY_LABEL_KEYS,
     detectDateOrder,

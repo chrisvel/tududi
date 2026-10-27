@@ -3218,6 +3218,8 @@
       "instructionsOther": "Jede andere Spalte kann in der Notiz der Aufgabe behalten werden, damit nichts aus dem Blatt verloren geht."
     },
     "import": {
+      "encodingHint": "Die Buchstaben sehen falsch aus? Lies die Datei als:",
+      "undoneKept": "Der Import wurde rückgängig gemacht. {{count}} Aufgaben, die sich seitdem geändert haben, blieben erhalten.",
       "actionCreate": "Neu",
       "actionUpdate": "Aktualisieren",
       "actionSkip": "Übersprungen",
@@ -3282,6 +3284,10 @@
       "hierarchy_auto": "automatisch erkennen"
     },
     "issues": {
+      "too_many_tags": "Nur die ersten 20 Tags werden übernommen.",
+      "too_many_new_projects": "Dadurch würden mehr als {{value}} Projekte angelegt. Prüfe, ob die Spalte Projekt die richtige ist.",
+      "too_many_new_areas": "Dadurch würden mehr als {{value}} Bereiche angelegt. Prüfe, ob die Spalte Bereich die richtige ist.",
+      "too_many_new_tags": "Dadurch würden mehr als {{value}} Tags angelegt. Prüfe, ob die Spalte Tags die richtige ist.",
       "name_column_required": "Wähle die Spalte mit den Aufgabennamen.",
       "target_project_invalid": "Wähle ein Projekt, zu dem du Aufgaben hinzufügen kannst.",
       "target_project_name_required": "Gib dem neuen Projekt einen Namen.",

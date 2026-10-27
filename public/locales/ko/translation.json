@@ -3206,6 +3206,8 @@
       "instructionsOther": "그 밖의 열은 작업 메모에 보관할 수 있어서 시트의 내용이 사라지지 않습니다."
     },
     "import": {
+      "encodingHint": "글자가 이상하게 보이나요? 파일을 다음 인코딩으로 읽기:",
+      "undoneKept": "가져오기를 취소했습니다. 그 이후에 변경된 작업 {{count}}개는 그대로 두었습니다.",
       "actionCreate": "신규",
       "actionUpdate": "업데이트",
       "actionSkip": "건너뜀",
@@ -3270,6 +3272,10 @@
       "hierarchy_auto": "자동 감지"
     },
     "issues": {
+      "too_many_tags": "처음 20개의 태그만 유지됩니다.",
+      "too_many_new_projects": "프로젝트가 {{value}}개를 넘게 만들어집니다. 프로젝트 열이 맞는지 확인하세요.",
+      "too_many_new_areas": "영역이 {{value}}개를 넘게 만들어집니다. 영역 열이 맞는지 확인하세요.",
+      "too_many_new_tags": "태그가 {{value}}개를 넘게 만들어집니다. 태그 열이 맞는지 확인하세요.",
       "name_column_required": "작업 이름이 들어 있는 열을 선택하세요.",
       "target_project_invalid": "작업을 추가할 수 있는 프로젝트를 선택하세요.",
       "target_project_name_required": "새 프로젝트의 이름을 입력하세요.",

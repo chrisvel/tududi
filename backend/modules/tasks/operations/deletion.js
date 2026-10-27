@@ -6,7 +6,9 @@ const { logError } = require('../../../services/logService');
 
 // Removes one task row and everything that hangs off it. Recurring instances
 // are the caller's business; `task` must come with its Attachments loaded.
-async function destroyTaskRows(task) {
+// `skipWebhooks` keeps a bulk caller (undoing an import) from sending one
+// task.deleted per row.
+async function destroyTaskRows(task, { skipWebhooks = false } = {}) {
     const taskId = task.id;
 
     // Before the row goes away, so the remote copy does not survive to be
@@ -55,7 +57,7 @@ async function destroyTaskRows(task) {
             force: true,
         });
 
-        await task.destroy({ force: true });
+        await task.destroy({ force: true, skipWebhooks });
     });
 }
 

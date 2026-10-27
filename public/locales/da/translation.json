@@ -3209,6 +3209,8 @@
       "instructionsOther": "Alle andre kolonner kan gemmes i opgavens note, så intet i arket går tabt."
     },
     "import": {
+      "encodingHint": "Ser bogstaverne forkerte ud? Læs filen som:",
+      "undoneKept": "Importen blev fortrudt. {{count}} opgaver, der er ændret siden, blev beholdt.",
       "actionCreate": "Ny",
       "actionUpdate": "Opdater",
       "actionSkip": "Sprunget over",
@@ -3273,6 +3275,10 @@
       "hierarchy_auto": "find dem automatisk"
     },
     "issues": {
+      "too_many_tags": "Kun de første 20 tags beholdes.",
+      "too_many_new_projects": "Det ville oprette mere end {{value}} projekter. Tjek, at kolonnen Projekt er den rigtige.",
+      "too_many_new_areas": "Det ville oprette mere end {{value}} områder. Tjek, at kolonnen Område er den rigtige.",
+      "too_many_new_tags": "Det ville oprette mere end {{value}} tags. Tjek, at kolonnen Tags er den rigtige.",
       "name_column_required": "Vælg den kolonne, der indeholder opgavenavnene.",
       "target_project_invalid": "Vælg et projekt, du kan tilføje opgaver til.",
       "target_project_name_required": "Giv det nye projekt et navn.",

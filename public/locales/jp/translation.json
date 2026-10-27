@@ -3206,6 +3206,8 @@
       "instructionsOther": "それ以外の列はタスクのノートに残せるので、シートの内容が失われることはありません。"
     },
     "import": {
+      "encodingHint": "文字が正しく表示されませんか? ファイルを次の文字コードで読み込みます:",
+      "undoneKept": "インポートを取り消しました。その後に変更された{{count}}件のタスクは残しています。",
       "actionCreate": "新規",
       "actionUpdate": "更新",
       "actionSkip": "スキップ",
@@ -3270,6 +3272,10 @@
       "hierarchy_auto": "自動で検出"
     },
     "issues": {
+      "too_many_tags": "最初の20個のタグのみ保持されます。",
+      "too_many_new_projects": "{{value}}件を超えるプロジェクトが作成されます。プロジェクト列が正しいか確認してください。",
+      "too_many_new_areas": "{{value}}件を超えるエリアが作成されます。エリア列が正しいか確認してください。",
+      "too_many_new_tags": "{{value}}件を超えるタグが作成されます。タグ列が正しいか確認してください。",
       "name_column_required": "タスク名が入っている列を選んでください。",
       "target_project_invalid": "タスクを追加できるプロジェクトを選んでください。",
       "target_project_name_required": "新しいプロジェクトの名前を入力してください。",

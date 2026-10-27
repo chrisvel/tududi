@@ -3212,6 +3212,8 @@
       "instructionsOther": "Toute autre colonne peut être conservée dans la note de la tâche, rien de la feuille n'est donc perdu."
     },
     "import": {
+      "encodingHint": "Les caractères semblent incorrects ? Lisez le fichier en :",
+      "undoneKept": "L'import a été annulé. {{count}} tâches modifiées depuis ont été conservées.",
       "actionCreate": "Nouvelle",
       "actionUpdate": "Mise à jour",
       "actionSkip": "Ignorée",
@@ -3276,6 +3278,10 @@
       "hierarchy_auto": "les détecter"
     },
     "issues": {
+      "too_many_tags": "Seules les 20 premières étiquettes sont conservées.",
+      "too_many_new_projects": "Cela créerait plus de {{value}} projets. Vérifiez que la colonne Projet est la bonne.",
+      "too_many_new_areas": "Cela créerait plus de {{value}} domaines. Vérifiez que la colonne Domaine est la bonne.",
+      "too_many_new_tags": "Cela créerait plus de {{value}} étiquettes. Vérifiez que la colonne Étiquettes est la bonne.",
       "name_column_required": "Choisissez la colonne qui contient les noms des tâches.",
       "target_project_invalid": "Choisissez un projet auquel vous pouvez ajouter des tâches.",
       "target_project_name_required": "Donnez un nom au nouveau projet.",

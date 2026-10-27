@@ -3219,6 +3219,8 @@
       "instructionsOther": "Każdą inną kolumnę można zachować w notatce zadania, więc nic z arkusza nie przepadnie."
     },
     "import": {
+      "encodingHint": "Litery wyglądają źle? Odczytaj plik jako:",
+      "undoneKept": "Import został cofnięty. Zachowano zadania zmienione od tego czasu: {{count}}.",
       "actionCreate": "Nowe",
       "actionUpdate": "Aktualizacja",
       "actionSkip": "Pominięte",
@@ -3283,6 +3285,10 @@
       "hierarchy_auto": "wykryj automatycznie"
     },
     "issues": {
+      "too_many_tags": "Zachowanych zostanie tylko pierwszych 20 tagów.",
+      "too_many_new_projects": "Spowodowałoby to utworzenie ponad {{value}} projektów. Sprawdź, czy kolumna Projekt jest właściwa.",
+      "too_many_new_areas": "Spowodowałoby to utworzenie ponad {{value}} obszarów. Sprawdź, czy kolumna Obszar jest właściwa.",
+      "too_many_new_tags": "Spowodowałoby to utworzenie ponad {{value}} tagów. Sprawdź, czy kolumna Tagi jest właściwa.",
       "name_column_required": "Wybierz kolumnę z nazwami zadań.",
       "target_project_invalid": "Wybierz projekt, do którego możesz dodawać zadania.",
       "target_project_name_required": "Nadaj nowemu projektowi nazwę.",

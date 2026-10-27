@@ -3209,6 +3209,8 @@
       "instructionsOther": "Mikä tahansa muu sarake voidaan säilyttää tehtävän muistiinpanossa, joten mikään taulukossa ei katoa."
     },
     "import": {
+      "encodingHint": "Näyttävätkö kirjaimet vääriltä? Lue tiedosto muodossa:",
+      "undoneKept": "Tuonti peruttiin. {{count}} tehtävää, jotka ovat muuttuneet sen jälkeen, säilytettiin.",
       "actionCreate": "Uusi",
       "actionUpdate": "Päivitys",
       "actionSkip": "Ohitettu",
@@ -3273,6 +3275,10 @@
       "hierarchy_auto": "tunnista"
     },
     "issues": {
+      "too_many_tags": "Vain 20 ensimmäistä tunnistetta säilytetään.",
+      "too_many_new_projects": "Tämä loisi yli {{value}} projektia. Tarkista, että Projekti-sarake on oikea.",
+      "too_many_new_areas": "Tämä loisi yli {{value}} aluetta. Tarkista, että Alue-sarake on oikea.",
+      "too_many_new_tags": "Tämä loisi yli {{value}} tunnistetta. Tarkista, että Tunnisteet-sarake on oikea.",
       "name_column_required": "Valitse sarake, jossa tehtävien nimet ovat.",
       "target_project_invalid": "Valitse projekti, johon voit lisätä tehtäviä.",
       "target_project_name_required": "Anna uudelle projektille nimi.",

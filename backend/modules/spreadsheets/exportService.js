@@ -99,6 +99,19 @@ function dateCell(value, timezone, withTime) {
     return { text, date };
 }
 
+// Excel refuses some sheet names: certain characters, a leading or trailing
+// apostrophe, more than 31 characters, and the reserved name History.
+function safeSheetName(name) {
+    const cleaned = String(name || '')
+        .replace(/[*?:\\/[\]]/g, ' ')
+        .trim()
+        .slice(0, 31)
+        .replace(/^'+|'+$/g, '')
+        .trim();
+    if (!cleaned) return 'Tasks';
+    return cleaned.toLowerCase() === 'history' ? `${cleaned} (1)` : cleaned;
+}
+
 function slugify(text) {
     return (
         String(text || '')
@@ -222,9 +235,19 @@ async function buildRows(userId, tasks, language, timezone) {
         ...new Set(tasks.map((t) => t.parent_task_id).filter(Boolean)),
     ];
     const parents = new Map(
+        // A subtask can be visible (assigned to the user) while its parent
+        // is not; such a parent stays out of the file.
         (
             await Task.findAll({
-                where: { id: parentIds },
+                where: {
+                    [Op.and]: [
+                        { id: parentIds },
+                        await permissionsService.ownershipOrPermissionWhere(
+                            'task',
+                            userId
+                        ),
+                    ],
+                },
                 attributes: ['id', 'uid', 'name'],
                 raw: true,
             })
@@ -347,7 +370,7 @@ async function exportTasks(user, query = {}) {
         language,
         columns: EXPORT_COLUMNS,
         rows,
-        sheetName: sheetName.replace(/[*?:\\/[\]]/g, ' ') || 'Tasks',
+        sheetName: safeSheetName(sheetName),
     });
     const day = moment.tz(timezone).format('YYYY-MM-DD');
     return {
@@ -415,7 +438,7 @@ async function exportTemplate(user, query = {}) {
         language,
         columns,
         rows,
-        sheetName: t('spreadsheet.tasksSheet') || 'Tasks',
+        sheetName: safeSheetName(t('spreadsheet.tasksSheet')),
         extra: [
             {
                 name: t('spreadsheet.template.instructionsSheet') || 'How to',

@@ -3669,7 +3669,9 @@
       "hierarchy_wbs": "WBS numbers (1, 1.1, 1.2)",
       "hierarchy_indent": "indented rows",
       "hierarchy_flat": "no subtasks",
-      "hierarchy_auto": "detect it"
+      "hierarchy_auto": "detect it",
+      "encodingHint": "Letters look wrong? Read the file as:",
+      "undoneKept": "The import was undone. {{count}} tasks changed since then were kept."
     },
     "issues": {
       "name_column_required": "Pick the column that holds the task names.",
@@ -3688,7 +3690,11 @@
       "invalid_tag": "Tag “{{value}}” has characters tags cannot use, left out.",
       "parent_not_found": "Parent “{{value}}” not found, so this is a top-level task.",
       "flattened": "Subtasks are one level deep, so this goes under the top task.",
-      "moved_to_parent_project": "Goes into its parent task's project."
+      "moved_to_parent_project": "Goes into its parent task's project.",
+      "too_many_new_tags": "This would create more than {{value}} tags. Check that the Tags column is the right one.",
+      "too_many_new_areas": "This would create more than {{value}} areas. Check that the Area column is the right one.",
+      "too_many_new_projects": "This would create more than {{value}} projects. Check that the Project column is the right one.",
+      "too_many_tags": "Only the first 20 tags are kept."
     },
     "tab": {
       "title": "Import & export",

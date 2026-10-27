@@ -3209,6 +3209,8 @@
       "instructionsOther": "Alla andra kolumner kan sparas i uppgiftens anteckning, så inget i bladet går förlorat."
     },
     "import": {
+      "encodingHint": "Ser bokstäverna fel ut? Läs filen som:",
+      "undoneKept": "Importen ångrades. {{count}} uppgifter som ändrats sedan dess behölls.",
       "actionCreate": "Ny",
       "actionUpdate": "Uppdatera",
       "actionSkip": "Hoppad över",
@@ -3273,6 +3275,10 @@
       "hierarchy_auto": "upptäck automatiskt"
     },
     "issues": {
+      "too_many_tags": "Bara de första 20 taggarna behålls.",
+      "too_many_new_projects": "Det skulle skapa fler än {{value}} projekt. Kontrollera att kolumnen Projekt är rätt.",
+      "too_many_new_areas": "Det skulle skapa fler än {{value}} områden. Kontrollera att kolumnen Område är rätt.",
+      "too_many_new_tags": "Det skulle skapa fler än {{value}} taggar. Kontrollera att kolumnen Taggar är rätt.",
       "name_column_required": "Välj kolumnen som innehåller uppgiftsnamnen.",
       "target_project_invalid": "Välj ett projekt du kan lägga till uppgifter i.",
       "target_project_name_required": "Ge det nya projektet ett namn.",

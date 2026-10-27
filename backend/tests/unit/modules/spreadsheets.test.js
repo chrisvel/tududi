@@ -122,7 +122,11 @@ describe('spreadsheet files', () => {
 
     it('reads Windows-1252 CSV and drops empty rows', async () => {
         const buffer = Buffer.from('Name;Note\r\nCaf\xe9;\r\n;\r\n', 'latin1');
-        const [sheet] = await readSpreadsheet(buffer, 'x.csv');
+        const {
+            sheets: [sheet],
+            encoding,
+        } = await readSpreadsheet(buffer, 'x.csv');
+        expect(encoding).toBe('win1252');
         expect(sheet.rows).toEqual([
             ['Name', 'Note'],
             ['Café', ''],
@@ -135,7 +139,9 @@ describe('spreadsheet files', () => {
         expect(csv.toString('utf8')).toBe(
             '﻿Name\r\n\'=SUM(A1)\r\n"a, ""b"""\r\n'
         );
-        const [sheet] = await readSpreadsheet(csv, 'x.csv');
+        const {
+            sheets: [sheet],
+        } = await readSpreadsheet(csv, 'x.csv');
         expect(sheet.rows[1]).toEqual(['=SUM(A1)']);
         expect(sheet.rows[2]).toEqual(['a, "b"']);
     });

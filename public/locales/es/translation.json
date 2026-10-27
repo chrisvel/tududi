@@ -3199,6 +3199,8 @@
       "instructionsOther": "Cualquier otra columna se puede guardar en la nota de la tarea, así no se pierde nada de la hoja."
     },
     "import": {
+      "encodingHint": "¿Las letras se ven mal? Lee el archivo como:",
+      "undoneKept": "Se deshizo la importación. Se conservaron {{count}} tareas que cambiaron desde entonces.",
       "actionCreate": "Nueva",
       "actionUpdate": "Actualizar",
       "actionSkip": "Omitida",
@@ -3263,6 +3265,10 @@
       "hierarchy_auto": "detectarlo"
     },
     "issues": {
+      "too_many_tags": "Solo se conservan las primeras 20 etiquetas.",
+      "too_many_new_projects": "Esto crearía más de {{value}} proyectos. Comprueba que la columna Proyecto sea la correcta.",
+      "too_many_new_areas": "Esto crearía más de {{value}} áreas. Comprueba que la columna Área sea la correcta.",
+      "too_many_new_tags": "Esto crearía más de {{value}} etiquetas. Comprueba que la columna Etiquetas sea la correcta.",
       "name_column_required": "Elige la columna que contiene los nombres de las tareas.",
       "target_project_invalid": "Elige un proyecto al que puedas añadir tareas.",
       "target_project_name_required": "Ponle un nombre al proyecto nuevo.",

@@ -3216,6 +3216,8 @@
       "instructionsOther": "Orice altă coloană poate fi păstrată în nota sarcinii, ca să nu se piardă nimic din foaie."
     },
     "import": {
+      "encodingHint": "Literele arată greșit? Citește fișierul ca:",
+      "undoneKept": "Importul a fost anulat. Au fost păstrate {{count}} sarcini modificate de atunci.",
       "actionCreate": "Nouă",
       "actionUpdate": "Actualizare",
       "actionSkip": "Omisă",
@@ -3280,6 +3282,10 @@
       "hierarchy_auto": "detectează"
     },
     "issues": {
+      "too_many_tags": "Se păstrează doar primele 20 de etichete.",
+      "too_many_new_projects": "Aceasta ar crea mai mult de {{value}} proiecte. Verifică dacă coloana Proiect este cea corectă.",
+      "too_many_new_areas": "Aceasta ar crea mai mult de {{value}} zone. Verifică dacă coloana Zonă este cea corectă.",
+      "too_many_new_tags": "Aceasta ar crea mai mult de {{value}} etichete. Verifică dacă coloana Etichete este cea corectă.",
       "name_column_required": "Alege coloana care conține numele sarcinilor.",
       "target_project_invalid": "Alege un proiect în care poți adăuga sarcini.",
       "target_project_name_required": "Dă un nume noului proiect.",

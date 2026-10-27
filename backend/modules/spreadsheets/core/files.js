@@ -3,11 +3,18 @@
 const ExcelJS = require('exceljs');
 const iconv = require('iconv-lite');
 const { parse: parseCsv } = require('csv-parse/sync');
-const { ValidationError } = require('../../../shared/errors');
+const {
+    ValidationError,
+    ServiceUnavailableError,
+} = require('../../../shared/errors');
+const { checkXlsxArchive } = require('./zipGuard');
 
 const MAX_ROWS = 5000;
 const MAX_COLUMNS = 60;
 const MAX_CELL_LENGTH = 10000;
+// All the text kept from one file. Shared strings let a small .xlsx repeat
+// one long cell thousands of times, and the rows are stored until commit.
+const MAX_TOTAL_CHARS = 8 * 1000 * 1000;
 
 function pad(n) {
     return String(n).padStart(2, '0');
@@ -48,40 +55,51 @@ function clean(text) {
     return String(text)
         .replace(/\u00a0/g, ' ')
         .trim()
-        .replace(/^'(?=[=+\-@])/, '')
+        .replace(/^'(?=[=+\-@|\uff1d\uff0b\uff0d\uff20])/, '')
         .slice(0, MAX_CELL_LENGTH);
 }
 
 // Drops trailing empty rows and columns, caps the size, and keeps the
 // spreadsheet row number of every row so problems can point at it.
-function finishSheet(name, rawRows, rawLevels = []) {
+// Turns raw rows ({ cells, level, rowNumber }, empty ones already dropped
+// or dropped here) into a sheet: capped at MAX_ROWS data rows plus a header
+// and MAX_COLUMNS columns, trailing empty columns trimmed, each row keeping
+// its spreadsheet row number so problems can point at it.
+function finishSheet(name, entries, budget = { chars: MAX_TOTAL_CHARS }) {
     const rows = [];
     const levels = [];
     const rowNumbers = [];
-    let truncatedRows = false;
-    rawRows.forEach((cells, i) => {
-        const values = cells.map(clean);
-        if (!values.some(Boolean)) return;
+    let truncated = false;
+    for (const entry of entries) {
+        if (entry.cells.length > MAX_COLUMNS) {
+            if (entry.cells.slice(MAX_COLUMNS).some((c) => clean(c))) {
+                truncated = true;
+            }
+        }
+        const values = entry.cells.slice(0, MAX_COLUMNS).map(clean);
+        if (!values.some(Boolean)) continue;
         if (rows.length >= MAX_ROWS + 1) {
-            truncatedRows = true;
-            return;
+            truncated = true;
+            break;
+        }
+        // Counted as stored: JSON escapes control characters into several
+        // bytes each.
+        budget.chars -= JSON.stringify(values).length;
+        if (budget.chars < 0) {
+            throw new ValidationError(
+                'The file holds too much text to import at once. Split it into smaller files.'
+            );
         }
         rows.push(values);
-        levels.push(rawLevels[i] || 0);
-        rowNumbers.push(i + 1);
-    });
+        levels.push(entry.level || 0);
+        rowNumbers.push(entry.rowNumber);
+    }
 
-    const width = Math.min(
-        MAX_COLUMNS,
-        rows.reduce((max, row) => {
-            let last = row.length;
-            while (last > 0 && !row[last - 1]) last--;
-            return Math.max(max, last);
-        }, 0)
-    );
-    const truncatedColumns = rows.some((row) =>
-        row.slice(MAX_COLUMNS).some(Boolean)
-    );
+    const width = rows.reduce((max, row) => {
+        let last = row.length;
+        while (last > 0 && !row[last - 1]) last--;
+        return Math.max(max, last);
+    }, 0);
 
     return {
         name,
@@ -90,28 +108,58 @@ function finishSheet(name, rawRows, rawLevels = []) {
         ),
         levels,
         row_numbers: rowNumbers,
-        truncated: truncatedRows || truncatedColumns,
+        truncated,
     };
 }
 
+// Code pages Excel on Windows saves CSV in, offered when a file is not
+// UTF-8. Anything else is refused rather than passed to iconv.
+const ENCODINGS = [
+    'utf8',
+    'win1252',
+    'win1250',
+    'win1251',
+    'win1253',
+    'win1254',
+    'win1256',
+    'win1257',
+    'shift_jis',
+    'gbk',
+    'big5',
+    'euc-kr',
+    'win874',
+    'win1258',
+];
+
 function decodeText(buffer, encoding) {
     if (encoding && encoding !== 'auto') {
-        if (!iconv.encodingExists(encoding)) {
+        if (!ENCODINGS.includes(encoding)) {
             throw new ValidationError('Unknown text encoding.');
         }
-        return iconv.decode(buffer, encoding);
+        return { text: iconv.decode(buffer, encoding), encoding };
     }
     if (buffer[0] === 0xff && buffer[1] === 0xfe) {
-        return iconv.decode(buffer.subarray(2), 'utf16le');
+        return {
+            text: iconv.decode(buffer.subarray(2), 'utf16le'),
+            encoding: 'utf16le',
+        };
     }
     if (buffer[0] === 0xfe && buffer[1] === 0xff) {
-        return iconv.decode(buffer.subarray(2), 'utf16be');
+        return {
+            text: iconv.decode(buffer.subarray(2), 'utf16be'),
+            encoding: 'utf16be',
+        };
     }
     try {
-        return new TextDecoder('utf-8', { fatal: true }).decode(buffer);
+        return {
+            text: new TextDecoder('utf-8', { fatal: true }).decode(buffer),
+            encoding: 'utf8',
+        };
     } catch {
-        // Not UTF-8: Excel on Windows saves CSV in the system code page.
-        return iconv.decode(buffer, 'win1252');
+        // Not UTF-8: Excel on Windows saves CSV in the system code page,
+        // which cannot be told apart reliably. Western European is the
+        // guess; the wizard offers the others.
+        return { text: iconv.decode(buffer, 'win1252'), encoding: 'win1252' };
     }
 }
 
@@ -143,25 +191,61 @@ function detectDelimiter(text) {
     return best;
 }
 
-function readCsv(buffer, encoding) {
-    const text = decodeText(buffer, encoding).replace(/^\ufeff/, '');
+function readCsv(buffer, requested) {
+    const decoded = decodeText(buffer, requested);
+    const text = decoded.text.replace(/^\ufeff/, '');
     let records;
     try {
         records = parseCsv(text, {
             delimiter: detectDelimiter(text),
             relax_column_count: true,
             relax_quotes: true,
-            skip_empty_lines: false,
+            skip_empty_lines: true,
+            skip_records_with_empty_values: true,
+            info: true,
+            // One past the limit, so a cut-short file is flagged.
+            to: MAX_ROWS + 2,
         });
     } catch (error) {
         throw new ValidationError(
             `Could not read the CSV file: ${error.message}`
         );
     }
-    return [finishSheet('CSV', records)];
+    return {
+        sheets: [
+            finishSheet(
+                'CSV',
+                records.map(({ record, info }) => ({
+                    cells: record,
+                    rowNumber: info.lines,
+                }))
+            ),
+        ],
+        encoding: decoded.encoding,
+    };
 }
 
+// Excel files are parsed whole and in memory, so only a couple at a time.
+const MAX_PARALLEL_XLSX = 2;
+let xlsxInProgress = 0;
+
 async function readXlsx(buffer) {
+    checkXlsxArchive(buffer);
+    if (xlsxInProgress >= MAX_PARALLEL_XLSX) {
+        throw new ServiceUnavailableError(
+            'Busy reading other files. Try again in a moment.'
+        );
+    }
+    xlsxInProgress++;
+    try {
+        return await parseXlsx(buffer);
+    } finally {
+        xlsxInProgress--;
+    }
+}
+
+async function parseXlsx(buffer) {
+    const budget = { chars: MAX_TOTAL_CHARS };
     const workbook = new ExcelJS.Workbook();
     try {
         await workbook.xlsx.load(buffer);
@@ -172,25 +256,35 @@ async function readXlsx(buffer) {
     const sheets = [];
     workbook.eachSheet((worksheet) => {
         if (worksheet.state && worksheet.state !== 'visible') return;
-        const rawRows = [];
-        const rawLevels = [];
-        worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+        const entries = [];
+        let filled = 0;
+        worksheet.eachRow((row, rowNumber) => {
+            // Rows past the limit are only counted, so the sheet is flagged
+            // as cut short; eachRow cannot stop early.
+            if (filled > MAX_ROWS + 1) return;
             const cells = [];
             let indent = 0;
-            row.eachCell({ includeEmpty: true }, (cell, column) => {
-                cells[column - 1] = cellText(cell.value);
-                if (!indent && cells[column - 1].trim()) {
+            row.eachCell((cell, column) => {
+                if (column > MAX_COLUMNS + 1) return;
+                // A merged range repeats its value in every cell it covers;
+                // only the top-left one holds it, so a merged title row does
+                // not read as a row of headers.
+                if (cell.isMerged && cell.master !== cell) return;
+                const text = cellText(cell.value);
+                cells[column - 1] = text;
+                if (!indent && text.trim()) {
                     indent = cell.alignment?.indent || 0;
                 }
             });
-            rawRows[rowNumber - 1] = Array.from(cells, (c) => c || '');
-            rawLevels[rowNumber - 1] = row.outlineLevel || indent || 0;
+            const dense = Array.from(cells, (c) => c || '');
+            if (dense.some((c) => c.trim())) filled++;
+            entries.push({
+                cells: dense,
+                level: row.outlineLevel || indent || 0,
+                rowNumber,
+            });
         });
-        const sheet = finishSheet(
-            worksheet.name,
-            Array.from(rawRows, (r) => r || []),
-            rawLevels
-        );
+        const sheet = finishSheet(worksheet.name, entries, budget);
         if (sheet.rows.length > 0) sheets.push(sheet);
     });
     return sheets;
@@ -205,17 +299,22 @@ async function readSpreadsheet(buffer, fileName = '', { encoding } = {}) {
             'Old .xls files are not supported. Save the file as .xlsx or .csv and try again.'
         );
     }
-    const sheets = isZip ? await readXlsx(buffer) : readCsv(buffer, encoding);
-    if (sheets.length === 0) {
+    const result = isZip
+        ? { sheets: await readXlsx(buffer), encoding: null }
+        : readCsv(buffer, encoding);
+    if (result.sheets.length === 0 || result.sheets[0].rows.length === 0) {
         throw new ValidationError('The file has no rows.');
     }
-    return sheets;
+    return result;
 }
 
 function csvEscape(value) {
     const text = value === null || value === undefined ? '' : String(value);
     // A leading = + - @ makes Excel run the cell as a formula.
-    const safe = /^[=+\-@\t\r]/.test(text) ? `'${text}` : text;
+    // Fullwidth forms count too: some Excel builds run them as formulas.
+    const safe = /^[=+\-@\t\r|\uff1d\uff0b\uff0d\uff20]/.test(text)
+        ? `'${text}`
+        : text;
     return /[",\r\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
 }
 
@@ -292,6 +391,7 @@ async function writeXlsx({ sheetName, columns, rows, extraSheets = [] }) {
 
 module.exports = {
     MAX_ROWS,
+    ENCODINGS,
     readSpreadsheet,
     writeCsv,
     writeXlsx,

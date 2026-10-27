@@ -3219,6 +3219,8 @@
       "instructionsOther": "Vsak drug stolpec lahko ohranite v opombi naloge, tako da se iz preglednice nič ne izgubi."
     },
     "import": {
+      "encodingHint": "Črke so videti napačno? Preberite datoteko kot:",
+      "undoneKept": "Uvoz je bil razveljavljen. Naloge, spremenjene od takrat, so ohranjene: {{count}}.",
       "actionCreate": "Nova",
       "actionUpdate": "Posodobi",
       "actionSkip": "Preskočena",
@@ -3283,6 +3285,10 @@
       "hierarchy_auto": "zaznaj"
     },
     "issues": {
+      "too_many_tags": "Ohranjenih je le prvih 20 oznak.",
+      "too_many_new_projects": "S tem bi nastalo več kot {{value}} projektov. Preverite, ali je stolpec Projekt pravi.",
+      "too_many_new_areas": "S tem bi nastalo več kot {{value}} področij. Preverite, ali je stolpec Področje pravi.",
+      "too_many_new_tags": "S tem bi nastalo več kot {{value}} oznak. Preverite, ali je stolpec Oznake pravi.",
       "name_column_required": "Izberite stolpec z imeni nalog.",
       "target_project_invalid": "Izberite projekt, v katerega lahko dodajate naloge.",
       "target_project_name_required": "Novemu projektu dajte ime.",

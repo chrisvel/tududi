@@ -11,6 +11,7 @@ const {
     sequelize,
 } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
+const permissionsService = require('../../services/permissionsService');
 const { logError } = require('../../services/logService');
 const {
     NotFoundError,
@@ -23,6 +24,8 @@ const {
 } = require('../tasks/core/builders');
 const { handleCompletionStatus } = require('../tasks/operations/completion');
 const { destroyTaskRows } = require('../tasks/operations/deletion');
+const { captureOldValues, logTaskChanges } = require('../tasks/utils/logging');
+const { notifyAssignee } = require('../tasks/operations/assignment');
 const {
     dueDateTimeToUTC,
     dateStringToUTC,
@@ -31,9 +34,16 @@ const { projectsService } = require('../projects');
 const { areasService } = require('../areas');
 const { readSpreadsheet } = require('./core/files');
 const { suggestMapping } = require('./core/columns');
-const { analyze, describeRow, detectHeaderRow } = require('./analyze');
+const {
+    analyze,
+    describeRow,
+    detectHeaderRow,
+    plainOptions,
+} = require('./analyze');
 
 const STAGING_HOURS = 24;
+// Uploads waiting to be committed, per user. Each holds the parsed file.
+const MAX_STAGED = 5;
 const UNDO_DAYS = 7;
 const PREVIEW_ROWS = 1000;
 const SAMPLE_ROWS = 5;
@@ -75,6 +85,10 @@ function describeJob(job) {
         uid: job.uid,
         file_name: job.file_name,
         status: job.status,
+        // Set for text files; the wizard offers to re-read one that was
+        // not UTF-8 in another code page.
+        encoding:
+            job.status === 'parsed' ? job.options?.encoding || null : null,
         created_at: job.created_at,
         committed_at: job.committed_at,
         undone_at: job.undone_at,
@@ -129,21 +143,36 @@ async function upload(user, file, { encoding } = {}) {
             },
         },
     });
-    const sheets = await readSpreadsheet(file.buffer, file.originalname, {
-        encoding,
+    const staged = await ImportJob.findAll({
+        where: { user_id: user.id, status: 'parsed' },
+        attributes: ['id'],
+        order: [['created_at', 'DESC']],
     });
+    if (staged.length >= MAX_STAGED) {
+        await ImportJob.destroy({
+            where: {
+                id: staged.slice(MAX_STAGED - 1).map((j) => j.id),
+            },
+        });
+    }
+    const { sheets, encoding: usedEncoding } = await readSpreadsheet(
+        file.buffer,
+        file.originalname,
+        { encoding }
+    );
     const job = await ImportJob.create({
         user_id: user.id,
         file_name: String(file.originalname || 'import').slice(0, 255),
         status: 'parsed',
         sheets,
+        options: { encoding: usedEncoding },
     });
     return describeJob(job);
 }
 
 async function columns(user, uid, { sheet = 0, header_row } = {}) {
     const job = await findParsedJob(user.id, uid);
-    const chosen = job.sheets[sheet];
+    const chosen = Number.isInteger(sheet) ? job.sheets[sheet] : undefined;
     if (!chosen) throw new ValidationError('Unknown sheet.');
     const headerRow = Number.isInteger(header_row)
         ? Math.min(Math.max(header_row, 0), chosen.rows.length - 1)
@@ -158,7 +187,7 @@ function summarize(plan) {
     const shown = plan.rows.slice(0, PREVIEW_ROWS);
     const extra = flagged.filter((r) => !shown.includes(r));
     return {
-        options: plan.options,
+        options: plainOptions(plan.options),
         problems: plan.problems,
         counts: plan.counts,
         date_columns: plan.date_columns,
@@ -179,7 +208,7 @@ async function preview(user, uid, options) {
 }
 
 function tagsSnapshot(task) {
-    return (task.Tags || []).map((t) => t.name);
+    return (task.Tags || []).map((t) => t.id);
 }
 
 async function tagsByName(userId, names, transaction) {
@@ -220,6 +249,25 @@ function writeOrder(rows) {
     ];
 }
 
+// Moves a job from one status to another only if nobody else did first,
+// so two commits (or two undos) of the same job cannot both run.
+async function claim(job, from, to) {
+    const [changed] = await ImportJob.update(
+        { status: to },
+        { where: { id: job.id, status: from } }
+    );
+    if (changed !== 1) {
+        throw new ConflictError('This import is already running or has run.');
+    }
+}
+
+async function release(job, from, to) {
+    await ImportJob.update(
+        { status: to },
+        { where: { id: job.id, status: from } }
+    ).catch((error) => logError('Could not release import job', error));
+}
+
 async function commit(user, uid, options) {
     const job = await findParsedJob(user.id, uid);
     const plan = await analyze(user, job.sheets, options);
@@ -231,6 +279,23 @@ async function commit(user, uid, options) {
     if (plan.counts.create + plan.counts.update === 0) {
         throw new ValidationError('There are no rows to import.');
     }
+
+    await claim(job, 'parsed', 'committing');
+    try {
+        const outcome = await writePlan(user, job, plan);
+        await afterCommit(user, outcome.followUps);
+        return {
+            uid: job.uid,
+            counts: outcome.result.counts,
+            project_uids: await projectUids(outcome.result, plan),
+        };
+    } catch (error) {
+        await release(job, 'committing', 'parsed');
+        throw error;
+    }
+}
+
+async function writePlan(user, job, plan) {
     if (plan.counts.create > 0) {
         await entitlements.assertCanCreate(user.id, 'task', plan.counts.create);
     }
@@ -251,7 +316,7 @@ async function commit(user, uid, options) {
         created_tag_ids: [],
         updated: [],
     };
-    const hookOptions = { skipWebhooks: true };
+    const followUps = [];
 
     await sequelize.transaction(async (transaction) => {
         for (const area of plan.new_areas) {
@@ -297,14 +362,19 @@ async function commit(user, uid, options) {
                 if (attrs.status === Task.STATUS.DONE) {
                     attrs.completed_at = completedAtFor(row, timezone);
                 }
+                // The importer's own new tasks: one summary, not a webhook
+                // per row.
                 const task = await Task.create(attrs, {
                     transaction,
-                    ...hookOptions,
+                    skipWebhooks: true,
                 });
                 row.taskId = task.id;
                 result.created_task_ids.push(task.id);
                 if (row.tags?.length) {
                     await task.setTags(tagsFor(row.tags), { transaction });
+                }
+                if (task.assigned_to) {
+                    followUps.push({ task, previousAssignee: null });
                 }
                 continue;
             }
@@ -312,6 +382,7 @@ async function commit(user, uid, options) {
             const task = row.existing;
             const before = {};
             for (const field of RESTORABLE_FIELDS) before[field] = task[field];
+            const oldValues = captureOldValues(task);
             const attrs = buildUpdateAttributes(row.body, task, timezone);
             if (row.body.status !== undefined) {
                 await handleCompletionStatus(attrs, row.body.status, task);
@@ -327,38 +398,81 @@ async function commit(user, uid, options) {
             if (parentId !== undefined && parentId !== task.id) {
                 attrs.parent_task_id = parentId;
             }
-            await task.update(attrs, { transaction, ...hookOptions });
+            // Someone else's task changed through a shared project: its
+            // owner's webhooks hear about it as they would from the app.
+            await task.update(attrs, {
+                transaction,
+                skipWebhooks: task.user_id === userId,
+            });
             row.taskId = task.id;
             const entry = { id: task.id, before };
+            let newTags;
             if (row.tags !== undefined) {
                 entry.tags_before = tagsSnapshot(task);
-                await task.setTags(tagsFor(row.tags), { transaction });
+                newTags = tagsFor(row.tags);
+                await task.setTags(newTags, { transaction });
             }
             result.updated.push(entry);
+            followUps.push({
+                task,
+                previousAssignee: before.assigned_to,
+                history: {
+                    oldValues,
+                    body: {
+                        ...row.body,
+                        ...(projectId !== undefined
+                            ? { project_id: projectId }
+                            : {}),
+                    },
+                    tags: newTags,
+                },
+            });
         }
+
+        result.counts = {
+            created: result.created_task_ids.length,
+            updated: result.updated.length,
+            skipped: plan.counts.skip,
+            new_projects: result.created_project_ids.length,
+            new_areas: result.created_area_ids.length,
+        };
+        await ImportJob.update(
+            {
+                status: 'committed',
+                committed_at: new Date(),
+                options: plainOptions(plan.options),
+                result,
+                // The file itself is not needed any more; what was done is.
+                sheets: null,
+            },
+            { where: { id: job.id, status: 'committing' }, transaction }
+        );
     });
 
-    result.counts = {
-        created: result.created_task_ids.length,
-        updated: result.updated.length,
-        skipped: plan.counts.skip,
-        new_projects: result.created_project_ids.length,
-        new_areas: result.created_area_ids.length,
-    };
-    const now = new Date();
-    await job.update({
-        status: 'committed',
-        committed_at: now,
-        options: plan.options,
-        result,
-        // The file itself is not needed any more; what was done is.
-        sheets: null,
-    });
-    return {
-        uid: job.uid,
-        counts: result.counts,
-        project_uids: await projectUids(result, plan),
-    };
+    return { result, followUps };
+}
+
+// Task history and assignment notices, written once the import is in.
+// They are what the task API records for the same changes.
+async function afterCommit(user, followUps) {
+    for (const { task, previousAssignee, history } of followUps) {
+        try {
+            if (history) {
+                await logTaskChanges(
+                    task,
+                    history.oldValues,
+                    history.body,
+                    history.tags,
+                    user.id
+                );
+            }
+            if (task.assigned_to && task.assigned_to !== previousAssignee) {
+                await notifyAssignee(task, previousAssignee, user.id);
+            }
+        } catch (error) {
+            logError('Import follow-up failed for a task', error);
+        }
+    }
 }
 
 async function projectUids(result, plan) {
@@ -381,41 +495,82 @@ async function undo(user, uid) {
     if (!canUndo(job)) {
         throw new ConflictError('This import can no longer be undone.');
     }
+    await claim(job, 'committed', 'undoing');
+    try {
+        const kept = await undoWrites(user, job);
+        await job.update({ status: 'undone', undone_at: new Date() });
+        return { ...describeJob(job), kept_changed: kept };
+    } catch (error) {
+        await release(job, 'undoing', 'committed');
+        throw error;
+    }
+}
+
+// Returns how many updated tasks were left alone because someone changed
+// them after the import.
+async function undoWrites(user, job) {
     const result = job.result || {};
     const userId = user.id;
+    const committedAt = new Date(job.committed_at).getTime();
+    let kept = 0;
     const createdIds = result.created_task_ids || [];
 
     if (createdIds.length > 0) {
-        // Subtasks someone added later under an imported task stay, at the
-        // top level.
-        await Task.update(
-            { parent_task_id: null },
-            {
-                where: {
-                    parent_task_id: createdIds,
-                    id: { [Op.notIn]: createdIds },
-                },
-            }
-        );
         const tasks = await Task.findAll({
             where: { id: createdIds, user_id: userId },
             include: [{ model: TaskAttachment, as: 'Attachments' }],
         });
-        tasks.sort(
+        // Worked on since the import: kept, so nobody's changes are lost.
+        const doomed = tasks.filter(
+            (task) => new Date(task.updated_at).getTime() <= committedAt + 5000
+        );
+        kept += tasks.length - doomed.length;
+        const doomedIds = doomed.map((task) => task.id);
+        if (doomedIds.length > 0) {
+            // Subtasks that stay (added later, or kept above) move to the
+            // top level rather than point at a deleted task.
+            await Task.update(
+                { parent_task_id: null },
+                {
+                    where: {
+                        parent_task_id: doomedIds,
+                        id: { [Op.notIn]: doomedIds },
+                    },
+                }
+            );
+        }
+        doomed.sort(
             (a, b) => (b.parent_task_id ? 1 : 0) - (a.parent_task_id ? 1 : 0)
         );
-        for (const task of tasks) {
-            await destroyTaskRows(task);
+        for (const task of doomed) {
+            await destroyTaskRows(task, { skipWebhooks: true });
         }
     }
 
     for (const entry of result.updated || []) {
         const task = await Task.findByPk(entry.id);
         if (!task) continue;
-        await task.update(entry.before, { skipWebhooks: true });
+        // Access may have changed in the days since the import.
+        if (task.user_id !== userId) {
+            const access = await permissionsService.getAccess(
+                userId,
+                'task',
+                task.uid
+            );
+            if (access !== 'rw' && access !== 'admin') continue;
+        }
+        // Edited since the import: putting the old values back would throw
+        // that work away.
+        if (new Date(task.updated_at).getTime() > committedAt + 5000) {
+            kept++;
+            continue;
+        }
+        await task.update(entry.before, {
+            skipWebhooks: task.user_id === userId,
+        });
         if (entry.tags_before) {
             const tags = await Tag.findAll({
-                where: { user_id: userId, name: entry.tags_before },
+                where: { id: entry.tags_before },
             });
             await task.setTags(tags);
         }
@@ -452,8 +607,7 @@ async function undo(user, uid) {
         }
     }
 
-    await job.update({ status: 'undone', undone_at: new Date() });
-    return describeJob(job);
+    return kept;
 }
 
 async function list(user) {

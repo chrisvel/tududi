@@ -17,6 +17,7 @@ import {
 import { Project } from '../../entities/Project';
 import { fetchProjects } from '../../utils/projectsService';
 import {
+    CSV_ENCODINGS,
     ColumnTarget,
     DateOrder,
     HierarchyMode,
@@ -111,6 +112,7 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
     const [result, setResult] = useState<ImportCommitResult | null>(null);
     const [undone, setUndone] = useState(false);
     const fileInput = useRef<HTMLInputElement>(null);
+    const [file, setFile] = useState<File | null>(null);
     const [dragging, setDragging] = useState(false);
 
     useEffect(() => {
@@ -166,12 +168,16 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
         };
     };
 
-    const handleFile = async (file: File | undefined) => {
-        if (!file) return;
+    const handleFile = async (picked: File | undefined, encoding?: string) => {
+        if (!picked) return;
         setBusy(true);
         setError(null);
         try {
-            const uploaded = await uploadImportFile(file);
+            const uploaded = await uploadImportFile(picked, encoding);
+            if (job && job.uid !== uploaded.uid) {
+                discardImport(job.uid).catch(() => undefined);
+            }
+            setFile(picked);
             setJob(uploaded);
             const first = uploaded.sheets[0];
             setColumns(first);
@@ -585,6 +591,38 @@ const ImportWizard: React.FC<ImportWizardProps> = ({
                                         ` · ${t('spreadsheet.import.truncated', 'only the first 5,000 rows and 60 columns are read')}`}
                                 </p>
                             </div>
+
+                            {job.encoding &&
+                                !/^(utf8|utf16)/.test(job.encoding) && (
+                                    <label className="flex flex-wrap items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:bg-amber-900/20 dark:text-amber-200">
+                                        <span>
+                                            {t(
+                                                'spreadsheet.import.encodingHint',
+                                                'Letters look wrong? Read the file as:'
+                                            )}
+                                        </span>
+                                        <select
+                                            className={`${inputClass} sm:w-72`}
+                                            value={job.encoding}
+                                            disabled={busy}
+                                            onChange={(e) =>
+                                                handleFile(
+                                                    file || undefined,
+                                                    e.target.value
+                                                )
+                                            }
+                                        >
+                                            {CSV_ENCODINGS.map((option) => (
+                                                <option
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </label>
+                                )}
 
                             <section>
                                 <h3 className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">

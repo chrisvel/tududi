@@ -3209,6 +3209,8 @@
       "instructionsOther": "Elke andere kolom kan in de notitie van de taak bewaard worden, zodat er niets uit het blad verloren gaat."
     },
     "import": {
+      "encodingHint": "Zien de letters er verkeerd uit? Lees het bestand als:",
+      "undoneKept": "De import is ongedaan gemaakt. {{count}} taken die sindsdien zijn gewijzigd, zijn behouden.",
       "actionCreate": "Nieuw",
       "actionUpdate": "Bijwerken",
       "actionSkip": "Overgeslagen",
@@ -3273,6 +3275,10 @@
       "hierarchy_auto": "automatisch herkennen"
     },
     "issues": {
+      "too_many_tags": "Alleen de eerste 20 tags worden bewaard.",
+      "too_many_new_projects": "Hierdoor zouden meer dan {{value}} projecten worden aangemaakt. Controleer of de kolom Project de juiste is.",
+      "too_many_new_areas": "Hierdoor zouden meer dan {{value}} gebieden worden aangemaakt. Controleer of de kolom Gebied de juiste is.",
+      "too_many_new_tags": "Hierdoor zouden meer dan {{value}} tags worden aangemaakt. Controleer of de kolom Tags de juiste is.",
       "name_column_required": "Kies de kolom met de taaknamen.",
       "target_project_invalid": "Kies een project waaraan je taken kunt toevoegen.",
       "target_project_name_required": "Geef het nieuwe project een naam.",

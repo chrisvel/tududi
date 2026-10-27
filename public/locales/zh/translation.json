@@ -3206,6 +3206,8 @@
       "instructionsOther": "其他任何列都可以保留在任务的笔记中，这样表中的内容不会丢失。"
     },
     "import": {
+      "encodingHint": "字符显示不对？请按以下编码读取文件：",
+      "undoneKept": "导入已撤销。此后有改动的 {{count}} 个任务已保留。",
       "actionCreate": "新建",
       "actionUpdate": "更新",
       "actionSkip": "已跳过",
@@ -3270,6 +3272,10 @@
       "hierarchy_auto": "自动识别"
     },
     "issues": {
+      "too_many_tags": "只保留前 20 个标签。",
+      "too_many_new_projects": "这会创建超过 {{value}} 个项目。请确认“项目”列是否正确。",
+      "too_many_new_areas": "这会创建超过 {{value}} 个区域。请确认“区域”列是否正确。",
+      "too_many_new_tags": "这会创建超过 {{value}} 个标签。请确认“标签”列是否正确。",
       "name_column_required": "请选择包含任务名称的列。",
       "target_project_invalid": "请选择一个你可以添加任务的项目。",
       "target_project_name_required": "请为新项目起个名字。",

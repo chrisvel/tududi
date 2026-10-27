@@ -25,7 +25,7 @@ Columns: UID, Name, Project, Area, Parent (name, for reading), Parent UID, Statu
 
 Four steps, each an API call on an import job (`import_jobs` table):
 
-1. **Upload** `POST /api/imports` (multipart `file`): `.xlsx` or `.csv`/`.tsv`/`.txt`, 5 MB, the first 5,000 rows and 60 columns of every visible sheet. Old binary `.xls` is refused with a hint to save as `.xlsx`. CSV encoding is UTF-8, UTF-16 with a BOM, or Windows-1252; the separator (`,` `;` tab `|`) is detected. The parsed rows are stored on the job; uploads not committed are deleted after a day, or when the wizard is closed.
+1. **Upload** `POST /api/imports` (multipart `file`, optional `encoding`): `.xlsx` or `.csv`/`.tsv`/`.txt`, 5 MB, the first 5,000 rows and 60 columns of every visible sheet. Old binary `.xls` is refused with a hint to save as `.xlsx`. CSV encoding is UTF-8 or UTF-16 with a BOM; anything else is read as Windows-1252 and the wizard offers the other Windows code pages (Greek 1253, Cyrillic 1251, Central European 1250…) and Shift JIS, GBK, Big5, EUC-KR. The separator (`,` `;` tab `|`) is detected. Merged cells count once (top-left), formulas give their cached result, hidden sheets are skipped. The parsed rows are stored on the job; uploads not committed are deleted after a day, when the wizard is closed, or once the user has more than five waiting.
 2. **Columns** The header row is detected (title rows above it are skipped) and can be changed with `POST /api/imports/:uid/columns`. Each column gets a suggested target from its header, matched against English synonyms ("Deadline", "Owner", "Task name"…) and the exported headers in all 26 languages. Targets: a task field, **Keep in the note** (adds `Header: value` lines to the note, the default for unknown columns that hold data), or **Don't import**. The user also picks where tasks go: an existing project, a new project, the Project column (unknown project names become new projects, the Area column places them), or no project.
 3. **Review** `POST /api/imports/:uid/preview` runs the whole import as a dry run and returns counts, the new projects, and every row with its errors (row skipped) and warnings (row imported with that field left out).
 4. **Commit** `POST /api/imports/:uid/commit` runs the same analysis and writes everything in one transaction. `POST /api/imports/:uid/undo` takes it back.
@@ -58,7 +58,28 @@ When a UID column is mapped and **Update tasks that are already in tududi** is o
 
 ### Undo
 
-Available for 7 days, from the wizard's last step or **Profile → Import & export**. It deletes the tasks the import created (subtasks someone added under them since stay, at the top level), puts updated tasks back to their earlier fields and tags, and removes projects and areas the import created if nothing is left in them. Tags it created stay.
+Available for 7 days, from the wizard's last step or **Profile → Import & export**. It deletes the tasks the import created, puts updated tasks back to their earlier fields and tags, and removes projects and areas the import created if nothing is left in them. Tags it created stay. A task someone changed after the import is left as it is (created or updated), and the response says how many were kept; subtasks left behind move to the top level.
+
+## Limits and safeguards
+
+| What | Limit |
+|---|---|
+| Upload | 5 MB, `.csv` `.tsv` `.txt` `.xlsx` (`.xls` named files only if they are really `.xlsx`) |
+| Rows, columns | 5,000 data rows and 60 columns per sheet; the job is flagged as cut short |
+| Excel unpacked | 24 MB of XML in at most 2,000 zip entries, measured by inflating every entry before ExcelJS sees the file (declared sizes and the entry count in the end record are not trusted); password-protected and ZIP64 files are refused; at most two Excel files are parsed at once per process |
+| Stored text | 8 million characters (as JSON) per file, which also stops shared strings repeating one long cell |
+| Cells | dates over 64 characters, estimates over 32 and status, priority and assignee words over 100 are not parsed (they cannot be valid, and the parsers slow down on long input) |
+| One import | 200 new projects, 50 new areas, 500 new tags, 20 tags per task; above that the review shows a problem instead of importing |
+
+Access follows the task API:
+
+- Tasks go only into projects the user owns or has a read-write share on. A project named in the sheet that the user cannot write to becomes a new project of their own.
+- A UID updates a task only if the user can edit it; otherwise the row is a new task, with the same warning as an unknown UID, so UIDs cannot be probed.
+- An existing task takes subtasks only if it is in a project the user can write to, or is their own task outside any project. Being assigned a task in someone else's private project is not enough.
+- Assignees, also when matched by hand in the review, must be people the user can assign to. Status and priority choices are checked against their ranges.
+- A job belongs to its uploader; every endpoint answers 404 to anyone else. Commit and undo claim the job atomically, so running either twice at once does it once.
+- Updates are written to task history and newly assigned people are notified, as in the app. Webhooks are not sent for the importer's own tasks (one per row would flood a receiver), but are sent as usual to the owners of shared tasks the import changed.
+- Exports only contain tasks the user can see; a visible subtask's parent is named only if the user can see the parent too.
 
 ## Notes for developers
 
@@ -68,3 +89,4 @@ Available for 7 days, from the wizard's last step or **Profile → Import & expo
 - Status, priority and header words come from `public/locales/*/translation.json` (`status.*`, `priority.*`, `spreadsheet.columns.*`), read from `backend/dist/locales` in production.
 - Undo shares `destroyTaskRows` (`backend/modules/tasks/operations/deletion.js`) with `DELETE /api/task/:uid`.
 - Not imported: comments, attachments, dependencies, repeating rules, custom fields.
+- Rows that repeat the header row (exports that start every group with its own header) are skipped. A group's title row above it is imported as a task of its own; its row shows in the review.

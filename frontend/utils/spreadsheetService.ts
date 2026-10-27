@@ -64,8 +64,27 @@ export interface ImportJob {
     uid: string;
     file_name: string;
     status: 'parsed' | 'committed' | 'undone';
+    encoding: string | null;
     sheets: ImportSheet[];
 }
+
+// Code pages a CSV that is not UTF-8 can be re-read in, with the languages
+// that use each.
+export const CSV_ENCODINGS: { value: string; label: string }[] = [
+    { value: 'win1252', label: 'Western European (Windows-1252)' },
+    { value: 'win1250', label: 'Central European (Windows-1250)' },
+    { value: 'win1251', label: 'Cyrillic (Windows-1251)' },
+    { value: 'win1253', label: 'Greek (Windows-1253)' },
+    { value: 'win1254', label: 'Turkish (Windows-1254)' },
+    { value: 'win1256', label: 'Arabic (Windows-1256)' },
+    { value: 'win1257', label: 'Baltic (Windows-1257)' },
+    { value: 'win1258', label: 'Vietnamese (Windows-1258)' },
+    { value: 'win874', label: 'Thai (Windows-874)' },
+    { value: 'shift_jis', label: 'Japanese (Shift JIS)' },
+    { value: 'gbk', label: 'Chinese Simplified (GBK)' },
+    { value: 'big5', label: 'Chinese Traditional (Big5)' },
+    { value: 'euc-kr', label: 'Korean (EUC-KR)' },
+];
 
 export type TargetMode = 'project' | 'new_project' | 'column' | 'none';
 export type HierarchyMode = 'auto' | 'parent' | 'wbs' | 'indent' | 'flat';
@@ -238,8 +257,12 @@ export const downloadImportTemplate = (format: SpreadsheetFormat = 'xlsx') =>
         'Could not download the template'
     );
 
-export const uploadImportFile = async (file: File): Promise<ImportJob> => {
+export const uploadImportFile = async (
+    file: File,
+    encoding?: string
+): Promise<ImportJob> => {
     const formData = new FormData();
+    if (encoding) formData.append('encoding', encoding);
     formData.append('file', file);
     const response = await fetch(getApiPath('imports'), {
         method: 'POST',
@@ -282,7 +305,11 @@ export const commitImport = (uid: string, options: ImportOptions) =>
     );
 
 export const undoImport = (uid: string) =>
-    send<unknown>(`imports/${uid}/undo`, 'POST', 'Could not undo the import');
+    send<{ kept_changed: number }>(
+        `imports/${uid}/undo`,
+        'POST',
+        'Could not undo the import'
+    );
 
 export const discardImport = (uid: string) =>
     send<void>(`imports/${uid}`, 'DELETE', 'Could not cancel the import');
