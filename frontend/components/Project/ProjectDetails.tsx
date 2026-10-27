@@ -41,6 +41,9 @@ import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { getApiPath } from '../../config/paths';
 import ProjectHero from './ProjectHero';
+import ImportWizard from '../Spreadsheet/ImportWizard';
+import { exportTasks } from '../../utils/spreadsheetService';
+import { spreadsheetErrorText } from '../Spreadsheet/errorText';
 import NewItemButton from '../Shared/NewItemButton';
 import { onCaptureSaved, openCapture } from '../../utils/captureUi';
 import BannerEditModal from './BannerEditModal';
@@ -160,6 +163,7 @@ const ProjectDetails: React.FC = () => {
 
     // Bumped after something is captured, so new tasks and notes show up
     const [reloadKey, setReloadKey] = useState(0);
+    const [isImportOpen, setIsImportOpen] = useState(false);
     const { requestComplete, completeDialog } = useCompleteProject();
     useEffect(
         () =>
@@ -739,7 +743,21 @@ const ProjectDetails: React.FC = () => {
                 }
                 onEditBannerClick={handleEditBannerClick}
                 onTogglePin={handleTogglePin}
+                onImportClick={() => setIsImportOpen(true)}
+                onExport={(format) =>
+                    exportTasks(format, { project_uid: project.uid }).catch(
+                        (e: Error) => showErrorToast(spreadsheetErrorText(t, e))
+                    )
+                }
             />
+
+            {isImportOpen && project.uid && (
+                <ImportWizard
+                    projectUid={project.uid}
+                    onClose={() => setIsImportOpen(false)}
+                    onImported={() => setReloadKey((key) => key + 1)}
+                />
+            )}
 
             <div className="w-full">
                 <div className="w-full">

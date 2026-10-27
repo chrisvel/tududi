@@ -7,17 +7,9 @@ const eventsRouter = require('./events');
 const relationsRouter = require('./relations/routes');
 const orderRouter = require('./order/routes');
 
-const {
-    Task,
-    TaskEvent,
-    TaskAttachment,
-    Project,
-    sequelize,
-} = require('../../models');
+const { Task, TaskAttachment, Project } = require('../../models');
 const { numericIdParam } = require('../../middleware/numericIdParam');
 const taskRepository = require('./repository');
-const { deleteAttachmentFiles } = require('../../utils/attachment-utils');
-const { withForeignKeyChecksDisabled } = require('../../utils/db-dialect');
 const {
     resetQueryCounter,
     getQueryStats,
@@ -60,6 +52,7 @@ const { requireQuota } = require('../../middleware/entitlements');
 const { handleCompletionStatus } = require('./operations/completion');
 const { captureOldValues, logTaskChanges } = require('./utils/logging');
 const { notifyAssignee } = require('./operations/assignment');
+const { destroyTaskRows } = require('./operations/deletion');
 const {
     handleParentChildOnStatusChange,
 } = require('./operations/parent-child');
@@ -973,54 +966,7 @@ router.delete('/task/:uid', requireTaskWriteAccess, async (req, res) => {
             }
         }
 
-        // Before the row goes away, so the remote copy does not survive to be
-        // pulled back in as a new task on the next sync (#1371). Required lazily
-        // because the CalDAV module already depends on this one.
-        try {
-            const {
-                deleteTaskFromRemotes,
-            } = require('../caldav/services/task-deletion-service');
-            await deleteTaskFromRemotes(task);
-        } catch (error) {
-            logError('Error removing task from CalDAV remotes:', error);
-        }
-
-        // Dependent rows are removed in dependency order below, which is
-        // what PostgreSQL relies on; older SQLite databases additionally get
-        // constraint checks switched off for the duration.
-        await withForeignKeyChecksDisabled(sequelize, async () => {
-            await TaskEvent.destroy({
-                where: { task_id: taskId },
-                force: true,
-            });
-
-            await sequelize.query('DELETE FROM tasks_tags WHERE task_id = ?', {
-                replacements: [taskId],
-            });
-
-            await sequelize.query(
-                'DELETE FROM task_relations WHERE source_task_id = ? OR target_task_id = ?',
-                { replacements: [taskId, taskId] }
-            );
-
-            await sequelize.query(
-                'DELETE FROM user_task_orders WHERE task_id = ?',
-                { replacements: [taskId] }
-            );
-
-            await taskRepository.clearRecurringParent(taskId);
-
-            // Unlink attachment files from disk before destroying rows, so a
-            // dangling file never outlives the record that gated its access
-            // (GHSA-43p8-ch4p-gqg4).
-            await deleteAttachmentFiles(task.Attachments);
-            await TaskAttachment.destroy({
-                where: { task_id: taskId },
-                force: true,
-            });
-
-            await task.destroy({ force: true });
-        });
+        await destroyTaskRows(task);
 
         res.json({ message: 'Task successfully deleted' });
     } catch (error) {

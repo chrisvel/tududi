@@ -26,6 +26,7 @@ import {
     CreditCardIcon,
     ViewColumnsIcon,
     QueueListIcon,
+    TableCellsIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -67,6 +68,7 @@ import CalendarFeedsTab from './tabs/CalendarFeedsTab';
 import AIAssistantTab from './tabs/AIAssistantTab';
 import BillingTab from './tabs/BillingTab';
 import PlanningTab from './tabs/PlanningTab';
+import ImportExportTab from './tabs/ImportExportTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import { PASSWORD_MIN_LENGTH } from '../../utils/passwordPolicy';
 import { getFeatureFlags, type FeatureFlags } from '../../utils/featureFlags';
@@ -124,6 +126,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'features',
             'billing',
             'sidebar',
+            'import-export',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
@@ -1472,6 +1475,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <Squares2X2Icon className="w-5 h-5" />,
         },
         {
+            id: 'import-export',
+            name: t('spreadsheet.tab.title', 'Import & export'),
+            icon: <TableCellsIcon className="w-5 h-5" />,
+        },
+        {
             id: 'sidebar',
             name: t('profile.tabs.sidebar', 'Sidebar'),
             icon: <ViewColumnsIcon className="w-5 h-5" />,
@@ -1893,6 +1901,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                                 <BillingTab
                                     isActive={activeTab === 'billing'}
+                                />
+
+                                <ImportExportTab
+                                    isActive={activeTab === 'import-export'}
                                 />
 
                                 <div className="flex justify-end dark:border-gray-700">

@@ -342,6 +342,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Reminder/alert events, task created/updated/completed/deleted, and a daily summary at a chosen local hour
     - Queue with retries in `webhook_deliveries`; turns off after 10 failures in a row; not in the Cloud trial
 
+37. **[Spreadsheet Import & Export](docs/28-spreadsheets.md)**
+    - Export tasks to Excel or CSV from a project, the Profile page, or the API; a template to fill in
+    - Import wizard: upload, match columns, dry-run review, commit, undo for 7 days
+    - Parent column, WBS numbers or indented rows as subtasks; UID column updates tasks on re-import
+
 ---
 
 ## Project Overview

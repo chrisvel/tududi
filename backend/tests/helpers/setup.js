@@ -58,6 +58,7 @@ const CLEANUP_TABLES = [
     'waitlist_subscribers',
     'feedback',
     'push_subscriptions',
+    'import_jobs',
     'webhook_deliveries',
     'webhooks',
     'billing_events',
