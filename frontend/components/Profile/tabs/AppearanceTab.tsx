@@ -14,6 +14,8 @@ import {
     CONTENT_BACKGROUNDS,
     contentBackgroundUrl,
 } from '../../../constants/contentBackgrounds';
+import { PALETTE } from '../../../constants/colorPalette';
+import { DEFAULT_ACCENT } from '../../../constants/theme';
 
 interface AppearanceTabProps {
     isActive: boolean;
@@ -21,6 +23,8 @@ interface AppearanceTabProps {
     onAppearanceChange: (appearance: 'light' | 'dark' | 'system') => void;
     contentBackground: string | null;
     onContentBackgroundChange: (background: string | null) => void;
+    accent: string | null;
+    onAccentChange: (accent: string | null) => void;
 }
 
 interface BackgroundCardProps {
@@ -76,16 +80,53 @@ const BackgroundCard: React.FC<BackgroundCardProps> = ({
     </button>
 );
 
+interface AccentSwatchProps {
+    label: string;
+    color: string;
+    selected: boolean;
+    onSelect: () => void;
+}
+
+// A round colour chip. The ring and the offset are drawn in the app's own
+// greys so the chip keeps its shape against any accent.
+const AccentSwatch: React.FC<AccentSwatchProps> = ({
+    label,
+    color,
+    selected,
+    onSelect,
+}) => (
+    <button
+        type="button"
+        onClick={onSelect}
+        aria-pressed={selected}
+        aria-label={label}
+        title={label}
+        className={`h-8 w-8 rounded-full transition-transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
+            selected
+                ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900'
+                : ''
+        }`}
+        style={{ backgroundColor: color }}
+    />
+);
+
 const AppearanceTab: React.FC<AppearanceTabProps> = ({
     isActive,
     formData,
     onAppearanceChange,
     contentBackground,
     onContentBackgroundChange,
+    accent,
+    onAccentChange,
 }) => {
     const { t } = useTranslation();
 
     if (!isActive) return null;
+
+    const normalizedAccent = accent?.toLowerCase() ?? null;
+    const isPaletteColor = PALETTE.some(
+        (color) => color.value.toLowerCase() === normalizedAccent
+    );
 
     return (
         <div>
@@ -136,6 +177,49 @@ const AppearanceTab: React.FC<AppearanceTabProps> = ({
                         <ComputerDesktopIcon className="h-4 w-4 mr-2" />
                         {t('profile.systemMode', 'System')}
                     </button>
+                </div>
+            </div>
+
+            {/* Accent colour */}
+            <div className="mb-8">
+                <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                    {t('profile.accentColor', 'Accent colour')}
+                </h4>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                    {t(
+                        'profile.accentColorDescription',
+                        'Recolour the app. Buttons, links and highlights follow this colour.'
+                    )}
+                </p>
+                <div
+                    className="flex flex-wrap items-center gap-2"
+                    data-testid="accent-swatches"
+                >
+                    <AccentSwatch
+                        label={t('profile.accentDefault', 'Default')}
+                        color={DEFAULT_ACCENT}
+                        selected={!accent}
+                        onSelect={() => onAccentChange(null)}
+                    />
+                    {PALETTE.map((color) => (
+                        <AccentSwatch
+                            key={color.key}
+                            label={color.name}
+                            color={color.value}
+                            selected={
+                                normalizedAccent === color.value.toLowerCase()
+                            }
+                            onSelect={() => onAccentChange(color.value)}
+                        />
+                    ))}
+                    {accent && !isPaletteColor && (
+                        <AccentSwatch
+                            label={accent}
+                            color={accent}
+                            selected
+                            onSelect={() => onAccentChange(accent)}
+                        />
+                    )}
                 </div>
             </div>
 

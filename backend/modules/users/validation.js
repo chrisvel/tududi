@@ -92,6 +92,44 @@ const SIDEBAR_ORDER_MAX_ID_LENGTH = 64;
 const SIDEBAR_WIDTH_MIN_PERCENT = 90;
 const SIDEBAR_WIDTH_MAX_PERCENT = 110;
 
+// The accent colour of the interface. It is written into the page as a CSS
+// variable, so only colours are accepted.
+const ACCENT_COLOR_PATTERN = /^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+
+/**
+ * Validate appearance settings. The accent is a hex colour (or nothing, to
+ * fall back to the default); the rest is passed through as it came in.
+ */
+function validateAppearance(appearance) {
+    if (
+        appearance === null ||
+        typeof appearance !== 'object' ||
+        Array.isArray(appearance)
+    ) {
+        throw new ValidationError('Appearance settings must be an object.');
+    }
+
+    const result = { ...appearance };
+    if ('accent' in result) {
+        const accent = result.accent;
+        if (accent === null || accent === '') {
+            result.accent = null;
+        } else if (
+            typeof accent !== 'string' ||
+            !ACCENT_COLOR_PATTERN.test(accent.trim())
+        ) {
+            throw new ValidationError(
+                'Accent colour must be a hex colour such as #2563eb.',
+                'accent'
+            );
+        } else {
+            result.accent = accent.trim().toLowerCase();
+        }
+    }
+
+    return result;
+}
+
 /**
  * Validate sidebar settings.
  */
@@ -213,5 +251,6 @@ module.exports = {
     validateApiKeyName,
     validateExpiresAt,
     validateSidebarSettings,
+    validateAppearance,
     validateAiSettings,
 };

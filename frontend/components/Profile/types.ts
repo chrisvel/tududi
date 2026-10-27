@@ -20,6 +20,8 @@ export interface Features {
 export interface UiSettingsAppearance {
     theme?: 'light' | 'dark' | 'system';
     contentBackground?: string | null;
+    // The accent colour the app is themed with, as a hex colour.
+    accent?: string | null;
 }
 
 export interface UiSettings {

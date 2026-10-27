@@ -2,6 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
+/* The themeable accent. Every blue utility in the app resolves to these
+   variables (see tailwind.config.js), so a user can recolour the app from
+   Profile > Appearance without a rebuild. The values are the space separated
+   channels Tailwind's `<alpha-value>` needs, and the defaults are Tailwind's
+   built-in blue palette: an app without a chosen accent looks unchanged.
+   frontend/constants/theme.ts overwrites them at runtime. */
+:root {
+  --theme-blue-50: 239 246 255;
+  --theme-blue-100: 219 234 254;
+  --theme-blue-200: 191 219 254;
+  --theme-blue-300: 147 197 253;
+  --theme-blue-400: 96 165 250;
+  --theme-blue-500: 59 130 246;
+  --theme-blue-600: 37 99 235;
+  --theme-blue-700: 29 78 216;
+  --theme-blue-800: 30 64 175;
+  --theme-blue-900: 30 58 138;
+  --theme-blue-950: 23 37 84;
+}
+
 @layer base {
   html {
     /* Scale down everything by 10% by setting base font-size to 90% */

@@ -1,4 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+
+// The blue palette is themeable: every shade resolves to a CSS variable, so
+// the accent a user picks in Profile > Appearance recolours the app at
+// runtime, without a rebuild. The variables are set on <html> by
+// frontend/constants/theme.ts; their defaults live in
+// frontend/styles/tailwind.css and match Tailwind's built-in blue palette.
+const themeBlue = (shade) => `rgb(var(--theme-blue-${shade}) / <alpha-value>)`;
+
 module.exports = {
   darkMode: 'class',
   content: [
@@ -7,6 +15,21 @@ module.exports = {
   ],
   theme: {
     extend: {
+      colors: {
+        blue: {
+          50: themeBlue(50),
+          100: themeBlue(100),
+          200: themeBlue(200),
+          300: themeBlue(300),
+          400: themeBlue(400),
+          500: themeBlue(500),
+          600: themeBlue(600),
+          700: themeBlue(700),
+          800: themeBlue(800),
+          900: themeBlue(900),
+          950: themeBlue(950),
+        },
+      },
       spacing: {
         sidebar: 'var(--sidebar-width, 22rem)',
         rail: '3.5rem',

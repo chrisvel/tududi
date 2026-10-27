@@ -50,6 +50,7 @@ const {
     validateApiKeyName,
     validateExpiresAt,
     validateSidebarSettings,
+    validateAppearance,
     validateAiSettings,
 } = require('./validation');
 const {
@@ -780,7 +781,7 @@ class UsersService {
         if (appearance !== undefined) {
             newSettings.appearance = {
                 ...(currentSettings.appearance || {}),
-                ...appearance,
+                ...validateAppearance(appearance),
             };
         }
 

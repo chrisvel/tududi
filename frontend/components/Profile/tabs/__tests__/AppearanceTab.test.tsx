@@ -12,8 +12,12 @@ jest.mock('react-i18next', () => {
     return { useTranslation: () => value };
 });
 
-const renderTab = (contentBackground: string | null) => {
+const renderTab = (
+    contentBackground: string | null,
+    props: Partial<React.ComponentProps<typeof AppearanceTab>> = {}
+) => {
     const onContentBackgroundChange = jest.fn();
+    const onAccentChange = jest.fn();
     render(
         <AppearanceTab
             isActive
@@ -21,9 +25,12 @@ const renderTab = (contentBackground: string | null) => {
             onAppearanceChange={jest.fn()}
             contentBackground={contentBackground}
             onContentBackgroundChange={onContentBackgroundChange}
+            accent={null}
+            onAccentChange={onAccentChange}
+            {...props}
         />
     );
-    return { onContentBackgroundChange };
+    return { onContentBackgroundChange, onAccentChange };
 };
 
 const cards = () =>
@@ -65,5 +72,55 @@ describe('AppearanceTab background', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'None' }));
         expect(onContentBackgroundChange).toHaveBeenLastCalledWith(null);
+    });
+});
+
+describe('AppearanceTab accent colour', () => {
+    it('offers the accent colours', () => {
+        renderTab(null);
+
+        expect(screen.getByText('Accent colour')).toBeInTheDocument();
+        expect(screen.getByTestId('accent-swatches')).toBeInTheDocument();
+        expect(screen.getByLabelText('Red')).toBeInTheDocument();
+        expect(screen.getByLabelText('Default')).toBeInTheDocument();
+    });
+
+    it('reports the picked accent colour', () => {
+        const { onAccentChange } = renderTab(null);
+
+        fireEvent.click(screen.getByLabelText('Teal'));
+
+        expect(onAccentChange).toHaveBeenLastCalledWith('#0f766e');
+    });
+
+    it('marks the chosen accent colour as pressed', () => {
+        renderTab(null, { accent: '#0f766e' });
+
+        expect(screen.getByLabelText('Teal')).toHaveAttribute(
+            'aria-pressed',
+            'true'
+        );
+        expect(screen.getByLabelText('Red')).toHaveAttribute(
+            'aria-pressed',
+            'false'
+        );
+        expect(screen.getByLabelText('Default')).toHaveAttribute(
+            'aria-pressed',
+            'false'
+        );
+    });
+
+    it('falls back to the default accent colour', () => {
+        const { onAccentChange } = renderTab(null, { accent: '#0f766e' });
+
+        fireEvent.click(screen.getByLabelText('Default'));
+
+        expect(onAccentChange).toHaveBeenLastCalledWith(null);
+    });
+
+    it('shows an accent colour that is not one of the offered ones', () => {
+        renderTab(null, { accent: '#123456' });
+
+        expect(screen.getByLabelText('#123456')).toBeInTheDocument();
     });
 });

@@ -783,6 +783,9 @@
     "contentBackground": "Background",
     "contentBackgroundDescription": "Show a photo behind the main content area. Photos come from Unsplash and are credited to their photographers.",
     "contentBackgroundNone": "None",
+    "accentColor": "Accent colour",
+    "accentColorDescription": "Recolour the app. Buttons, links and highlights follow this colour.",
+    "accentDefault": "Default",
     "photoBy": "Photo by",
     "photoOn": "on",
     "connected": {

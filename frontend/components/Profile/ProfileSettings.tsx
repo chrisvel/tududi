@@ -33,6 +33,7 @@ import { useToast } from '../Shared/ToastContext';
 import { dispatchTelegramStatusChange } from '../../contexts/TelegramStatusContext';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { getLocaleFirstDayOfWeek } from '../../utils/profileService';
+import { applyThemeAccent, storeThemeAccent } from '../../constants/theme';
 import {
     getTimezonesByRegion,
     getRegionDisplayName,
@@ -162,6 +163,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
         ui_settings: {
             appearance: {
                 theme: isDarkMode ? 'dark' : 'light',
+                accent: null,
             },
         },
         notification_preferences: null,
@@ -595,6 +597,8 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                             contentBackground:
                                 data.ui_settings?.appearance
                                     ?.contentBackground ?? null,
+                            accent:
+                                data.ui_settings?.appearance?.accent ?? null,
                         },
                     },
                     notification_preferences:
@@ -1348,6 +1352,13 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                     );
             }
 
+            if (updatedProfile.ui_settings?.appearance?.accent !== undefined) {
+                const accent =
+                    updatedProfile.ui_settings.appearance.accent ?? null;
+                applyThemeAccent(accent);
+                storeThemeAccent(accent);
+            }
+
             if (updatedProfile.sidebar_settings?.visibleSections) {
                 useStore
                     .getState()
@@ -1581,6 +1592,26 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                                             },
                                         }))
                                     }
+                                    accent={
+                                        formData.ui_settings?.appearance
+                                            ?.accent ?? null
+                                    }
+                                    onAccentChange={(accent) => {
+                                        // Paint it right away so the choice can
+                                        // be seen before it is saved.
+                                        applyThemeAccent(accent);
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            ui_settings: {
+                                                ...(prev.ui_settings || {}),
+                                                appearance: {
+                                                    ...(prev.ui_settings
+                                                        ?.appearance || {}),
+                                                    accent,
+                                                },
+                                            },
+                                        }));
+                                    }}
                                 />
 
                                 <SecurityTab

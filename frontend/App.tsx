@@ -65,6 +65,11 @@ import { setCurrentUser as setUserInStorage } from './utils/userUtils';
 import type { StarterResult } from './utils/onboardingService';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
+import {
+    applyThemeAccent,
+    readStoredThemeAccent,
+    storeThemeAccent,
+} from './constants/theme';
 import { sanitizeFocus } from './utils/focus';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
@@ -89,6 +94,11 @@ const ProjectHistory = lazy(
 // string, and a lazy component created inside render would remount and
 // re-suspend on every navigation.
 const AdminUsersPage = lazy(() => import('./components/Admin/AdminUsersPage'));
+
+// Paint in the accent of the last session before the first render, so the
+// app does not flash the default blue. The profile replaces it with the
+// saved accent once it loads.
+applyThemeAccent(readStoredThemeAccent());
 
 const App: React.FC = () => {
     const { i18n } = useTranslation();
@@ -171,6 +181,11 @@ const App: React.FC = () => {
                         data.user.ui_settings?.appearance?.contentBackground ??
                             null
                     );
+                // The accent the user saved in Profile > Appearance.
+                const accent =
+                    data.user.ui_settings?.appearance?.accent ?? null;
+                applyThemeAccent(accent);
+                storeThemeAccent(accent);
                 useStore
                     .getState()
                     .userSettingsStore.setSidebarVisibleSections(
