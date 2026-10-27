@@ -60,7 +60,9 @@ jest.mock('../../Note/NoteModal', () => ({
 
 jest.mock('../ProjectModal', () => ({
     __esModule: true,
-    default: () => null,
+    default: ({ project }: { project?: { name: string } }) => (
+        <div data-testid="project-edit-panel">{project?.name}</div>
+    ),
 }));
 
 const mockStoreState = {
@@ -179,5 +181,35 @@ describe('ProjectDetails delete confirmation (#1826)', () => {
         expect(
             screen.queryByText(/\{\{projectName\}\}/)
         ).not.toBeInTheDocument();
+    });
+});
+
+describe('ProjectDetails edit menu item', () => {
+    it('opens the project side panel from the three dot menu', async () => {
+        (fetchProjectBySlug as jest.Mock).mockResolvedValue({
+            id: 100,
+            uid: 'proj-100',
+            name: 'Schedule with WBS',
+            description: '',
+            status: 'in_progress',
+            tasks: [],
+            notes: [],
+        });
+
+        render(<ProjectDetails />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Schedule with WBS')).toBeInTheDocument();
+        });
+        expect(
+            screen.queryByTestId('project-edit-panel')
+        ).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByLabelText('More options'));
+        fireEvent.click(screen.getByTestId('project-edit'));
+
+        expect(screen.getByTestId('project-edit-panel')).toHaveTextContent(
+            'Schedule with WBS'
+        );
     });
 });
