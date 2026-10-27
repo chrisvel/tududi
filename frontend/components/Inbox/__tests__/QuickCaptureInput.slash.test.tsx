@@ -5,6 +5,7 @@ import QuickCaptureInput from '../QuickCaptureInput';
 import { resetCaptureSettingsCache } from '../../../utils/captureSettings';
 import { analyzeInboxText } from '../../../utils/inboxService';
 import { createProject, fetchProjects } from '../../../utils/projectsService';
+import { useStore } from '../../../store/useStore';
 
 jest.mock('react-i18next', () => ({
     initReactI18next: { type: '3rdParty', init: jest.fn() },
@@ -278,6 +279,33 @@ describe('QuickCaptureInput slash menu', () => {
             screen.queryByTestId('selected-tag-urgent')
         ).not.toBeInTheDocument();
     });
+
+    it.each(['Área', 'Misc.', 'Errands!', 'Stuff)', 'Say "hi"', 'a~b'])(
+        'assigns the picked existing area "%s" without creating a duplicate',
+        async (areaName) => {
+            // The server cannot match these names back from "~Name" text
+            // (it cuts punctuation and SQLite lower() skips non-ASCII).
+            const { areasStore } = useStore.getState();
+            const before = areasStore.areas;
+            areasStore.setAreas([
+                ...before,
+                { id: 10, uid: 'area-x', name: areaName },
+            ]);
+            try {
+                type('Fix tap /');
+                fireEvent.click(inMenu().getByText('Area'));
+                fireEvent.click(inMenu().getByText(areaName));
+                await clickAdd();
+
+                expect(mockCreateArea).not.toHaveBeenCalled();
+                expect(mockCreateTask).toHaveBeenCalledWith(
+                    expect.objectContaining({ name: 'Fix tap', area_id: 10 })
+                );
+            } finally {
+                areasStore.setAreas(before);
+            }
+        }
+    );
 
     it('creates an unknown ~Name typed in the text and strips it from the title', async () => {
         type('#admin #kids +"Monday slides prep" ~Career hi ');

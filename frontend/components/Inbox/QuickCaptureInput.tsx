@@ -377,7 +377,13 @@ const QuickCaptureInput = React.forwardRef<
                 ...(picked.project && destination !== 'project'
                     ? [`+${name(picked.project)}`]
                     : []),
-                ...(picked.area && destination !== 'note'
+                // A task or project takes the picked area by uid in
+                // captureOne; the server would re-read its name and miss
+                // names with punctuation or non-ASCII letters.
+                ...(picked.area &&
+                destination !== 'note' &&
+                destination !== 'task' &&
+                destination !== 'project'
                     ? [`~${name(picked.area.name)}`]
                     : []),
             ];
@@ -1857,7 +1863,18 @@ const QuickCaptureInput = React.forwardRef<
                 } catch (error) {
                     console.error('Error analyzing text:', error);
                 }
-                analysis = await ensureAnalysisArea(analysis);
+                // An area picked from the list is already known, so it is
+                // used as is instead of being looked up again by name.
+                analysis =
+                    picked.area && analysis
+                        ? {
+                              ...analysis,
+                              parsed_area: {
+                                  uid: picked.area.uid,
+                                  name: picked.area.name,
+                              },
+                          }
+                        : await ensureAnalysisArea(analysis);
             }
 
             const title = cleanFirstLine(first, analysis);
