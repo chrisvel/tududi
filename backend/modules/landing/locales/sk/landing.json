@@ -278,6 +278,13 @@
           "Každý si ponechá vlastné súkromné úlohy a poznámky",
           "Jedno predplatné, ktoré platí vlastník účtu"
         ]
+      },
+      "picker": {
+        "label": "Pre koho?",
+        "solo": "Len pre mňa",
+        "team": "Tím s {{n}} ľuďmi",
+        "perMonth": "/mesiac",
+        "perYear": "/rok"
       }
     },
     "fineprint": "Zrušiť môžete kedykoľvek a všetko si exportovať. Ak by tududi Cloud niekedy skončil, dostanete svoje dáta a návod na migráciu na vlastný server. Na úložisko a objem API sa vzťahuje primerané používanie. 14-dňová záruka vrátenia peňazí bez otázok.",

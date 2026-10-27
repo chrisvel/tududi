@@ -275,6 +275,13 @@
           "Mỗi người giữ công việc và ghi chú riêng tư của mình",
           "Một gói đăng ký, do chủ tài khoản thanh toán"
         ]
+      },
+      "picker": {
+        "label": "Dành cho ai?",
+        "solo": "Chỉ mình tôi",
+        "team": "Nhóm {{n}} người",
+        "perMonth": "/tháng",
+        "perYear": "/năm"
       }
     },
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 14 ngày, không cần lý do.",

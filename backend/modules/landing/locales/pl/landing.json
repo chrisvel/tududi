@@ -275,6 +275,13 @@
           "Każdy zachowuje własne prywatne zadania i notatki",
           "Jedna subskrypcja, opłacana przez właściciela konta"
         ]
+      },
+      "picker": {
+        "label": "Dla kogo?",
+        "solo": "Tylko dla mnie",
+        "team": "Zespół {{n}} osób",
+        "perMonth": "/mies.",
+        "perYear": "/rok"
       }
     },
     "fineprint": "Zrezygnuj w każdej chwili i wyeksportuj wszystko. Gdyby tududi Cloud kiedykolwiek został zamknięty, otrzymasz swoje dane i przewodnik migracji na własny serwer. Do przestrzeni i ruchu API stosuje się zasada fair use. 14-dniowa gwarancja zwrotu pieniędzy, bez pytań.",

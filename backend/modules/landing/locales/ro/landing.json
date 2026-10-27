@@ -275,6 +275,13 @@
           "Fiecare își păstrează propriile sarcini și notițe private",
           "Un singur abonament, plătit de titularul contului"
         ]
+      },
+      "picker": {
+        "label": "Pentru cine?",
+        "solo": "Doar pentru mine",
+        "team": "Echipă de {{n}}",
+        "perMonth": "/lună",
+        "perYear": "/an"
       }
     },
     "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 14 de zile, fără întrebări.",

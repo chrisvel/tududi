@@ -272,18 +272,31 @@ describe('Landing page', () => {
         expect(belowHero).toContain('https://github.com/chrisvel/tududi');
     });
 
-    it('offers Pro and Team, with the Team sizes and a way past 40', async () => {
-        const res = await request(app).get('/').set('Host', 'tududi.com');
-        const pricing = res.text.slice(res.text.indexOf('id="pricing"'));
-        expect(pricing).toContain('plan-grid-duo');
-        expect(pricing).toContain('<h3>Pro</h3>');
-        expect(pricing).toContain('<h3>Team</h3>');
-        expect(pricing).toContain(
-            'Sold in sizes of 3, 5, 10, 15, 20, 25, 30, 40 seats, you included. A team of 5 is €25 a month.'
-        );
-        expect(pricing).toContain('More than 40 people?');
-        expect(pricing).toContain('href="/contact"');
-        expect(pricing).not.toContain('each a seat at the same price');
+    it('sells Pro and every Team size from one card with a picker', async () => {
+        for (const url of ['/', '/cloud']) {
+            const res = await request(app).get(url).set('Host', 'tududi.com');
+            const from = res.text.indexOf('data-plan-picker>');
+            const card = res.text.slice(
+                from,
+                res.text.indexOf('</script>', from)
+            );
+            expect(res.text.match(/data-plan-picker>/g)).toHaveLength(1);
+            expect(res.text).not.toContain('plan-grid-duo');
+            expect(card).toContain('<option value="1"');
+            expect(card).toContain('>Just me</option>');
+            for (const n of [3, 5, 10, 15, 20, 25, 30, 40]) {
+                expect(card).toContain(`>Team of ${n}</option>`);
+            }
+            // Each option carries its own totals: 5 seats at €5 and €50.
+            expect(card).toMatch(
+                /value="5"\s+data-monthly="€25"\s+data-annual="€250"/
+            );
+            expect(card).toContain(
+                'Sold in sizes of 3, 5, 10, 15, 20, 25, 30, 40 seats, you included. A team of 5 is €25 a month.'
+            );
+            expect(card).toContain('More than 40 people?');
+            expect(card).toContain('href="/contact"');
+        }
     });
 
     it('announces a decided price rise until the day it starts', async () => {

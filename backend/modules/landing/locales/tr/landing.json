@@ -275,6 +275,13 @@
           "Herkes kendi özel görevlerini ve notlarını korur",
           "Tek abonelik, hesap sahibi öder"
         ]
+      },
+      "picker": {
+        "label": "Kimin için?",
+        "solo": "Sadece ben",
+        "team": "{{n}} kişilik ekip",
+        "perMonth": "/ay",
+        "perYear": "/yıl"
       }
     },
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 14 gün para iade garantisi, soru sorulmaz.",

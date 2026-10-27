@@ -275,6 +275,13 @@
           "Vsak obdrži svoja zasebna opravila in zapiske",
           "Ena naročnina, ki jo plača lastnik računa"
         ]
+      },
+      "picker": {
+        "label": "Za koga?",
+        "solo": "Samo zame",
+        "team": "Ekipa z {{n}} osebami",
+        "perMonth": "/mesec",
+        "perYear": "/leto"
       }
     },
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",

@@ -909,9 +909,6 @@
            leaving the fineprint 1180px wide under a 520px card. */
         .plan-grid.plan-grid-solo,
         .plan-notes.plan-grid-solo { max-width: 520px; grid-template-columns: minmax(0, 1fr); }
-        /* Pro beside Team: two cards side by side, stacked on a phone. */
-        .plan-grid.plan-grid-duo { max-width: 1000px; }
-        .plan-notes.plan-grid-duo { max-width: 1000px; grid-template-columns: minmax(0, 1fr); }
         .plan-next-price { font-weight: 600; color: #374151; }
         .plan {
             background: #ffffff;
@@ -975,6 +972,19 @@
         .plan-featured .plan-icon i { color: #fff; }
         .plan-head h3 { font-size: 21px; font-weight: 700; margin: 0; color: #111827; letter-spacing: -0.01em; }
         .plan-featured .plan-head h3 { color: #fff; }
+        /* Size picker on the pricing card: just you, or a Team size. */
+        .plan-size { display: block; margin-bottom: 20px; }
+        .plan-size-label { display: block; font-size: 13px; font-weight: 600; color: #9ca3af; margin-bottom: 6px; }
+        .plan-size-select {
+            width: 100%; appearance: none; -webkit-appearance: none;
+            padding: 12px 40px 12px 14px; border-radius: 10px; border: 0;
+            font: inherit; font-size: 16px; font-weight: 600; cursor: pointer;
+            background: rgba(255, 255, 255, 0.1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23ffffff'%3E%3Cpath d='M5.3 7.3a1 1 0 0 1 1.4 0L10 10.6l3.3-3.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 0-1.4z'/%3E%3C/svg%3E") no-repeat right 14px center / 16px;
+            color: #fff;
+        }
+        .plan-size-select:focus-visible { outline: 2px solid #1e86e5; outline-offset: 2px; }
+        .plan-size-select option { color: #111827; background: #fff; }
+        [data-plan-picker] [hidden] { display: none !important; }
         .plan-price { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #ececee; }
         .plan-featured .plan-price { border-bottom-color: rgba(255, 255, 255, 0.12); }
         .plan-amount { display: flex; align-items: baseline; gap: 6px; }

@@ -1,0 +1,91 @@
+<%#
+    The one pricing card, shared by the homepage and /cloud so the two pages
+    cannot disagree about what Cloud costs. A dropdown picks who it is for:
+    just you (Pro) or a Team size. Every option carries its own formatted
+    prices, so the script below only swaps text and never does money maths.
+
+    Paid, with no free tier; the trial is mentioned only when
+    TUDUDI_TRIAL_DAYS turns it on (trialDays), so nothing here may imply a way
+    in without a card that the instance does not offer. No crossed-out "was"
+    price either: nothing higher has ever been charged, and an invented prior
+    price is exactly what the EU price-indication rules are about.
+
+    Locals: soloFeatures, teamFeatures, soloAction, teamAction, soloNote,
+    orLabel.
+%>
+<%
+    const pickerT = i18n.t;
+    const perSeatYear = pricing.launchActive ? pricing.annual : pricing.standard;
+    const sizes = [1].concat(plans.teamSeats);
+    const maxSeats = plans.teamSeats[plans.teamSeats.length - 1];
+%>
+<div class="plan plan-featured" data-plan-picker>
+    <div class="plan-head">
+        <div class="plan-icon"><i class="fas fa-cloud"></i></div>
+        <h3><%= pickerT('pricing.plans.cloud.name') %></h3>
+    </div>
+
+    <label class="plan-size">
+        <span class="plan-size-label"><%= pickerT('pricing.plans.picker.label') %></span>
+        <select class="plan-size-select" data-plan-size>
+            <% sizes.forEach(function (n) { %>
+            <option value="<%= n %>"
+                data-monthly="<%= money(pricing.monthly * n) %>"
+                data-annual="<%= money(perSeatYear * n) %>"><%= n === 1 ? pickerT('pricing.plans.picker.solo') : pickerT('pricing.plans.picker.team', { n: n }) %></option>
+            <% }); %>
+        </select>
+    </label>
+
+    <div class="plan-price">
+        <div class="plan-amount"><span data-plan-monthly><%= money(pricing.monthly) %></span><span><%= pickerT('pricing.plans.picker.perMonth') %></span></div>
+        <div class="plan-pro-line">
+            <span class="plan-pro-sep"><%= orLabel %></span>
+            <strong data-plan-annual><%= money(perSeatYear) %></strong><%= pickerT('pricing.plans.picker.perYear') %>
+            <% if (pricing.launchActive) { %>
+            <span class="plan-tag"><%= pickerT('pricing.earlyBird') %></span>
+            <% } %>
+        </div>
+        <div data-plan-show="solo">
+            <% if (pricing.launchActive) { %>
+            <div class="plan-launch-note"><%= pickerT('pricing.plans.cloud.launchNote') %></div>
+            <% } %>
+            <div class="plan-price-note"><%= soloNote %></div>
+        </div>
+        <div data-plan-show="team" hidden>
+            <div class="plan-price-note"><%= pickerT('pricing.plans.team.sizes', { sizes: plans.teamSeats.join(', '), example: money(pricing.monthly * 5) }) %></div>
+            <div class="plan-launch-note"><%= pickerT('pricing.plans.team.moreThan', { max: maxSeats }) %> <a href="<%= localePath(i18n.locale, '/contact') %>" class="plan-selfhost-link"><%= pickerT('pricing.plans.team.contact') %> &rarr;</a></div>
+        </div>
+        <% if (trialDays > 0) { %>
+        <div class="plan-launch-note"><%= pickerT('pricing.plans.cloud.trialNote') %></div>
+        <% } %>
+    </div>
+
+    <ul class="plan-features" data-plan-show="solo">
+        <% soloFeatures.forEach(function (feature) { %>
+        <li><i class="fas fa-check"></i><%= feature %></li>
+        <% }); %>
+    </ul>
+    <ul class="plan-features" data-plan-show="team" hidden>
+        <% teamFeatures.forEach(function (feature) { %>
+        <li><i class="fas fa-check"></i><%= feature %></li>
+        <% }); %>
+    </ul>
+
+    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary" data-plan-show="solo"><%= soloAction %></a>
+    <a href="<%= appUrl %>/register" class="plan-action plan-action-primary" data-plan-show="team" hidden><%= teamAction %></a>
+</div>
+<script>
+    (function () {
+        var card = document.currentScript.previousElementSibling;
+        var select = card.querySelector('[data-plan-size]');
+        select.addEventListener('change', function () {
+            var option = select.options[select.selectedIndex];
+            var team = select.value !== '1';
+            card.querySelector('[data-plan-monthly]').textContent = option.dataset.monthly;
+            card.querySelector('[data-plan-annual]').textContent = option.dataset.annual;
+            card.querySelectorAll('[data-plan-show]').forEach(function (el) {
+                el.hidden = (el.getAttribute('data-plan-show') === 'team') !== team;
+            });
+        });
+    })();
+</script>

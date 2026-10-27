@@ -275,6 +275,13 @@
           "Cada pessoa mantém suas próprias tarefas e notas privadas",
           "Uma assinatura, paga pelo dono da conta"
         ]
+      },
+      "picker": {
+        "label": "Para quem é?",
+        "solo": "Só para mim",
+        "team": "Equipa de {{n}}",
+        "perMonth": "/mês",
+        "perYear": "/ano"
       }
     },
     "fineprint": "Cancele a qualquer momento e exporte tudo. Se o tududi Cloud alguma vez encerrar, recebe os seus dados e um guia de migração para auto-alojamento. Aplica-se uso razoável ao armazenamento e ao volume de API. Garantia de reembolso de 14 dias, sem perguntas.",

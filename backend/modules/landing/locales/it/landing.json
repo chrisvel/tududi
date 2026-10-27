@@ -275,6 +275,13 @@
           "Ognuno tiene le proprie attività e note private",
           "Un solo abbonamento, pagato dal titolare dell'account"
         ]
+      },
+      "picker": {
+        "label": "Per chi è?",
+        "solo": "Solo per me",
+        "team": "Team da {{n}}",
+        "perMonth": "/mese",
+        "perYear": "/anno"
       }
     },
     "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 14 giorni, senza domande.",

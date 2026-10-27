@@ -275,6 +275,13 @@
           "Jokainen pitää omat yksityiset tehtävänsä ja muistiinpanonsa",
           "Yksi tilaus, jonka tilin omistaja maksaa"
         ]
+      },
+      "picker": {
+        "label": "Kenelle?",
+        "solo": "Vain minulle",
+        "team": "{{n}} hengen tiimi",
+        "perMonth": "/kk",
+        "perYear": "/vuosi"
       }
     },
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",

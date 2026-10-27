@@ -296,6 +296,13 @@
           "Each person keeps their own private tasks and notes",
           "One subscription, paid by the account owner"
         ]
+      },
+      "picker": {
+        "label": "Who is it for?",
+        "solo": "Just me",
+        "team": "Team of {{n}}",
+        "perMonth": "/month",
+        "perYear": "/year"
       }
     },
     "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a guide to keep running it. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",

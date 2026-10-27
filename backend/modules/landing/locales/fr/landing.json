@@ -275,6 +275,13 @@
           "Chacun garde ses propres tâches et notes privées",
           "Un seul abonnement, payé par le titulaire du compte"
         ]
+      },
+      "picker": {
+        "label": "Pour qui ?",
+        "solo": "Juste moi",
+        "team": "Équipe de {{n}}",
+        "perMonth": "/mois",
+        "perYear": "/an"
       }
     },
     "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 14 jours, sans question.",

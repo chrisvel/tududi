@@ -275,6 +275,13 @@
           "Var och en behåller sina egna privata uppgifter och anteckningar",
           "Ett abonnemang, betalt av kontoägaren"
         ]
+      },
+      "picker": {
+        "label": "Vem är det för?",
+        "solo": "Bara jag",
+        "team": "Team på {{n}}",
+        "perMonth": "/månad",
+        "perYear": "/år"
       }
     },
     "fineprint": "Avsluta när som helst och exportera allt. Om tududi Cloud någonsin stänger får du dina data och en guide för att hosta själv. Skälig användning gäller för lagring och API-volym. 14 dagars pengarna-tillbaka-garanti, inga frågor.",

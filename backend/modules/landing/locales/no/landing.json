@@ -275,6 +275,13 @@
           "Hver person beholder sine egne private oppgaver og notater",
           "Ett abonnement, betalt av kontoeieren"
         ]
+      },
+      "picker": {
+        "label": "Hvem er det for?",
+        "solo": "Bare meg",
+        "team": "Team på {{n}}",
+        "perMonth": "/måned",
+        "perYear": "/år"
       }
     },
     "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 14 dagers pengene-tilbake-garanti, ingen spørsmål.",

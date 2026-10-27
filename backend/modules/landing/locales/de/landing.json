@@ -275,6 +275,13 @@
           "Jede Person behält ihre eigenen privaten Aufgaben und Notizen",
           "Ein Abonnement, bezahlt von der Kontoinhaberin oder dem Kontoinhaber"
         ]
+      },
+      "picker": {
+        "label": "Für wen?",
+        "solo": "Nur für mich",
+        "team": "Team mit {{n}}",
+        "perMonth": "/Monat",
+        "perYear": "/Jahr"
       }
     },
     "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 14 Tage Geld-zurück-Garantie, ohne Nachfragen.",

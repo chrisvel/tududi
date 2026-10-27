@@ -275,6 +275,13 @@
           "Iedereen houdt zijn eigen privétaken en notities",
           "Eén abonnement, betaald door de accounteigenaar"
         ]
+      },
+      "picker": {
+        "label": "Voor wie?",
+        "solo": "Alleen ik",
+        "team": "Team van {{n}}",
+        "perMonth": "/maand",
+        "perYear": "/jaar"
       }
     },
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 14 dagen geld-terug-garantie, zonder vragen.",

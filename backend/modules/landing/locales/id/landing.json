@@ -275,6 +275,13 @@
           "Setiap orang tetap punya tugas dan catatan pribadinya sendiri",
           "Satu langganan, dibayar oleh pemilik akun"
         ]
+      },
+      "picker": {
+        "label": "Untuk siapa?",
+        "solo": "Hanya saya",
+        "team": "Tim {{n}} orang",
+        "perMonth": "/bulan",
+        "perYear": "/tahun"
       }
     },
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
