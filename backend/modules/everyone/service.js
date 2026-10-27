@@ -8,7 +8,10 @@ const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const peopleRepository = require('../people/repository');
 const { getTaskIncludeConfig } = require('../tasks/queries/query-builders');
 const { summarize, buildColumns } = require('./core/columns');
+const moment = require('moment-timezone');
 const { getSafeTimezone } = require('../../utils/timezone-utils');
+const { serializeTasks } = require('../tasks/core/serializers');
+const { getDayHours } = require('../daily-plan/service');
 
 const HIDDEN_STATUSES = [
     Task.STATUS.DONE,
@@ -51,9 +54,8 @@ async function getProjectIds(userId) {
     };
 }
 
-async function getEveryoneDashboard(userId, timezone) {
-    const tz = getSafeTimezone(timezone);
-
+// The open tasks on the Everyone board and the people they belong to.
+async function collectBoardTasks(userId) {
     const collaboratorUserIds = await getWorkspaceUserIds(userId);
     const allUserIds = [userId, ...collaboratorUserIds];
 
@@ -149,6 +151,14 @@ async function getEveryoneDashboard(userId, timezone) {
         if (!personByUid[a.uid]) personByUid[a.uid] = a;
     }
 
+    return { tasks, userIdToSelfPersonUid, personByUid, personUidAlias };
+}
+
+async function getEveryoneDashboard(userId, timezone) {
+    const tz = getSafeTimezone(timezone);
+    const { tasks, userIdToSelfPersonUid, personByUid, personUidAlias } =
+        await collectBoardTasks(userId);
+
     const columns = await buildColumns(
         tasks,
         userId,
@@ -159,6 +169,122 @@ async function getEveryoneDashboard(userId, timezone) {
     );
 
     return { columns, summary: summarize(columns) };
+}
+
+// The Everyone board laid out over time: a lane per person with the tasks
+// whose start or due date falls in [from, from + days). The viewer's own
+// lane also holds their private tasks, which only they can see.
+async function getEveryoneTimeline(user, timezone, { from, days } = {}) {
+    const tz = getSafeTimezone(timezone);
+    const span = Math.min(Math.max(parseInt(days, 10) || 14, 1), 62);
+    const start =
+        from && moment(from, 'YYYY-MM-DD', true).isValid()
+            ? moment.tz(from, 'YYYY-MM-DD', tz)
+            : moment.tz(tz).startOf('day');
+    const windowStart = start.clone().startOf('day');
+    const windowEnd = start
+        .clone()
+        .add(span - 1, 'days')
+        .endOf('day');
+
+    const { tasks, userIdToSelfPersonUid, personByUid, personUidAlias } =
+        await collectBoardTasks(user.id);
+
+    const ownTasks = await Task.findAll({
+        where: {
+            [Op.and]: [
+                { user_id: user.id },
+                { status: { [Op.notIn]: HIDDEN_STATUSES } },
+                { parent_task_id: null },
+                { recurring_parent_id: null },
+                { habit_mode: false },
+                {
+                    [Op.or]: [
+                        { start_date: { [Op.ne]: null } },
+                        { due_date: { [Op.ne]: null } },
+                    ],
+                },
+            ],
+        },
+        include: getTaskIncludeConfig(),
+        distinct: true,
+    });
+    const seen = new Set(tasks.map((task) => task.id));
+    const allTasks = [
+        ...tasks,
+        ...ownTasks.filter((task) => !seen.has(task.id)),
+    ];
+    for (const task of allTasks) {
+        const a = task.AssignedTo;
+        if (a && !personUidAlias[a.uid] && !personByUid[a.uid]) {
+            personByUid[a.uid] = a;
+        }
+    }
+
+    const inWindow = (task) => {
+        const first = task.start_date || task.due_date;
+        const last = task.due_date || task.start_date;
+        if (!first) return false;
+        const lo = first < last ? first : last;
+        const hi = first < last ? last : first;
+        return (
+            moment(lo).isSameOrBefore(windowEnd) &&
+            moment(hi).isSameOrAfter(windowStart)
+        );
+    };
+
+    const selfPersonUid = userIdToSelfPersonUid[user.id] || null;
+    const byPerson = new Map();
+    for (const uid of Object.values(userIdToSelfPersonUid)) {
+        byPerson.set(uid, []);
+    }
+    for (const task of allTasks) {
+        if (!inWindow(task)) continue;
+        const assignedUid = task.assigned_to
+            ? personUidAlias[task.assigned_to] || task.assigned_to
+            : null;
+        const personUid =
+            assignedUid || userIdToSelfPersonUid[task.user_id] || null;
+        if (!personUid) continue;
+        if (!byPerson.has(personUid)) byPerson.set(personUid, []);
+        byPerson.get(personUid).push(task);
+    }
+
+    const lanes = [];
+    for (const [personUid, laneTasks] of byPerson.entries()) {
+        const person = personByUid[personUid];
+        if (!person) continue;
+        const isSelf = personUid === selfPersonUid;
+        if (laneTasks.length === 0 && !person.linked_user_id && !isSelf) {
+            continue;
+        }
+        lanes.push({
+            person: {
+                uid: person.uid,
+                name: person.name,
+                color: person.color || null,
+                linked_user_id: person.linked_user_id || null,
+            },
+            is_self: isSelf,
+            tasks: await serializeTasks(laneTasks, tz, {
+                preserveOriginalName: true,
+            }),
+        });
+    }
+    lanes.sort((a, b) => {
+        if (a.is_self !== b.is_self) return a.is_self ? -1 : 1;
+        const aLinked = a.person.linked_user_id != null;
+        const bLinked = b.person.linked_user_id != null;
+        if (aLinked !== bLinked) return aLinked ? -1 : 1;
+        return a.person.name.localeCompare(b.person.name);
+    });
+
+    return {
+        from: windowStart.format('YYYY-MM-DD'),
+        days: span,
+        day_hours: await getDayHours(user),
+        lanes,
+    };
 }
 
 // One group's board: a column per member, holding the tasks assigned to them
@@ -211,4 +337,4 @@ async function getGroupBoard(viewerId, memberUserIds, timezone) {
     return { columns, summary: summarize(columns) };
 }
 
-module.exports = { getEveryoneDashboard, getGroupBoard };
+module.exports = { getEveryoneDashboard, getEveryoneTimeline, getGroupBoard };

@@ -3124,6 +3124,27 @@
     "legendOverdue": "Quá hạn",
     "saveError": "Không thể di chuyển công việc",
     "dueOn": "Hạn {{date}}",
-    "startsOn": "Bắt đầu {{date}}"
+    "startsOn": "Bắt đầu {{date}}",
+    "noLinks": "Đánh dấu công việc là chặn công việc khác để xem đường đến đích"
+  },
+  "everyoneTimeline": {
+    "view": "Chế độ xem",
+    "board": "Bảng",
+    "subtitle": "Ai làm gì trong những tuần tới",
+    "earlier": "Trước",
+    "later": "Sau",
+    "twoWeeks": "2 tuần",
+    "fourWeeks": "4 tuần",
+    "loadError": "Không thể tải dòng thời gian.",
+    "planned": "Đã lên kế hoạch {{hours}}",
+    "daysOver": "Quá tải {{count}} ngày",
+    "loadTitle": "{{hours}} / {{capacity}} đã lên kế hoạch",
+    "legendLoad": "Số giờ từ ước tính công việc, chia từ ngày bắt đầu đến hạn",
+    "legendOver": "Nhiều hơn ngày làm việc {{hours}} của bạn",
+    "dragHint": "Kéo thanh để di chuyển, kéo hai đầu để đổi ngày, hoặc thả vào người khác để giao việc",
+    "oneWeek": "1 tuần",
+    "eightWeeks": "8 tuần",
+    "zoomIn": "Phóng to",
+    "zoomOut": "Thu nhỏ"
   }
 }

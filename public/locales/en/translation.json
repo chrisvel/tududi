@@ -3526,6 +3526,27 @@
     "legendOverdue": "Overdue",
     "saveError": "Could not move the task",
     "dueOn": "Due {{date}}",
-    "startsOn": "Starts {{date}}"
+    "startsOn": "Starts {{date}}",
+    "noLinks": "Mark tasks as blocking other tasks to see the path to the finish"
+  },
+  "everyoneTimeline": {
+    "view": "View",
+    "board": "Board",
+    "subtitle": "Who is doing what over the coming weeks",
+    "earlier": "Earlier",
+    "later": "Later",
+    "twoWeeks": "2 weeks",
+    "fourWeeks": "4 weeks",
+    "loadError": "Could not load the timeline.",
+    "planned": "{{hours}} planned",
+    "daysOver": "{{count}} days over",
+    "loadTitle": "{{hours}} of {{capacity}} planned",
+    "legendLoad": "Hours from task estimates, spread from start to due",
+    "legendOver": "More than your {{hours}} planning day",
+    "dragHint": "Drag a bar to move it, its ends to change the dates, or onto another person to assign it",
+    "oneWeek": "1 week",
+    "eightWeeks": "8 weeks",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   }
 }

@@ -3124,6 +3124,27 @@
     "legendOverdue": "已逾期",
     "saveError": "无法移动任务",
     "dueOn": "截止 {{date}}",
-    "startsOn": "开始 {{date}}"
+    "startsOn": "开始 {{date}}",
+    "noLinks": "将任务标记为阻塞其他任务，即可查看到完成的路径"
+  },
+  "everyoneTimeline": {
+    "view": "视图",
+    "board": "看板",
+    "subtitle": "接下来几周谁在做什么",
+    "earlier": "更早",
+    "later": "更晚",
+    "twoWeeks": "2 周",
+    "fourWeeks": "4 周",
+    "loadError": "无法加载时间线。",
+    "planned": "已计划 {{hours}}",
+    "daysOver": "超出 {{count}} 天",
+    "loadTitle": "已计划 {{hours}} / {{capacity}}",
+    "legendLoad": "按任务预估计算的小时数，从开始到截止平均分配",
+    "legendOver": "超过你 {{hours}} 的计划工作日",
+    "dragHint": "拖动条形以移动，拖动两端以更改日期，或拖到其他人以分配",
+    "oneWeek": "1 周",
+    "eightWeeks": "8 周",
+    "zoomIn": "放大",
+    "zoomOut": "缩小"
   }
 }

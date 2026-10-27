@@ -3149,6 +3149,27 @@
         "legendOverdue": "Po termíne",
         "saveError": "Úlohu sa nepodarilo presunúť",
         "dueOn": "Termín {{date}}",
-        "startsOn": "Začína {{date}}"
+        "startsOn": "Začína {{date}}",
+        "noLinks": "Označte úlohy ako blokujúce iné úlohy, aby ste videli cestu do konca"
+    },
+    "everyoneTimeline": {
+        "view": "Zobrazenie",
+        "board": "Tabuľa",
+        "subtitle": "Kto čo robí v nasledujúcich týždňoch",
+        "earlier": "Skôr",
+        "later": "Neskôr",
+        "twoWeeks": "2 týždne",
+        "fourWeeks": "4 týždne",
+        "loadError": "Časovú os sa nepodarilo načítať.",
+        "planned": "{{hours}} naplánované",
+        "daysOver": "{{count}} dní nad",
+        "loadTitle": "{{hours}} z {{capacity}} naplánované",
+        "legendLoad": "Hodiny z odhadov úloh, rozložené od začiatku po termín",
+        "legendOver": "Viac ako váš plánovací deň {{hours}}",
+        "dragHint": "Potiahnite pruh na presun, jeho okraje na zmenu dátumov alebo na inú osobu na priradenie",
+        "oneWeek": "1 týždeň",
+        "eightWeeks": "8 týždňov",
+        "zoomIn": "Priblížiť",
+        "zoomOut": "Oddialiť"
     }
 }

@@ -3134,6 +3134,27 @@
     "legendOverdue": "Întârziate",
     "saveError": "Sarcina nu a putut fi mutată",
     "dueOn": "Termen {{date}}",
-    "startsOn": "Începe {{date}}"
+    "startsOn": "Începe {{date}}",
+    "noLinks": "Marchează sarcinile ca blocând alte sarcini pentru a vedea drumul până la final"
+  },
+  "everyoneTimeline": {
+    "view": "Vizualizare",
+    "board": "Panou",
+    "subtitle": "Cine ce face în săptămânile următoare",
+    "earlier": "Mai devreme",
+    "later": "Mai târziu",
+    "twoWeeks": "2 săptămâni",
+    "fourWeeks": "4 săptămâni",
+    "loadError": "Cronologia nu a putut fi încărcată.",
+    "planned": "{{hours}} planificate",
+    "daysOver": "{{count}} zile peste",
+    "loadTitle": "{{hours}} din {{capacity}} planificate",
+    "legendLoad": "Ore din estimările sarcinilor, împărțite de la început la termen",
+    "legendOver": "Mai mult decât ziua ta de planificare de {{hours}}",
+    "dragHint": "Trage o bară pentru a o muta, capetele ei pentru a schimba datele sau peste altă persoană pentru a i-o atribui",
+    "oneWeek": "1 săptămână",
+    "eightWeeks": "8 săptămâni",
+    "zoomIn": "Mărește",
+    "zoomOut": "Micșorează"
   }
 }

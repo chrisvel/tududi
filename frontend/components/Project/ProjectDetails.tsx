@@ -57,6 +57,7 @@ import {
     TaskStatusFilter,
 } from '../../constants/taskStatus';
 import { saveProjectAsTemplate } from '../../utils/templatesService';
+import TaskModal from '../Task/TaskModal';
 
 const ProjectDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -69,6 +70,7 @@ const ProjectDetails: React.FC = () => {
     const [allProjects, setAllProjects] = useState<Project[]>([]);
     const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [panelTask, setPanelTask] = useState<Task | null>(null);
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -234,7 +236,9 @@ const ProjectDetails: React.FC = () => {
                 )
             );
         } catch {
-            showErrorToast(t('projectTimeline.saveError', 'Could not move the task'));
+            showErrorToast(
+                t('projectTimeline.saveError', 'Could not move the task')
+            );
         }
     };
 
@@ -757,7 +761,10 @@ const ProjectDetails: React.FC = () => {
                                     >
                                         {tab === 'tasks'
                                             ? t('tasks.title', 'Tasks')
-                                            : t('projectTimeline.title', 'Timeline')}
+                                            : t(
+                                                  'projectTimeline.title',
+                                                  'Timeline'
+                                              )}
                                     </button>
                                 ))}
                             </div>
@@ -878,6 +885,7 @@ const ProjectDetails: React.FC = () => {
                                     tasks={displayTasks}
                                     links={project.task_links || []}
                                     onDatesChange={handleTaskDatesChange}
+                                    onOpenTask={setPanelTask}
                                     t={t}
                                 />
                             ) : (
@@ -927,6 +935,23 @@ const ProjectDetails: React.FC = () => {
                             )}
                         </>
                     }
+
+                    {panelTask && (
+                        <TaskModal
+                            isOpen
+                            onClose={() => setPanelTask(null)}
+                            task={panelTask}
+                            onSaved={(fresh) =>
+                                setTasks((prev) =>
+                                    prev.map((item) =>
+                                        item.uid === fresh.uid
+                                            ? { ...item, ...fresh }
+                                            : item
+                                    )
+                                )
+                            }
+                        />
+                    )}
 
                     {previewNote && (
                         <NoteSidePanel

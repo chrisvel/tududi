@@ -3127,6 +3127,27 @@
     "legendOverdue": "Forsinket",
     "saveError": "Opgaven kunne ikke flyttes",
     "dueOn": "Forfalder {{date}}",
-    "startsOn": "Starter {{date}}"
+    "startsOn": "Starter {{date}}",
+    "noLinks": "Markér opgaver som blokerende for andre opgaver for at se vejen til målet"
+  },
+  "everyoneTimeline": {
+    "view": "Visning",
+    "board": "Tavle",
+    "subtitle": "Hvem laver hvad de kommende uger",
+    "earlier": "Tidligere",
+    "later": "Senere",
+    "twoWeeks": "2 uger",
+    "fourWeeks": "4 uger",
+    "loadError": "Tidslinjen kunne ikke indlæses.",
+    "planned": "{{hours}} planlagt",
+    "daysOver": "{{count}} dage for meget",
+    "loadTitle": "{{hours}} af {{capacity}} planlagt",
+    "legendLoad": "Timer fra opgaveestimater, fordelt fra start til forfald",
+    "legendOver": "Mere end din planlægningsdag på {{hours}}",
+    "dragHint": "Træk en bjælke for at flytte den, dens ender for at ændre datoerne, eller over på en anden person for at tildele den",
+    "oneWeek": "1 uge",
+    "eightWeeks": "8 uger",
+    "zoomIn": "Zoom ind",
+    "zoomOut": "Zoom ud"
   }
 }
