@@ -113,6 +113,7 @@ const Feedback = require('./feedback')(sequelize);
 const PushSubscription = require('./push_subscription')(sequelize);
 const Webhook = require('./webhook')(sequelize);
 const WebhookDelivery = require('./webhook_delivery')(sequelize);
+const ImportJob = require('./import_job')(sequelize);
 const Account = require('./account')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
@@ -135,6 +136,8 @@ Webhook.hasMany(WebhookDelivery, {
     onDelete: 'CASCADE',
 });
 WebhookDelivery.belongsTo(Webhook, { foreignKey: 'webhook_id', as: 'Webhook' });
+User.hasMany(ImportJob, { foreignKey: 'user_id', as: 'ImportJobs' });
+ImportJob.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 
 User.hasMany(Area, { foreignKey: 'user_id' });
 Area.belongsTo(User, { foreignKey: 'user_id' });
@@ -722,4 +725,5 @@ module.exports = {
     PushSubscription,
     Webhook,
     WebhookDelivery,
+    ImportJob,
 };

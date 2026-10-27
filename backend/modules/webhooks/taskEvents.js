@@ -88,9 +88,12 @@ async function afterCommit(options, fn) {
     await fn();
 }
 
-function skip(task) {
-    // Habits are tasks underneath; their check-ins are not task changes.
+function skip(task, options) {
+    // Habits are tasks underneath; their check-ins are not task changes. A
+    // spreadsheet import writes rows in bulk and passes skipWebhooks, so a
+    // receiver is not flooded with one event per row.
     return (
+        options?.skipWebhooks ||
         !task?.user_id ||
         task.habit_mode ||
         dispatcher.knownToHaveNone(task.user_id)
@@ -98,12 +101,12 @@ function skip(task) {
 }
 
 function onCreate(task, options) {
-    if (skip(task)) return undefined;
+    if (skip(task, options)) return undefined;
     return afterCommit(options, () => send('task.created', task));
 }
 
 function onUpdate(task, options) {
-    if (skip(task)) return undefined;
+    if (skip(task, options)) return undefined;
     const changed = (task.changed() || []).filter((field) =>
         WATCHED_FIELDS.includes(field)
     );
@@ -126,7 +129,7 @@ function onUpdate(task, options) {
 }
 
 function onDestroy(task, options) {
-    if (skip(task)) return undefined;
+    if (skip(task, options)) return undefined;
     const snapshot = Task.build(task.get({ plain: true }), {
         isNewRecord: false,
     });

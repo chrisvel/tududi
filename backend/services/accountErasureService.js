@@ -51,6 +51,7 @@ const {
     PushSubscription,
     Webhook,
     WebhookDelivery,
+    ImportJob,
     SiteVisit,
     EmailDelivery,
 } = require('../models');
@@ -245,6 +246,7 @@ async function eraseUserAccount(userId) {
             });
         }
         await Webhook.destroy(byUser);
+        await ImportJob.destroy(byUser);
         await SiteVisit.destroy(byUser);
         await EmailDelivery.destroy(byUser);
         // Emails this account sent by hand as an admin stay in the log.

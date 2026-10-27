@@ -58,6 +58,7 @@ const OPEN_WITHOUT_SUBSCRIPTION = [
     /^\/backup\/export$/,
     /^\/backup\/list$/,
     /^\/backup\/[^/]+\/download$/,
+    /^\/export\/tasks$/,
     // Someone stuck at the paywall can still tell us something is wrong.
     /^\/feedback$/,
 ];

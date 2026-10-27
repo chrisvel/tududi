@@ -35,11 +35,13 @@ import {
     PlusIcon,
     RectangleStackIcon,
     ClockIcon,
+    ArrowUpTrayIcon,
 } from '@heroicons/react/24/outline';
 import ProjectItem from './Project/ProjectItem';
 import { PROJECT_TABLE_GRID } from './Project/projectTableLayout';
 import SortableItem from './Shared/SortableItem';
 import NewItemButton from './Shared/NewItemButton';
+import ImportWizard from './Spreadsheet/ImportWizard';
 import BlankSlate from './Shared/BlankSlate';
 import { projectMatchesFocus, useFocus } from '../utils/focus';
 import FocusEmptyHint from './Focus/FocusEmptyHint';
@@ -178,6 +180,7 @@ const Projects: React.FC = () => {
         useState<Project | null>(null);
     const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] =
         useState<boolean>(false);
+    const [isImportOpen, setIsImportOpen] = useState(false);
     const [shareModal, setShareModal] = useState<{
         isOpen: boolean;
         project: Project | null;
@@ -898,6 +901,30 @@ const Projects: React.FC = () => {
                             </Link>
                         )}
                         {canCreateProjects && (
+                            <button
+                                type="button"
+                                onClick={() => setIsImportOpen(true)}
+                                aria-label={t(
+                                    'spreadsheet.menu.importShort',
+                                    'Import'
+                                )}
+                                title={t(
+                                    'spreadsheet.menu.importHint',
+                                    'Import projects and tasks from Excel or CSV'
+                                )}
+                                className="flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-2 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 shadow-sm text-sm font-medium text-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                                data-testid="projects-import-button"
+                            >
+                                <ArrowUpTrayIcon className="h-5 w-5 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">
+                                    {t(
+                                        'spreadsheet.menu.importShort',
+                                        'Import'
+                                    )}
+                                </span>
+                            </button>
+                        )}
+                        {canCreateProjects && (
                             <NewItemButton
                                 label={t('projects.new', 'New Project')}
                                 onClick={handleNewProject}
@@ -1160,6 +1187,15 @@ const Projects: React.FC = () => {
                         setShareModal({ isOpen: false, project: null })
                     }
                     project={shareModal.project}
+                />
+            )}
+
+            {isImportOpen && (
+                <ImportWizard
+                    onClose={() => setIsImportOpen(false)}
+                    onImported={async () =>
+                        setProjects(await fetchProjects('all', ''))
+                    }
                 />
             )}
 
