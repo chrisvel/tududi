@@ -2616,7 +2616,8 @@
       "note": "Notizen",
       "storage": "Speicher für Anhänge",
       "ai": "KI-Anfragen heute",
-      "aiCredits": "KI-Guthaben diesen Monat"
+      "aiCredits": "KI-Guthaben diesen Monat",
+      "member": "Mitglieder"
     },
     "feature": {
       "ai": "den KI-Assistenten",
@@ -2630,7 +2631,18 @@
     },
     "seatCovered": "Dein Platz wird von {{name}} bezahlt.",
     "workspaceOwner": "der Inhaberin oder dem Inhaber des Arbeitsbereichs",
-    "seats": "{{count}} Plätze in deinem Abonnement: du und {{members}} weitere."
+    "teamName": "Team ({{seats}} Plätze)",
+    "seatsUsed": "{{used}} von {{seats}} Plätzen belegt.",
+    "seatsFullHint": "Für mehr wechsle unter „Abo verwalten“ zu einem größeren Team-Tarif.",
+    "justMe": "Nur ich",
+    "team": "Team",
+    "teamSize": "Teamgröße",
+    "upToSeats": "Bis zu {{seats}} Personen",
+    "pricePerMonth": "{{price}} pro Monat",
+    "pricePerYear": "{{price}} pro Jahr",
+    "perSeatNote": "({{seats}} Plätze, du eingeschlossen)",
+    "membersNeedTeam": "Pro ist für eine Person. Mit einem Team-Tarif kannst du Mitglieder hinzufügen, ab 3 Plätzen.",
+    "seatsFull": "Alle {{seats}} Plätze deines Tarifs sind belegt. Wechsle zu einem größeren Team-Tarif, um weitere Personen hinzuzufügen."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2665,7 +2677,11 @@
     "trialLock": {
       "webhooks": "Webhooks sind nicht Teil der kostenlosen Testphase. Abonnieren Sie, um Ereignisse an Ihre eigenen Dienste zu senden."
     },
-    "lockedWebhooks": "Webhooks sind Teil des kostenpflichtigen Plans."
+    "lockedWebhooks": "Webhooks sind Teil des kostenpflichtigen Plans.",
+    "whoFor": "Für wen ist es?",
+    "justMe": "Nur ich (Pro)",
+    "teamOf": "Ein Team mit bis zu {{seats}} Personen",
+    "perSeat": "{{price}} pro Person im Monat, {{seats}} Plätze inklusive dir"
   },
   "demo": {
     "opening": "Öffne die Demo...",
@@ -2731,13 +2747,13 @@
     "giveAccount": "Konto geben",
     "nameRequiredWithoutEmail": "Gib einen Namen ein, wenn es keine E-Mail-Adresse gibt",
     "failedToAdd": "Mitglied konnte nicht hinzugefügt werden",
-    "seatNote": "Jedes Mitglied ist ein weiterer Platz in deinem Abonnement. Die Änderung wird anteilig mit der nächsten Rechnung verrechnet, und wenn du ein Mitglied entfernst, wird der Platz wieder frei.",
+    "seatNote": "Jedes Mitglied belegt einen Platz deines Tarifs. Wenn du ein Mitglied entfernst, wird der Platz für jemand anderen frei.",
     "editTitle": "Mitglied bearbeiten",
     "nameRequired": "Gib einen Namen ein",
     "failedToUpdate": "Mitglied konnte nicht aktualisiert werden",
     "addEmailHint": "Mit einer E-Mail-Adresse erhält die Person eine Einladung, ein Passwort festzulegen. Sie kann danach nicht mehr geändert werden.",
     "remove": "Mitglied entfernen",
-    "removeConfirm": "{{name}} entfernen? Das Konto und alles darin wird gelöscht, und das lässt sich nicht rückgängig machen. Bei tududi Cloud wird der Platz aus deinem Abonnement entfernt.",
+    "removeConfirm": "{{name}} entfernen? Das Konto und alles darin wird gelöscht, und das lässt sich nicht rückgängig machen. Bei tududi Cloud wird der Platz für jemand anderen frei.",
     "removed": "Mitglied entfernt",
     "updated": "Mitglied aktualisiert",
     "invitationSent": "Einladung gesendet",

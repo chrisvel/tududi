@@ -24,6 +24,13 @@ export interface CreatedMember {
     email_sent: boolean;
 }
 
+export class PlanLimitShownError extends Error {
+    constructor() {
+        super('Plan limit reached');
+        this.name = 'PlanLimitShownError';
+    }
+}
+
 export const createMember = async (
     input: MemberInput
 ): Promise<CreatedMember> => {
@@ -37,7 +44,9 @@ export const createMember = async (
         body: JSON.stringify(input),
     });
     if (!response.ok) {
-        await handlePlanLimit(response);
+        // The upgrade dialog already explains a plan limit, so the caller
+        // should not show the same message again.
+        if (await handlePlanLimit(response)) throw new PlanLimitShownError();
         let message = 'Failed to add member.';
         try {
             const body = await response.json();

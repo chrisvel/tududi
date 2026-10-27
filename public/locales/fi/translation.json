@@ -2607,7 +2607,8 @@
       "note": "muistiinpanoa",
       "storage": "liitteiden tallennustila",
       "ai": "tekoälypyyntöä tänään",
-      "aiCredits": "AI-krediitit tässä kuussa"
+      "aiCredits": "AI-krediitit tässä kuussa",
+      "member": "jäsentä"
     },
     "feature": {
       "ai": "tekoälyavustaja",
@@ -2621,7 +2622,18 @@
     },
     "seatCovered": "Paikkasi maksaa {{name}}.",
     "workspaceOwner": "työtilan omistaja",
-    "seats": "{{count}} paikkaa tilauksessasi: sinä ja {{members}} muuta."
+    "teamName": "Tiimi ({{seats}} paikkaa)",
+    "seatsUsed": "{{used}}/{{seats}} paikkaa käytössä.",
+    "seatsFullHint": "Jos tarvitset lisää, vaihda isompaan Tiimi-tilaukseen kohdassa ”Hallitse tilausta”.",
+    "justMe": "Vain minä",
+    "team": "Tiimi",
+    "teamSize": "Tiimin koko",
+    "upToSeats": "Enintään {{seats}} henkeä",
+    "pricePerMonth": "{{price}} kuukaudessa",
+    "pricePerYear": "{{price}} vuodessa",
+    "perSeatNote": "({{seats}} paikkaa, sinä mukaan lukien)",
+    "membersNeedTeam": "Pro on yhdelle henkilölle. Tiimi-tilauksella voit lisätä jäseniä, 3 paikasta alkaen.",
+    "seatsFull": "Kaikki tilauksesi {{seats}} paikkaa ovat käytössä. Vaihda isompaan Tiimi-tilaukseen lisätäksesi ihmisiä."
   },
   "subscription": {
     "title": "Tilauksen",
@@ -2656,7 +2668,11 @@
     "trialLock": {
       "webhooks": "Webhookit eivät sisälly ilmaiseen kokeilujaksoon. Tilaa, niin voit lähettää tapahtumia omiin palveluihisi."
     },
-    "lockedWebhooks": "Webhookit kuuluvat maksulliseen tilaukseen."
+    "lockedWebhooks": "Webhookit kuuluvat maksulliseen tilaukseen.",
+    "whoFor": "Kenelle se on?",
+    "justMe": "Vain minä (Pro)",
+    "teamOf": "Enintään {{seats}} hengen tiimi",
+    "perSeat": "{{price}} per henkilö kuukaudessa, {{seats}} paikkaa sinä mukaan lukien"
   },
   "demo": {
     "opening": "Avaamassa demoa...",
@@ -2722,13 +2738,13 @@
     "giveAccount": "Anna tili",
     "nameRequiredWithoutEmail": "Anna nimi, kun sähköpostia ei ole",
     "failedToAdd": "Jäsenen lisääminen epäonnistui",
-    "seatNote": "Jokainen jäsen on yksi paikka lisää tilauksessasi. Muutos laskutetaan suhteutettuna seuraavassa laskussa, ja jäsenen poistaminen vapauttaa paikan.",
+    "seatNote": "Jokainen jäsen vie yhden tilauksesi paikan. Jäsenen poistaminen vapauttaa paikan jollekulle toiselle.",
     "editTitle": "Muokkaa jäsentä",
     "nameRequired": "Anna nimi",
     "failedToUpdate": "Jäsenen päivittäminen epäonnistui",
     "addEmailHint": "Kun lisäät sähköpostiosoitteen, hän saa kutsun salasanan asettamiseen. Osoitetta ei voi muuttaa jälkikäteen.",
     "remove": "Poista jäsen",
-    "removeConfirm": "Poistetaanko {{name}}? Tili ja kaikki sen sisältö poistetaan, eikä tätä voi perua. tududi Cloudissa paikka poistetaan tilauksestasi.",
+    "removeConfirm": "Poistetaanko {{name}}? Tili ja kaikki sen sisältö poistetaan, eikä tätä voi perua. tududi Cloudissa paikka vapautuu jollekulle toiselle.",
     "removed": "Jäsen poistettu",
     "updated": "Jäsen päivitetty",
     "invitationSent": "Kutsu lähetetty",

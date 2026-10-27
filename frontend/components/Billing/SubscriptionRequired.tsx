@@ -11,6 +11,11 @@ import {
     syncCheckout,
 } from '../../utils/billingService';
 import type { BillingCatalog, BillingStatus } from '../../entities/Billing';
+import {
+    planLabel,
+    planPrice,
+    purchasablePlans,
+} from '../../utils/billingPlans';
 
 type Interval = 'month' | 'year';
 
@@ -24,6 +29,7 @@ const SubscriptionRequired: React.FC = () => {
     const [status, setStatus] = useState<BillingStatus | null>(null);
     const [catalog, setCatalog] = useState<BillingCatalog | null>(null);
     const [interval, setIntervalChoice] = useState<Interval>('year');
+    const [planKey, setPlanKey] = useState('pro');
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -76,7 +82,7 @@ const SubscriptionRequired: React.FC = () => {
         setBusy(true);
         setError(null);
         try {
-            const url = await startCheckout(interval);
+            const url = await startCheckout(interval, planKey);
             window.location.assign(url);
         } catch (err: any) {
             setError(err.message || 'Could not start the checkout');
@@ -108,6 +114,12 @@ const SubscriptionRequired: React.FC = () => {
               }).format(amount);
 
     const pro = catalog?.plans.find((p) => p.key === 'pro');
+    const plans = status ? purchasablePlans(status) : [];
+    const teamPlans = plans.filter((p) => p.key !== 'pro');
+    const chosen = plans.find((p) => p.key === planKey) || {
+        key: 'pro',
+        seats: 1,
+    };
     const onTrial = status?.reason === 'trial';
     const readOnly = !!status?.read_only;
     const formatDate = (value?: string | null) =>
@@ -164,10 +176,7 @@ const SubscriptionRequired: React.FC = () => {
     const perks = [
         t('subscription.perkUnlimited', 'Unlimited tasks, projects and notes'),
         t('subscription.perkStorage', 'Attachments and file uploads'),
-        t(
-            'subscription.perkFeatures',
-            'AI assistant, MCP and CalDAV sync'
-        ),
+        t('subscription.perkFeatures', 'AI assistant, MCP and CalDAV sync'),
         t('subscription.perkBackups', 'Daily backups and managed updates'),
         t('subscription.perkExport', 'Export everything at any time'),
     ];
@@ -252,9 +261,53 @@ const SubscriptionRequired: React.FC = () => {
                                     </div>
                                 )}
 
+                            {teamPlans.length > 0 && (
+                                <div className="mb-4">
+                                    <label
+                                        htmlFor="subscription-plan"
+                                        className="block text-sm text-gray-500 dark:text-gray-400 mb-1"
+                                    >
+                                        {t(
+                                            'subscription.whoFor',
+                                            'Who is it for?'
+                                        )}
+                                    </label>
+                                    <select
+                                        id="subscription-plan"
+                                        value={chosen.key}
+                                        onChange={(e) =>
+                                            setPlanKey(e.target.value)
+                                        }
+                                        className="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        data-testid="subscription-plan"
+                                    >
+                                        <option value="pro">
+                                            {t(
+                                                'subscription.justMe',
+                                                'Just me (Pro)'
+                                            )}
+                                        </option>
+                                        {teamPlans.map((p) => (
+                                            <option key={p.key} value={p.key}>
+                                                {t('subscription.teamOf', {
+                                                    defaultValue:
+                                                        'A team of up to {{seats}} people',
+                                                    seats: p.seats,
+                                                })}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
                             <div className="mb-6">
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    {pro?.name || 'Pro'}
+                                    {planLabel(
+                                        t,
+                                        chosen.key,
+                                        chosen.seats,
+                                        pro?.name
+                                    )}
                                 </p>
                                 <p className="text-3xl font-bold text-gray-900 dark:text-white">
                                     {interval === 'month'
@@ -262,17 +315,41 @@ const SubscriptionRequired: React.FC = () => {
                                               defaultValue:
                                                   '{{price}} per month',
                                               price: money(
-                                                  status?.pricing?.monthly
+                                                  status
+                                                      ? planPrice(
+                                                            status,
+                                                            chosen.seats,
+                                                            'month'
+                                                        )
+                                                      : undefined
                                               ),
                                           })
                                         : t('subscription.priceYearly', {
                                               defaultValue:
                                                   '{{price}} per year',
                                               price: money(
-                                                  status?.pricing?.annual
+                                                  status
+                                                      ? planPrice(
+                                                            status,
+                                                            chosen.seats,
+                                                            'year'
+                                                        )
+                                                      : undefined
                                               ),
                                           })}
                                 </p>
+                                {chosen.seats > 1 && (
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                        {t('subscription.perSeat', {
+                                            defaultValue:
+                                                '{{price}} per person a month, {{seats}} seats including you',
+                                            price: money(
+                                                status?.pricing?.monthly
+                                            ),
+                                            seats: chosen.seats,
+                                        })}
+                                    </p>
+                                )}
                             </div>
 
                             <ul className="space-y-2 mb-8">

@@ -2610,7 +2610,8 @@
       "note": "notes",
       "storage": "stockage des pièces jointes",
       "ai": "requêtes IA aujourd'hui",
-      "aiCredits": "Crédits IA ce mois-ci"
+      "aiCredits": "Crédits IA ce mois-ci",
+      "member": "membres"
     },
     "feature": {
       "ai": "l'assistant IA",
@@ -2624,7 +2625,18 @@
     },
     "seatCovered": "Votre place est payée par {{name}}.",
     "workspaceOwner": "la personne propriétaire de l'espace de travail",
-    "seats": "{{count}} places sur votre abonnement : vous et {{members}} de plus."
+    "teamName": "Équipe ({{seats}} places)",
+    "seatsUsed": "{{used}} places utilisées sur {{seats}}.",
+    "seatsFullHint": "Pour plus de places, passez à un forfait Équipe plus grand depuis « Gérer l'abonnement ».",
+    "justMe": "Juste moi",
+    "team": "Équipe",
+    "teamSize": "Taille de l'équipe",
+    "upToSeats": "Jusqu'à {{seats}} personnes",
+    "pricePerMonth": "{{price}} par mois",
+    "pricePerYear": "{{price}} par an",
+    "perSeatNote": "({{seats}} places, vous compris)",
+    "membersNeedTeam": "Pro est pour une personne. Un forfait Équipe vous permet d'ajouter des membres, à partir de 3 places.",
+    "seatsFull": "Les {{seats}} places de votre forfait sont utilisées. Passez à un forfait Équipe plus grand pour ajouter d'autres personnes."
   },
   "subscription": {
     "title": "Abonnement",
@@ -2659,7 +2671,11 @@
     "trialLock": {
       "webhooks": "Les webhooks ne font pas partie de l'essai gratuit. Abonnez-vous pour envoyer des événements à vos propres services."
     },
-    "lockedWebhooks": "Les webhooks font partie de l'offre payante."
+    "lockedWebhooks": "Les webhooks font partie de l'offre payante.",
+    "whoFor": "Pour qui ?",
+    "justMe": "Juste moi (Pro)",
+    "teamOf": "Une équipe de {{seats}} personnes maximum",
+    "perSeat": "{{price}} par personne et par mois, {{seats}} places vous compris"
   },
   "demo": {
     "opening": "Ouverture de la démo...",
@@ -2725,13 +2741,13 @@
     "giveAccount": "Donner un compte",
     "nameRequiredWithoutEmail": "Saisissez un nom quand il n'y a pas d'e-mail",
     "failedToAdd": "Échec de l'ajout du membre",
-    "seatNote": "Chaque membre est une place de plus sur votre abonnement. Le changement est calculé au prorata sur votre prochaine facture, et retirer un membre libère la place.",
+    "seatNote": "Chaque membre occupe une place de votre forfait. Retirer un membre libère la place pour quelqu'un d'autre.",
     "editTitle": "Modifier le membre",
     "nameRequired": "Saisissez un nom",
     "failedToUpdate": "Impossible de modifier le membre",
     "addEmailHint": "Ajouter une adresse e-mail lui envoie une invitation pour choisir un mot de passe. Elle ne pourra plus être modifiée ensuite.",
     "remove": "Retirer le membre",
-    "removeConfirm": "Retirer {{name}} ? Son compte et tout son contenu sont supprimés, et c'est définitif. Sur tududi Cloud, sa place est retirée de votre abonnement.",
+    "removeConfirm": "Retirer {{name}} ? Son compte et tout son contenu sont supprimés, et c'est définitif. Sur tududi Cloud, sa place se libère pour quelqu'un d'autre.",
     "removed": "Membre retiré",
     "updated": "Membre modifié",
     "invitationSent": "Invitation envoyée",

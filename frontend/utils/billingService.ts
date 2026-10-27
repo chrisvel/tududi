@@ -38,13 +38,14 @@ export const fetchBillingCatalog = async (): Promise<BillingCatalog> => {
 };
 
 export const startCheckout = async (
-    interval: 'month' | 'year'
+    interval: 'month' | 'year',
+    plan: string = 'pro'
 ): Promise<string> => {
     const response = await fetch(getApiPath('billing/checkout'), {
         method: 'POST',
         credentials: 'include',
         headers: await getPostHeadersWithCsrf(),
-        body: JSON.stringify({ interval }),
+        body: JSON.stringify({ interval, plan }),
     });
     await handleAuthResponse(response, 'Failed to start checkout.');
     const data = await response.json();

@@ -2607,7 +2607,8 @@
       "note": "anteckningar",
       "storage": "lagringsutrymme för bilagor",
       "ai": "AI-förfrågningar idag",
-      "aiCredits": "AI-krediter den här månaden"
+      "aiCredits": "AI-krediter den här månaden",
+      "member": "medlemmar"
     },
     "feature": {
       "ai": "AI-assistenten",
@@ -2621,7 +2622,18 @@
     },
     "seatCovered": "Din plats betalas av {{name}}.",
     "workspaceOwner": "arbetsytans ägare",
-    "seats": "{{count}} platser i ditt abonnemang: du och {{members}} till."
+    "teamName": "Team ({{seats}} platser)",
+    "seatsUsed": "{{used}} av {{seats}} platser används.",
+    "seatsFullHint": "Vill du ha fler, byt till ett större Team-abonnemang under \"Hantera prenumeration\".",
+    "justMe": "Bara jag",
+    "team": "Team",
+    "teamSize": "Teamstorlek",
+    "upToSeats": "Upp till {{seats}} personer",
+    "pricePerMonth": "{{price}} i månaden",
+    "pricePerYear": "{{price}} om året",
+    "perSeatNote": "({{seats}} platser, du inräknad)",
+    "membersNeedTeam": "Pro är för en person. Med ett Team-abonnemang kan du lägga till medlemmar, från 3 platser och uppåt.",
+    "seatsFull": "Alla {{seats}} platser i ditt abonnemang används. Byt till ett större Team-abonnemang för att lägga till fler personer."
   },
   "subscription": {
     "title": "Prenumeration",
@@ -2656,7 +2668,11 @@
     "trialLock": {
       "webhooks": "Webhooks ingår inte i den kostnadsfria provperioden. Prenumerera för att skicka händelser till dina egna tjänster."
     },
-    "lockedWebhooks": "Webhooks ingår i den betalda planen."
+    "lockedWebhooks": "Webhooks ingår i den betalda planen.",
+    "whoFor": "Vem är det för?",
+    "justMe": "Bara jag (Pro)",
+    "teamOf": "Ett team på upp till {{seats}} personer",
+    "perSeat": "{{price}} per person i månaden, {{seats}} platser inklusive dig"
   },
   "demo": {
     "opening": "Öppnar demon...",
@@ -2722,13 +2738,13 @@
     "giveAccount": "Ge konto",
     "nameRequiredWithoutEmail": "Ange ett namn när det inte finns någon e-postadress",
     "failedToAdd": "Det gick inte att lägga till medlemmen",
-    "seatNote": "Varje medlem är en plats till i ditt abonnemang. Ändringen proportioneras på nästa faktura, och när du tar bort en medlem frigörs platsen.",
+    "seatNote": "Varje medlem tar en plats i ditt abonnemang. När du tar bort en medlem blir platsen ledig för någon annan.",
     "editTitle": "Redigera medlem",
     "nameRequired": "Ange ett namn",
     "failedToUpdate": "Det gick inte att uppdatera medlemmen",
     "addEmailHint": "När du lägger till en e-postadress får personen en inbjudan att välja ett lösenord. Den kan inte ändras efteråt.",
     "remove": "Ta bort medlem",
-    "removeConfirm": "Ta bort {{name}}? Kontot och allt i det raderas, och det går inte att ångra. På tududi Cloud tas platsen bort från ditt abonnemang.",
+    "removeConfirm": "Ta bort {{name}}? Kontot och allt i det raderas, och det går inte att ångra. På tududi Cloud blir platsen ledig för någon annan.",
     "removed": "Medlemmen togs bort",
     "updated": "Medlemmen uppdaterades",
     "invitationSent": "Inbjudan skickad",

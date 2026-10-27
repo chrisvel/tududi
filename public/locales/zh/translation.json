@@ -2605,7 +2605,8 @@
       "note": "笔记",
       "storage": "附件存储空间",
       "ai": "今日 AI 请求",
-      "aiCredits": "本月 AI 额度"
+      "aiCredits": "本月 AI 额度",
+      "member": "成员"
     },
     "feature": {
       "ai": "AI 助手",
@@ -2619,7 +2620,18 @@
     },
     "seatCovered": "你的席位由 {{name}} 付费。",
     "workspaceOwner": "工作区所有者",
-    "seats": "订阅中共有 {{count}} 个席位：你和另外 {{members}} 人。"
+    "teamName": "团队（{{seats}} 个席位）",
+    "seatsUsed": "已使用 {{used}} / {{seats}} 个席位。",
+    "seatsFullHint": "如需更多席位，请在“管理订阅”中换成更大的团队套餐。",
+    "justMe": "仅我自己",
+    "team": "团队",
+    "teamSize": "团队规模",
+    "upToSeats": "最多 {{seats}} 人",
+    "pricePerMonth": "每月 {{price}}",
+    "pricePerYear": "每年 {{price}}",
+    "perSeatNote": "（{{seats}} 个席位，含你自己）",
+    "membersNeedTeam": "Pro 仅供一人使用。团队套餐可让你添加成员，3 个席位起。",
+    "seatsFull": "你套餐中的 {{seats}} 个席位已全部占用。换成更大的团队套餐即可添加更多人。"
   },
   "subscription": {
     "title": "订阅",
@@ -2654,7 +2666,11 @@
     "trialLock": {
       "webhooks": "免费试用不包含 Webhook。订阅后即可将事件发送到你自己的服务。"
     },
-    "lockedWebhooks": "Webhook 属于付费套餐。"
+    "lockedWebhooks": "Webhook 属于付费套餐。",
+    "whoFor": "给谁用？",
+    "justMe": "仅我自己（Pro）",
+    "teamOf": "最多 {{seats}} 人的团队",
+    "perSeat": "每人每月 {{price}}，含你自己共 {{seats}} 个席位"
   },
   "demo": {
     "opening": "正在打开演示...",
@@ -2720,13 +2736,13 @@
     "giveAccount": "授予账户",
     "nameRequiredWithoutEmail": "没有邮箱时请输入姓名",
     "failedToAdd": "添加成员失败",
-    "seatNote": "每位成员会在你的订阅中多占一个席位。费用会按比例计入下一张账单，移除成员即可释放席位。",
+    "seatNote": "每位成员占用你套餐中的一个席位。移除成员后，该席位可留给其他人。",
     "editTitle": "编辑成员",
     "nameRequired": "请输入姓名",
     "failedToUpdate": "更新成员失败",
     "addEmailHint": "添加邮箱后，对方会收到设置密码的邀请。之后无法更改。",
     "remove": "移除成员",
-    "removeConfirm": "移除 {{name}}？其账户及全部内容将被删除，且无法撤销。在 tududi Cloud 上，该席位会从你的订阅中移除。",
+    "removeConfirm": "移除 {{name}}？其账户及全部内容将被删除，且无法撤销。在 tududi Cloud 上，该席位会空出来留给其他人。",
     "removed": "成员已移除",
     "updated": "成员已更新",
     "invitationSent": "邀请已发送",

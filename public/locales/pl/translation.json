@@ -2615,7 +2615,8 @@
       "note": "notatek",
       "storage": "miejsca na załączniki",
       "ai": "zapytań AI dzisiaj",
-      "aiCredits": "Kredyty AI w tym miesiącu"
+      "aiCredits": "Kredyty AI w tym miesiącu",
+      "member": "członków"
     },
     "feature": {
       "ai": "asystent AI",
@@ -2629,7 +2630,18 @@
     },
     "seatCovered": "Twoje miejsce opłaca {{name}}.",
     "workspaceOwner": "właściciel obszaru roboczego",
-    "seats": "Miejsca w Twojej subskrypcji: {{count}} (Ty i jeszcze {{members}})."
+    "teamName": "Zespół ({{seats}} miejsc)",
+    "seatsUsed": "Zajęte miejsca: {{used}} z {{seats}}.",
+    "seatsFullHint": "Aby mieć więcej, przejdź na większy plan Zespół w „Zarządzaj subskrypcją”.",
+    "justMe": "Tylko ja",
+    "team": "Zespół",
+    "teamSize": "Wielkość zespołu",
+    "upToSeats": "Do {{seats}} osób",
+    "pricePerMonth": "{{price}} miesięcznie",
+    "pricePerYear": "{{price}} rocznie",
+    "perSeatNote": "(miejsca: {{seats}}, łącznie z Tobą)",
+    "membersNeedTeam": "Pro jest dla jednej osoby. Plan Zespół pozwala dodawać członków, od 3 miejsc wzwyż.",
+    "seatsFull": "Wszystkie miejsca w Twoim planie ({{seats}}) są zajęte. Przejdź na większy plan Zespół, aby dodać więcej osób."
   },
   "subscription": {
     "title": "Subskrypcja",
@@ -2664,7 +2676,11 @@
     "trialLock": {
       "webhooks": "Webhooki nie są dostępne w bezpłatnym okresie próbnym. Wykup subskrypcję, aby wysyłać zdarzenia do własnych usług."
     },
-    "lockedWebhooks": "Webhooki są częścią płatnego planu."
+    "lockedWebhooks": "Webhooki są częścią płatnego planu.",
+    "whoFor": "Dla kogo?",
+    "justMe": "Tylko ja (Pro)",
+    "teamOf": "Zespół do {{seats}} osób",
+    "perSeat": "{{price}} za osobę miesięcznie, miejsca: {{seats}}, łącznie z Tobą"
   },
   "demo": {
     "opening": "Otwieranie dema...",
@@ -2730,13 +2746,13 @@
     "giveAccount": "Nadaj konto",
     "nameRequiredWithoutEmail": "Wpisz imię, gdy nie ma e-maila",
     "failedToAdd": "Nie udało się dodać członka",
-    "seatNote": "Każdy członek to jedno miejsce więcej w Twojej subskrypcji. Zmiana jest rozliczana proporcjonalnie na następnej fakturze, a usunięcie członka zwalnia miejsce.",
+    "seatNote": "Każdy członek zajmuje jedno miejsce w Twoim planie. Usunięcie członka zwalnia miejsce dla kogoś innego.",
     "editTitle": "Edytuj członka",
     "nameRequired": "Wpisz imię",
     "failedToUpdate": "Nie udało się zaktualizować członka",
     "addEmailHint": "Dodanie adresu e-mail wyśle zaproszenie do ustawienia hasła. Nie można go później zmienić.",
     "remove": "Usuń członka",
-    "removeConfirm": "Usunąć {{name}}? Konto i cała jego zawartość zostaną usunięte, tej operacji nie można cofnąć. W tududi Cloud miejsce zostanie usunięte z Twojej subskrypcji.",
+    "removeConfirm": "Usunąć {{name}}? Konto i cała jego zawartość zostaną usunięte, tej operacji nie można cofnąć. W tududi Cloud jego miejsce zwolni się dla kogoś innego.",
     "removed": "Członek usunięty",
     "updated": "Członek zaktualizowany",
     "invitationSent": "Zaproszenie wysłane",

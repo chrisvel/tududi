@@ -2605,7 +2605,8 @@
       "note": "ghi chú",
       "storage": "dung lượng tệp đính kèm",
       "ai": "yêu cầu AI hôm nay",
-      "aiCredits": "Tín dụng AI tháng này"
+      "aiCredits": "Tín dụng AI tháng này",
+      "member": "thành viên"
     },
     "feature": {
       "ai": "trợ lý AI",
@@ -2619,7 +2620,18 @@
     },
     "seatCovered": "Chỗ của bạn do {{name}} trả phí.",
     "workspaceOwner": "chủ không gian làm việc",
-    "seats": "{{count}} chỗ trong gói đăng ký: bạn và {{members}} người khác."
+    "teamName": "Nhóm ({{seats}} chỗ)",
+    "seatsUsed": "Đang dùng {{used}} trên {{seats}} chỗ.",
+    "seatsFullHint": "Muốn thêm, hãy chuyển sang gói Nhóm lớn hơn tại \"Quản lý gói đăng ký\".",
+    "justMe": "Chỉ mình tôi",
+    "team": "Nhóm",
+    "teamSize": "Quy mô nhóm",
+    "upToSeats": "Tối đa {{seats}} người",
+    "pricePerMonth": "{{price}} mỗi tháng",
+    "pricePerYear": "{{price}} mỗi năm",
+    "perSeatNote": "({{seats}} chỗ, tính cả bạn)",
+    "membersNeedTeam": "Pro dành cho một người. Gói Nhóm cho phép bạn thêm thành viên, từ 3 chỗ trở lên.",
+    "seatsFull": "Cả {{seats}} chỗ trong gói của bạn đều đang được dùng. Chuyển sang gói Nhóm lớn hơn để thêm người."
   },
   "subscription": {
     "title": "Đăng ký",
@@ -2654,7 +2666,11 @@
     "trialLock": {
       "webhooks": "Webhook không có trong bản dùng thử miễn phí. Hãy đăng ký để gửi sự kiện đến các dịch vụ của riêng bạn."
     },
-    "lockedWebhooks": "Webhook thuộc gói trả phí."
+    "lockedWebhooks": "Webhook thuộc gói trả phí.",
+    "whoFor": "Dành cho ai?",
+    "justMe": "Chỉ mình tôi (Pro)",
+    "teamOf": "Nhóm tối đa {{seats}} người",
+    "perSeat": "{{price}} mỗi người mỗi tháng, {{seats}} chỗ tính cả bạn"
   },
   "demo": {
     "opening": "Đang mở bản demo...",
@@ -2720,13 +2736,13 @@
     "giveAccount": "Cấp tài khoản",
     "nameRequiredWithoutEmail": "Nhập tên khi không có email",
     "failedToAdd": "Không thể thêm thành viên",
-    "seatNote": "Mỗi thành viên là thêm một chỗ trong gói đăng ký của bạn. Thay đổi được tính theo tỷ lệ vào hóa đơn kế tiếp, và xóa thành viên sẽ trả lại chỗ.",
+    "seatNote": "Mỗi thành viên chiếm một chỗ trong gói của bạn. Xóa thành viên sẽ trả chỗ đó cho người khác dùng.",
     "editTitle": "Sửa thành viên",
     "nameRequired": "Nhập tên",
     "failedToUpdate": "Không cập nhật được thành viên",
     "addEmailHint": "Thêm email sẽ gửi lời mời để họ đặt mật khẩu. Không thể thay đổi sau đó.",
     "remove": "Xóa thành viên",
-    "removeConfirm": "Xóa {{name}}? Tài khoản và mọi nội dung trong đó sẽ bị xóa, không thể hoàn tác. Trên tududi Cloud, chỗ của họ được bỏ khỏi gói đăng ký của bạn.",
+    "removeConfirm": "Xóa {{name}}? Tài khoản và mọi nội dung trong đó sẽ bị xóa, không thể hoàn tác. Trên tududi Cloud, chỗ của họ sẽ trống để người khác dùng.",
     "removed": "Đã xóa thành viên",
     "updated": "Đã cập nhật thành viên",
     "invitationSent": "Đã gửi lời mời",

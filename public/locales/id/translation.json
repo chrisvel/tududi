@@ -2605,7 +2605,8 @@
       "note": "catatan",
       "storage": "penyimpanan lampiran",
       "ai": "permintaan AI hari ini",
-      "aiCredits": "Kredit AI bulan ini"
+      "aiCredits": "Kredit AI bulan ini",
+      "member": "anggota"
     },
     "feature": {
       "ai": "asisten AI",
@@ -2619,7 +2620,18 @@
     },
     "seatCovered": "Kursi Anda dibayar oleh {{name}}.",
     "workspaceOwner": "pemilik ruang kerja",
-    "seats": "{{count}} kursi di langganan Anda: Anda dan {{members}} lainnya."
+    "teamName": "Tim ({{seats}} kursi)",
+    "seatsUsed": "{{used}} dari {{seats}} kursi terpakai.",
+    "seatsFullHint": "Untuk lebih banyak, pindah ke paket Tim yang lebih besar di \"Kelola langganan\".",
+    "justMe": "Hanya saya",
+    "team": "Tim",
+    "teamSize": "Ukuran tim",
+    "upToSeats": "Hingga {{seats}} orang",
+    "pricePerMonth": "{{price}} per bulan",
+    "pricePerYear": "{{price}} per tahun",
+    "perSeatNote": "({{seats}} kursi, termasuk Anda)",
+    "membersNeedTeam": "Pro untuk satu orang. Paket Tim memungkinkan Anda menambah anggota, mulai dari 3 kursi.",
+    "seatsFull": "Semua {{seats}} kursi di paket Anda sudah terpakai. Pindah ke paket Tim yang lebih besar untuk menambah orang."
   },
   "subscription": {
     "title": "Langganan",
@@ -2654,7 +2666,11 @@
     "trialLock": {
       "webhooks": "Webhook tidak termasuk dalam uji coba gratis. Berlangganan untuk mengirim peristiwa ke layanan Anda sendiri."
     },
-    "lockedWebhooks": "Webhook termasuk dalam paket berbayar."
+    "lockedWebhooks": "Webhook termasuk dalam paket berbayar.",
+    "whoFor": "Untuk siapa?",
+    "justMe": "Hanya saya (Pro)",
+    "teamOf": "Tim hingga {{seats}} orang",
+    "perSeat": "{{price}} per orang per bulan, {{seats}} kursi termasuk Anda"
   },
   "demo": {
     "opening": "Membuka demo...",
@@ -2720,13 +2736,13 @@
     "giveAccount": "Beri akun",
     "nameRequiredWithoutEmail": "Masukkan nama jika tidak ada email",
     "failedToAdd": "Gagal menambahkan anggota",
-    "seatNote": "Setiap anggota adalah satu kursi tambahan di langganan Anda. Perubahan dihitung secara proporsional di tagihan berikutnya, dan menghapus anggota mengembalikan kursinya.",
+    "seatNote": "Setiap anggota memakai satu kursi di paket Anda. Menghapus anggota membebaskan kursinya untuk orang lain.",
     "editTitle": "Edit anggota",
     "nameRequired": "Masukkan nama",
     "failedToUpdate": "Gagal memperbarui anggota",
     "addEmailHint": "Menambahkan email akan mengirim undangan untuk membuat kata sandi. Email tidak dapat diubah setelahnya.",
     "remove": "Hapus anggota",
-    "removeConfirm": "Hapus {{name}}? Akun dan semua isinya akan dihapus, dan ini tidak dapat dibatalkan. Di tududi Cloud, kursinya dilepas dari langganan Anda.",
+    "removeConfirm": "Hapus {{name}}? Akun dan semua isinya akan dihapus, dan ini tidak dapat dibatalkan. Di tududi Cloud, kursinya menjadi kosong untuk orang lain.",
     "removed": "Anggota dihapus",
     "updated": "Anggota diperbarui",
     "invitationSent": "Undangan terkirim",
