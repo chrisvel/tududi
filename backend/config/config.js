@@ -41,6 +41,9 @@ const displayPricing = () => ({
     // deliberately if that ever changes.
     standard: 50,
     launchActive: true,
+    // A decided price rise, per seat. The pricing pages announce it until
+    // `from`, and subscribing before then keeps today's price.
+    next: { monthly: 7, annual: 70, from: '2027-01-01' },
     ...parseJsonEnv(
         process.env.TUDUDI_PRICING_JSON ||
             process.env.TUDUDI_LANDING_PRICING_JSON
@@ -175,6 +178,8 @@ const config = {
             prices: {
                 proMonthly: process.env.STRIPE_PRICE_PRO_MONTHLY,
                 proAnnual: process.env.STRIPE_PRICE_PRO_ANNUAL,
+                // Team plans: {"team_5":{"month":"price_…","year":"price_…"}}
+                team: parseJsonEnv(process.env.STRIPE_TEAM_PRICES_JSON),
             },
         },
         lemonsqueezy: {
@@ -185,6 +190,8 @@ const config = {
             variants: {
                 proMonthly: process.env.LEMONSQUEEZY_VARIANT_PRO_MONTHLY,
                 proAnnual: process.env.LEMONSQUEEZY_VARIANT_PRO_ANNUAL,
+                // Team plans: {"team_5":{"month":"123","year":"456"}}
+                team: parseJsonEnv(process.env.LEMONSQUEEZY_TEAM_VARIANTS_JSON),
             },
         },
         // Which provider sells Pro. Explicit BILLING_PROVIDER wins; otherwise

@@ -32,10 +32,13 @@ const billingController = {
     async checkout(req, res, next) {
         try {
             const interval = req.body?.interval === 'year' ? 'year' : 'month';
+            const plan =
+                typeof req.body?.plan === 'string' ? req.body.plan : 'pro';
             res.json(
                 await billingService.createCheckoutSession(
                     requireUserId(req),
-                    interval
+                    interval,
+                    plan
                 )
             );
         } catch (error) {

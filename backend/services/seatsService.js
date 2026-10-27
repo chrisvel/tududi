@@ -2,7 +2,6 @@
 
 const entitlements = require('./entitlementsService');
 const { isAdmin } = require('./rolesService');
-const { logError } = require('./logService');
 const {
     ForbiddenError,
     FeatureNotInPlanError,
@@ -10,25 +9,17 @@ const {
     SubscriptionRequiredError,
 } = require('../shared/errors');
 
-// Seats on a hosted instance: an account owner pays for itself plus every
-// member of its account (see accountsService), whichever admin added them, as
-// the quantity of its subscription. Self-hosted instances never get
-// here, since every function returns early when hosted mode is off.
+// Seats on a hosted instance: an account owner and every member of its
+// account (see accountsService), whichever admin added them. Seats are sold
+// in fixed buckets as Team plans (config/plans.js), so the plan's
+// max_members is the limit and adding a member never changes the
+// subscription. The owner moves to a bigger bucket through checkout or the
+// provider's portal. Self-hosted instances never get here, since every
+// function returns early when hosted mode is off.
 
-// Reasons an owner's own plan lets it add members. A comp (override) adds
-// members without touching billing; a subscription or its grace window adds
-// a paid seat. A trial adds up to its max_members for free, and they become
-// paid seats if the owner subscribes.
+// Reasons an owner's own plan lets it add members: a subscription, its grace
+// window, a comp (override), or a trial with room for a member.
 const ADD_REASONS = ['subscription', 'grace', 'override', 'trial'];
-const BILLED_STATUSES = new Set(['active', 'trialing', 'past_due']);
-
-function models() {
-    return require('../models');
-}
-
-function provider() {
-    return require('../modules/billing/providers');
-}
 
 async function countMembers(ownerId) {
     return require('./accountsService').countMembers(ownerId);
@@ -63,72 +54,21 @@ async function assertCanAddSeat(ownerId) {
     }
 }
 
-// Sets the subscription's quantity to the owner plus its members (plus
-// `extra`, for a member about to be created). Returns the new quantity, or
-// null when there is nothing to bill: hosted mode off, billing not set up,
-// an admin, a comp, or no live subscription. Provider failures throw.
-async function syncSeats(ownerId, { extra = 0 } = {}) {
-    if (!entitlements.isHostedMode()) return null;
-    if (!provider().isBillingConfigured()) return null;
-    if (await isAdmin(ownerId)) return null;
-
-    const account = await models().BillingAccount.findOne({
-        where: { user_id: ownerId },
-    });
-    if (!account || !account.provider_subscription_id) return null;
-    if (!BILLED_STATUSES.has(account.status)) return null;
-    if (account.override_plan) return null;
-
-    const quantity = 1 + (await countMembers(ownerId)) + extra;
-    if (account.seat_quantity === quantity) return quantity;
-
-    const fields = await provider()
-        .getProvider()
-        .updateSeats({ account, quantity });
-    await account.update(fields);
-    entitlements.invalidate(ownerId);
-    return fields.seat_quantity;
-}
-
-// Adds the paid seat for a member that is about to be created. Called before
-// the account exists, so a refused payment leaves nothing behind.
-async function addSeat(ownerId) {
-    await assertCanAddSeat(ownerId);
-    return syncSeats(ownerId, { extra: 1 });
-}
-
-// Brings the quantity back in line after a member is created or removed.
-// Never throws: the member change already happened, and the next sync
-// corrects the quantity.
-async function reconcile(ownerId) {
-    try {
-        return await syncSeats(ownerId);
-    } catch (error) {
-        logError(error, `Could not update seats for user ${ownerId}`);
-        return null;
-    }
-}
-
-// What the billing tab shows about seats.
+// What the billing tab shows about seats: how many the plan has and how many
+// are taken, the owner included.
 async function describeSeats(ownerId) {
     if (!entitlements.isHostedMode()) return null;
     const members = await countMembers(ownerId);
-    const account = await models().BillingAccount.findOne({
-        where: { user_id: ownerId },
-        attributes: ['seat_quantity'],
-    });
+    const ent = await entitlements.getEntitlements(ownerId);
     return {
         members,
-        needed: 1 + members,
-        billed: account?.seat_quantity ?? null,
+        used: 1 + members,
+        seats: ent.seats ?? 1,
     };
 }
 
 module.exports = {
     countMembers,
     assertCanAddSeat,
-    syncSeats,
-    addSeat,
-    reconcile,
     describeSeats,
 };

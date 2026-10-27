@@ -15,17 +15,15 @@ const entitlements = require('../../services/entitlementsService');
 const rolesService = require('../../services/rolesService');
 const { createTestUser } = require('../helpers/testUtils');
 
-// Lemon Squeezy is reached over plain fetch; only the subscription item
-// endpoint matters here. `ls.fail` makes it answer 500.
-const ls = { patches: [], fail: false };
+// Lemon Squeezy is reached over plain fetch. Seats come from the Team plan,
+// so adding or removing a member must never change the subscription:
+// every PATCH is recorded and the tests expect none.
+const ls = { patches: [] };
 const realFetch = global.fetch;
 const mockFetch = async (url, init = {}) => {
     const path = String(url).replace('https://api.lemonsqueezy.com/v1', '');
     const match = path.match(/^\/subscription-items\/([^/]+)$/);
     if (match && init.method === 'PATCH') {
-        if (ls.fail) {
-            return new Response('boom', { status: 500 });
-        }
         const body = JSON.parse(init.body);
         const quantity = body.data.attributes.quantity;
         ls.patches.push({ id: match[1], quantity });
@@ -57,9 +55,8 @@ const subscribe = (userId, fields = {}) =>
         provider: 'lemonsqueezy',
         provider_subscription_id: `sub_${userId}`,
         provider_subscription_item_id: `item_${userId}`,
-        seat_quantity: 1,
         status: 'active',
-        plan: 'pro',
+        plan: 'team_3',
         ...fields,
     });
 
@@ -88,7 +85,6 @@ describe('Cloud seats', () => {
         plans._resetCache();
         entitlements.invalidate();
         ls.patches = [];
-        ls.fail = false;
 
         owner = await createTestUser({
             email: `owner_${Date.now()}@example.com`,
@@ -139,7 +135,7 @@ describe('Cloud seats', () => {
     });
 
     describe('adding a member', () => {
-        it('adds a paid seat and covers the member with the owner plan', async () => {
+        it('takes a seat of the Team plan and covers the member with it', async () => {
             await subscribe(owner.id);
 
             const res = await addMember(ownerAgent, {
@@ -149,13 +145,7 @@ describe('Cloud seats', () => {
             });
 
             expect(res.status).toBe(201);
-            expect(ls.patches).toEqual([
-                { id: `item_${owner.id}`, quantity: 2 },
-            ]);
-            const account = await BillingAccount.findOne({
-                where: { user_id: owner.id },
-            });
-            expect(account.seat_quantity).toBe(2);
+            expect(ls.patches).toEqual([]);
 
             const ent = await entitlements.getEntitlements(res.body.id);
             expect(ent.reason).toBe('seat');
@@ -173,8 +163,8 @@ describe('Cloud seats', () => {
             const ownerBilling = await ownerAgent.get('/api/billing');
             expect(ownerBilling.body.seats).toEqual({
                 members: 1,
-                needed: 2,
-                billed: 2,
+                used: 2,
+                seats: 3,
             });
         });
 
@@ -185,7 +175,7 @@ describe('Cloud seats', () => {
 
             expect(res.status).toBe(201);
             expect(res.body.email).toBeNull();
-            expect(ls.patches).toHaveLength(1);
+            expect(ls.patches).toHaveLength(0);
         });
 
         it('is refused without a subscription and creates nothing', async () => {
@@ -196,32 +186,78 @@ describe('Cloud seats', () => {
             expect(await User.count({ where: { name: 'Emma' } })).toBe(0);
         });
 
-        it('creates nothing when the seat cannot be paid for', async () => {
-            await subscribe(owner.id);
-            ls.fail = true;
+        it('refuses a Pro owner, whose plan is one person', async () => {
+            await subscribe(owner.id, { plan: 'pro' });
 
             const res = await addMember(ownerAgent, { name: 'Emma' });
 
-            expect(res.status).toBeGreaterThanOrEqual(500);
+            expect(res.status).toBe(402);
+            expect(res.body.code).toBe('PLAN_LIMIT_REACHED');
+            expect(res.body.details).toMatchObject({
+                resource: 'member',
+                limit: 0,
+                plan: 'pro',
+            });
+            expect(ls.patches).toHaveLength(0);
             expect(await User.count({ where: { name: 'Emma' } })).toBe(0);
         });
 
-        it('stops at the plan member limit', async () => {
-            process.env.TUDUDI_PLANS_JSON = JSON.stringify({
-                pro: { limits: { max_members: 1 } },
-            });
-            plans._resetCache();
-            entitlements.invalidate();
+        it('stops when every seat of the Team plan is taken', async () => {
             await subscribe(owner.id);
 
-            expect((await addMember(ownerAgent, { name: 'Emma' })).status).toBe(
-                201
-            );
-            const res = await addMember(ownerAgent, { name: 'Leo' });
+            for (const name of ['Emma', 'Leo']) {
+                expect((await addMember(ownerAgent, { name })).status).toBe(
+                    201
+                );
+            }
+            const res = await addMember(ownerAgent, { name: 'Mia' });
 
             expect(res.status).toBe(402);
             expect(res.body.code).toBe('PLAN_LIMIT_REACHED');
-            expect(await User.count({ where: { name: 'Leo' } })).toBe(0);
+            expect(res.body.details).toMatchObject({
+                resource: 'member',
+                limit: 2,
+                current: 2,
+                plan: 'team_3',
+            });
+            expect(await User.count({ where: { name: 'Mia' } })).toBe(0);
+            expect(ls.patches).toHaveLength(0);
+        });
+
+        it('keeps the members after a move to a smaller plan, but adds no more', async () => {
+            await subscribe(owner.id, { plan: 'team_5' });
+            for (const name of ['Emma', 'Leo', 'Mia']) {
+                await addMember(ownerAgent, { name });
+            }
+
+            await BillingAccount.update(
+                { plan: 'team_3' },
+                { where: { user_id: owner.id } }
+            );
+            entitlements.invalidate();
+
+            const res = await addMember(ownerAgent, { name: 'Noah' });
+            expect(res.status).toBe(402);
+            const billing = await ownerAgent.get('/api/billing');
+            expect(billing.body.seats).toEqual({
+                members: 3,
+                used: 4,
+                seats: 3,
+            });
+        });
+
+        it('lets a comp on a Team plan add members, with no subscription', async () => {
+            await BillingAccount.create({
+                user_id: owner.id,
+                status: 'none',
+                plan: 'free',
+                override_plan: 'team_3',
+            });
+
+            const res = await addMember(ownerAgent, { name: 'Emma' });
+
+            expect(res.status).toBe(201);
+            expect(ls.patches).toHaveLength(0);
         });
 
         it('is refused for a member', async () => {
@@ -296,14 +332,14 @@ describe('Cloud seats', () => {
             expect(await User.findByPk(member.id)).not.toBeNull();
         });
 
-        it('removes a member and gives the seat back', async () => {
+        it('removes a member and frees the seat', async () => {
             const res = await ownerAgent.delete(`/api/members/${member.id}`);
 
             expect(res.status).toBe(204);
             expect(await User.findByPk(member.id)).toBeNull();
-            expect(ls.patches).toEqual([
-                { id: `item_${owner.id}`, quantity: 1 },
-            ]);
+            expect(ls.patches).toEqual([]);
+            const billing = await ownerAgent.get('/api/billing');
+            expect(billing.body.seats.used).toBe(1);
         });
     });
 

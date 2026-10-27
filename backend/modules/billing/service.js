@@ -94,6 +94,7 @@ class BillingService {
                 month: !!prices.month,
                 year: !!prices.year,
             },
+            plans_available: this.purchasablePlans(),
             seats: await seats.describeSeats(userId),
             subscription: account
                 ? {
@@ -107,6 +108,20 @@ class BillingService {
         };
     }
 
+    // The plans that can be bought here: Pro and whichever Team buckets have
+    // a price, smallest first, with the intervals each one is sold in.
+    purchasablePlans() {
+        const plans = getPlans();
+        return Object.entries(this.provider().configuredPlans())
+            .filter(([key, ids]) => plans[key] && (ids.month || ids.year))
+            .map(([key, ids]) => ({
+                key,
+                seats: plans[key].seats,
+                intervals: { month: !!ids.month, year: !!ids.year },
+            }))
+            .sort((a, b) => a.seats - b.seats);
+    }
+
     // Public catalog: names, limits and features, never price ids.
     getCatalog() {
         const prices = this.provider().configuredPrices();
@@ -114,19 +129,24 @@ class BillingService {
             plans: Object.values(getPlans()).map((plan) => ({
                 key: plan.key,
                 name: plan.name,
+                seats: plan.seats,
                 limits: plan.limits,
                 features: plan.features,
             })),
+            purchasable: this.purchasablePlans(),
             intervals: { month: !!prices.month, year: !!prices.year },
             trial_days: getConfig().hosted.trialDays,
         };
     }
 
-    async createCheckoutSession(userId, interval) {
+    async createCheckoutSession(userId, interval, plan = 'pro') {
         if (!providers.isBillingConfigured())
             throw new BillingNotConfiguredError();
         const provider = this.provider();
-        if (!provider.configuredPrices()[interval]) {
+        if (!provider.configuredPlans()[plan]) {
+            throw new ValidationError(`The ${plan} plan cannot be bought here`);
+        }
+        if (!provider.configuredPrices(plan)[interval]) {
             throw new ValidationError(
                 `No ${interval === 'year' ? 'annual' : 'monthly'} price is configured`
             );
@@ -144,6 +164,7 @@ class BillingService {
         const checkout = await provider.createCheckout({
             user,
             account,
+            plan,
             interval,
             successUrl: billingTabUrl('&checkout=success'),
             cancelUrl: billingTabUrl('&checkout=cancel'),
@@ -298,14 +319,6 @@ class BillingService {
         }
 
         entitlements.invalidate(account.user_id);
-        if (
-            event.type === 'checkout.completed' ||
-            event.type === 'subscription.updated'
-        ) {
-            // A new or resumed subscription starts at one seat; bring it up
-            // to the members this owner already has.
-            await seats.reconcile(account.user_id);
-        }
         return { handled: true, userId: account.user_id };
     }
 

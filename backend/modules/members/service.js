@@ -151,13 +151,12 @@ class MembersService {
         if (name) userData.name = name;
         if (surname) userData.surname = surname;
 
-        // On a hosted instance the member is a paid seat: it is added to the
-        // account owner's subscription first, so a refused payment creates
-        // nothing.
+        // On a hosted instance the member takes a seat of the account
+        // owner's plan; with every seat taken, nothing is created.
         const payerId = actorIsAdmin
             ? null
             : await accounts.getOwnerId(actorId);
-        if (payerId) await seats.addSeat(payerId);
+        if (payerId) await seats.assertCanAddSeat(payerId);
 
         let user;
         let person;
@@ -209,7 +208,6 @@ class MembersService {
                 }
             });
         } catch (err) {
-            if (payerId) await seats.reconcile(payerId);
             if (err?.name === 'SequelizeUniqueConstraintError') {
                 throw new ConflictError('Email already exists');
             }
@@ -323,13 +321,10 @@ class MembersService {
         );
     }
 
-    // Deletes a member's account and everything in it, then gives the seat
-    // back on the account owner's subscription.
+    // Deletes a member's account and everything in it, which frees its seat.
     async removeMember(actorId, memberId) {
         const member = await findManagedMember(actorId, memberId);
-        const payerId = await accounts.getOwnerId(member.id);
         await eraseUserAccount(member.id);
-        if (payerId !== member.id) await seats.reconcile(payerId);
     }
 
     async sendEmails(user, { verify, invite }) {

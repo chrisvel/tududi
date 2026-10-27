@@ -9,17 +9,16 @@ const { getConfig } = require('../../../config/config');
 //
 //   name, displayName, signatureHeader
 //   isConfigured()                         keys and at least one price present
-//   configuredPrices()                     { month, year } price or variant ids
+//   configuredPlans()                      { pro: { month, year }, team_5: … }
+//   configuredPrices(plan = 'pro')         { month, year } price or variant ids
 //   planForPrice(id)                       plan key for a price id, or null
 //   canOpenPortal(account)                 whether "Manage subscription" works
-//   createCheckout({ user, account, interval, successUrl, cancelUrl })
+//   createCheckout({ user, account, plan, interval, successUrl, cancelUrl })
 //                                          -> { url, id, customerId? }
 //   createPortal({ account, returnUrl })   -> { url }
 //   sync({ user, account, checkoutRef })   -> account fields, or null
 //   parseWebhook(rawBody, headers)         -> normalized event (below)
 //   cancelForDeletedUser(account)
-//   updateSeats({ account, quantity })     -> { provider_subscription_item_id,
-//                                             seat_quantity }
 //   validateConfig()                       -> [problem strings]
 //
 // A normalized webhook event is
@@ -58,6 +57,7 @@ module.exports = {
     providerName,
     getProvider,
     isBillingConfigured,
-    configuredPrices: () => getProvider().configuredPrices(),
+    configuredPlans: () => getProvider().configuredPlans(),
+    configuredPrices: (plan) => getProvider().configuredPrices(plan),
     planForPrice: (id) => getProvider().planForPrice(id),
 };
