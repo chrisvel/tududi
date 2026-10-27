@@ -19,6 +19,17 @@ import { useReverify } from '../../Auth/useReverify';
 
 type Step = 'idle' | 'setup' | 'codes' | 'disable';
 
+// This card sits inside the profile page's own <form>, so it has no forms
+// of its own (a nested form is dropped and its button would save the
+// profile). Enter in a code field runs the step instead.
+const onEnter =
+    (action: () => void) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            action();
+        }
+    };
+
 const inputClass =
     'block w-full rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
 const primaryButton =
@@ -72,8 +83,7 @@ const TwoFactorCard: React.FC = () => {
             setStep('setup');
         });
 
-    const confirmSetup = (e: React.FormEvent) => {
-        e.preventDefault();
+    const confirmSetup = () => {
         run(async () => {
             const result = await enableMfa(code.replace(/\s/g, ''));
             setRecoveryCodes(result.recovery_codes);
@@ -95,8 +105,7 @@ const TwoFactorCard: React.FC = () => {
             await load();
         });
 
-    const confirmDisable = (e: React.FormEvent) => {
-        e.preventDefault();
+    const confirmDisable = () => {
         run(async () => {
             const value = code.replace(/\s/g, '');
             await disableMfa(
@@ -183,7 +192,7 @@ const TwoFactorCard: React.FC = () => {
             )}
 
             {step === 'setup' && setup && (
-                <form onSubmit={confirmSetup} className="space-y-4">
+                <div className="space-y-4">
                     <ol className="list-decimal ml-5 space-y-1 text-sm text-gray-700 dark:text-gray-300">
                         <li>
                             {t(
@@ -223,11 +232,13 @@ const TwoFactorCard: React.FC = () => {
                         placeholder="123 456"
                         required
                         className={`${inputClass} max-w-[10rem] tracking-widest`}
+                        onKeyDown={onEnter(confirmSetup)}
                         data-testid="mfa-setup-code"
                     />
                     <div className="flex space-x-2">
                         <button
-                            type="submit"
+                            type="button"
+                            onClick={confirmSetup}
                             disabled={busy || !code}
                             className={primaryButton}
                             data-testid="mfa-setup-confirm"
@@ -245,7 +256,7 @@ const TwoFactorCard: React.FC = () => {
                             {t('common.cancel', 'Cancel')}
                         </button>
                     </div>
-                </form>
+                </div>
             )}
 
             {step === 'codes' && (
@@ -393,7 +404,7 @@ const TwoFactorCard: React.FC = () => {
             )}
 
             {step === 'disable' && (
-                <form onSubmit={confirmDisable} className="space-y-3">
+                <div className="space-y-3">
                     <label className="block text-sm text-gray-700 dark:text-gray-300">
                         {t(
                             'mfa.disablePrompt',
@@ -407,11 +418,13 @@ const TwoFactorCard: React.FC = () => {
                         autoComplete="one-time-code"
                         required
                         className={`${inputClass} max-w-[14rem] tracking-widest`}
+                        onKeyDown={onEnter(confirmDisable)}
                         data-testid="mfa-disable-code"
                     />
                     <div className="flex space-x-2">
                         <button
-                            type="submit"
+                            type="button"
+                            onClick={confirmDisable}
                             disabled={busy || !code}
                             className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
                             data-testid="mfa-disable-confirm"
@@ -426,7 +439,7 @@ const TwoFactorCard: React.FC = () => {
                             {t('common.cancel', 'Cancel')}
                         </button>
                     </div>
-                </form>
+                </div>
             )}
         </div>
     );
