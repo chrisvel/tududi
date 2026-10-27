@@ -128,6 +128,7 @@ describe('Admin dashboard', () => {
         );
         expect(trends.active_users_7d).toBeGreaterThanOrEqual(1);
         expect(trends.billing).toBeNull();
+        expect(res.body.insights.length).toBeGreaterThan(0);
     });
 
     it('adds trial and churn signals on a hosted instance', async () => {
