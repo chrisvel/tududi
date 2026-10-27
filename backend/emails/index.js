@@ -16,6 +16,7 @@ const EMAILS = {
     comeBack: require('./comeBack'),
     notification: require('./notification'),
     contactMessage: require('./contactMessage'),
+    securityNotice: require('./securityNotice'),
 };
 
 // Builds the email `name` in `language` (a users.language code; anything

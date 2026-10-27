@@ -342,6 +342,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Reminder/alert events, task created/updated/completed/deleted, and a daily summary at a chosen local hour
     - Queue with retries in `webhook_deliveries`; turns off after 10 failures in a row; not in the Cloud trial
 
+37. **[Two-factor sign-in](docs/28-two-factor-sign-in.md)**
+    - Opt-in authenticator-app codes with 10 single-use recovery codes; applies after password and SSO sign-in
+    - Step-up (password or code) for new API keys; admin reset; CalDAV needs an API key once it is on
+    - Required for the hosted superadmin before the admin panel opens
+
 ---
 
 ## Project Overview

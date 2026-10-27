@@ -12,6 +12,7 @@ import {
     KeyIcon,
     LinkIcon,
     MinusIcon,
+    LockOpenIcon,
     PencilIcon,
     TrashIcon,
 } from '@heroicons/react/24/outline';
@@ -38,6 +39,7 @@ import {
     isAdminRole,
 } from '../../entities/Role';
 import { useStore } from '../../store/useStore';
+import { getCurrentUser } from '../../utils/userUtils';
 import { FORM } from '../../constants/formClasses';
 import {
     ADMIN_TABLE_WRAPPER,
@@ -62,6 +64,7 @@ interface AdminUserItem {
     invited?: boolean;
     verification_requested?: boolean;
     email_sent?: boolean;
+    mfa_enabled?: boolean;
 }
 
 const accountLabel = (u: {
@@ -181,6 +184,21 @@ const updateAdminUser = async (
         throw new Error(message);
     }
     return await res.json();
+};
+
+// Clears two-factor sign-in for someone who lost their phone and codes.
+const resetAdminUserMfa = async (id: number, t: any): Promise<void> => {
+    const res = await fetchWithCsrf(getApiPath(`admin/users/${id}/mfa/reset`), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+    });
+    if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(
+            body?.error || t('admin.mfaResetFailed', 'Could not reset 2FA')
+        );
+    }
 };
 
 const deleteAdminUser = async (id: number, t: any): Promise<void> => {
@@ -841,6 +859,10 @@ const AdminUsersPanel: React.FC<{
     const [userToDelete, setUserToDelete] = useState<AdminUserItem | null>(
         null
     );
+    const [mfaResetUser, setMfaResetUser] = useState<AdminUserItem | null>(
+        null
+    );
+    const viewerEmail = getCurrentUser()?.email;
     const navigate = useNavigate();
 
     const load = async () => {
@@ -864,6 +886,30 @@ const AdminUsersPanel: React.FC<{
     useEffect(() => {
         load();
     }, []);
+
+    const handleResetMfa = async () => {
+        if (!mfaResetUser) return;
+        const target = mfaResetUser;
+        setMfaResetUser(null);
+        try {
+            await resetAdminUserMfa(target.id, t);
+            setUsers((prev) =>
+                prev
+                    ? prev.map((u) =>
+                          u.id === target.id ? { ...u, mfa_enabled: false } : u
+                      )
+                    : null
+            );
+            showSuccessToast(
+                t(
+                    'admin.mfaResetDone',
+                    'Two-factor sign-in was reset. They can sign in with their password.'
+                )
+            );
+        } catch (err: any) {
+            showErrorToast(err.message);
+        }
+    };
 
     const handleDeleteUser = async () => {
         if (!userToDelete) return;
@@ -1032,6 +1078,17 @@ const AdminUsersPanel: React.FC<{
                                                     )}
                                                 </div>
                                             )}
+                                            {u.mfa_enabled && (
+                                                <div
+                                                    className="text-xs font-normal text-green-700 dark:text-green-400"
+                                                    data-testid={`user-mfa-${u.id}`}
+                                                >
+                                                    {t(
+                                                        'admin.mfaOn',
+                                                        'Two-factor sign-in on'
+                                                    )}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                             {u.name || '-'}
@@ -1103,6 +1160,24 @@ const AdminUsersPanel: React.FC<{
                                                             data-testid={`sign-in-link-${u.id}`}
                                                         >
                                                             <LinkIcon className="h-5 w-5" />
+                                                        </button>
+                                                    )}
+                                                {u.mfa_enabled &&
+                                                    u.email !== viewerEmail && (
+                                                        <button
+                                                            onClick={() =>
+                                                                setMfaResetUser(
+                                                                    u
+                                                                )
+                                                            }
+                                                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                                                            title={t(
+                                                                'admin.mfaReset',
+                                                                'Reset two-factor sign-in'
+                                                            )}
+                                                            data-testid={`mfa-reset-${u.id}`}
+                                                        >
+                                                            <LockOpenIcon className="h-5 w-5" />
                                                         </button>
                                                     )}
                                                 <button
@@ -1213,6 +1288,26 @@ const AdminUsersPanel: React.FC<{
                                 memberId={signInLinkUser.id}
                                 memberName={accountLabel(signInLinkUser)}
                                 onClose={() => setSignInLinkUser(null)}
+                            />
+                        )}
+
+                        {mfaResetUser && (
+                            <ConfirmDialog
+                                title={t(
+                                    'admin.mfaReset',
+                                    'Reset two-factor sign-in'
+                                )}
+                                message={t(
+                                    'admin.mfaResetConfirm',
+                                    'Turn off two-factor sign-in for {{email}}? Only do this when you are sure it is them. They will be signed out everywhere and emailed about it.',
+                                    { email: accountLabel(mfaResetUser) }
+                                )}
+                                confirmButtonText={t(
+                                    'admin.mfaResetAction',
+                                    'Reset'
+                                )}
+                                onConfirm={handleResetMfa}
+                                onCancel={() => setMfaResetUser(null)}
                             />
                         )}
 

@@ -89,6 +89,9 @@ const ProjectHistory = lazy(
 // string, and a lazy component created inside render would remount and
 // re-suspend on every navigation.
 const AdminUsersPage = lazy(() => import('./components/Admin/AdminUsersPage'));
+const AdminMfaRequired = lazy(
+    () => import('./components/Admin/AdminMfaRequired')
+);
 
 const App: React.FC = () => {
     const { i18n } = useTranslation();
@@ -96,6 +99,10 @@ const App: React.FC = () => {
     const location = useLocation();
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
+    // The hosted superadmin sees a setup prompt instead of the admin panel
+    // until two-factor sign-in is on.
+    const adminElement = (element: React.ReactElement) =>
+        currentUser?.admin_mfa_required ? <AdminMfaRequired /> : element;
 
     if (!i18n.isInitialized) {
         return <LoadingScreen fullScreen />;
@@ -633,20 +640,22 @@ const App: React.FC = () => {
                                 path="/admin/billing"
                                 element={
                                     currentUser?.is_admin === true ? (
-                                        <React.Suspense
-                                            fallback={
-                                                <div className="p-4">
-                                                    Loading...
-                                                </div>
-                                            }
-                                        >
-                                            {React.createElement(
-                                                React.lazy(
-                                                    () =>
-                                                        import('./components/Admin/AdminBillingPage')
-                                                )
-                                            )}
-                                        </React.Suspense>
+                                        adminElement(
+                                            <React.Suspense
+                                                fallback={
+                                                    <div className="p-4">
+                                                        Loading...
+                                                    </div>
+                                                }
+                                            >
+                                                {React.createElement(
+                                                    React.lazy(
+                                                        () =>
+                                                            import('./components/Admin/AdminBillingPage')
+                                                    )
+                                                )}
+                                            </React.Suspense>
+                                        )
                                     ) : (
                                         <Navigate to="/today" replace />
                                     )
@@ -656,20 +665,22 @@ const App: React.FC = () => {
                                 path="/admin"
                                 element={
                                     currentUser?.is_admin === true ? (
-                                        <React.Suspense
-                                            fallback={
-                                                <div className="p-4">
-                                                    Loading...
-                                                </div>
-                                            }
-                                        >
-                                            {React.createElement(
-                                                React.lazy(
-                                                    () =>
-                                                        import('./components/Admin/AdminDashboardPage')
-                                                )
-                                            )}
-                                        </React.Suspense>
+                                        adminElement(
+                                            <React.Suspense
+                                                fallback={
+                                                    <div className="p-4">
+                                                        Loading...
+                                                    </div>
+                                                }
+                                            >
+                                                {React.createElement(
+                                                    React.lazy(
+                                                        () =>
+                                                            import('./components/Admin/AdminDashboardPage')
+                                                    )
+                                                )}
+                                            </React.Suspense>
+                                        )
                                     ) : (
                                         <Navigate to="/today" replace />
                                     )
@@ -679,20 +690,22 @@ const App: React.FC = () => {
                                 path="/admin/ai-usage"
                                 element={
                                     currentUser?.is_admin === true ? (
-                                        <React.Suspense
-                                            fallback={
-                                                <div className="p-4">
-                                                    Loading...
-                                                </div>
-                                            }
-                                        >
-                                            {React.createElement(
-                                                React.lazy(
-                                                    () =>
-                                                        import('./components/Admin/AdminAiUsagePage')
-                                                )
-                                            )}
-                                        </React.Suspense>
+                                        adminElement(
+                                            <React.Suspense
+                                                fallback={
+                                                    <div className="p-4">
+                                                        Loading...
+                                                    </div>
+                                                }
+                                            >
+                                                {React.createElement(
+                                                    React.lazy(
+                                                        () =>
+                                                            import('./components/Admin/AdminAiUsagePage')
+                                                    )
+                                                )}
+                                            </React.Suspense>
+                                        )
                                     ) : (
                                         <Navigate to="/today" replace />
                                     )
@@ -702,20 +715,22 @@ const App: React.FC = () => {
                                 path="/admin/feedback"
                                 element={
                                     currentUser?.is_admin === true ? (
-                                        <React.Suspense
-                                            fallback={
-                                                <div className="p-4">
-                                                    Loading...
-                                                </div>
-                                            }
-                                        >
-                                            {React.createElement(
-                                                React.lazy(
-                                                    () =>
-                                                        import('./components/Admin/AdminFeedbackPage')
-                                                )
-                                            )}
-                                        </React.Suspense>
+                                        adminElement(
+                                            <React.Suspense
+                                                fallback={
+                                                    <div className="p-4">
+                                                        Loading...
+                                                    </div>
+                                                }
+                                            >
+                                                {React.createElement(
+                                                    React.lazy(
+                                                        () =>
+                                                            import('./components/Admin/AdminFeedbackPage')
+                                                    )
+                                                )}
+                                            </React.Suspense>
+                                        )
                                     ) : (
                                         <Navigate to="/today" replace />
                                     )
@@ -725,20 +740,22 @@ const App: React.FC = () => {
                                 path="/admin/waitlist"
                                 element={
                                     currentUser?.is_admin === true ? (
-                                        <React.Suspense
-                                            fallback={
-                                                <div className="p-4">
-                                                    Loading...
-                                                </div>
-                                            }
-                                        >
-                                            {React.createElement(
-                                                React.lazy(
-                                                    () =>
-                                                        import('./components/Admin/AdminWaitlistPage')
-                                                )
-                                            )}
-                                        </React.Suspense>
+                                        adminElement(
+                                            <React.Suspense
+                                                fallback={
+                                                    <div className="p-4">
+                                                        Loading...
+                                                    </div>
+                                                }
+                                            >
+                                                {React.createElement(
+                                                    React.lazy(
+                                                        () =>
+                                                            import('./components/Admin/AdminWaitlistPage')
+                                                    )
+                                                )}
+                                            </React.Suspense>
+                                        )
                                     ) : (
                                         <Navigate to="/today" replace />
                                     )
@@ -748,15 +765,17 @@ const App: React.FC = () => {
                                 path="/admin/users"
                                 element={
                                     canOpenAccess(currentUser) ? (
-                                        <React.Suspense
-                                            fallback={
-                                                <div className="p-4">
-                                                    Loading...
-                                                </div>
-                                            }
-                                        >
-                                            <AdminUsersPage />
-                                        </React.Suspense>
+                                        adminElement(
+                                            <React.Suspense
+                                                fallback={
+                                                    <div className="p-4">
+                                                        Loading...
+                                                    </div>
+                                                }
+                                            >
+                                                <AdminUsersPage />
+                                            </React.Suspense>
+                                        )
                                     ) : (
                                         <Navigate to="/today" replace />
                                     )

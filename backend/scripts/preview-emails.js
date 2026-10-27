@@ -104,6 +104,40 @@ const SAMPLES = {
             },
         },
     ],
+    securityNotice: [
+        {
+            label: 'mfaEnabled',
+            vars: {
+                event: 'mfaEnabled',
+                url: url('/profile?section=security'),
+            },
+        },
+        {
+            label: 'mfaDisabled',
+            vars: {
+                event: 'mfaDisabled',
+                url: url('/profile?section=security'),
+            },
+        },
+        {
+            label: 'mfaReset',
+            vars: { event: 'mfaReset', url: url('/profile?section=security') },
+        },
+        {
+            label: 'recoveryCodeUsed',
+            vars: {
+                event: 'recoveryCodeUsed',
+                url: url('/profile?section=security'),
+            },
+        },
+        {
+            label: 'recoveryCodesRegenerated',
+            vars: {
+                event: 'recoveryCodesRegenerated',
+                url: url('/profile?section=security'),
+            },
+        },
+    ],
     contactMessage: [
         {
             label: '',

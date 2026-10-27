@@ -89,5 +89,29 @@
         "tip": "Se la lista è diventata troppo lunga, inizia in piccolo: apri Pianifica, scegli tre cose per oggi e lascia il resto per dopo.",
         "button": "Pianifica oggi",
         "outro": "Non ti invieremo altre email come questa finché non sarai tornato."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "L'autenticazione a due fattori è attiva",
+            "body": "L'autenticazione a due fattori è stata attivata per il tuo account Tududi. Ora per accedere serve un codice dalla tua app di autenticazione, e tutti gli altri dispositivi sono stati disconnessi."
+        },
+        "mfaDisabled": {
+            "subject": "L'autenticazione a due fattori è disattivata",
+            "body": "L'autenticazione a due fattori è stata disattivata per il tuo account Tududi. Ora per accedere basta la tua password."
+        },
+        "mfaReset": {
+            "subject": "La tua autenticazione a due fattori è stata reimpostata",
+            "body": "Un amministratore ha reimpostato l'autenticazione a due fattori del tuo account Tududi, e tutti i dispositivi sono stati disconnessi. Puoi accedere con la tua password e riattivarla."
+        },
+        "recoveryCodeUsed": {
+            "subject": "È stato usato un codice di recupero",
+            "body": "Qualcuno ha effettuato l'accesso al tuo account Tududi con uno dei tuoi codici di recupero. Ogni codice funziona una sola volta."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Sono stati creati nuovi codici di recupero",
+            "body": "Sono stati creati nuovi codici di recupero per il tuo account Tududi. Quelli vecchi non funzionano più."
+        },
+        "button": "Apri le impostazioni di sicurezza",
+        "notYou": "Se non sei stato tu, cambia subito la password e avvisa il tuo amministratore."
     }
 }

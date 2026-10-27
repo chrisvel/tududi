@@ -7,6 +7,7 @@ import OIDCProviderButtons from './Auth/OIDCProviderButtons';
 import CaptchaWidget from './Auth/CaptchaWidget';
 import { fetchCaptchaConfig, CaptchaConfig } from '../utils/captcha';
 import { clearCsrfToken } from '../utils/csrfService';
+import MfaCodeForm from './Auth/MfaCodeForm';
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -19,6 +20,8 @@ const Login: React.FC = () => {
     const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
+    // Password (or SSO) accepted, the 2FA code still to come.
+    const [mfaStep, setMfaStep] = useState(false);
     const [oidcProviders, setOidcProviders] = useState<
         Array<{ slug: string; name: string }>
     >([]);
@@ -76,6 +79,21 @@ const Login: React.FC = () => {
             }
         }
     }, [searchParams, t]);
+
+    // Back from SSO on an account with 2FA (?mfa=1), or a reload halfway
+    // through a sign-in: pick up at the code prompt.
+    useEffect(() => {
+        if (searchParams.get('mfa') === '1') {
+            setMfaStep(true);
+            return;
+        }
+        fetch(getApiPath('current_user'), { credentials: 'include' })
+            .then((response) => (response.ok ? response.json() : null))
+            .then((data) => {
+                if (data?.mfa_pending) setMfaStep(true);
+            })
+            .catch(() => {});
+    }, [searchParams]);
 
     // Check if registration is enabled
     useEffect(() => {
@@ -160,6 +178,30 @@ const Login: React.FC = () => {
         setResendState('sent');
     };
 
+    const completeSignIn = async (data: any) => {
+        // A token fetched before signing in belongs to another session.
+        clearCsrfToken();
+        if (data.user && data.user.language) {
+            await i18n.changeLanguage(data.user.language);
+        }
+
+        window.dispatchEvent(
+            new CustomEvent('userLoggedIn', { detail: data.user })
+        );
+
+        navigate('/today');
+    };
+
+    const handleMfaExpired = () => {
+        setMfaStep(false);
+        setError(
+            t(
+                'mfa.expired',
+                'Sign-in timed out or had too many wrong codes. Please sign in again.'
+            )
+        );
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setUnverifiedEmail(null);
@@ -177,18 +219,12 @@ const Login: React.FC = () => {
 
             const data = await response.json();
 
-            if (response.ok) {
-                // A token fetched before signing in belongs to another session.
-                clearCsrfToken();
-                if (data.user && data.user.language) {
-                    await i18n.changeLanguage(data.user.language);
-                }
-
-                window.dispatchEvent(
-                    new CustomEvent('userLoggedIn', { detail: data.user })
-                );
-
-                navigate('/today');
+            if (response.ok && data.mfa_required) {
+                setError(null);
+                setPassword('');
+                setMfaStep(true);
+            } else if (response.ok) {
+                await completeSignIn(data);
             } else {
                 if (data.email_not_verified) {
                     setUnverifiedEmail(email);
@@ -292,9 +328,21 @@ const Login: React.FC = () => {
                                 </div>
                             )}
 
-                            <OIDCProviderButtons providers={oidcProviders} />
+                            {mfaStep && (
+                                <MfaCodeForm
+                                    onSuccess={completeSignIn}
+                                    onExpired={handleMfaExpired}
+                                />
+                            )}
 
-                            {oidcProviders.length > 0 &&
+                            {!mfaStep && (
+                                <OIDCProviderButtons
+                                    providers={oidcProviders}
+                                />
+                            )}
+
+                            {!mfaStep &&
+                                oidcProviders.length > 0 &&
                                 passwordAuthEnabled && (
                                     <div className="relative mb-6">
                                         <div className="absolute inset-0 flex items-center">
@@ -311,7 +359,7 @@ const Login: React.FC = () => {
                                     </div>
                                 )}
 
-                            {passwordAuthEnabled && (
+                            {!mfaStep && passwordAuthEnabled && (
                                 <form onSubmit={handleSubmit}>
                                     <div className="mb-4">
                                         <label
@@ -385,20 +433,22 @@ const Login: React.FC = () => {
                                     </div>
                                 )}
 
-                            {registrationEnabled && passwordAuthEnabled && (
-                                <div className="mt-6 text-center text-gray-600 dark:text-gray-400">
-                                    {t(
-                                        'auth.no_account',
-                                        "Don't have an account?"
-                                    )}{' '}
-                                    <Link
-                                        to="/register"
-                                        className="text-blue-500 hover:text-blue-600"
-                                    >
-                                        {t('auth.sign_up', 'Sign Up')}
-                                    </Link>
-                                </div>
-                            )}
+                            {!mfaStep &&
+                                registrationEnabled &&
+                                passwordAuthEnabled && (
+                                    <div className="mt-6 text-center text-gray-600 dark:text-gray-400">
+                                        {t(
+                                            'auth.no_account',
+                                            "Don't have an account?"
+                                        )}{' '}
+                                        <Link
+                                            to="/register"
+                                            className="text-blue-500 hover:text-blue-600"
+                                        >
+                                            {t('auth.sign_up', 'Sign Up')}
+                                        </Link>
+                                    </div>
+                                )}
                         </div>
                     </div>
 

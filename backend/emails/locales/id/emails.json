@@ -75,5 +75,29 @@
         "tip": "Jika daftarnya terlalu panjang, mulailah dari yang kecil: buka Rencana, pilih tiga hal untuk hari ini, dan simpan sisanya untuk nanti.",
         "button": "Rencanakan hari ini",
         "outro": "Kami tidak akan mengirim email seperti ini lagi sampai Anda kembali."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Verifikasi dua langkah aktif",
+            "body": "Verifikasi dua langkah telah diaktifkan untuk akun Tududi Anda. Untuk masuk, kini diperlukan kode dari aplikasi autentikator Anda, dan semua perangkat lain telah dikeluarkan."
+        },
+        "mfaDisabled": {
+            "subject": "Verifikasi dua langkah nonaktif",
+            "body": "Verifikasi dua langkah telah dinonaktifkan untuk akun Tududi Anda. Untuk masuk, kini hanya diperlukan kata sandi Anda."
+        },
+        "mfaReset": {
+            "subject": "Verifikasi dua langkah Anda telah diatur ulang",
+            "body": "Seorang administrator mengatur ulang verifikasi dua langkah untuk akun Tududi Anda, dan semua perangkat telah dikeluarkan. Anda bisa masuk dengan kata sandi dan mengaktifkannya lagi."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Kode pemulihan telah digunakan",
+            "body": "Seseorang masuk ke akun Tududi Anda dengan salah satu kode pemulihan Anda. Setiap kode hanya berlaku sekali."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Kode pemulihan baru telah dibuat",
+            "body": "Kode pemulihan baru telah dibuat untuk akun Tududi Anda. Kode yang lama tidak berlaku lagi."
+        },
+        "button": "Buka pengaturan keamanan",
+        "notYou": "Jika ini bukan Anda, segera ubah kata sandi dan beri tahu administrator Anda."
     }
 }

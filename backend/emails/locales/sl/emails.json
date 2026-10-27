@@ -96,5 +96,29 @@
         "tip": "Če je seznam postal predolg, začnite z malim: odprite Načrt, izberite tri stvari za danes in ostalo pustite za pozneje.",
         "button": "Načrtuj dan",
         "outro": "Drugega takšnega e-sporočila vam ne bomo poslali, dokler se ne vrnete."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Dvostopenjsko preverjanje je vklopljeno",
+            "body": "Za vaš račun Tududi je bilo vklopljeno dvostopenjsko preverjanje. Za prijavo zdaj potrebujete kodo iz aplikacije za preverjanje pristnosti, vse druge naprave pa so bile odjavljene."
+        },
+        "mfaDisabled": {
+            "subject": "Dvostopenjsko preverjanje je izklopljeno",
+            "body": "Za vaš račun Tududi je bilo izklopljeno dvostopenjsko preverjanje. Za prijavo zdaj potrebujete samo geslo."
+        },
+        "mfaReset": {
+            "subject": "Vaše dvostopenjsko preverjanje je bilo ponastavljeno",
+            "body": "Skrbnik je ponastavil dvostopenjsko preverjanje za vaš račun Tududi, vse naprave pa so bile odjavljene. Prijavite se lahko z geslom in ga znova vklopite."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Uporabljena je bila obnovitvena koda",
+            "body": "Nekdo se je v vaš račun Tududi prijavil z eno od vaših obnovitvenih kod. Vsaka koda deluje enkrat."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Ustvarjene so bile nove obnovitvene kode",
+            "body": "Za vaš račun Tududi so bile ustvarjene nove obnovitvene kode. Stare ne delujejo več."
+        },
+        "button": "Odpri varnostne nastavitve",
+        "notYou": "Če to niste bili vi, takoj spremenite geslo in obvestite skrbnika."
     }
 }

@@ -20,6 +20,8 @@ const {
 } = require('./passwordResetService');
 const { MIN_LENGTH_POLICY_MESSAGE } = require('../users/userService');
 const peopleService = require('../people/service');
+const mfaService = require('../mfa/service');
+const mfaSession = require('../mfa/session');
 const packageJson = require('../../../package.json');
 const { getRoleInfo } = require('../../services/rolesService');
 const {
@@ -234,6 +236,12 @@ class AuthService {
                         ui_settings: uiSettings || null,
                         sidebar_settings: sidebarSettings || null,
                         is_admin: admin,
+                        // Hosted superadmin without 2FA: the admin panel is
+                        // closed until it is on (modules/admin/mfaGate.js).
+                        admin_mfa_required:
+                            admin &&
+                            getConfig().hosted?.enabled === true &&
+                            !(await mfaService.isEnabled(session.userId)),
                         ...(await getRoleInfo(user.uid)),
                         has_collaborators: hasCollaborators,
                         onboarded_at: user.onboarded_at || null,
@@ -243,10 +251,18 @@ class AuthService {
             }
         }
 
+        // Half signed in (password or SSO done, code still to come): the
+        // sign-in page picks up at the code prompt after a reload.
+        if (mfaSession.getPendingLogin(session)) {
+            return { user: null, mfa_pending: true };
+        }
+
         return { user: null };
     }
 
-    async login(email, password, session) {
+    // Takes req, not req.session: a sign-in regenerates the session, which
+    // puts a new object on req.session.
+    async login(email, password, req) {
         if (!isPasswordAuthEnabled()) {
             throw new ForbiddenError(
                 'Password login is disabled. Please use SSO to sign in.'
@@ -301,14 +317,16 @@ class AuthService {
             throw error;
         }
 
-        session.userId = user.id;
-
-        await new Promise((resolve, reject) => {
-            session.save((err) => {
-                if (err) reject(err);
-                else resolve();
+        // With two-factor sign-in on, the password only gets the session as
+        // far as the code prompt (POST /api/login/mfa).
+        if (await mfaService.isEnabled(user.id)) {
+            await mfaSession.startPendingLogin(req, user, {
+                method: 'email_password',
             });
-        });
+            return { mfa_required: true };
+        }
+
+        await mfaSession.signIn(req, user);
 
         return this.buildLoginResult(user);
     }

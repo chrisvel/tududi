@@ -113,6 +113,8 @@ const Feedback = require('./feedback')(sequelize);
 const PushSubscription = require('./push_subscription')(sequelize);
 const Webhook = require('./webhook')(sequelize);
 const WebhookDelivery = require('./webhook_delivery')(sequelize);
+const UserMfa = require('./user_mfa')(sequelize);
+const UserRecoveryCode = require('./user_recovery_code')(sequelize);
 const Account = require('./account')(sequelize);
 const { selfPersonName } = require('../utils/selfPersonName');
 
@@ -129,6 +131,13 @@ User.hasMany(PushSubscription, {
 PushSubscription.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 User.hasMany(Webhook, { foreignKey: 'user_id', as: 'Webhooks' });
 Webhook.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasOne(UserMfa, { foreignKey: 'user_id', as: 'Mfa' });
+UserMfa.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
+User.hasMany(UserRecoveryCode, {
+    foreignKey: 'user_id',
+    as: 'RecoveryCodes',
+});
+UserRecoveryCode.belongsTo(User, { foreignKey: 'user_id', as: 'User' });
 Webhook.hasMany(WebhookDelivery, {
     foreignKey: 'webhook_id',
     as: 'Deliveries',
@@ -722,4 +731,6 @@ module.exports = {
     PushSubscription,
     Webhook,
     WebhookDelivery,
+    UserMfa,
+    UserRecoveryCode,
 };

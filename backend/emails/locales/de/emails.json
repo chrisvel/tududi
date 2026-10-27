@@ -82,5 +82,29 @@
         "tip": "Wenn die Liste zu lang geworden ist, fangen Sie klein an: Öffnen Sie Planen, wählen Sie drei Dinge für heute aus und heben Sie den Rest für später auf.",
         "button": "Heute planen",
         "outro": "Wir schicken Ihnen keine weitere E-Mail dieser Art, bis Sie wieder vorbeigeschaut haben."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Zwei-Faktor-Anmeldung ist an",
+            "body": "Die Zwei-Faktor-Anmeldung wurde für Ihr Tududi-Konto eingeschaltet. Zum Anmelden brauchen Sie jetzt einen Code aus Ihrer Authenticator-App, und alle anderen Geräte wurden abgemeldet."
+        },
+        "mfaDisabled": {
+            "subject": "Zwei-Faktor-Anmeldung ist aus",
+            "body": "Die Zwei-Faktor-Anmeldung wurde für Ihr Tududi-Konto ausgeschaltet. Zum Anmelden brauchen Sie jetzt nur noch Ihr Passwort."
+        },
+        "mfaReset": {
+            "subject": "Ihre Zwei-Faktor-Anmeldung wurde zurückgesetzt",
+            "body": "Ein Administrator hat die Zwei-Faktor-Anmeldung für Ihr Tududi-Konto zurückgesetzt, und alle Geräte wurden abgemeldet. Sie können sich mit Ihrem Passwort anmelden und sie wieder einschalten."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Ein Wiederherstellungscode wurde verwendet",
+            "body": "Jemand hat sich mit einem Ihrer Wiederherstellungscodes bei Ihrem Tududi-Konto angemeldet. Jeder Code funktioniert nur einmal."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Neue Wiederherstellungscodes wurden erstellt",
+            "body": "Für Ihr Tududi-Konto wurden neue Wiederherstellungscodes erstellt. Die alten funktionieren nicht mehr."
+        },
+        "button": "Sicherheitseinstellungen öffnen",
+        "notYou": "Falls Sie das nicht waren, ändern Sie jetzt Ihr Passwort und informieren Sie Ihren Administrator."
     }
 }

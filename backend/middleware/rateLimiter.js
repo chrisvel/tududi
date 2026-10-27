@@ -395,6 +395,30 @@ const caldavAuthLimiter = rateLimit({
     },
 });
 
+// Two-factor codes and step-up checks (sign-in code, setup, reverify). Keyed
+// by the signed-in or half-signed-in user, else the IP; only failures count.
+// The per-user lockout in modules/mfa/service.js holds across sessions too.
+const mfaLimiter = rateLimit({
+    store: createRateLimitStore('mfa'),
+    windowMs: rateLimitConfig.passwordConfirm.windowMs,
+    max: rateLimitConfig.passwordConfirm.max,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: skipInTest,
+    skipSuccessfulRequests: true,
+    keyGenerator: (req) => {
+        const pending = req.session?.pendingMfa?.userId;
+        if (pending) return `user:${pending}`;
+        return identityOrIpKey(req);
+    },
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Too many attempts. Please try again later.',
+            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+        });
+    },
+});
+
 module.exports = {
     caldavAuthLimiter,
     authLimiter,
@@ -406,6 +430,7 @@ module.exports = {
     signupLimiter,
     bearerFailureLimiter,
     passwordConfirmLimiter,
+    mfaLimiter,
     uploadsLimiter,
     requestIdentity,
     authEmailKey,

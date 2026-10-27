@@ -244,12 +244,15 @@ describe('authService edge cases', () => {
                 email_verified: true,
             });
             jest.spyOn(User, 'checkPassword').mockResolvedValue(true);
-            const session = {
-                save: (callback) => callback(new Error('store down')),
+            const req = {
+                session: {
+                    regenerate: (callback) => callback(),
+                    save: (callback) => callback(new Error('store down')),
+                },
             };
 
             await expect(
-                authService.login('a@example.com', 'password123', session)
+                authService.login('a@example.com', 'password123', req)
             ).rejects.toThrow('store down');
         });
     });

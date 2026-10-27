@@ -3,7 +3,7 @@ const app = require('../../app');
 const { getConfig } = require('../../config/config');
 const { Role, UsageCounter } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 const config = getConfig();
 
@@ -50,6 +50,7 @@ describe('Admin AI usage', () => {
                 { where: { user_id: admin.id } }
             );
             adminAgent = await login(admin);
+            await enrollMfa(admin);
 
             user = await createTestUser({
                 email: `member_${Date.now()}@example.com`,

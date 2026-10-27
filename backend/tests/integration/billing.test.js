@@ -81,7 +81,7 @@ const { getConfig } = require('../../config/config');
 const { BillingAccount, BillingEvent, Role, User } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
 const stripeClient = require('../../modules/billing/stripeClient');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 const config = getConfig();
 const PRICE_MONTH = 'price_month';
@@ -550,6 +550,7 @@ describe('Billing with hosted mode on', () => {
                 { where: { user_id: admin.id } }
             );
             adminAgent = await login(admin);
+            await enrollMfa(admin);
         });
 
         it('is refused for regular users', async () => {

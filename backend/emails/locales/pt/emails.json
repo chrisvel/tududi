@@ -89,5 +89,29 @@
         "tip": "Se a lista ficou longa demais, comece pequeno: abra Planejar, escolha três coisas para hoje e deixe o resto para depois.",
         "button": "Planejar hoje",
         "outro": "Não vamos enviar outro e-mail como este até você voltar."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "A verificação em duas etapas está ativada",
+            "body": "A verificação em duas etapas foi ativada na sua conta Tududi. Agora, para entrar, é preciso um código do seu app autenticador, e todos os outros dispositivos foram desconectados."
+        },
+        "mfaDisabled": {
+            "subject": "A verificação em duas etapas está desativada",
+            "body": "A verificação em duas etapas foi desativada na sua conta Tududi. Agora, para entrar, basta a sua senha."
+        },
+        "mfaReset": {
+            "subject": "Sua verificação em duas etapas foi redefinida",
+            "body": "Um administrador redefiniu a verificação em duas etapas da sua conta Tududi, e todos os dispositivos foram desconectados. Você pode entrar com sua senha e ativá-la de novo."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Um código de recuperação foi usado",
+            "body": "Alguém entrou na sua conta Tududi com um dos seus códigos de recuperação. Cada código funciona uma vez."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Novos códigos de recuperação foram criados",
+            "body": "Novos códigos de recuperação foram criados para a sua conta Tududi. Os antigos não funcionam mais."
+        },
+        "button": "Abrir configurações de segurança",
+        "notYou": "Se não foi você, troque sua senha agora e avise o seu administrador."
     }
 }

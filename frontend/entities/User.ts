@@ -16,6 +16,8 @@ export interface User {
     timezone: string;
     avatarUrl?: string;
     is_admin?: boolean;
+    // Hosted superadmin without 2FA: the admin panel stays closed.
+    admin_mfa_required?: boolean;
     role?: RoleId;
     capabilities?: Capabilities;
     features?: UserFeatures;

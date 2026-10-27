@@ -17,7 +17,7 @@ const {
 } = require('../../models');
 const { getConfig } = require('../../config/config');
 const entitlements = require('../../services/entitlementsService');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 const login = async (user) => {
     const agent = request.agent(app);
@@ -36,6 +36,7 @@ describe('Admin dashboard', () => {
         });
         await Role.update({ is_admin: true }, { where: { user_id: admin.id } });
         adminAgent = await login(admin);
+        await enrollMfa(admin);
 
         plain = await createTestUser({
             email: `usr_${Date.now()}@example.com`,

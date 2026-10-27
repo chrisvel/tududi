@@ -200,6 +200,17 @@ class AdminRepository {
         return new Set(rows.map((row) => row.user_id));
     }
 
+    // Who has two-factor sign-in on, among `userIds` (null: everyone).
+    async findMfaUserIds(userIds) {
+        const { UserMfa } = require('../../models');
+        const rows = await UserMfa.findAll({
+            attributes: ['user_id'],
+            where: userIds ? { user_id: userIds } : {},
+            raw: true,
+        });
+        return new Set(rows.map((row) => row.user_id));
+    }
+
     // Every single sign-on link with its provider and when it was made, so
     // the dashboard can tell which accounts were created through one.
     async findIdentities() {

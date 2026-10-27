@@ -32,7 +32,7 @@ const {
 } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
 const { createApiToken } = require('../../modules/users/apiTokenService');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 // Every customer on tududi Cloud gets an account of its own, however it
 // signed up, and nothing one account owns can be read, changed or deleted
@@ -417,6 +417,7 @@ describe('Cloud: account isolation', () => {
 
         it('when the superadmin creates a customer', async () => {
             const agent = await login(superadmin.email);
+            await enrollMfa(superadmin);
             const res = await agent.post('/api/admin/users').send({
                 email: `comped_${stamp}@example.com`,
                 password: 'password123',
