@@ -4,7 +4,12 @@ const request = require('supertest');
 // Paddle and Lemon Squeezy are reached over plain fetch, so both APIs are
 // stood in for by one routed mock of global.fetch. Tests shape
 // `paddle.subscriptions` / `ls.subscriptions` and read `calls`.
-const paddle = { subscriptions: {}, customers: [], transactions: {} };
+const paddle = {
+    subscriptions: {},
+    customers: [],
+    transactions: {},
+    checkoutUrl: null,
+};
 const ls = { subscriptions: {} };
 let calls = [];
 
@@ -47,7 +52,13 @@ function mockFetch(url, options = {}) {
         return data(201, customer);
     }
     if (method === 'POST' && path === '/transactions') {
-        return data(201, { id: 'txn_1', status: 'ready' });
+        return data(201, {
+            id: 'txn_1',
+            status: 'ready',
+            checkout: paddle.checkoutUrl
+                ? { url: `${paddle.checkoutUrl}?_ptxn=txn_1` }
+                : null,
+        });
     }
     let m = path.match(/^\/transactions\/(\w+)$/);
     if (m) {
@@ -174,6 +185,7 @@ describe('Billing with Paddle', () => {
         paddle.subscriptions = {};
         paddle.customers = [];
         paddle.transactions = {};
+        paddle.checkoutUrl = null;
         ls.subscriptions = {};
         calls = [];
         user = await createTestUser({
@@ -251,6 +263,16 @@ describe('Billing with Paddle', () => {
             user_id: String(user.id),
         });
         expect((await account(user)).provider_customer_id).toBe('ctm_new');
+    });
+
+    it('sends the browser to the default payment link when Paddle has one', async () => {
+        paddle.checkoutUrl = 'https://tududi.com/billing/pay';
+        const res = await agent
+            .post('/api/billing/checkout')
+            .send({ interval: 'year', plan: 'team_5' });
+        expect(res.status).toBe(200);
+        expect(res.body.url).toBe('https://tududi.com/billing/pay?_ptxn=txn_1');
+        expect(res.body.paddle).toBeUndefined();
     });
 
     it('reuses the Paddle customer with the same email', async () => {
@@ -554,8 +576,25 @@ describe('Paddle default payment link', () => {
         const res = await request(app).get('/billing/pay?_ptxn=txn_1');
         expect(res.status).toBe(200);
         expect(res.text).toContain('cdn.paddle.com/paddle/v2/paddle.js');
-        expect(res.text).toContain('"token":"live_test_token"');
+        expect(res.text).toContain('token: "live_test_token"');
+        expect(res.text).toContain('checkout.completed');
         expect(res.text).not.toContain("Environment.set('sandbox')");
+    });
+
+    it('is served on the marketing host, not sent on to the app', async () => {
+        config.hosted.enabled = true;
+        config.hosted.paddle.clientToken = 'live_test_token';
+        const hosts = config.landing.hosts;
+        config.landing.hosts = ['tududi.com'];
+        try {
+            const res = await request(app)
+                .get('/billing/pay?_ptxn=txn_1')
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('paddle.js');
+        } finally {
+            config.landing.hosts = hosts;
+        }
     });
 
     it('is not there without Paddle', async () => {

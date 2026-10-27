@@ -164,8 +164,10 @@ async function customerFor(user, account) {
     return created.id;
 }
 
-// The browser opens Paddle's overlay on this transaction; there is no
-// hosted page to redirect to.
+// The transaction's checkout url is the default payment link (our
+// /billing/pay page on an approved domain) with ?_ptxn=, which opens the
+// overlay; without a default payment link the browser opens the overlay
+// over the billing tab itself.
 async function createCheckout({
     user,
     account,
@@ -180,6 +182,13 @@ async function createCheckout({
         collection_mode: 'automatic',
         custom_data: { user_uid: user.uid, user_id: String(user.id) },
     });
+    if (transaction.checkout?.url) {
+        return {
+            url: transaction.checkout.url,
+            id: transaction.id,
+            customerId,
+        };
+    }
     return {
         url: null,
         id: transaction.id,

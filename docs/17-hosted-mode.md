@@ -247,15 +247,19 @@ price.
 | `PADDLE_PRICES_JSON` | price ids by plan, `{"pro":{"month":"pri_…","year":"pri_…"},"team_5":{…}}` |
 | `PADDLE_ENVIRONMENT` | `sandbox` for sandbox-api.paddle.com; production otherwise |
 
-Checkout: the server finds or creates the Paddle customer by email, opens
-a transaction for the price with the user's uid in `custom_data` (Paddle
-copies it to the subscription), and the browser opens Paddle's overlay on
-that transaction; afterwards Paddle sends it back to the billing tab with
-the transaction id, which the sync reads. The checkout domain must be
-approved in Paddle (Checkout > Website approval), and the default payment
-link set to `https://your-host/billing/pay`: Paddle sends customers there
-with `?_ptxn=` to pay an invoice or replace a failed card, and the page
-opens the checkout without a sign-in. Add a notification destination at `https://your-host/api/billing/webhook`
+Checkout: the server finds or creates the Paddle customer by email and
+opens a transaction for the price with the user's uid in `custom_data`
+(Paddle copies it to the subscription). Its checkout url is the default
+payment link plus `?_ptxn=`; set the link to `https://your-host/billing/pay`
+on a domain approved under Checkout > Website approval. The browser goes
+there, Paddle.js opens the checkout, and afterwards returns it to the
+billing tab with the transaction id, which the sync reads. The same page
+serves Paddle's emails (pay an invoice, replace a failed card) without a
+sign-in. Paddle's review refuses a domain that opens on a sign-in page, so
+the hosted tududi uses `https://tududi.com/billing/pay`, served by the same
+app as `app.tududi.com`. Without a default payment link, the overlay opens
+over the billing tab instead, which needs the app's own domain approved.
+Add a notification destination at `https://your-host/api/billing/webhook`
 with `subscription.created`, `subscription.updated`,
 `subscription.activated`, `subscription.trialing`,
 `subscription.paused`, `subscription.resumed`, `subscription.canceled`,
