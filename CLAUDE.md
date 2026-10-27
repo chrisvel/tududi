@@ -347,6 +347,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Import wizard: upload, match columns, dry-run review, commit, undo for 7 days
     - Parent column, WBS numbers or indented rows as subtasks; UID column updates tasks on re-import
 
+38. **[Two-factor sign-in](docs/29-two-factor-sign-in.md)**
+    - Opt-in authenticator-app codes with 10 single-use recovery codes; applies after password and SSO sign-in
+    - Step-up (password or code) for new API keys; admin reset; CalDAV needs an API key once it is on
+    - Required for the hosted superadmin before the admin panel opens
+
 ---
 
 ## Project Overview

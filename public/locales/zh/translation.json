@@ -2068,7 +2068,13 @@
       "postCount": "文章:{{count}}",
       "open": "打开博客",
       "preview": "在应用中预览"
-    }
+    },
+    "mfaOn": "两步验证已开启",
+    "mfaReset": "重置两步验证",
+    "mfaResetConfirm": "要为 {{email}} 关闭两步验证吗？请在确定是本人时才这样做。对方将在所有设备上退出登录，并收到邮件通知。",
+    "mfaResetAction": "重置",
+    "mfaResetDone": "两步验证已重置。对方可以使用密码登录。",
+    "mfaResetFailed": "无法重置 2FA"
   },
   "shares": {
     "shareProject": "分享项目",
@@ -3363,5 +3369,47 @@
       "importShort": "导入",
       "importHint": "从 Excel 或 CSV 导入项目和任务"
     }
+  },
+  "mfa": {
+    "title": "两步验证",
+    "on": "已开启",
+    "description": "每当此账户在新设备上登录时，除了密码或单点登录外，还需要输入身份验证器应用中的验证码。",
+    "unavailable": "两步验证需要在服务器上设置 TUDUDI_SESSION_SECRET。请联系管理员。",
+    "turnOn": "开启",
+    "turnOff": "关闭",
+    "setupScan": "使用身份验证器应用扫描此二维码，例如 Google Authenticator、1Password 或 Aegis。",
+    "setupEnter": "输入应用中显示的 6 位验证码。",
+    "qrAlt": "用于身份验证器应用的二维码",
+    "setupManual": "或者在应用中输入此密钥：",
+    "confirm": "确认",
+    "codesIntro": "请把这些恢复码保存在安全的地方。如果手机丢失，每个恢复码可以登录一次。它们只会显示这一次。",
+    "copyCodes": "复制",
+    "downloadCodes": "下载",
+    "codesSaved": "我已保存",
+    "keysIntro": "这些 API 密钥无需验证码即可继续使用。请撤销您不认识或不再使用的密钥。",
+    "keyLastUsed": "上次使用 {{date}}",
+    "keyNeverUsed": "从未使用",
+    "revoke": "撤销",
+    "revokeAll": "全部撤销",
+    "codesLeft_other": "还剩 {{count}} 个恢复码。",
+    "newCodes": "新的恢复码",
+    "disablePrompt": "输入身份验证器应用中的验证码或一个恢复码，以关闭两步验证。",
+    "codePrompt": "输入身份验证器应用中的 6 位验证码。",
+    "recoveryPrompt": "输入一个恢复码。每个恢复码只能使用一次。",
+    "code": "验证码",
+    "recoveryCode": "恢复码",
+    "verify": "验证",
+    "useRecovery": "使用恢复码",
+    "useApp": "使用身份验证器应用",
+    "wrongCode": "验证码不正确，请重试。",
+    "wrongPassword": "密码不正确。",
+    "tooManyAttempts": "错误的验证码次数过多。请在 15 分钟后重试。",
+    "expired": "登录已超时或输入了过多错误的验证码。请重新登录。",
+    "reverifyTitle": "确认是您本人",
+    "reverifyCode": "输入身份验证器应用中的验证码以继续。",
+    "reverifyPassword": "输入密码以继续。",
+    "adminRequiredTitle": "请先开启两步验证",
+    "adminRequiredBody": "此账户可以查看所有客户，因此只有开启两步验证后才能打开管理面板。",
+    "adminRequiredAction": "立即设置"
   }
 }

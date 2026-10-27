@@ -82,5 +82,29 @@
         "tip": "Jos lista kasvoi liian pitkäksi, aloita pienestä: avaa Suunnitelma, valitse kolme asiaa tälle päivälle ja jätä loput myöhemmäksi.",
         "button": "Suunnittele päivä",
         "outro": "Emme lähetä toista tällaista viestiä ennen kuin olet käynyt takaisin."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Kaksivaiheinen tunnistautuminen on käytössä",
+            "body": "Kaksivaiheinen tunnistautuminen otettiin käyttöön Tududi-tililläsi. Kirjautumiseen tarvitaan nyt koodi todennussovelluksestasi, ja kaikki muut laitteet kirjattiin ulos."
+        },
+        "mfaDisabled": {
+            "subject": "Kaksivaiheinen tunnistautuminen ei ole käytössä",
+            "body": "Kaksivaiheinen tunnistautuminen poistettiin käytöstä Tududi-tililtäsi. Kirjautumiseen tarvitaan nyt vain salasanasi."
+        },
+        "mfaReset": {
+            "subject": "Kaksivaiheinen tunnistautumisesi nollattiin",
+            "body": "Ylläpitäjä nollasi Tududi-tilisi kaksivaiheisen tunnistautumisen, ja kaikki laitteet kirjattiin ulos. Voit kirjautua salasanallasi ja ottaa sen uudelleen käyttöön."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Palautuskoodia käytettiin",
+            "body": "Joku kirjautui Tududi-tilillesi yhdellä palautuskoodeistasi. Kukin koodi toimii kerran."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Uudet palautuskoodit luotiin",
+            "body": "Tududi-tilillesi luotiin uudet palautuskoodit. Vanhat eivät enää toimi."
+        },
+        "button": "Avaa suojausasetukset",
+        "notYou": "Jos tämä et ollut sinä, vaihda salasanasi heti ja kerro asiasta ylläpitäjällesi."
     }
 }

@@ -2,7 +2,7 @@ const request = require('supertest');
 const app = require('../../app');
 const { User, Role } = require('../../models');
 const { getConfig } = require('../../config/config');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 // Hosted mode is a config flag read at call time, so it can be flipped on
 // the live config object for these tests only.
@@ -62,6 +62,7 @@ describe('Hosted mode: admin bootstrap is never implicit', () => {
         await agent
             .post('/api/login')
             .send({ email: admin.email, password: 'password123' });
+        await enrollMfa(admin);
 
         const res = await agent
             .post('/api/admin/set-admin-role')

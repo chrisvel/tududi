@@ -4,6 +4,7 @@ const usersService = require('./service');
 const { UnauthorizedError } = require('../../shared/errors');
 const { getAuthenticatedUserId } = require('../../utils/request-utils');
 const { logError } = require('../../services/logService');
+const { destroyUserSessions } = require('../../services/sessionService');
 const fs = require('fs').promises;
 const path = require('path');
 const { getConfig } = require('../../config/config');
@@ -74,6 +75,11 @@ const usersController = {
         try {
             const userId = requireUserId(req);
             const profile = await usersService.updateProfile(userId, req.body);
+            // A new password signs the account out everywhere else, the way
+            // a reset does.
+            if (req.body?.newPassword) {
+                await destroyUserSessions(userId, { exceptSid: req.sessionID });
+            }
             res.json(profile);
         } catch (error) {
             next(error);
@@ -144,6 +150,7 @@ const usersController = {
                 currentPassword,
                 newPassword
             );
+            await destroyUserSessions(userId, { exceptSid: req.sessionID });
             res.json(result);
         } catch (error) {
             next(error);

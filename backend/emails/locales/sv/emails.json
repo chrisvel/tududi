@@ -82,5 +82,29 @@
         "tip": "Om listan har blivit för lång, börja i liten skala: öppna Planera, välj tre saker för i dag och spara resten till senare.",
         "button": "Planera i dag",
         "outro": "Vi skickar inget nytt mejl av det här slaget förrän du har varit tillbaka."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Tvåfaktorsautentisering är på",
+            "body": "Tvåfaktorsautentisering har slagits på för ditt Tududi-konto. Inloggning kräver nu en kod från din autentiseringsapp, och alla andra enheter har loggats ut."
+        },
+        "mfaDisabled": {
+            "subject": "Tvåfaktorsautentisering är av",
+            "body": "Tvåfaktorsautentisering har stängts av för ditt Tududi-konto. Inloggning kräver nu bara ditt lösenord."
+        },
+        "mfaReset": {
+            "subject": "Din tvåfaktorsautentisering har återställts",
+            "body": "En administratör har återställt tvåfaktorsautentiseringen för ditt Tududi-konto, och alla enheter har loggats ut. Du kan logga in med ditt lösenord och slå på den igen."
+        },
+        "recoveryCodeUsed": {
+            "subject": "En återställningskod har använts",
+            "body": "Någon loggade in på ditt Tududi-konto med en av dina återställningskoder. Varje kod fungerar en gång."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Nya återställningskoder har skapats",
+            "body": "Nya återställningskoder har skapats för ditt Tududi-konto. De gamla fungerar inte längre."
+        },
+        "button": "Öppna säkerhetsinställningar",
+        "notYou": "Om det inte var du, byt lösenord nu och meddela din administratör."
     }
 }

@@ -2070,7 +2070,13 @@
       "postCount": "Inlägg: {{count}}",
       "open": "Öppna bloggen",
       "preview": "Förhandsgranska i appen"
-    }
+    },
+    "mfaOn": "Tvåfaktorsautentisering på",
+    "mfaReset": "Återställ tvåfaktorsautentisering",
+    "mfaResetConfirm": "Stänga av tvåfaktorsautentisering för {{email}}? Gör det bara när du är säker på att det är personen själv. De loggas ut överallt och får ett mejl om det.",
+    "mfaResetAction": "Återställ",
+    "mfaResetDone": "Tvåfaktorsautentiseringen har återställts. De kan logga in med sitt lösenord.",
+    "mfaResetFailed": "Kunde inte återställa 2FA"
   },
   "shares": {
     "shareProject": "Dela projekt",
@@ -3366,5 +3372,48 @@
       "importShort": "Importera",
       "importHint": "Importera projekt och uppgifter från Excel eller CSV"
     }
+  },
+  "mfa": {
+    "title": "Tvåfaktorsautentisering",
+    "on": "På",
+    "description": "Ber om en kod från en autentiseringsapp, utöver ditt lösenord eller enkel inloggning, varje gång det här kontot loggar in på en ny enhet.",
+    "unavailable": "Tvåfaktorsautentisering kräver att TUDUDI_SESSION_SECRET är satt på servern. Fråga din administratör.",
+    "turnOn": "Slå på",
+    "turnOff": "Stäng av",
+    "setupScan": "Skanna den här QR-koden med en autentiseringsapp, till exempel Google Authenticator, 1Password eller Aegis.",
+    "setupEnter": "Ange den 6-siffriga koden som appen visar.",
+    "qrAlt": "QR-kod för din autentiseringsapp",
+    "setupManual": "Eller skriv in den här nyckeln i appen:",
+    "confirm": "Bekräfta",
+    "codesIntro": "Spara de här återställningskoderna på ett säkert ställe. Varje kod loggar in dig en gång om du tappar bort telefonen. De visas bara nu.",
+    "copyCodes": "Kopiera",
+    "downloadCodes": "Ladda ner",
+    "codesSaved": "Jag har sparat dem",
+    "keysIntro": "De här API-nycklarna fortsätter att fungera utan kod. Återkalla dem du inte känner igen eller inte längre använder.",
+    "keyLastUsed": "senast använd {{date}}",
+    "keyNeverUsed": "aldrig använd",
+    "revoke": "Återkalla",
+    "revokeAll": "Återkalla alla",
+    "codesLeft_one": "{{count}} återställningskod kvar.",
+    "codesLeft_other": "{{count}} återställningskoder kvar.",
+    "newCodes": "Nya återställningskoder",
+    "disablePrompt": "Ange en kod från din autentiseringsapp, eller en återställningskod, för att stänga av tvåfaktorsautentisering.",
+    "codePrompt": "Ange den 6-siffriga koden från din autentiseringsapp.",
+    "recoveryPrompt": "Ange en av dina återställningskoder. Varje kod fungerar en gång.",
+    "code": "Kod",
+    "recoveryCode": "Återställningskod",
+    "verify": "Verifiera",
+    "useRecovery": "Använd en återställningskod",
+    "useApp": "Använd din autentiseringsapp",
+    "wrongCode": "Koden stämmer inte. Försök igen.",
+    "wrongPassword": "Lösenordet stämmer inte.",
+    "tooManyAttempts": "För många felaktiga koder. Försök igen om 15 minuter.",
+    "expired": "Inloggningen tog för lång tid eller fick för många felaktiga koder. Logga in igen.",
+    "reverifyTitle": "Bekräfta att det är du",
+    "reverifyCode": "Ange en kod från din autentiseringsapp för att fortsätta.",
+    "reverifyPassword": "Ange ditt lösenord för att fortsätta.",
+    "adminRequiredTitle": "Slå på tvåfaktorsautentisering först",
+    "adminRequiredBody": "Det här kontot kan se alla kunder, så adminpanelen öppnas först när tvåfaktorsautentisering är på.",
+    "adminRequiredAction": "Konfigurera"
   }
 }

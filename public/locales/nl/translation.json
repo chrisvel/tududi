@@ -2070,7 +2070,13 @@
       "postCount": "Berichten: {{count}}",
       "open": "Blog openen",
       "preview": "Voorbeeld in de app"
-    }
+    },
+    "mfaOn": "Tweestapsverificatie aan",
+    "mfaReset": "Tweestapsverificatie resetten",
+    "mfaResetConfirm": "Tweestapsverificatie uitschakelen voor {{email}}? Doe dit alleen als je zeker weet dat het echt die persoon is. Diegene wordt overal uitgelogd en krijgt hierover een e-mail.",
+    "mfaResetAction": "Resetten",
+    "mfaResetDone": "Tweestapsverificatie is gereset. Diegene kan inloggen met het eigen wachtwoord.",
+    "mfaResetFailed": "Kon 2FA niet resetten"
   },
   "shares": {
     "shareProject": "Project delen",
@@ -3366,5 +3372,48 @@
       "importShort": "Importeren",
       "importHint": "Importeer projecten en taken uit Excel of CSV"
     }
+  },
+  "mfa": {
+    "title": "Tweestapsverificatie",
+    "on": "Aan",
+    "description": "Vraagt om een code uit een authenticator-app, naast je wachtwoord of single sign-on, telkens wanneer dit account inlogt op een nieuw apparaat.",
+    "unavailable": "Tweestapsverificatie werkt alleen als TUDUDI_SESSION_SECRET op de server is ingesteld. Vraag het je beheerder.",
+    "turnOn": "Inschakelen",
+    "turnOff": "Uitschakelen",
+    "setupScan": "Scan deze QR-code met een authenticator-app, zoals Google Authenticator, 1Password of Aegis.",
+    "setupEnter": "Voer de 6-cijferige code in die de app toont.",
+    "qrAlt": "QR-code voor je authenticator-app",
+    "setupManual": "Of typ deze sleutel in de app:",
+    "confirm": "Bevestigen",
+    "codesIntro": "Bewaar deze herstelcodes op een veilige plek. Met elke code kun je één keer inloggen als je je telefoon kwijtraakt. Ze worden alleen nu getoond.",
+    "copyCodes": "Kopiëren",
+    "downloadCodes": "Downloaden",
+    "codesSaved": "Ik heb ze bewaard",
+    "keysIntro": "Deze API-sleutels blijven werken zonder code. Trek de sleutels in die je niet herkent of niet meer gebruikt.",
+    "keyLastUsed": "laatst gebruikt op {{date}}",
+    "keyNeverUsed": "nooit gebruikt",
+    "revoke": "Intrekken",
+    "revokeAll": "Alles intrekken",
+    "codesLeft_one": "Nog {{count}} herstelcode over.",
+    "codesLeft_other": "Nog {{count}} herstelcodes over.",
+    "newCodes": "Nieuwe herstelcodes",
+    "disablePrompt": "Voer een code uit je authenticator-app of een herstelcode in om tweestapsverificatie uit te schakelen.",
+    "codePrompt": "Voer de 6-cijferige code uit je authenticator-app in.",
+    "recoveryPrompt": "Voer een van je herstelcodes in. Elke code werkt één keer.",
+    "code": "Code",
+    "recoveryCode": "Herstelcode",
+    "verify": "Verifiëren",
+    "useRecovery": "Een herstelcode gebruiken",
+    "useApp": "Je authenticator-app gebruiken",
+    "wrongCode": "Die code klopt niet. Probeer het opnieuw.",
+    "wrongPassword": "Dat wachtwoord klopt niet.",
+    "tooManyAttempts": "Te veel onjuiste codes. Probeer het over 15 minuten opnieuw.",
+    "expired": "Het inloggen is verlopen of er zijn te veel verkeerde codes ingevoerd. Log opnieuw in.",
+    "reverifyTitle": "Bevestig dat jij het bent",
+    "reverifyCode": "Voer een code uit je authenticator-app in om door te gaan.",
+    "reverifyPassword": "Voer je wachtwoord in om door te gaan.",
+    "adminRequiredTitle": "Schakel eerst tweestapsverificatie in",
+    "adminRequiredBody": "Dit account kan alle klanten zien, dus het beheerpaneel opent pas als tweestapsverificatie aan staat.",
+    "adminRequiredAction": "Instellen"
   }
 }

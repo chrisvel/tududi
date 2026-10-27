@@ -78,6 +78,7 @@ import type {
     TelegramBotInfo,
     ProfileFormData,
 } from './types';
+import { useReverify } from '../Auth/useReverify';
 
 const formatFrequency = (frequency: string): string => {
     if (frequency.endsWith('h')) {
@@ -100,6 +101,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     setAppearance,
 }) => {
     const { t, i18n } = useTranslation();
+    const { runWithReverify, reverifyModal } = useReverify();
     const { showSuccessToast, showErrorToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
@@ -414,7 +416,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 payload.expires_at = parsed.toISOString();
             }
 
-            const response = await createApiKey(payload);
+            // A new token needs the password or a code typed again.
+            const response = await runWithReverify(() => createApiKey(payload));
+            if (!response) return;
             setGeneratedApiToken(response.token);
             setApiKeys((prev) => [response.apiKey, ...prev]);
             setNewApiKeyName('');
@@ -1496,6 +1500,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
     return (
         <>
+            {reverifyModal}
             <div
                 className="w-full p-4 sm:p-6"
                 key={`profile-settings-${updateKey}`}

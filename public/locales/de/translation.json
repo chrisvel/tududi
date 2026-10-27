@@ -2079,7 +2079,13 @@
       "postCount": "Beiträge: {{count}}",
       "open": "Blog öffnen",
       "preview": "In der App ansehen"
-    }
+    },
+    "mfaOn": "Zwei-Faktor-Anmeldung an",
+    "mfaReset": "Zwei-Faktor-Anmeldung zurücksetzen",
+    "mfaResetConfirm": "Zwei-Faktor-Anmeldung für {{email}} ausschalten? Tun Sie das nur, wenn Sie sicher sind, dass es wirklich diese Person ist. Sie wird überall abgemeldet und per E-Mail darüber informiert.",
+    "mfaResetAction": "Zurücksetzen",
+    "mfaResetDone": "Die Zwei-Faktor-Anmeldung wurde zurückgesetzt. Die Person kann sich mit ihrem Passwort anmelden.",
+    "mfaResetFailed": "2FA konnte nicht zurückgesetzt werden"
   },
   "shares": {
     "shareProject": "Projekt teilen",
@@ -3375,5 +3381,48 @@
       "importShort": "Import",
       "importHint": "Projekte und Aufgaben aus Excel oder CSV importieren"
     }
+  },
+  "mfa": {
+    "title": "Zwei-Faktor-Anmeldung",
+    "on": "An",
+    "description": "Fragt bei jeder Anmeldung auf einem neuen Gerät zusätzlich zu Ihrem Passwort oder Single Sign-On nach einem Code aus einer Authenticator-App.",
+    "unavailable": "Die Zwei-Faktor-Anmeldung erfordert, dass TUDUDI_SESSION_SECRET auf dem Server gesetzt ist. Wenden Sie sich an Ihren Administrator.",
+    "turnOn": "Einschalten",
+    "turnOff": "Ausschalten",
+    "setupScan": "Scannen Sie diesen QR-Code mit einer Authenticator-App, zum Beispiel Google Authenticator, 1Password oder Aegis.",
+    "setupEnter": "Geben Sie den 6-stelligen Code aus der App ein.",
+    "qrAlt": "QR-Code für Ihre Authenticator-App",
+    "setupManual": "Oder geben Sie diesen Schlüssel in der App ein:",
+    "confirm": "Bestätigen",
+    "codesIntro": "Bewahren Sie diese Wiederherstellungscodes an einem sicheren Ort auf. Mit jedem Code können Sie sich einmal anmelden, falls Sie Ihr Telefon verlieren. Sie werden nur jetzt angezeigt.",
+    "copyCodes": "Kopieren",
+    "downloadCodes": "Herunterladen",
+    "codesSaved": "Ich habe sie gespeichert",
+    "keysIntro": "Diese API-Schlüssel funktionieren weiterhin ohne Code. Widerrufen Sie alle, die Sie nicht kennen oder nicht mehr nutzen.",
+    "keyLastUsed": "zuletzt verwendet am {{date}}",
+    "keyNeverUsed": "nie verwendet",
+    "revoke": "Widerrufen",
+    "revokeAll": "Alle widerrufen",
+    "codesLeft_one": "Noch {{count}} Wiederherstellungscode übrig.",
+    "codesLeft_other": "Noch {{count}} Wiederherstellungscodes übrig.",
+    "newCodes": "Neue Wiederherstellungscodes",
+    "disablePrompt": "Geben Sie einen Code aus Ihrer Authenticator-App oder einen Wiederherstellungscode ein, um die Zwei-Faktor-Anmeldung auszuschalten.",
+    "codePrompt": "Geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein.",
+    "recoveryPrompt": "Geben Sie einen Ihrer Wiederherstellungscodes ein. Jeder Code funktioniert nur einmal.",
+    "code": "Code",
+    "recoveryCode": "Wiederherstellungscode",
+    "verify": "Prüfen",
+    "useRecovery": "Wiederherstellungscode verwenden",
+    "useApp": "Authenticator-App verwenden",
+    "wrongCode": "Dieser Code stimmt nicht. Versuchen Sie es erneut.",
+    "wrongPassword": "Dieses Passwort stimmt nicht.",
+    "tooManyAttempts": "Zu viele falsche Codes. Bitte versuchen Sie es in 15 Minuten erneut.",
+    "expired": "Die Anmeldung ist abgelaufen oder es wurden zu viele falsche Codes eingegeben. Bitte melden Sie sich erneut an.",
+    "reverifyTitle": "Bestätigen Sie, dass Sie es sind",
+    "reverifyCode": "Geben Sie einen Code aus Ihrer Authenticator-App ein, um fortzufahren.",
+    "reverifyPassword": "Geben Sie Ihr Passwort ein, um fortzufahren.",
+    "adminRequiredTitle": "Schalten Sie zuerst die Zwei-Faktor-Anmeldung ein",
+    "adminRequiredBody": "Dieses Konto kann alle Kunden sehen. Deshalb öffnet sich der Admin-Bereich erst, wenn die Zwei-Faktor-Anmeldung eingeschaltet ist.",
+    "adminRequiredAction": "Einrichten"
   }
 }

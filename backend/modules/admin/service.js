@@ -4,6 +4,7 @@ const adminRepository = require('./repository');
 const { accountStatusOf } = require('./accountStatus');
 const { buildInsights } = require('./insights');
 const membersService = require('../members/service');
+const mfaService = require('../mfa/service');
 const {
     validateRoleChange,
     validateUserId,
@@ -167,6 +168,7 @@ class AdminService {
         const userIdToRole = new Map(roles.map((r) => [r.user_id, r]));
         const identityUserIds =
             await adminRepository.findIdentityUserIds(userIds);
+        const mfaUserIds = await adminRepository.findMfaUserIds(userIds);
         const hosted = accountsService.isHosted();
         const ownerIds = hosted
             ? await adminRepository.findAccountOwnerIds(
@@ -182,9 +184,41 @@ class AdminService {
             created_at: u.created_at,
             email_verified: !!u.email_verified,
             account_status: accountStatusOf(u, identityUserIds.has(u.id)),
+            mfa_enabled: mfaUserIds.has(u.id),
             ...this.describeRole(userIdToRole.get(u.id)),
             ...(hosted ? { is_account_owner: ownerIds.has(u.id) } : {}),
         }));
+    }
+
+    // Clears two-factor sign-in for someone who lost their phone and their
+    // recovery codes. The instance admin may do it for anyone; an account
+    // admin only for the members of their own account, and not for another
+    // admin, whose reset stays with the instance admin.
+    async resetUserMfa(requesterId, userId, req) {
+        const scope = await this.accessScope(requesterId);
+        const id = validateUserId(userId);
+        const user = await adminRepository.findUserById(id);
+        if (!user) throw new NotFoundError('User not found');
+        // Turning your own off takes a fresh code, in Profile > Security.
+        if (user.id === requesterId) {
+            throw new ForbiddenError(
+                'Turn off your own two-factor sign-in from your profile'
+            );
+        }
+        if (!scope.superadmin) {
+            if (!scope.userIds.includes(user.id)) {
+                throw new NotFoundError('User not found');
+            }
+            const targetRole = rolesService.effectiveRole(
+                await adminRepository.findRoleByUserId(user.id)
+            );
+            if (targetRole === 'admin' || targetRole === 'account_admin') {
+                throw new ForbiddenError(
+                    'Only the instance admin can reset two-factor sign-in for an admin'
+                );
+            }
+        }
+        return mfaService.reset(user.id, requesterId, req);
     }
 
     /**

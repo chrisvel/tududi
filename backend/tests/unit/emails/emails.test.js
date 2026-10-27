@@ -56,6 +56,10 @@ const SAMPLES = {
     },
     comeBack: { url: 'https://example.com/today/plan' },
     notification: { title: 'Due', message: 'A task is due' },
+    securityNotice: {
+        event: 'mfaEnabled',
+        url: 'https://example.com/profile?section=security',
+    },
     contactMessage: {
         name: 'Sam',
         email: 'sam@example.com',

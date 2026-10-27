@@ -2070,7 +2070,13 @@
       "postCount": "Yazılar: {{count}}",
       "open": "Blogu aç",
       "preview": "Uygulamada önizle"
-    }
+    },
+    "mfaOn": "İki adımlı doğrulama açık",
+    "mfaReset": "İki adımlı doğrulamayı sıfırla",
+    "mfaResetConfirm": "{{email}} için iki adımlı doğrulama kapatılsın mı? Bunu yalnızca o kişi olduğundan eminseniz yapın. Her yerde oturumu kapatılacak ve bu konuda bir e-posta alacak.",
+    "mfaResetAction": "Sıfırla",
+    "mfaResetDone": "İki adımlı doğrulama sıfırlandı. Kişi şifresiyle giriş yapabilir.",
+    "mfaResetFailed": "2FA sıfırlanamadı"
   },
   "shares": {
     "shareProject": "Projeyi paylaş",
@@ -3366,5 +3372,48 @@
       "importShort": "İçe aktar",
       "importHint": "Projeleri ve görevleri Excel veya CSV'den içe aktarın"
     }
+  },
+  "mfa": {
+    "title": "İki adımlı doğrulama",
+    "on": "Açık",
+    "description": "Bu hesap yeni bir cihazda her giriş yaptığında, şifrenize veya tek oturum açmaya ek olarak bir doğrulama uygulamasından kod ister.",
+    "unavailable": "İki adımlı doğrulama için sunucuda TUDUDI_SESSION_SECRET ayarlanmış olmalıdır. Yöneticinize sorun.",
+    "turnOn": "Aç",
+    "turnOff": "Kapat",
+    "setupScan": "Bu QR kodunu Google Authenticator, 1Password veya Aegis gibi bir doğrulama uygulamasıyla tarayın.",
+    "setupEnter": "Uygulamanın gösterdiği 6 haneli kodu girin.",
+    "qrAlt": "Doğrulama uygulamanız için QR kodu",
+    "setupManual": "Ya da bu anahtarı uygulamaya yazın:",
+    "confirm": "Onayla",
+    "codesIntro": "Bu kurtarma kodlarını güvenli bir yerde saklayın. Telefonunuzu kaybederseniz her biri bir kez giriş yapmanızı sağlar. Yalnızca şimdi gösterilirler.",
+    "copyCodes": "Kopyala",
+    "downloadCodes": "İndir",
+    "codesSaved": "Kaydettim",
+    "keysIntro": "Bu API anahtarları kod olmadan çalışmaya devam eder. Tanımadığınız veya artık kullanmadığınız anahtarları iptal edin.",
+    "keyLastUsed": "son kullanım {{date}}",
+    "keyNeverUsed": "hiç kullanılmadı",
+    "revoke": "İptal et",
+    "revokeAll": "Tümünü iptal et",
+    "codesLeft_one": "{{count}} kurtarma kodu kaldı.",
+    "codesLeft_other": "{{count}} kurtarma kodu kaldı.",
+    "newCodes": "Yeni kurtarma kodları",
+    "disablePrompt": "İki adımlı doğrulamayı kapatmak için doğrulama uygulamanızdan bir kod veya bir kurtarma kodu girin.",
+    "codePrompt": "Doğrulama uygulamanızdaki 6 haneli kodu girin.",
+    "recoveryPrompt": "Kurtarma kodlarınızdan birini girin. Her kod bir kez çalışır.",
+    "code": "Kod",
+    "recoveryCode": "Kurtarma kodu",
+    "verify": "Doğrula",
+    "useRecovery": "Kurtarma kodu kullan",
+    "useApp": "Doğrulama uygulamanızı kullanın",
+    "wrongCode": "Bu kod doğru değil. Tekrar deneyin.",
+    "wrongPassword": "Bu şifre doğru değil.",
+    "tooManyAttempts": "Çok fazla hatalı kod girildi. Lütfen 15 dakika sonra tekrar deneyin.",
+    "expired": "Girişin süresi doldu veya çok fazla hatalı kod girildi. Lütfen tekrar giriş yapın.",
+    "reverifyTitle": "Siz olduğunuzu onaylayın",
+    "reverifyCode": "Devam etmek için doğrulama uygulamanızdan bir kod girin.",
+    "reverifyPassword": "Devam etmek için şifrenizi girin.",
+    "adminRequiredTitle": "Önce iki adımlı doğrulamayı açın",
+    "adminRequiredBody": "Bu hesap tüm müşterileri görebilir, bu yüzden yönetim paneli yalnızca iki adımlı doğrulama açıkken açılır.",
+    "adminRequiredAction": "Kur"
   }
 }

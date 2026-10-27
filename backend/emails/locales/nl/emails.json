@@ -82,5 +82,29 @@
         "tip": "Is de lijst te lang geworden? Begin klein: open Plannen, kies drie dingen voor vandaag en bewaar de rest voor later.",
         "button": "Plan vandaag",
         "outro": "We sturen je geen nieuwe e-mail als deze tot je weer bent langs geweest."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Tweestapsverificatie staat aan",
+            "body": "Tweestapsverificatie is ingeschakeld voor je Tududi-account. Voor inloggen heb je nu een code uit je authenticator-app nodig, en alle andere apparaten zijn uitgelogd."
+        },
+        "mfaDisabled": {
+            "subject": "Tweestapsverificatie staat uit",
+            "body": "Tweestapsverificatie is uitgeschakeld voor je Tududi-account. Voor inloggen heb je nu alleen je wachtwoord nodig."
+        },
+        "mfaReset": {
+            "subject": "Je tweestapsverificatie is gereset",
+            "body": "Een beheerder heeft de tweestapsverificatie van je Tududi-account gereset, en alle apparaten zijn uitgelogd. Je kunt inloggen met je wachtwoord en het weer inschakelen."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Er is een herstelcode gebruikt",
+            "body": "Iemand heeft ingelogd op je Tududi-account met een van je herstelcodes. Elke code werkt één keer."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Er zijn nieuwe herstelcodes gemaakt",
+            "body": "Er zijn nieuwe herstelcodes gemaakt voor je Tududi-account. De oude werken niet meer."
+        },
+        "button": "Beveiligingsinstellingen openen",
+        "notYou": "Was jij dit niet? Wijzig dan nu je wachtwoord en laat het je beheerder weten."
     }
 }

@@ -184,6 +184,17 @@ const adminController = {
         }
     },
 
+    async resetUserMfa(req, res, next) {
+        try {
+            const requesterId = getRequesterId(req);
+            res.json(
+                await adminService.resetUserMfa(requesterId, req.params.id, req)
+            );
+        } catch (error) {
+            next(error);
+        }
+    },
+
     /**
      * DELETE /api/admin/users/:id
      * Delete a user.

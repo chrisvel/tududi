@@ -7,6 +7,7 @@ const fs = require('fs');
 const { getConfig } = require('../../config/config');
 const config = getConfig();
 const router = express.Router();
+const { requireRecentAuth } = require('../mfa/session');
 const { blockDemoUser } = require('../../middleware/demo');
 const {
     imageFileFilter,
@@ -95,10 +96,13 @@ router.get(
 );
 // Closed to the demo account: a token would keep working after the sandbox
 // is wiped, which is the one thing the reset exists to prevent.
+// A new token works without a second factor, so making one asks for the
+// password or code again (see modules/mfa/session.js).
 router.post(
     '/profile/api-keys',
     apiKeyManagementLimiter,
     blockDemoUser,
+    requireRecentAuth,
     usersController.createApiKey
 );
 router.post(

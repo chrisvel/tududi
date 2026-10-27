@@ -21,7 +21,7 @@ const {
 } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
 const accountsService = require('../../services/accountsService');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 // Accounts on tududi Cloud: whoever signs up owns an account and is an admin
 // of it; admins manage the members, roles and groups of their own account and
@@ -121,6 +121,7 @@ describe('Cloud accounts', () => {
         await subscribe(owner.id);
         await subscribe(otherOwner.id);
         superAgent = await login(superadmin.email);
+        await enrollMfa(superadmin);
         ownerAgent = await login(owner.email);
         otherAgent = await login(otherOwner.email);
     });
@@ -499,6 +500,7 @@ describe('Cloud accounts', () => {
                 { where: { user_id: user.id } }
             );
             const agent = await login(user.email);
+            await enrollMfa(user);
             const roles = await agent.get('/api/admin/roles');
             expect(roles.body.roles.map((r) => r.id)).toEqual([
                 'admin',

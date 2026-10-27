@@ -54,6 +54,8 @@ const {
     ImportJob,
     SiteVisit,
     EmailDelivery,
+    UserMfa,
+    UserRecoveryCode,
 } = require('../models');
 const { getConfig } = require('../config/config');
 const { assertAnotherAdminRemains } = require('./rolesService');
@@ -233,6 +235,8 @@ async function eraseUserAccount(userId) {
         await Backup.destroy(byUser);
         await OIDCIdentity.destroy(byUser);
         await AuthAuditLog.destroy(byUser);
+        await UserRecoveryCode.destroy(byUser);
+        await UserMfa.destroy(byUser);
         await UsageCounter.destroy(byUser);
         await Feedback.destroy(byUser);
         await PushSubscription.destroy(byUser);

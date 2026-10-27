@@ -75,5 +75,29 @@
         "tip": "Nếu danh sách đã quá dài, hãy bắt đầu từ việc nhỏ: mở Kế hoạch, chọn ba việc cho hôm nay và để phần còn lại cho sau.",
         "button": "Lên kế hoạch hôm nay",
         "outro": "Chúng tôi sẽ không gửi email như thế này nữa cho đến khi bạn quay lại."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Xác minh hai bước đã bật",
+            "body": "Xác minh hai bước đã được bật cho tài khoản Tududi của bạn. Giờ đây, đăng nhập cần mã từ ứng dụng xác thực, và mọi thiết bị khác đã bị đăng xuất."
+        },
+        "mfaDisabled": {
+            "subject": "Xác minh hai bước đã tắt",
+            "body": "Xác minh hai bước đã được tắt cho tài khoản Tududi của bạn. Giờ đây, đăng nhập chỉ cần mật khẩu."
+        },
+        "mfaReset": {
+            "subject": "Xác minh hai bước của bạn đã được đặt lại",
+            "body": "Một quản trị viên đã đặt lại xác minh hai bước cho tài khoản Tududi của bạn, và mọi thiết bị đã bị đăng xuất. Bạn có thể đăng nhập bằng mật khẩu và bật lại."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Một mã khôi phục đã được dùng",
+            "body": "Có người đã đăng nhập vào tài khoản Tududi của bạn bằng một trong các mã khôi phục của bạn. Mỗi mã chỉ dùng được một lần."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Đã tạo mã khôi phục mới",
+            "body": "Mã khôi phục mới đã được tạo cho tài khoản Tududi của bạn. Các mã cũ không còn dùng được."
+        },
+        "button": "Mở cài đặt bảo mật",
+        "notYou": "Nếu không phải bạn, hãy đổi mật khẩu ngay và báo cho quản trị viên."
     }
 }
