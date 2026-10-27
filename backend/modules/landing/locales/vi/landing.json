@@ -280,9 +280,7 @@
     "fineprint": "Hủy bất cứ lúc nào và xuất mọi thứ. Nếu tududi Cloud có ngày đóng cửa, bạn nhận được dữ liệu của mình cùng hướng dẫn chuyển sang tự lưu trữ. Áp dụng sử dụng hợp lý cho dung lượng và lưu lượng API. Hoàn tiền trong 14 ngày, không cần lý do.",
     "perMonth": "/tháng mỗi người",
     "nextPrice": "Từ {{date}}, giá mỗi người sẽ là {{monthly}} mỗi tháng hoặc {{annual}} mỗi năm. Đăng ký trước ngày đó để giữ giá hôm nay trong suốt thời gian bạn còn đăng ký.",
-    "sub": "Gói nào cũng có đủ mọi tính năng. Pro dành cho một người; gói Nhóm có quy mô cố định và bạn thêm người cho đến mức đó.",
-    "selfHostNote": "Dành cho lập trình viên: tududi là mã nguồn mở và có thể chạy trên máy chủ của bạn.",
-    "selfHostLink": "Đọc hướng dẫn"
+    "sub": "Gói nào cũng có đủ mọi tính năng. Pro dành cho một người; gói Nhóm có quy mô cố định và bạn thêm người cho đến mức đó."
   },
   "compare": {
     "title": "So sánh nhanh",

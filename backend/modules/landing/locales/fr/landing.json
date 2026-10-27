@@ -280,9 +280,7 @@
     "fineprint": "Annulez à tout moment et exportez tout. Si tududi Cloud devait fermer, vous recevez vos données et un guide de migration vers l'auto-hébergement. Usage raisonnable pour le stockage et le volume d'API. Garantie satisfait ou remboursé 14 jours, sans question.",
     "perMonth": "/mois par personne",
     "nextPrice": "À partir du {{date}}, le prix par personne passe à {{monthly}} par mois ou {{annual}} par an. Abonnez-vous avant pour garder le prix d'aujourd'hui aussi longtemps que vous restez abonné.",
-    "sub": "Chaque forfait inclut toutes les fonctionnalités. Pro est pour une personne ; un forfait Équipe a une taille fixe et vous ajoutez des personnes jusqu'à cette taille.",
-    "selfHostNote": "Développeurs : tududi est open source et peut tourner sur votre propre serveur.",
-    "selfHostLink": "Lire le guide"
+    "sub": "Chaque forfait inclut toutes les fonctionnalités. Pro est pour une personne ; un forfait Équipe a une taille fixe et vous ajoutez des personnes jusqu'à cette taille."
   },
   "compare": {
     "title": "Comparatif rapide",

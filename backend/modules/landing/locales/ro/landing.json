@@ -280,9 +280,7 @@
     "fineprint": "Anulează oricând și exportă tot. Dacă tududi Cloud se va închide vreodată, primești datele tale și un ghid de migrare către găzduire proprie. Pentru stocare și volumul API se aplică utilizarea rezonabilă. Garanție de returnare a banilor în 14 de zile, fără întrebări.",
     "perMonth": "/lună de persoană",
     "nextPrice": "Din {{date}} prețul pe persoană devine {{monthly}} pe lună sau {{annual}} pe an. Abonează-te înainte ca să păstrezi prețul de azi cât timp rămâi abonat.",
-    "sub": "Fiecare plan are toate funcțiile. Pro este pentru o singură persoană, iar un plan Echipă are o mărime fixă și adaugi persoane până la ea.",
-    "selfHostNote": "Pentru dezvoltatori: tududi este open source și poate rula pe propriul server.",
-    "selfHostLink": "Citește ghidul"
+    "sub": "Fiecare plan are toate funcțiile. Pro este pentru o singură persoană, iar un plan Echipă are o mărime fixă și adaugi persoane până la ea."
   },
   "compare": {
     "title": "Comparație rapidă",

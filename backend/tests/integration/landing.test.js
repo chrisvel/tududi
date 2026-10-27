@@ -311,7 +311,7 @@ describe('Landing page', () => {
         }
     });
 
-    it('sends self-hosters to GitHub instead of a section of its own', async () => {
+    it('leaves self-hosting out of the page', async () => {
         const res = await request(app).get('/').set('Host', 'tududi.com');
         expect(res.text).not.toContain('id="self-host"');
         expect(res.text).not.toContain('href="#self-host"');
@@ -319,12 +319,8 @@ describe('Landing page', () => {
         expect(res.text).not.toContain('id="faq-requirements"');
         expect(res.text).not.toContain('Prefer to run it on your own server?');
 
-        // One quiet line under the fine print, not a card of its own.
         const pricing = res.text.slice(res.text.indexOf('id="pricing"'));
-        expect(pricing).toMatch(
-            /href="https:\/\/github\.com\/chrisvel\/tududi" class="plan-selfhost-link"/
-        );
-        expect(pricing).toContain(
+        expect(pricing).not.toContain(
             'tududi is open source and can be run on your own server'
         );
         expect(pricing).not.toContain('Self-host (advanced)');
@@ -615,9 +611,9 @@ describe('Landing page', () => {
         expect(res.text).not.toContain('The trial includes the AI assistant');
         expect(res.text).not.toContain('Start free trial');
 
-        // Self-hosting is still possible, and only the fine print says so.
+        // Nothing on the page offers a free self-hosted way round the price.
         expect(res.text).not.toMatch(/free, if you run the server yourself/i);
-        expect(res.text).toContain('can be run on your own server');
+        expect(res.text).not.toContain('can be run on your own server');
     });
 
     it('sells no Business Licence anywhere on the page', async () => {

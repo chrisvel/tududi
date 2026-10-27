@@ -280,9 +280,7 @@
     "fineprint": "Peruuta milloin tahansa ja vie kaikki. Jos tududi Cloud joskus suljetaan, saat tietosi ja oppaan siirtymiseen omalle palvelimelle. Tallennustilaan ja API-liikenteeseen sovelletaan kohtuullista käyttöä. 14 päivän rahat takaisin -takuu, ilman kysymyksiä.",
     "perMonth": "/kk per henkilö",
     "nextPrice": "Hinta per henkilö on {{date}} alkaen {{monthly}} kuukaudessa tai {{annual}} vuodessa. Tilaa ennen sitä, niin pidät tämänpäiväisen hinnan niin kauan kuin tilaus jatkuu.",
-    "sub": "Jokaisessa tilauksessa on kaikki ominaisuudet. Pro on yhdelle henkilölle, ja Tiimi-tilaus on kiinteän kokoinen, ja lisäät ihmisiä siihen asti.",
-    "selfHostNote": "Kehittäjille: tududi on avointa lähdekoodia ja sitä voi ajaa omalla palvelimella.",
-    "selfHostLink": "Lue ohje"
+    "sub": "Jokaisessa tilauksessa on kaikki ominaisuudet. Pro on yhdelle henkilölle, ja Tiimi-tilaus on kiinteän kokoinen, ja lisäät ihmisiä siihen asti."
   },
   "compare": {
     "title": "Nopea vertailu",

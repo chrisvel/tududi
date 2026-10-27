@@ -280,9 +280,7 @@
     "fineprint": "Si opp når som helst og eksporter alt. Skulle tududi Cloud noen gang stenge, får du dataene dine og en guide til selvhosting. Rimelig bruk gjelder for lagring og API-volum. 14 dagers pengene-tilbake-garanti, ingen spørsmål.",
     "perMonth": "/måned per person",
     "nextPrice": "Fra {{date}} går prisen per person til {{monthly}} i måneden eller {{annual}} i året. Abonner før det for å beholde dagens pris så lenge du er abonnent.",
-    "sub": "Alle abonnementer har alle funksjoner. Pro er for én person, og et Team-abonnement har en fast størrelse som du legger til personer opp til.",
-    "selfHostNote": "Utviklere: tududi er åpen kildekode og kan kjøres på din egen server.",
-    "selfHostLink": "Les guiden"
+    "sub": "Alle abonnementer har alle funksjoner. Pro er for én person, og et Team-abonnement har en fast størrelse som du legger til personer opp til."
   },
   "compare": {
     "title": "Rask sammenligning",

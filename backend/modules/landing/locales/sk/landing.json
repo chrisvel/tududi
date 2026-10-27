@@ -282,9 +282,7 @@
     },
     "fineprint": "Zrušiť môžete kedykoľvek a všetko si exportovať. Ak by tududi Cloud niekedy skončil, dostanete svoje dáta a návod na migráciu na vlastný server. Na úložisko a objem API sa vzťahuje primerané používanie. 14-dňová záruka vrátenia peňazí bez otázok.",
     "perMonth": "/mesiac",
-    "nextPrice": "Od {{date}} sa cena za osobu zvýši na {{monthly}} mesačne alebo {{annual}} ročne. Predplaťte si skôr a dnešná cena vám zostane, kým budete predplatiteľom.",
-    "selfHostNote": "Pre vývojárov: tududi je open source a môže bežať na vlastnom serveri.",
-    "selfHostLink": "Prečítajte si návod"
+    "nextPrice": "Od {{date}} sa cena za osobu zvýši na {{monthly}} mesačne alebo {{annual}} ročne. Predplaťte si skôr a dnešná cena vám zostane, kým budete predplatiteľom."
   },
   "compare": {
     "title": "Rýchle porovnanie",

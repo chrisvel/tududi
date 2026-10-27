@@ -280,9 +280,7 @@
     "fineprint": "Jederzeit kündbar, alles exportierbar. Sollte tududi Cloud je eingestellt werden, bekommst du deine Daten und eine Anleitung zum Selbsthosten. Für Speicher und API-Volumen gilt Fair Use. 14 Tage Geld-zurück-Garantie, ohne Nachfragen.",
     "perMonth": "/Monat pro Person",
     "nextPrice": "Ab {{date}} steigt der Preis pro Person auf {{monthly}} im Monat oder {{annual}} im Jahr. Abonniere vorher, um den heutigen Preis zu behalten, solange du abonniert bleibst.",
-    "sub": "Jeder Tarif hat alle Funktionen. Pro ist für eine Person, ein Team-Tarif hat eine feste Größe, bis zu der du Personen hinzufügst.",
-    "selfHostNote": "Für Entwickler: tududi ist Open Source und kann auf dem eigenen Server betrieben werden.",
-    "selfHostLink": "Anleitung lesen"
+    "sub": "Jeder Tarif hat alle Funktionen. Pro ist für eine Person, ein Team-Tarif hat eine feste Größe, bis zu der du Personen hinzufügst."
   },
   "compare": {
     "title": "Kurzer Vergleich",

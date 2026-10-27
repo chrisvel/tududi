@@ -280,9 +280,7 @@
     "fineprint": "Prekličite kadar koli in izvozite vse. Če bi se tududi Cloud kdaj zaprl, dobite svoje podatke in vodnik za selitev na lastni strežnik. Za prostor in obseg API velja poštena uporaba. 14-dnevna garancija vračila denarja, brez vprašanj.",
     "perMonth": "/mesec na osebo",
     "nextPrice": "Od {{date}} bo cena na osebo {{monthly}} na mesec ali {{annual}} na leto. Naročite se prej, da ohranite današnjo ceno, dokler ostanete naročeni.",
-    "sub": "Vsak paket ima vse funkcije. Pro je za eno osebo, paket Ekipa pa ima stalno velikost, do katere dodajate osebe.",
-    "selfHostNote": "Za razvijalce: tududi je odprtokoden in lahko teče na vašem strežniku.",
-    "selfHostLink": "Preberi navodila"
+    "sub": "Vsak paket ima vse funkcije. Pro je za eno osebo, paket Ekipa pa ima stalno velikost, do katere dodajate osebe."
   },
   "compare": {
     "title": "Hitra primerjava",

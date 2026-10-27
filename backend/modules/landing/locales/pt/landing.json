@@ -280,9 +280,7 @@
     "fineprint": "Cancele a qualquer momento e exporte tudo. Se o tududi Cloud alguma vez encerrar, recebe os seus dados e um guia de migração para auto-alojamento. Aplica-se uso razoável ao armazenamento e ao volume de API. Garantia de reembolso de 14 dias, sem perguntas.",
     "perMonth": "/mês por pessoa",
     "nextPrice": "A partir de {{date}} o preço por pessoa passa para {{monthly}} por mês ou {{annual}} por ano. Assine antes disso para manter o preço de hoje enquanto continuar assinante.",
-    "sub": "Todos os planos têm todos os recursos. O Pro é para uma pessoa; um plano Equipe tem um tamanho fixo e você adiciona pessoas até ele.",
-    "selfHostNote": "Programadores: o tududi é open source e pode correr no vosso próprio servidor.",
-    "selfHostLink": "Ler o guia"
+    "sub": "Todos os planos têm todos os recursos. O Pro é para uma pessoa; um plano Equipe tem um tamanho fixo e você adiciona pessoas até ele."
   },
   "compare": {
     "title": "Comparação rápida",

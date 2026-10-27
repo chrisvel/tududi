@@ -280,9 +280,7 @@
     "fineprint": "Zeg op wanneer je wilt en exporteer alles. Mocht tududi Cloud ooit stoppen, dan krijg je je gegevens en een handleiding om zelf te hosten. Voor opslag en API-volume geldt fair use. 14 dagen geld-terug-garantie, zonder vragen.",
     "perMonth": "/maand per persoon",
     "nextPrice": "Vanaf {{date}} gaat de prijs per persoon naar {{monthly}} per maand of {{annual}} per jaar. Neem vóór die tijd een abonnement om de prijs van vandaag te houden zolang je abonnee blijft.",
-    "sub": "Elk abonnement heeft alle functies. Pro is voor één persoon; een Team-abonnement heeft een vaste grootte en je voegt mensen toe tot die grootte.",
-    "selfHostNote": "Ontwikkelaars: tududi is open source en kan op je eigen server draaien.",
-    "selfHostLink": "Lees de handleiding"
+    "sub": "Elk abonnement heeft alle functies. Pro is voor één persoon; een Team-abonnement heeft een vaste grootte en je voegt mensen toe tot die grootte."
   },
   "compare": {
     "title": "Snelle vergelijking",

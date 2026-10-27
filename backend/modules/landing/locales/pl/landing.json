@@ -280,9 +280,7 @@
     "fineprint": "Zrezygnuj w każdej chwili i wyeksportuj wszystko. Gdyby tududi Cloud kiedykolwiek został zamknięty, otrzymasz swoje dane i przewodnik migracji na własny serwer. Do przestrzeni i ruchu API stosuje się zasada fair use. 14-dniowa gwarancja zwrotu pieniędzy, bez pytań.",
     "perMonth": "/mies. za osobę",
     "nextPrice": "Od {{date}} cena za osobę wzrośnie do {{monthly}} miesięcznie lub {{annual}} rocznie. Wykup subskrypcję wcześniej, aby zachować dzisiejszą cenę, dopóki ją utrzymujesz.",
-    "sub": "Każdy plan ma wszystkie funkcje. Pro jest dla jednej osoby, a plan Zespół ma stałą wielkość, do której dodajesz osoby.",
-    "selfHostNote": "Dla programistów: tududi jest open source i może działać na własnym serwerze.",
-    "selfHostLink": "Przeczytaj przewodnik"
+    "sub": "Każdy plan ma wszystkie funkcje. Pro jest dla jednej osoby, a plan Zespół ma stałą wielkość, do której dodajesz osoby."
   },
   "compare": {
     "title": "Szybkie porównanie",

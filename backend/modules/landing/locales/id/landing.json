@@ -280,9 +280,7 @@
     "fineprint": "Batalkan kapan saja dan ekspor semuanya. Jika tududi Cloud suatu saat ditutup, Anda mendapat data Anda dan panduan migrasi ke self-host. Penggunaan wajar berlaku untuk penyimpanan dan volume API. Garansi uang kembali 14 hari, tanpa pertanyaan.",
     "perMonth": "/bulan per orang",
     "nextPrice": "Mulai {{date}} harga per orang menjadi {{monthly}} per bulan atau {{annual}} per tahun. Berlangganan sebelum itu untuk mempertahankan harga hari ini selama Anda tetap berlangganan.",
-    "sub": "Setiap paket punya semua fitur. Pro untuk satu orang; paket Tim punya ukuran tetap dan Anda menambah orang sampai batas itu.",
-    "selfHostNote": "Untuk pengembang: tududi bersifat open source dan dapat dijalankan di server Anda sendiri.",
-    "selfHostLink": "Baca panduan"
+    "sub": "Setiap paket punya semua fitur. Pro untuk satu orang; paket Tim punya ukuran tetap dan Anda menambah orang sampai batas itu."
   },
   "compare": {
     "title": "Perbandingan singkat",

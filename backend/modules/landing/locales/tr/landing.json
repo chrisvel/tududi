@@ -280,9 +280,7 @@
     "fineprint": "İstediğiniz zaman iptal edin ve her şeyi dışa aktarın. tududi Cloud bir gün kapanırsa verilerinizi ve kendi sunucunuza taşınma rehberini alırsınız. Depolama ve API hacmi için adil kullanım geçerlidir. 14 gün para iade garantisi, soru sorulmaz.",
     "perMonth": "/ay, kişi başı",
     "nextPrice": "{{date}} tarihinden itibaren kişi başı fiyat aylık {{monthly}} ya da yıllık {{annual}} olacak. Bugünkü fiyatı abone kaldığınız sürece korumak için bu tarihten önce abone olun.",
-    "sub": "Her planda tüm özellikler var. Pro tek kişilik; Ekip planı sabit bir büyüklükte gelir ve bu büyüklüğe kadar kişi eklersiniz.",
-    "selfHostNote": "Geliştiriciler: tududi açık kaynaklıdır ve kendi sunucunuzda çalıştırılabilir.",
-    "selfHostLink": "Kılavuzu okuyun"
+    "sub": "Her planda tüm özellikler var. Pro tek kişilik; Ekip planı sabit bir büyüklükte gelir ve bu büyüklüğe kadar kişi eklersiniz."
   },
   "compare": {
     "title": "Hızlı karşılaştırma",

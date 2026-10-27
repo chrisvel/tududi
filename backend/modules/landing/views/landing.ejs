@@ -706,8 +706,8 @@
             <%# Two cards: Pro for one person and Team for a group, sold in
                 fixed seat sizes like monday.com. The self-host card that used
                 to sit here told every visitor there was a free version before
-                they had tried this one; self-hosting is a footnote under the
-                fine print now, for the developer who came looking. %>
+                they had tried this one, so the pricing section does not
+                mention self-hosting at all. %>
             <div class="plan-grid plan-grid-duo">
                 <div class="plan">
                     <div class="plan-head">
@@ -777,10 +777,6 @@
                 <% } %>
                 <p class="plan-fineprint">
                     <%= t('pricing.fineprint') %>
-                </p>
-                <p class="plan-fineprint plan-selfhost-note">
-                    <%= t('pricing.selfHostNote') %>
-                    <a href="https://github.com/chrisvel/tududi" class="plan-selfhost-link"><%= t('pricing.selfHostLink') %> &rarr;</a>
                 </p>
             </div>
         </div>

@@ -299,8 +299,6 @@
       }
     },
     "fineprint": "Cancel any time and export everything. If tududi Cloud ever shuts down, you get your data and a guide to keep running it. Fair use applies to storage and API volume. 14-day money-back guarantee, no questions asked.",
-    "selfHostNote": "Developers: tududi is open source and can be run on your own server.",
-    "selfHostLink": "Read the guide",
     "perMonth": "/month",
     "nextPrice": "From {{date}} the price per person goes to {{monthly}} a month or {{annual}} a year. Subscribe before then to keep today's price for as long as you stay subscribed."
   },

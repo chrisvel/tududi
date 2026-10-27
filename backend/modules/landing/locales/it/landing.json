@@ -280,9 +280,7 @@
     "fineprint": "Annulla quando vuoi ed esporta tutto. Se tududi Cloud dovesse mai chiudere, ricevi i tuoi dati e una guida alla migrazione self-hosted. Per spazio e volume API vale il fair use. Garanzia soddisfatti o rimborsati di 14 giorni, senza domande.",
     "perMonth": "/mese a persona",
     "nextPrice": "Dal {{date}} il prezzo a persona passa a {{monthly}} al mese o {{annual}} all'anno. Abbonati prima per mantenere il prezzo di oggi finché resti abbonato.",
-    "sub": "Ogni piano ha tutte le funzioni. Pro è per una persona; un piano Team ha una dimensione fissa e aggiungi persone fino a riempirla.",
-    "selfHostNote": "Sviluppatori: tududi è open source e può girare sul vostro server.",
-    "selfHostLink": "Leggi la guida"
+    "sub": "Ogni piano ha tutte le funzioni. Pro è per una persona; un piano Team ha una dimensione fissa e aggiungi persone fino a riempirla."
   },
   "compare": {
     "title": "Confronto rapido",
