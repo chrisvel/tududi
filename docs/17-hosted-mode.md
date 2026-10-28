@@ -458,7 +458,9 @@ something, planned a first day, kept planning, waitlist joins), usage
 churn. **Visits, last 7 days** shows how people arrive and what they do:
 visitors and page views per day, blog readers, app opens, app users (this
 week, today, last 30 days), top pages and top referrers. Every figure sits
-next to the week before.
+next to the week before, and the counts (visitors, views, signups, waitlist
+joins, app users, creators, tasks, trials started) also show today so far,
+as a UTC day.
 
 A visit is a navigation answered with a page: a marketing page, a blog page
 (a blog host, or `/blog` on the app host), or the app shell. Redirects,

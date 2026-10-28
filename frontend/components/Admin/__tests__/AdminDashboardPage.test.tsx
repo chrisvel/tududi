@@ -57,7 +57,7 @@ const overview = (hosted: boolean, trendsOverride: object = {}) => ({
             signups: i >= 7 ? 2 : 1,
             waitlist: 0,
         })),
-        signups: { last7d: 14, prev7d: 7 },
+        signups: { today: 2, last7d: 14, prev7d: 7 },
         waitlist: { last7d: 0, prev7d: 0 },
         activation: { new_users: 14, activated: 7 },
         active_users_7d: 5,
@@ -67,12 +67,12 @@ const overview = (hosted: boolean, trendsOverride: object = {}) => ({
         },
         visits: {
             landing: {
-                views: { last7d: 40, prev7d: 20 },
-                visitors: { last7d: 20, prev7d: 10 },
+                views: { today: 6, last7d: 40, prev7d: 20 },
+                visitors: { today: 3, last7d: 20, prev7d: 10 },
             },
             blog: {
-                views: { last7d: 10, prev7d: 10 },
-                visitors: { last7d: 5, prev7d: 5 },
+                views: { today: 2, last7d: 10, prev7d: 10 },
+                visitors: { today: 1, last7d: 5, prev7d: 5 },
             },
             app: {
                 views: { last7d: 9, prev7d: 3 },
@@ -199,8 +199,9 @@ describe('Admin dashboard waitlist', () => {
         await waitFor(() =>
             expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
         );
+        // today, this week, last week, change
         expect(screen.getByTestId('admin-trends-signups')).toHaveTextContent(
-            '147+7'
+            '2147+7'
         );
         expect(screen.getByTestId('admin-trends-activation')).toHaveTextContent(
             '7 / 14 · 50%'
@@ -297,12 +298,17 @@ describe('Admin dashboard visits', () => {
         await waitFor(() =>
             expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
         );
+        // 3 landing + 1 blog today
         expect(screen.getByTestId('admin-trends-visitors')).toHaveTextContent(
-            '2515+10'
+            '42515+10'
         );
         expect(screen.getByTestId('admin-trends-app-users')).toHaveTextContent(
-            '4 today'
+            '11 in 30 days463+3'
         );
+        // no today figure sent for completed tasks, so the cell stays empty
+        expect(
+            screen.getByTestId('admin-trends-tasks-completed')
+        ).toHaveTextContent(/^Tasks completed129\+3$/);
         expect(screen.getByTestId('admin-visits-pages')).toHaveTextContent(
             '/cloud'
         );
