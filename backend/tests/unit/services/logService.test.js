@@ -88,7 +88,7 @@ describe('logService', () => {
     it('drops the SQL and bound parameters from database errors', () => {
         const { logger: capturing, output } = captureLogs();
 
-        const error = new Error('SQLITE_ERROR: no such column');
+        const error = new Error('column "missing" does not exist');
         error.name = 'SequelizeDatabaseError';
         error.sql = "UPDATE notes SET content = 'private note text'";
         error.parameters = { content: 'private note text' };
@@ -99,7 +99,7 @@ describe('logService', () => {
         const written = output();
         expect(written).not.toContain('private note text');
         expect(written).toContain('SequelizeDatabaseError');
-        expect(written).toContain('no such column');
+        expect(written).toContain('does not exist');
     });
 
     it('keeps the fields needed to diagnose a failure', () => {

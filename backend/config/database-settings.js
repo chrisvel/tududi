@@ -1,12 +1,9 @@
-// Resolves which database engine to use and how to reach it, from env vars.
+// Resolves how to reach the PostgreSQL database, from env vars.
 // Side-effect free so it can run outside the app (Jest globalSetup, scripts).
 //
-// SQLite (a file path) stays the default; PostgreSQL is opted into either
-// with DATABASE_URL=postgres://... or DB_DIALECT=postgres plus DB_HOST etc.
+// Set either DATABASE_URL=postgres://... or DB_HOST plus DB_NAME etc.
 
 const { parse } = require('pg-connection-string');
-
-const SUPPORTED_DIALECTS = ['sqlite', 'postgres'];
 
 function parseDatabaseUrl(rawUrl) {
     let parsed;
@@ -38,22 +35,24 @@ function parseDatabaseUrl(rawUrl) {
     };
 }
 
-function resolveDatabaseSettings(env, dbFile) {
+function resolveDatabaseSettings(env) {
     const rawDialect = (env.DB_DIALECT || '').trim().toLowerCase();
-    const dialect = env.DATABASE_URL
-        ? 'postgres'
-        : rawDialect === 'postgresql'
-          ? 'postgres'
-          : rawDialect || 'sqlite';
-
-    if (!SUPPORTED_DIALECTS.includes(dialect)) {
+    if (
+        rawDialect &&
+        rawDialect !== 'postgres' &&
+        rawDialect !== 'postgresql'
+    ) {
         throw new Error(
-            `Unsupported DB_DIALECT '${env.DB_DIALECT}'. Use one of: ${SUPPORTED_DIALECTS.join(', ')}`
+            `DB_DIALECT '${env.DB_DIALECT}' is no longer supported: tududi 2.0 runs on PostgreSQL only. ` +
+                'Remove DB_DIALECT and set DATABASE_URL. Moving from SQLite: docs/30-moving-to-postgres.md'
         );
     }
 
-    if (dialect === 'sqlite') {
-        return { dialect: 'sqlite', storage: dbFile };
+    if (!env.DATABASE_URL && !env.DB_HOST) {
+        throw new Error(
+            'No database configured. tududi needs PostgreSQL: set DATABASE_URL=postgres://user:password@host:5432/tududi ' +
+                '(or DB_HOST, DB_NAME, DB_USER and DB_PASSWORD).'
+        );
     }
 
     const fromUrl = env.DATABASE_URL
@@ -91,7 +90,6 @@ function resolveDatabaseSettings(env, dbFile) {
 }
 
 module.exports = {
-    SUPPORTED_DIALECTS,
     parseDatabaseUrl,
     resolveDatabaseSettings,
 };

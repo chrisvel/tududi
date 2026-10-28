@@ -1,7 +1,7 @@
-# One replica only. With SQLite the database is a single file on one volume,
-# and the schedulers run inside the app process, so a second pod would fight
-# over the file and send every reminder twice. Recreate makes sure the old pod
-# is gone before the new one starts.
+# One replica by default. The schedulers run inside the app process; they take
+# advisory locks in PostgreSQL, but a single pod keeps things simple. Recreate
+# makes sure the old pod is gone before the new one starts. The database is
+# PostgreSQL, reached through DATABASE_URL in the Secret.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,7 +26,7 @@ spec:
         - name: tududi
           # Pin a release tag instead of latest so upgrades happen when you
           # choose. Check the release notes before bumping it.
-          image: docker.io/chrisvel/tududi:1.5.0
+          image: docker.io/chrisvel/tududi:2.0.0
           ports:
             - name: http
               containerPort: 3002
@@ -40,9 +40,6 @@ spec:
             - secretRef:
                 name: tududi
           volumeMounts:
-            # Since v1.2.0 the database lives in /app/db, not /app/backend/db.
-            - name: db
-              mountPath: /app/db
             - name: uploads
               mountPath: /app/uploads
           # The first start runs the migrations, give it a few minutes.
@@ -71,9 +68,6 @@ spec:
             limits:
               memory: 1Gi
       volumes:
-        - name: db
-          persistentVolumeClaim:
-            claimName: tududi-db
         - name: uploads
           persistentVolumeClaim:
             claimName: tududi-uploads

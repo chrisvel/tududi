@@ -1,14 +1,72 @@
+# tududi with PostgreSQL
+#
+#   cp .env.example .env   # set DB_PASSWORD and the TUDUDI_* values
+#   docker compose up -d
+#
+# The database starts empty; tududi creates the schema on first start.
+# Moving from a 1.x SQLite install: docs/30-moving-to-postgres.md
+
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: tududi-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tududi}
+      POSTGRES_USER: ${DB_USER:-tududi}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      - tududi_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-tududi} -d ${DB_NAME:-tududi}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
   tududi:
     image: chrisvel/tududi:latest
     container_name: tududi
-    # Requires: cp .env.example .env — see .env.example for all options
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgres://${DB_USER:-tududi}:${DB_PASSWORD}@db:5432/${DB_NAME:-tududi}
     volumes:
-      - ./tududi_db:/app/db
       - ./uploads:/app/uploads
       - ./backups:/app/backups
     ports:
       - "3002:3002"
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
+
+  # Nightly pg_dump into ./backups/db, keeping BACKUP_KEEP_DAYS days.
+  # Uncomment to enable, then copy ./backups/db off the machine.
+  # backup:
+  #   image: postgres:16-alpine
+  #   container_name: tududi-backup
+  #   environment:
+  #     PGHOST: db
+  #     PGDATABASE: ${DB_NAME:-tududi}
+  #     PGUSER: ${DB_USER:-tududi}
+  #     PGPASSWORD: ${DB_PASSWORD}
+  #     KEEP_DAYS: ${BACKUP_KEEP_DAYS:-7}
+  #   volumes:
+  #     - ./backups/db:/backups
+  #   entrypoint:
+  #     - sh
+  #     - -c
+  #     - |
+  #       while true; do
+  #         file=/backups/tududi-$$(date -u +%Y%m%dT%H%M%SZ).sql.gz
+  #         pg_dump --no-owner --no-acl | gzip > "$$file.part" && mv "$$file.part" "$$file"
+  #         find /backups -name 'tududi-*.sql.gz' -mtime +$$KEEP_DAYS -delete
+  #         sleep 86400
+  #       done
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+
+volumes:
+  tududi_pgdata:

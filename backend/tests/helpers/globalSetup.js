@@ -1,23 +1,17 @@
-// Jest globalSetup: when the suite targets PostgreSQL, create one database
-// per worker so test files running in parallel never share tables.
-// No-op for SQLite, where each test file gets its own temporary file.
+// Jest globalSetup: create one PostgreSQL database per worker so test files
+// running in parallel never share tables.
 
-const { testDatabaseName } = require('./test-db');
+const { applyDefaultTestDatabase, testDatabaseName } = require('./test-db');
 
 module.exports = async function globalSetup(globalConfig) {
-    if (!process.env.DATABASE_URL && !process.env.DB_DIALECT) {
-        return;
-    }
+    applyDefaultTestDatabase();
 
     const { Client } = require('pg');
     const {
         resolveDatabaseSettings,
     } = require('../../config/database-settings');
 
-    const settings = resolveDatabaseSettings(process.env, null);
-    if (settings.dialect !== 'postgres') {
-        return;
-    }
+    const settings = resolveDatabaseSettings(process.env);
 
     const admin = new Client({
         host: settings.host,

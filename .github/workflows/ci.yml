@@ -10,35 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  test-sqlite:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v5
-      with:
-        node-version: '22'
-        cache: 'npm'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Run linting
-      run: npm run lint
-
-    - name: Run backend tests
-      run: npm run backend:test
-
-    - name: Upgrade legacy SQLite databases and check schema parity
-      run: npm run backend:test:upgrade
-
-    - name: Build frontend
-      run: npm run build
-
-  test-postgres:
+  test:
     runs-on: ubuntu-latest
 
     services:
@@ -72,6 +44,9 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Run linting
+      run: npm run lint
+
     - name: Bootstrap an empty database and run pending migrations
       working-directory: backend
       run: |
@@ -81,10 +56,8 @@ jobs:
       env:
         NODE_ENV: production
 
-    - name: Run backend tests against PostgreSQL
-      run: npm run backend:test:pg
+    - name: Run backend tests
+      run: npm run backend:test
 
-    # Legacy fixtures are always SQLite; with DATABASE_URL set the parity test
-    # also compares the PostgreSQL schema produced by db-prepare.
-    - name: Upgrade legacy SQLite databases and check schema parity
-      run: npm run backend:test:upgrade
+    - name: Build frontend
+      run: npm run build

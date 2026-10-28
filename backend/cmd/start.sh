@@ -2,130 +2,8 @@
 # Start script for production and Docker
 set -eu
 
-# Default DB_FILE based on NODE_ENV (matches config/config.js behavior)
 : "${NODE_ENV:=production}"
-: "${DB_FILE:=db/${NODE_ENV}.sqlite3}"
-
-# PostgreSQL is selected with DATABASE_URL or DB_DIALECT=postgres
-# (see config/config.js). Everything file-related below is SQLite only.
-USE_POSTGRES=false
-case "$(printf '%s' "${DB_DIALECT:-}" | tr '[:upper:]' '[:lower:]')" in
-  postgres|postgresql) USE_POSTGRES=true ;;
-esac
-if [ -n "${DATABASE_URL:-}" ]; then
-  USE_POSTGRES=true
-fi
-
-backup_db() {
-  db_dir=$(dirname "$DB_FILE")
-  today=$(date +"%Y%m%d")
-  # Calculate 7 days ago using epoch time (POSIX-compliant, works with BusyBox)
-  current_epoch=$(date +%s)
-  week_ago_epoch=$((current_epoch - 604800))  # 7 days = 604800 seconds
-  # Use -r for macOS/BSD date, -d for Linux/BusyBox
-  if date -r "$week_ago_epoch" +"%Y%m%d" >/dev/null 2>&1; then
-    # macOS/BSD style
-    week_ago=$(date -r "$week_ago_epoch" +"%Y%m%d")
-  else
-    # Linux/BusyBox style
-    week_ago=$(date -d "@$week_ago_epoch" +"%Y%m%d")
-  fi
-  
-  # Clean up old backups
-  for backup in "$db_dir"/db-backup-*.sqlite3; do
-    [ -f "$backup" ] || continue
-    
-    # Extract date from filename (db-backup-YYYYMMDDHHMMSS.sqlite3)
-    backup_date=$(basename "$backup" | sed 's/db-backup-\([0-9]\{8\}\).*/\1/')
-    
-    # Skip if we can't extract a valid date
-    [ -n "$backup_date" ] || continue
-    
-    # Delete backups older than one week
-    if [ "$backup_date" -lt "$week_ago" ]; then
-      rm -f "$backup" "$backup-wal"
-      echo "Deleted old backup (>1 week): $(basename "$backup")"
-      continue
-    fi
-    
-    # For dates before today (but within the week), keep only the most recent backup
-    if [ "$backup_date" != "$today" ]; then
-      # For this date, find all backups and keep only the newest
-      day_backups=$(ls -t "$db_dir"/db-backup-${backup_date}*.sqlite3 2>/dev/null)
-      first=true
-      for old_backup in $day_backups; do
-        if [ "$first" = true ]; then
-          first=false
-          continue  # Skip the newest one
-        fi
-        rm -f "$old_backup" "$old_backup-wal"
-        echo "Deleted duplicate backup: $(basename "$old_backup")"
-      done
-    fi
-  done
-  
-  # Count today's backups
-  today_backup_count=$(find "$db_dir" -maxdepth 1 -name "db-backup-${today}*.sqlite3" -type f | wc -l)
-  
-  # If we have 4 or more backups from today, delete the oldest one from today
-  if [ "$today_backup_count" -ge 4 ]; then
-    oldest_today_backup=$(ls -t "$db_dir"/db-backup-${today}*.sqlite3 2>/dev/null | tail -n 1)
-    if [ -n "$oldest_today_backup" ]; then
-      rm -f "$oldest_today_backup" "$oldest_today_backup-wal"
-      echo "Deleted oldest backup from today: $(basename "$oldest_today_backup")"
-    fi
-  fi
-
-  timestamp=$(date +"%Y%m%d%H%M%S")
-  backup_file="$db_dir/db-backup-${timestamp}.sqlite3"
-
-  if [ -f "$DB_FILE" ]; then
-    # VACUUM INTO includes writes still in the -wal file, which a plain cp of
-    # the main file would silently leave out.
-    if node scripts/sqlite-backup.js "$DB_FILE" "$backup_file"; then
-      echo "Database backed up to $backup_file"
-    else
-      echo "Falling back to a file copy (with its -wal file)"
-      cp "$DB_FILE" "$backup_file"
-      if [ -f "$DB_FILE-wal" ]; then
-        cp "$DB_FILE-wal" "$backup_file-wal"
-      fi
-      echo "Database backed up to $backup_file"
-    fi
-  else
-    echo "Database file $DB_FILE not found, skipping backup"
-  fi
-}
-
-# Before v1.2.0, the database was mounted at /app/backend/db. If the new path
-# does not exist but the old path does, redirect DB_FILE to the old path so
-# writes stay on the persistent (user-mounted) volume rather than being copied
-# to an anonymous Docker volume that is discarded on container recreation.
-OLD_DB_PATH="/app/backend/db/${NODE_ENV}.sqlite3"
-if [ "$USE_POSTGRES" = false ] && [ ! -f "$DB_FILE" ] && [ -f "$OLD_DB_PATH" ]; then
-  echo ""
-  echo "⚠️  =============================================================="
-  echo "⚠️  ACTION REQUIRED: Volume mount path changed in v1.2.0"
-  echo "⚠️"
-  echo "⚠️  Your database is at the old location: $OLD_DB_PATH"
-  echo "⚠️  The new canonical location is:        $DB_FILE"
-  echo "⚠️"
-  echo "⚠️  To prevent data loss, using old path until you update:"
-  echo "⚠️    docker-compose.yml volumes:"
-  echo "⚠️      - ./tududi_db:/app/backend/db  (OLD - change this)"
-  echo "⚠️      + ./tududi_db:/app/db           (NEW)"
-  echo "⚠️"
-  echo "⚠️  WARNING: New data will be LOST on container recreation until"
-  echo "⚠️  you update the volume mount. See upgrade docs for details."
-  echo "⚠️  =============================================================="
-  echo ""
-  export DB_FILE="$OLD_DB_PATH"
-fi
-
-# Back up the SQLite file (if any) before touching the schema
-if [ "$USE_POSTGRES" = false ] && [ -f "$DB_FILE" ]; then
-  backup_db
-fi
+export NODE_ENV
 
 # Verify the connection and create the schema when the database is empty
 echo "Preparing database..."
@@ -133,6 +11,8 @@ echo "Preparing database..."
 # containers booting together cannot create the schema or migrate twice.
 if ! node scripts/with-db-lock.js node scripts/db-prepare.js; then
   echo "❌ Database preparation failed. Check the connection settings above."
+  echo "   tududi needs PostgreSQL (DATABASE_URL). For local development:"
+  echo "   docker compose -f docker-compose.dev.yml up -d db"
   exit 1
 fi
 
@@ -140,7 +20,7 @@ fi
 echo "Running database migrations..."
 if ! node scripts/with-db-lock.js npx sequelize-cli db:migrate --config config/database.js; then
   echo "❌ Migration failed. Container cannot start with an incomplete schema."
-  echo "   Check the migration error above and restore from backup if needed."
+  echo "   Check the migration error above and restore from a pg_dump backup if needed."
   exit 1
 fi
 echo "Migrations completed successfully"

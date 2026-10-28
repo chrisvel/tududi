@@ -6,329 +6,160 @@
 
 ## Overview
 
-Tududi automatically creates SQLite database file backups before migrations and on startup to protect your data. These backups ensure you have a recovery point if a migration fails or if you need to restore to a previous state.
+tududi keeps its data in two places: the PostgreSQL database and the uploads folder (`TUDUDI_UPLOAD_PATH`, `/app/uploads` in Docker). Both need a backup. tududi does not copy the database by itself, so pick one of the options below and run it on a schedule.
 
-> **PostgreSQL deployments:** the file backups below apply to SQLite only. When tududi runs against PostgreSQL (`DATABASE_URL` set), `start.sh` skips them and you are expected to back up the server with `pg_dump`, for example from cron:
->
-> ```bash
-> 0 3 * * * pg_dump "$DATABASE_URL" | gzip > /var/backups/tududi/tududi-$(date +\%F).sql.gz
-> ```
->
-> Restore with `psql "$DATABASE_URL" < backup.sql`. The per-user JSON export/import in the app works the same on both engines.
+There are two kinds of backup:
+
+- **Database dumps** (`pg_dump`): the whole instance, every account and table. Use these for disaster recovery and before upgrades.
+- **Per-user JSON exports** (the Backup & Restore page, `/backup`): one account's data, or the whole instance when an admin exports it. Use these to move data between instances. They are also how a 1.x SQLite install moves to 2.0 (see [30-moving-to-postgres.md](30-moving-to-postgres.md)).
 
 ---
 
-## Automatic SQLite File Backups
+## Database Dumps
 
-### When Backups Are Created
+### The compose `backup` service
 
-SQLite database file backups are **automatically created** in these scenarios:
+The root `docker-compose.yml` has an optional `backup` service, commented out by default. Uncomment it and it runs `pg_dump` against the `db` service every night, writes gzipped dumps to `./backups/db`, and deletes dumps older than `BACKUP_KEEP_DAYS` (default 7).
 
-1. **Before migrations** - Every time the app starts and finds an existing database
-2. **On startup** - Before running any database operations (Docker/production)
-3. **Manual trigger** - Via the backup script
-
-**Location:** `/backend/cmd/start.sh` (lines 9-78)
-
-### Backup File Location
-
-- **Development:** `/backend/db/db-backup-YYYYMMDDHHMMSS.sqlite3`
-- **Docker/Production:** `/app/db/db-backup-YYYYMMDDHHMMSS.sqlite3` (mounted volume)
-
-### Migration Snapshots
-
-A migration that rebuilds a table (currently `20260920000002-make-user-email-nullable.js`) also writes its own snapshot next to the database, before it touches anything: `db-premigrate-<migration name>.sqlite3`. It is made with `VACUUM INTO`, so it is a complete, consistent copy even while the database is in use.
-
-The name deliberately does not start with `db-backup-`, so the retention rules below never delete it. The automatic backup is taken every time the application starts, so a container that keeps restarting after a failed migration can push the good pre-upgrade backup out of the rotation. The snapshot is written once and left alone. It is safe to delete after you have confirmed the upgrade, and it is not written again if it already exists.
-
-### Backup Retention Policy
-
-The system automatically manages backup retention with these rules:
-
-| Timeframe | Retention Policy |
-|-----------|------------------|
-| **Today** | Keep up to 4 most recent backups |
-| **Past 7 days** | Keep 1 backup per day (most recent) |
-| **Older than 7 days** | Automatically deleted |
-
-**Example:**
-```
-db-backup-20260315083000.sqlite3  ← Today (backup #1)
-db-backup-20260315070000.sqlite3  ← Today (backup #2)
-db-backup-20260314193000.sqlite3  ← Yesterday (only 1 kept)
-db-backup-20260313100000.sqlite3  ← 2 days ago (only 1 kept)
-db-backup-20260308120000.sqlite3  ← Automatically deleted (>7 days)
+```bash
+# after uncommenting the service
+docker compose up -d backup
+ls -lh backups/db
 ```
 
-### How Automatic Backups Work
+The dumps sit on the same host as the database, so copy `./backups/db` somewhere else (restic, rclone, object storage).
 
-When the app starts (via `npm start` or Docker):
+### `scripts/pg-backup.sh` from cron
 
-1. Check if `DB_FILE` exists
-2. If exists, call `backup_db()` function
-3. Clean old backups based on retention policy
-4. Create a timestamped copy with `node scripts/sqlite-backup.js $DB_FILE $backup_file` (`VACUUM INTO`, which includes writes still in the `-wal` file; a plain `cp` of the main file would leave them out)
-5. Run migrations: `npx sequelize-cli db:migrate`
-6. Start application
+Without the compose service, run the script from cron on the host. It runs `pg_dump --no-owner --no-acl` against `DATABASE_URL`, gzips it to `<dir>/tududi-<timestamp>.sql.gz`, and prunes dumps older than `BACKUP_KEEP_DAYS` (default 14).
 
-**Critical:** Backups are created **before** migrations run, ensuring you have a recovery point if a migration fails.
+```bash
+# Nightly at 03:00
+0 3 * * * DATABASE_URL=postgres://tududi:secret@localhost:5432/tududi /opt/tududi/scripts/pg-backup.sh /var/backups/tududi
+```
+
+### By hand
+
+```bash
+# Against any server
+pg_dump "$DATABASE_URL" | gzip > tududi-$(date +%F).sql.gz
+
+# With the compose stack
+docker compose exec db pg_dump -U tududi tududi | gzip > tududi-$(date +%F).sql.gz
+```
+
+Take one before every upgrade. Pending migrations run on start, and a dump is the only way back if one fails.
 
 ---
 
-## Restoring from SQLite File Backup
+## Restoring a Dump
 
-### Quick Restore (Development)
+Restore into an **empty** database. Restoring over a live schema mixes old and new rows.
 
-```bash
-# 1. Stop the application
-npm stop  # or Ctrl+C
-
-# 2. List available backups
-ls -lh backend/db/db-backup-*.sqlite3
-
-# 3. Identify the backup to restore (e.g., db-backup-20260314193000.sqlite3)
-
-# 4. Backup current state (optional but recommended)
-node backend/scripts/sqlite-backup.js backend/db/development.sqlite3 backend/db/development.sqlite3.before-restore
-
-# 5. Restore the backup, removing the old -wal/-shm files first so SQLite
-#    does not replay them onto the restored file
-rm -f backend/db/development.sqlite3-wal backend/db/development.sqlite3-shm
-cp backend/db/db-backup-20260314193000.sqlite3 backend/db/development.sqlite3
-
-# 6. Restart the application
-npm start
-```
-
-### Restore in Docker
+### Docker Compose
 
 ```bash
-# 1. Stop the container
-docker-compose down
+# 1. Stop tududi, keep the database running
+docker compose stop tududi
 
-# 2. Access the host volume (find your volume location)
-docker volume inspect tududi_db_data
+# 2. Drop and recreate the database
+docker compose exec db dropdb -U tududi tududi
+docker compose exec db createdb -U tududi tududi
 
-# 3. Navigate to the mount point and list backups
-cd /var/lib/docker/volumes/tududi_db_data/_data
-ls -lh db-backup-*.sqlite3
+# 3. Load the dump
+gunzip -c backups/db/tududi-2026-10-28.sql.gz | docker compose exec -T db psql -U tududi tududi
 
-# 4. Backup current state (the -wal file holds recent writes, keep it too)
-cp production.sqlite3 production.sqlite3.before-restore
-[ -f production.sqlite3-wal ] && cp production.sqlite3-wal production.sqlite3.before-restore-wal
-
-# 5. Restore from backup, removing the old -wal/-shm files first
-rm -f production.sqlite3-wal production.sqlite3-shm
-cp db-backup-20260314193000.sqlite3 production.sqlite3
-
-# 6. Restart the container
-docker-compose up -d
+# 4. Start tududi again
+docker compose start tududi
+docker compose logs -f tududi
 ```
 
-### Emergency Restore (Production)
-
-If a migration fails and the app won't start:
+### Any server
 
 ```bash
-# The start script creates a backup BEFORE migrations
-# So the most recent backup is from before the failed migration
-
-cd backend/db
-
-# Find the most recent backup (will be from just before failure)
-ls -lt db-backup-*.sqlite3 | head -1
-
-# Restore it (drop the old -wal/-shm files first)
-rm -f production.sqlite3-wal production.sqlite3-shm
-cp db-backup-20260315083000.sqlite3 production.sqlite3
-
-# Try starting again
-npm start
+dropdb tududi && createdb tududi
+gunzip -c tududi-2026-10-28.sql.gz | psql "$DATABASE_URL"
 ```
+
+Dumps made with `pg_dump -Fc` (custom format) are restored with `pg_restore --no-owner -d "$DATABASE_URL" tududi.dump` instead.
+
+### Development
+
+```bash
+# Stop the dev servers first
+dropdb -h localhost -U tududi tududi_dev
+createdb -h localhost -U tududi tududi_dev
+gunzip -c tududi-2026-10-28.sql.gz | psql postgres://tududi:tududi@localhost:5432/tududi_dev
+```
+
+A dump from a newer release than the code you start is not supported: restore it with the release that made it.
 
 ---
 
 ## Per-User Backup Exports
 
-The in-app export (Profile > Backup) writes each
-user's `.json.gz` under `TUDUDI_BACKUP_PATH` (default `backend/backups`,
-`/app/backups` in the Docker image, declared as a volume). Mount it like
-`uploads`, or those exports disappear when the container is recreated.
+The in-app export (the Backup & Restore page, `/backup`) writes each user's `.json.gz` under `TUDUDI_BACKUP_PATH` (default `backend/backups`, `/app/backups` in the Docker image, declared as a volume). Mount it like `uploads`, or those exports disappear when the container is recreated.
 
-## PostgreSQL Dumps
+On a self-hosted instance an admin can export the whole instance: every account (with its password hash), roles, groups and shares, on top of the admin's own data. Import it as admin in merge mode.
 
-`scripts/pg-backup.sh <dir>` runs `pg_dump --no-owner --no-acl` against
-`DATABASE_URL`, gzips it to `<dir>/tududi-<timestamp>.sql.gz`, and prunes
-dumps older than `BACKUP_KEEP_DAYS` (default 14). Run it from cron on the
-host and copy the directory off the machine (restic, rclone, object
-storage). Restore with `gunzip -c <file> | psql "$DATABASE_URL"`.
+### Export Format
 
-## Per-User Export Format
+Exports are JSON (`format: 2`) with every relation expressed by uid (`area_uid`, `project_uid`, `parent_task_uid`, ...), attachment files embedded as base64, and goals and people included alongside areas, projects, tasks, tags, notes, inbox items and views. Because references are by uid, a backup restores cleanly on a different instance and can never point at another user's rows. If a uid is already taken by another account on the same instance, the imported row gets a fresh uid and its references follow. The exporting user's own contact card maps onto the importing user's own card instead of becoming a duplicate. Format 1 backups (numeric ids only) still import; their references resolve only among the importing user's rows.
 
-Exports (Profile > Backup) are JSON (`format: 2`)
-with every relation expressed by uid (`area_uid`, `project_uid`,
-`parent_task_uid`, ...), attachment files embedded as base64, and goals and
-people included alongside areas, projects, tasks, tags, notes, inbox items
-and views. Because references are by uid, a backup restores cleanly on a
-different instance and can never point at another user's rows. If a uid is
-already taken by another account on the same instance, the imported row
-gets a fresh uid and its references follow. The exporting user's own
-contact card maps onto the importing user's own card instead of becoming a
-duplicate. Format 1 backups (numeric ids only) still import; their
-references resolve only among the importing user's rows.
-
-Not exported: API tokens, shares and permissions, sessions, and the
-password.
-
-## Best Practices
-
-### 1. Before Major Changes
-
-Create a manual backup before:
-- Upgrading Tududi to a new version
-- Running manual migrations
-- Bulk data operations
-- Testing new features
-
-```bash
-# Quick manual backup (development); safe while the app is running
-node backend/scripts/sqlite-backup.js backend/db/development.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
-```
-
-### 2. External Backups
-
-For production:
-- Copy `/backend/db/*.sqlite3` to external storage weekly
-- Test restore procedures periodically
-
-### 3. Docker Volume Backups
-
-Backup the entire Docker volume:
-
-```bash
-# Backup Docker volume
-docker run --rm \
-  -v tududi_db_data:/data \
-  -v $(pwd):/backup \
-  alpine tar czf /backup/tududi-db-backup-$(date +%Y%m%d).tar.gz -C /data .
-
-# Restore Docker volume
-docker run --rm \
-  -v tududi_db_data:/data \
-  -v $(pwd):/backup \
-  alpine tar xzf /backup/tududi-db-backup-20260314.tar.gz -C /data
-```
-
-### 4. Migration Rollback Strategy
-
-If a migration fails:
-
-1. **Don't panic** - automatic backup was created
-2. Stop the application
-3. Restore the most recent automatic backup (created before migration)
-4. Investigate the migration issue
-5. Fix the migration or rollback: `npm run migration:undo`
-
-### 5. Test Restore Procedures
-
-Periodically test that backups can be restored:
-
-```bash
-# Test restore in a safe environment
-cp backend/db/db-backup-20260314193000.sqlite3 backend/db/test-restore.sqlite3
-
-# Verify the backup file is readable
-sqlite3 backend/db/test-restore.sqlite3 "SELECT COUNT(*) FROM Tasks;"
-```
+Not exported: API tokens, two-factor sign-in, SSO links, CalDAV sync state, push subscriptions, sessions, and logs. [30-moving-to-postgres.md](30-moving-to-postgres.md) has the full list of what comes across.
 
 ---
 
-## Backup Commands Reference
+## Best Practices
+
+### Before Major Changes
+
+Take a dump before upgrading tududi, running manual migrations or bulk data operations.
+
+### Keep a Copy Off the Host
+
+A dump on the same disk as the database does not survive that disk. Copy dumps and the uploads folder elsewhere on a schedule, and keep more than one generation.
+
+### Back Up Uploads Too
+
+Attachments, avatars and project images are plain files under `TUDUDI_UPLOAD_PATH`. A database restore without them leaves broken links.
 
 ```bash
-# Manual backup (development)
-node backend/scripts/sqlite-backup.js backend/db/development.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
+tar czf tududi-uploads-$(date +%F).tar.gz uploads/
+```
 
-# Manual backup (production)
-node backend/scripts/sqlite-backup.js backend/db/production.sqlite3 backend/db/manual-backup-$(date +%Y%m%d%H%M%S).sqlite3
+### Test a Restore
 
-# List all backups
-ls -lh backend/db/db-backup-*.sqlite3
+Now and then, restore a dump into a scratch database and look at it:
 
-# Restore specific backup (app stopped)
-rm -f backend/db/development.sqlite3-wal backend/db/development.sqlite3-shm
-cp backend/db/db-backup-20260314193000.sqlite3 backend/db/development.sqlite3
-
-# Verify backup file integrity
-sqlite3 backend/db/db-backup-20260314193000.sqlite3 "PRAGMA integrity_check;"
+```bash
+createdb tududi_restore_test
+gunzip -c tududi-2026-10-28.sql.gz | psql tududi_restore_test
+psql tududi_restore_test -c 'SELECT COUNT(*) FROM tasks;'
+dropdb tududi_restore_test
 ```
 
 ---
 
 ## Troubleshooting
 
-### Backup File Not Found
+### Restore Fails With "relation already exists"
 
-**Problem:** Can't find automatic backup after startup failure
+The target database is not empty. Drop and recreate it, then load the dump again.
 
-**Solution:** Check if database existed before startup. Backups are only created for existing databases.
+### `pg_dump: server version mismatch`
 
-```bash
-# New installations won't have backups yet
-# First run creates database, second run creates first backup
-```
+The `pg_dump` client is older than the server. Use the one inside the `db` container (`docker compose exec db pg_dump ...`) or install a matching client.
 
-### Restore Fails with "Database is locked"
+### Startup Stops After a Restore
 
-**Problem:** SQLite database is locked during restore
-
-**Solution:** Ensure the application is fully stopped
-
-```bash
-# Kill all node processes
-pkill -f "node.*tududi"
-
-# Verify no processes are using the database
-lsof backend/db/development.sqlite3
-
-# Then attempt restore
-```
-
-### Large Backup Files
-
-**Problem:** Backup files consuming too much space
-
-**Solution:** Automatic cleanup runs on every startup. For manual cleanup:
-
-```bash
-# Delete backups older than 7 days manually
-find backend/db -name "db-backup-*.sqlite3" -mtime +7 -delete
-
-# Or keep only last 10 backups
-ls -t backend/db/db-backup-*.sqlite3 | tail -n +11 | xargs rm
-```
-
----
-
-## Implementation Details
-
-### Backup Script Location
-
-The automatic backup script is located at `/backend/cmd/start.sh` (lines 9-78).
-
-**Key functions:**
-- `backup_db()` - Creates timestamped SQLite file copy
-- Automatic cleanup based on retention policy
-- Runs before every migration
+A dump from an older 1.x release restored under 2.0 is refused with "This database was last used by an older tududi 1.x release". Start the final 1.x image against it once, then 2.0.
 
 ---
 
 ## Related Documentation
 
+- [Database (PostgreSQL)](16-postgresql.md) - Connection, tuning and upgrades
+- [Moving from SQLite (1.x) to 2.0](30-moving-to-postgres.md) - Export on 1.x, import on 2.0
 - [Database & Migrations](database.md) - Schema changes and migrations
 - [Development Workflow](development-workflow.md) - Database management commands
-- [Architecture](architecture.md) - Data model relationships
-
----
-
-[← Back to Index](../CLAUDE.md)
