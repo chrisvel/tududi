@@ -38,6 +38,7 @@ const {
 const permissionsService = require('../../../services/permissionsService');
 const { resolveTagsForTransaction } = require('./tagResolver');
 const relationsService = require('../../tasks/relations/service');
+const dailyPlanService = require('../../daily-plan/service');
 const {
     computeTaskMetrics,
 } = require('../../tasks/queries/metrics-computation');
@@ -698,7 +699,8 @@ function registerTaskTools(server, context, tools) {
         },
         today: {
             type: 'boolean',
-            description: 'Add to Today list',
+            description:
+                "true adds the task to today's plan, false takes it off",
         },
         tags: {
             type: 'array',
@@ -822,7 +824,6 @@ function registerTaskTools(server, context, tools) {
                     }
                 );
             }
-            if (params.today !== undefined) updates.today = params.today;
 
             if (params.recurrence_type !== undefined)
                 updates.recurrence_type = params.recurrence_type;
@@ -937,6 +938,14 @@ function registerTaskTools(server, context, tools) {
                     task,
                     recurringOccurrence,
                     context.userId
+                );
+            }
+
+            if (typeof params.today === 'boolean') {
+                await dailyPlanService.setTaskOnToday(
+                    context.user,
+                    task.uid,
+                    params.today
                 );
             }
 
