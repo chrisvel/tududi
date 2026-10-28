@@ -11,6 +11,7 @@ import { PriorityType } from '../../entities/Task';
 import AreaDropdown from '../Shared/AreaDropdown';
 import GoalDropdown from '../Shared/GoalDropdown';
 import PriorityDropdown from '../Shared/PriorityDropdown';
+import { toPriorityLevel } from '../Shared/PriorityBadge';
 import DatePicker from '../Shared/DatePicker';
 import DateTimePicker from '../Shared/DateTimePicker';
 import { fromDueParts, toDueParts } from '../../utils/dueDateTime';
@@ -241,6 +242,7 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
         medium: 'bg-yellow-400',
         low: 'bg-blue-400',
     };
+    const priorityLevel = toPriorityLevel(project.priority);
     const recentNotes = [...notes].sort(
         (a, b) =>
             new Date(b.updated_at || 0).getTime() -
@@ -402,7 +404,7 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
                             'Change priority'
                         )}
                         empty={t('project.setPriority', 'Set priority')}
-                        hasValue={!!project.priority}
+                        hasValue={!!priorityLevel}
                         editing={editing === 'priority'}
                         onStartEdit={() => setEditing('priority')}
                         editor={
@@ -417,12 +419,9 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
                         }
                     >
                         <span
-                            className={`h-2 w-2 rounded-full ${priorityColor[String(project.priority)] || 'bg-gray-400'}`}
+                            className={`h-2 w-2 rounded-full ${(priorityLevel && priorityColor[priorityLevel]) || 'bg-gray-400'}`}
                         />
-                        {t(
-                            `priority.${project.priority}`,
-                            String(project.priority)
-                        )}
+                        {t(`priority.${priorityLevel}`, String(priorityLevel))}
                     </EditableRow>
                     <EditableRow
                         label={t('task.startDate', 'Start')}
