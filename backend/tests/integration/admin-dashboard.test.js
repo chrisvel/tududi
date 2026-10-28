@@ -122,6 +122,9 @@ describe('Admin dashboard', () => {
         expect(trends.signups.last7d).toBe(
             trends.days.slice(7).reduce((n, d) => n + d.signups, 0)
         );
+        expect(trends.signups.today).toBe(trends.days[13].signups);
+        expect(trends.tasks.created.today).toBeGreaterThanOrEqual(1);
+        expect(trends.active_users_today).toBeGreaterThanOrEqual(1);
         expect(trends.activation.new_users).toBeGreaterThanOrEqual(2);
         expect(trends.activation.activated).toBeGreaterThanOrEqual(1);
         expect(trends.activation.activated).toBeLessThan(
@@ -156,6 +159,7 @@ describe('Admin dashboard', () => {
 
             const res = await adminAgent.get('/api/admin/overview');
             expect(res.body.trends.billing).toEqual({
+                trials_started_today: 0,
                 trials_started_7d: 1,
                 trials_started_prev7d: 0,
                 trials_ending_7d: 1,

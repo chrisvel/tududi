@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface WeekCount {
+    today?: number;
     last7d: number;
     prev7d: number;
 }
@@ -26,8 +27,8 @@ export interface Visits {
 
 export interface Trends {
     days: { date: string; signups: number; waitlist: number }[];
-    signups: { last7d: number; prev7d: number };
-    waitlist: { last7d: number; prev7d: number };
+    signups: WeekCount;
+    waitlist: WeekCount;
     activation: { new_users: number; activated: number; verified?: number };
     onboarding?: {
         new_users: number;
@@ -36,12 +37,14 @@ export interface Trends {
         three_days: number;
     };
     active_users_7d: number;
+    active_users_today?: number;
     tasks?: {
-        created: { last7d: number; prev7d: number };
-        completed: { last7d: number; prev7d: number };
+        created: WeekCount;
+        completed: WeekCount;
     };
     visits?: Visits | null;
     billing: {
+        trials_started_today?: number;
         trials_started_7d: number;
         trials_started_prev7d?: number;
         trials_ending_7d: number;
@@ -118,6 +121,7 @@ interface Row {
     key: string;
     label: string;
     hint?: string;
+    today?: number;
     now: React.ReactNode;
     before?: number;
     // Set for a plain count so the change column can be worked out.
@@ -125,6 +129,12 @@ interface Row {
     spark?: number[];
     warn?: boolean;
 }
+
+// Today's figure for two surfaces added together, when both report one.
+const addToday = (a: WeekCount, b: WeekCount) =>
+    a.today === undefined || b.today === undefined
+        ? undefined
+        : a.today + b.today;
 
 // "6 of 21 · 29%" for a share of a group.
 const ofTotal = (n: number, total: number) => (
@@ -140,11 +150,12 @@ const ofTotal = (n: number, total: number) => (
 const count = (
     key: string,
     label: string,
-    week: { last7d: number; prev7d: number },
+    week: WeekCount,
     extra: Partial<Row> = {}
 ): Row => ({
     key,
     label,
+    today: week.today,
     now: week.last7d,
     nowCount: week.last7d,
     before: week.prev7d,
@@ -198,6 +209,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                 'visitors',
                 t('admin.trends.visitors', 'Site visitors'),
                 {
+                    today: addToday(landing.visitors, blog.visitors),
                     last7d: landing.visitors.last7d + blog.visitors.last7d,
                     prev7d: landing.visitors.prev7d + blog.visitors.prev7d,
                 },
@@ -210,6 +222,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                 }
             ),
             count('views', t('admin.trends.views', 'Page views'), {
+                today: addToday(landing.views, blog.views),
                 last7d: landing.views.last7d + blog.views.last7d,
                 prev7d: landing.views.prev7d + blog.views.prev7d,
             }),
@@ -282,17 +295,15 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                 'app-users',
                 t('admin.trends.appUsers', 'App users'),
                 {
+                    today: visits.app_users.dau,
                     last7d: visits.app_users.wau,
                     prev7d: visits.app_users.prev_wau,
                 },
                 {
                     hint: t(
-                        'admin.trends.appUsersHint',
-                        '{{day}} today · {{month}} in 30 days',
-                        {
-                            day: visits.app_users.dau,
-                            month: visits.app_users.mau,
-                        }
+                        'admin.trends.appUsersMonthHint',
+                        '{{month}} in 30 days',
+                        { month: visits.app_users.mau }
                     ),
                 }
             )
@@ -302,6 +313,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
         key: 'creators',
         label: t('admin.trends.creators', 'Created something'),
         hint: t('admin.trends.creatorsHint', 'users, any kind of item'),
+        today: trends.active_users_today,
         now: trends.active_users_7d,
     });
     if (trends.tasks) {
@@ -332,6 +344,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                 {
                     key: 'trials-started',
                     label: t('admin.trends.trialsStarted', 'Trials started'),
+                    today: billing.trials_started_today,
                     now: billing.trials_started_7d,
                     nowCount: billing.trials_started_7d,
                     before: billing.trials_started_prev7d,
@@ -375,6 +388,9 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                         <tr>
                             <th className="px-3 py-2 font-medium text-left" />
                             <th className={th}>
+                                {t('admin.trends.today', 'Today')}
+                            </th>
+                            <th className={th}>
                                 {t('admin.trends.thisWeek', 'This week')}
                             </th>
                             <th className={th}>
@@ -392,7 +408,7 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                         <tbody key={group.key}>
                             <tr>
                                 <th
-                                    colSpan={5}
+                                    colSpan={6}
                                     className="px-3 pt-4 pb-1 text-left text-xs font-medium text-gray-500 dark:text-gray-400"
                                 >
                                     {group.title}
@@ -415,6 +431,9 @@ const AdminTrends: React.FC<{ trends: Trends }> = ({ trends }) => {
                                                 {row.hint}
                                             </span>
                                         )}
+                                    </td>
+                                    <td className="px-3 py-1.5 text-right tabular-nums text-gray-700 dark:text-gray-200">
+                                        {row.today ?? ''}
                                     </td>
                                     <td className="px-3 py-1.5 text-right tabular-nums font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
                                         {row.now}

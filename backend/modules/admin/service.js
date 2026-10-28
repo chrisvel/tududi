@@ -620,9 +620,13 @@ class AdminService {
             new Date(start.getTime() + i * DAY_MS).toISOString().slice(0, 10)
         );
 
-        // This week's count and the week before's for one date column.
+        // Today's count, this week's and the week before's for one date
+        // column.
         const countByWeek = async (Model, field, where) => {
-            const [last7d, prev7d] = await Promise.all([
+            const [day, last7d, prev7d] = await Promise.all([
+                Model.count({
+                    where: { ...where, [field]: { [Op.gte]: today } },
+                }),
                 Model.count({
                     where: { ...where, [field]: { [Op.gte]: weekStart } },
                 }),
@@ -633,13 +637,14 @@ class AdminService {
                     },
                 }),
             ]);
-            return { last7d, prev7d };
+            return { today: day, last7d, prev7d };
         };
 
         const [
             signups,
             joins,
             active,
+            activeToday,
             trialsStarted,
             trialsEnding,
             canceled,
@@ -659,9 +664,10 @@ class AdminService {
                 raw: true,
             }),
             adminRepository.findCreatorIdsSince(weekStart),
+            adminRepository.findCreatorIdsSince(today),
             hosted
                 ? countByWeek(BillingAccount, 'trial_started_at', {})
-                : { last7d: 0, prev7d: 0 },
+                : { today: 0, last7d: 0, prev7d: 0 },
             hosted
                 ? BillingAccount.count({
                       where: {
@@ -720,10 +726,12 @@ class AdminService {
         return {
             days,
             signups: {
+                today: days[DAYS - 1].signups,
                 last7d: sum(thisWeek, 'signups'),
                 prev7d: sum(lastWeek, 'signups'),
             },
             waitlist: {
+                today: days[DAYS - 1].waitlist,
                 last7d: sum(thisWeek, 'waitlist'),
                 prev7d: sum(lastWeek, 'waitlist'),
             },
@@ -734,10 +742,12 @@ class AdminService {
             },
             onboarding,
             active_users_7d: active.size,
+            active_users_today: activeToday.size,
             tasks: { created: tasksCreated, completed: tasksCompleted },
             visits,
             billing: hosted
                 ? {
+                      trials_started_today: trialsStarted.today,
                       trials_started_7d: trialsStarted.last7d,
                       trials_started_prev7d: trialsStarted.prev7d,
                       trials_ending_7d: trialsEnding,

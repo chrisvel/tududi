@@ -157,7 +157,9 @@ describe('Visit tracking', () => {
             const { visits, tasks } = res.body.trends;
 
             expect(visits.landing.views.last7d).toBe(3);
+            expect(visits.landing.views.today).toBe(3);
             expect(visits.landing.visitors.last7d).toBe(2);
+            expect(visits.landing.visitors.today).toBe(2);
             expect(visits.app.views.last7d).toBe(1);
             expect(visits.days).toHaveLength(14);
             expect(visits.days[13].views).toBe(3);
@@ -171,7 +173,7 @@ describe('Visit tracking', () => {
             ]);
             expect(visits.app_users.dau).toBe(1);
             expect(visits.app_users.mau).toBe(1);
-            expect(tasks.created).toEqual({ last7d: 0, prev7d: 0 });
+            expect(tasks.created).toEqual({ today: 0, last7d: 0, prev7d: 0 });
         });
 
         it('leaves visits out when tracking is off', async () => {
