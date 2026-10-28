@@ -34,6 +34,20 @@ const {
 } = require('../../services/containerShareSync');
 const { Project, Area } = require('../../models');
 
+const PRIORITY_VALUES = { low: 0, medium: 1, high: 2 };
+
+// The UI sends priority names while the column is an integer; Postgres
+// rejects the names outright, so map them before saving.
+function toPriorityValue(priority) {
+    if (priority === '' || priority === null || priority === undefined) {
+        return null;
+    }
+    if (typeof priority === 'string' && priority in PRIORITY_VALUES) {
+        return PRIORITY_VALUES[priority];
+    }
+    return priority;
+}
+
 const PROJECT_STATUSES = Project.rawAttributes.status.values;
 const MAX_REORDER_PROJECTS = 5000;
 const VISIBILITIES = ['area', 'restricted'];
@@ -530,7 +544,7 @@ class ProjectsService {
             goal_id: goal_id || null,
             is_maintenance: is_maintenance || false,
             pin_to_sidebar: false,
-            priority: priority || null,
+            priority: toPriorityValue(priority),
             due_date_at: due_date_at || null,
             image_url: image_url || null,
             color: color || null,
@@ -623,7 +637,7 @@ class ProjectsService {
         if (pin_to_sidebar !== undefined)
             updateData.pin_to_sidebar = pin_to_sidebar;
         if (priority !== undefined)
-            updateData.priority = priority === '' ? null : priority;
+            updateData.priority = toPriorityValue(priority);
         if (due_date_at !== undefined)
             updateData.due_date_at = due_date_at === '' ? null : due_date_at;
         applyStart(updateData, data, userTimezone, project.start_date_at);
