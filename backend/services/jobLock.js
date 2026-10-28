@@ -1,13 +1,11 @@
 const crypto = require('crypto');
 const { sequelize } = require('../models');
-const { isPostgres } = require('../utils/db-dialect');
 const { logError, logInfo } = require('./logService');
 
 // Background jobs (task summaries, due-task notifications, CalDAV sync,
 // Telegram polling) used to run in every process. With two app containers
-// that means duplicate notifications and stolen Telegram updates. On
-// PostgreSQL an advisory lock makes exactly one process run each job; on
-// SQLite there is only ever one process, so a local mutex is enough.
+// that means duplicate notifications and stolen Telegram updates. A
+// PostgreSQL advisory lock makes exactly one process run each job.
 
 // Stable 32-bit key for pg advisory locks, derived from the job name.
 const lockKey = (name) =>
@@ -20,15 +18,6 @@ const runningLocally = new Set();
 async function withJobLock(name, fn) {
     if (runningLocally.has(name)) {
         return { ran: false };
-    }
-
-    if (!isPostgres()) {
-        runningLocally.add(name);
-        try {
-            return { ran: true, result: await fn() };
-        } finally {
-            runningLocally.delete(name);
-        }
     }
 
     // A transaction-scoped advisory lock releases itself when the
@@ -67,11 +56,6 @@ const leaderTransactions = new Map();
 
 async function tryBecomeLeader(name) {
     if (leaderTransactions.has(name)) {
-        return true;
-    }
-
-    if (!isPostgres()) {
-        leaderTransactions.set(name, null);
         return true;
     }
 

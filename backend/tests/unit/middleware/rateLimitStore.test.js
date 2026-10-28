@@ -1,23 +1,11 @@
 const { sequelize, RateLimit } = require('../../../models');
-const { isPostgres } = require('../../../utils/db-dialect');
 const {
     DatabaseRateLimitStore,
     createRateLimitStore,
     cleanupExpiredRateLimits,
 } = require('../../../middleware/rateLimitStore');
 
-// The upsert uses ON CONFLICT ... RETURNING, so most of this is only
-// exercised against a real PostgreSQL (DATABASE_URL in the environment).
-const describePg = isPostgres() ? describe : describe.skip;
-const describeSqlite = isPostgres() ? describe.skip : describe;
-
-describeSqlite('createRateLimitStore on SQLite', () => {
-    it('returns undefined so express-rate-limit uses its memory store', () => {
-        expect(createRateLimitStore('unit')).toBeUndefined();
-    });
-});
-
-describePg('createRateLimitStore on PostgreSQL', () => {
+describe('createRateLimitStore', () => {
     it('returns the shared database store', () => {
         expect(createRateLimitStore('unit')).toBeInstanceOf(
             DatabaseRateLimitStore
@@ -25,7 +13,7 @@ describePg('createRateLimitStore on PostgreSQL', () => {
     });
 });
 
-describePg('DatabaseRateLimitStore (PostgreSQL)', () => {
+describe('DatabaseRateLimitStore (PostgreSQL)', () => {
     let store;
 
     beforeAll(async () => {

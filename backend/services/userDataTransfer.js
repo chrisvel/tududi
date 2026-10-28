@@ -37,9 +37,22 @@ const {
     UserGroupMember,
     GroupShare,
     GroupPermission,
+    Comment,
+    CommentReaction,
+    TaskRelation,
+    DailyPlan,
+    DailyPlanItem,
+    CalendarFeed,
+    Webhook,
+    UserTaskOrder,
+    UserProjectOrder,
+    UserAreaOrder,
+    UserGoalOrder,
+    UserProjectArea,
     sequelize,
 } = require('../models');
 const { getConfig } = require('../config/config');
+const secretCipher = require('../shared/crypto/secretCipher');
 const { isAdmin } = require('./rolesService');
 const { uid: generateUid } = require('../utils/uid');
 const packageJson = require('../../package.json');
@@ -332,7 +345,202 @@ async function exportOwnData(userId) {
                         : null,
                 linked_user_id: undefined,
             })),
+            ...(await exportLinkedRecords(userId)),
         },
+    };
+}
+
+const uidsOf = async (Model, ids) => {
+    const wanted = [...new Set(ids.filter(Boolean))];
+    if (!wanted.length) return {};
+    const rows = await Model.findAll({
+        where: { id: wanted },
+        attributes: ['id', 'uid'],
+        raw: true,
+    });
+    return Object.fromEntries(rows.map((r) => [r.id, r.uid]));
+};
+
+const PROJECT_SCOPE = /^project:(\d+)$/;
+
+// Records that point at tasks, projects, areas and goals which can belong to
+// another account (a comment on a shared task, a plan item for a task shared
+// with this user). They reference those by uid and are restored once every
+// account's own rows exist. Calendar addresses and webhook urls and secrets
+// stay encrypted with this instance's key.
+async function exportLinkedRecords(userId) {
+    const ownTaskIds = (
+        await Task.findAll({
+            where: { user_id: userId },
+            attributes: ['id'],
+            raw: true,
+        })
+    ).map((t) => t.id);
+
+    const [
+        comments,
+        reactions,
+        relations,
+        plans,
+        feeds,
+        webhooks,
+        taskOrders,
+        projectOrders,
+        areaOrders,
+        goalOrders,
+        projectAreas,
+    ] = await Promise.all([
+        Comment.findAll({ where: { user_id: userId }, raw: true }),
+        CommentReaction.findAll({ where: { user_id: userId }, raw: true }),
+        ownTaskIds.length
+            ? TaskRelation.findAll({
+                  where: { source_task_id: ownTaskIds },
+                  raw: true,
+              })
+            : [],
+        DailyPlan.findAll({
+            where: { user_id: userId },
+            include: [{ model: DailyPlanItem, as: 'Items' }],
+        }),
+        CalendarFeed.findAll({ where: { user_id: userId }, raw: true }),
+        Webhook.findAll({ where: { user_id: userId }, raw: true }),
+        UserTaskOrder.findAll({ where: { user_id: userId }, raw: true }),
+        UserProjectOrder.findAll({ where: { user_id: userId }, raw: true }),
+        UserAreaOrder.findAll({ where: { user_id: userId }, raw: true }),
+        UserGoalOrder.findAll({ where: { user_id: userId }, raw: true }),
+        UserProjectArea.findAll({ where: { user_id: userId }, raw: true }),
+    ]);
+
+    const planItems = plans.flatMap((p) => p.Items || []);
+    const scopeProjectId = (scope) => {
+        const match = PROJECT_SCOPE.exec(scope || '');
+        return match ? Number(match[1]) : null;
+    };
+    const [taskUid, commentUid, projectUid, areaUid, goalUid] =
+        await Promise.all([
+            uidsOf(Task, [
+                ...comments.map((c) => c.task_id),
+                ...relations.flatMap((r) => [
+                    r.source_task_id,
+                    r.target_task_id,
+                ]),
+                ...planItems.map((i) => i.task_id),
+                ...taskOrders.map((o) => o.task_id),
+            ]),
+            uidsOf(Comment, [
+                ...comments.map((c) => c.parent_comment_id),
+                ...reactions.map((r) => r.comment_id),
+            ]),
+            uidsOf(Project, [
+                ...projectOrders.map((o) => o.project_id),
+                ...projectAreas.map((pa) => pa.project_id),
+                ...taskOrders.map((o) => scopeProjectId(o.scope)),
+            ]),
+            uidsOf(Area, [
+                ...areaOrders.map((o) => o.area_id),
+                ...projectAreas.map((pa) => pa.area_id),
+            ]),
+            uidsOf(
+                Goal,
+                goalOrders.map((o) => o.goal_id)
+            ),
+        ]);
+
+    return {
+        comments: comments
+            .filter((c) => taskUid[c.task_id])
+            .map((c) => ({
+                uid: c.uid,
+                task_uid: taskUid[c.task_id],
+                parent_comment_uid: commentUid[c.parent_comment_id] || null,
+                body: c.body,
+                mentioned_person_uids: c.mentioned_person_uids || [],
+                deleted_at: c.deleted_at,
+                created_at: c.created_at,
+            })),
+        comment_reactions: reactions
+            .filter((r) => commentUid[r.comment_id])
+            .map((r) => ({
+                comment_uid: commentUid[r.comment_id],
+                reaction_type: r.reaction_type,
+            })),
+        task_relations: relations
+            .filter(
+                (r) => taskUid[r.source_task_id] && taskUid[r.target_task_id]
+            )
+            .map((r) => ({
+                uid: r.uid,
+                source_task_uid: taskUid[r.source_task_id],
+                target_task_uid: taskUid[r.target_task_id],
+                relation_type: r.relation_type,
+            })),
+        daily_plans: plans.map((p) => ({
+            uid: p.uid,
+            plan_date: p.plan_date,
+            started_at: p.started_at,
+            ai_wrap_up: p.ai_wrap_up,
+            items: (p.Items || [])
+                .filter((i) => taskUid[i.task_id])
+                .map((i) => ({
+                    task_uid: taskUid[i.task_id],
+                    position: i.position,
+                    start_minute: i.start_minute,
+                    duration_minutes: i.duration_minutes,
+                })),
+        })),
+        calendar_feeds: feeds.map((f) => ({
+            uid: f.uid,
+            name: f.name,
+            url_encrypted: f.url_encrypted,
+            url_host: f.url_host,
+            color: f.color,
+            show_on_calendar: f.show_on_calendar,
+        })),
+        webhooks: webhooks.map((w) => ({
+            uid: w.uid,
+            name: w.name,
+            url: w.url,
+            secret: w.secret,
+            events: w.events,
+            summary_hour: w.summary_hour,
+            enabled: w.enabled,
+        })),
+        task_orders: taskOrders
+            .filter((o) => taskUid[o.task_id])
+            .map((o) => {
+                const projectId = scopeProjectId(o.scope);
+                return {
+                    task_uid: taskUid[o.task_id],
+                    scope: projectId ? 'project' : o.scope,
+                    project_uid: projectId ? projectUid[projectId] : null,
+                    position: o.position,
+                };
+            })
+            .filter((o) => o.scope !== 'project' || o.project_uid),
+        project_orders: projectOrders
+            .filter((o) => projectUid[o.project_id])
+            .map((o) => ({
+                project_uid: projectUid[o.project_id],
+                position: o.position,
+            })),
+        area_orders: areaOrders
+            .filter((o) => areaUid[o.area_id])
+            .map((o) => ({
+                area_uid: areaUid[o.area_id],
+                position: o.position,
+            })),
+        goal_orders: goalOrders
+            .filter((o) => goalUid[o.goal_id])
+            .map((o) => ({
+                goal_uid: goalUid[o.goal_id],
+                position: o.position,
+            })),
+        project_areas: projectAreas
+            .filter((pa) => projectUid[pa.project_id])
+            .map((pa) => ({
+                project_uid: projectUid[pa.project_id],
+                area_uid: areaUid[pa.area_id] || null,
+            })),
     };
 }
 
@@ -1076,7 +1284,7 @@ async function importOwnData(
         }
 
         await transaction.commit();
-        return { stats, uidRenames };
+        return { stats, uidRenames, personUids: uidMaps.people };
     } catch (error) {
         await transaction.rollback();
         for (const { dir, name } of writtenFiles) {
@@ -1342,6 +1550,304 @@ async function restoreSharing(userId, instance, ctx, renames, stats) {
     }
 }
 
+const LINKED_STAT_KEYS = [
+    'comments',
+    'task_relations',
+    'daily_plans',
+    'calendar_feeds',
+    'webhooks',
+    'orders',
+];
+
+// A stored secret only comes across when this instance's key can read it,
+// otherwise the restored feed or webhook could never be used.
+const readableHere = (...values) => {
+    try {
+        for (const value of values) secretCipher.decrypt(value);
+        return true;
+    } catch (_) {
+        return false;
+    }
+};
+
+// Restores the records exportLinkedRecords carries, for every account of the
+// restore at once, after all of their own rows exist. A reference only links
+// to a row restored or matched by this restore, never to some other row on
+// this instance that happens to share the uid.
+async function restoreLinkedRecords(entries, renames, personUids, stats) {
+    for (const key of LINKED_STAT_KEYS) {
+        stats[key] = stats[key] || { created: 0, skipped: 0 };
+    }
+    const count = (key, created) => {
+        stats[key][created ? 'created' : 'skipped'] += 1;
+    };
+
+    const transaction = await sequelize.transaction();
+    try {
+        const idCache = {};
+        const idOf = async (Model, key, uid) => {
+            const localUid = uid ? renames[key]?.[uid] : null;
+            if (!localUid) return null;
+            const cacheKey = `${key}:${localUid}`;
+            if (!(cacheKey in idCache)) {
+                const row = await Model.findOne({
+                    where: { uid: localUid },
+                    attributes: ['id'],
+                    transaction,
+                });
+                idCache[cacheKey] = row ? row.id : null;
+            }
+            return idCache[cacheKey];
+        };
+        const taskId = (uid) => idOf(Task, 'tasks', uid);
+        const projectId = (uid) => idOf(Project, 'projects', uid);
+        const areaId = (uid) => idOf(Area, 'areas', uid);
+        const goalId = (uid) => idOf(Goal, 'goals', uid);
+
+        // A uid taken by another account's row gets a fresh one, as in
+        // upsertByUid. Returns the existing row when this account has it.
+        const claimUid = async (Model, uid, userId) => {
+            const existing = uid
+                ? await Model.findOne({ where: { uid }, transaction })
+                : null;
+            if (existing && existing.user_id === userId) {
+                return { existing };
+            }
+            return { uid: !uid || existing ? generateUid() : uid };
+        };
+
+        const commentIds = {};
+        const createdComments = [];
+        for (const { userId, data } of entries) {
+            for (const c of data.comments || []) {
+                const claim = await claimUid(Comment, c.uid, userId);
+                if (claim.existing) {
+                    commentIds[c.uid] = claim.existing.id;
+                    count('comments', false);
+                    continue;
+                }
+                const task = await taskId(c.task_uid);
+                if (!task) {
+                    count('comments', false);
+                    continue;
+                }
+                const row = await Comment.create(
+                    {
+                        uid: claim.uid,
+                        task_id: task,
+                        user_id: userId,
+                        body: c.body,
+                        mentioned_person_uids: (c.mentioned_person_uids || [])
+                            .map((uid) => personUids[uid])
+                            .filter(Boolean),
+                        deleted_at: c.deleted_at || null,
+                        created_at: c.created_at || undefined,
+                    },
+                    { transaction }
+                );
+                commentIds[c.uid] = row.id;
+                createdComments.push({ row, parentUid: c.parent_comment_uid });
+                count('comments', true);
+            }
+        }
+        for (const { row, parentUid } of createdComments) {
+            const parentId = parentUid ? commentIds[parentUid] : null;
+            if (parentId) {
+                await row.update(
+                    { parent_comment_id: parentId },
+                    { transaction, silent: true }
+                );
+            }
+        }
+
+        for (const { userId, data } of entries) {
+            for (const r of data.comment_reactions || []) {
+                const commentId = commentIds[r.comment_uid];
+                if (!commentId) continue;
+                await CommentReaction.findOrCreate({
+                    where: { comment_id: commentId, user_id: userId },
+                    defaults: { reaction_type: r.reaction_type },
+                    transaction,
+                });
+            }
+
+            for (const r of data.task_relations || []) {
+                const source = await taskId(r.source_task_uid);
+                const target = await taskId(r.target_task_uid);
+                if (!source || !target || source === target) {
+                    count('task_relations', false);
+                    continue;
+                }
+                const taken = await TaskRelation.findOne({
+                    where: { uid: r.uid },
+                    attributes: ['id'],
+                    transaction,
+                });
+                const [, created] = await TaskRelation.findOrCreate({
+                    where: {
+                        source_task_id: source,
+                        target_task_id: target,
+                        relation_type: r.relation_type,
+                    },
+                    defaults: {
+                        uid: taken || !r.uid ? generateUid() : r.uid,
+                        created_by_user_id: userId,
+                    },
+                    transaction,
+                });
+                count('task_relations', created);
+            }
+
+            for (const p of data.daily_plans || []) {
+                let plan = await DailyPlan.findOne({
+                    where: { user_id: userId, plan_date: p.plan_date },
+                    transaction,
+                });
+                if (plan) {
+                    count('daily_plans', false);
+                } else {
+                    const claim = await claimUid(DailyPlan, p.uid, userId);
+                    plan = await DailyPlan.create(
+                        {
+                            uid: claim.uid || generateUid(),
+                            user_id: userId,
+                            plan_date: p.plan_date,
+                            started_at: p.started_at || null,
+                            ai_wrap_up: p.ai_wrap_up ?? null,
+                        },
+                        { transaction }
+                    );
+                    count('daily_plans', true);
+                }
+                for (const item of p.items || []) {
+                    const task = await taskId(item.task_uid);
+                    if (!task) continue;
+                    await DailyPlanItem.findOrCreate({
+                        where: { daily_plan_id: plan.id, task_id: task },
+                        defaults: {
+                            position: item.position ?? 0,
+                            start_minute: item.start_minute ?? null,
+                            duration_minutes: item.duration_minutes ?? 30,
+                        },
+                        transaction,
+                    });
+                }
+            }
+
+            for (const f of data.calendar_feeds || []) {
+                const claim = await claimUid(CalendarFeed, f.uid, userId);
+                if (claim.existing || !readableHere(f.url_encrypted)) {
+                    count('calendar_feeds', false);
+                    continue;
+                }
+                await CalendarFeed.create(
+                    {
+                        uid: claim.uid,
+                        user_id: userId,
+                        name: f.name,
+                        url_encrypted: f.url_encrypted,
+                        url_host: f.url_host,
+                        color: f.color ?? null,
+                        show_on_calendar: f.show_on_calendar !== false,
+                    },
+                    { transaction }
+                );
+                count('calendar_feeds', true);
+            }
+
+            for (const w of data.webhooks || []) {
+                const claim = await claimUid(Webhook, w.uid, userId);
+                if (claim.existing || !readableHere(w.url, w.secret)) {
+                    count('webhooks', false);
+                    continue;
+                }
+                await Webhook.create(
+                    {
+                        uid: claim.uid,
+                        user_id: userId,
+                        name: w.name,
+                        url: w.url,
+                        secret: w.secret,
+                        events: w.events || [],
+                        summary_hour: w.summary_hour ?? 8,
+                        enabled: w.enabled !== false,
+                    },
+                    { transaction }
+                );
+                count('webhooks', true);
+            }
+
+            const placeOrder = async (Model, where, position) => {
+                const [, created] = await Model.findOrCreate({
+                    where: { user_id: userId, ...where },
+                    defaults: { position },
+                    transaction,
+                });
+                count('orders', created);
+            };
+            for (const o of data.task_orders || []) {
+                const task = await taskId(o.task_uid);
+                let scope = o.scope;
+                if (o.scope === 'project') {
+                    const project = await projectId(o.project_uid);
+                    scope = project ? `project:${project}` : null;
+                }
+                if (!task || !scope) continue;
+                await placeOrder(
+                    UserTaskOrder,
+                    { task_id: task, scope },
+                    o.position
+                );
+            }
+            for (const o of data.project_orders || []) {
+                const project = await projectId(o.project_uid);
+                if (project) {
+                    await placeOrder(
+                        UserProjectOrder,
+                        { project_id: project },
+                        o.position
+                    );
+                }
+            }
+            for (const o of data.area_orders || []) {
+                const area = await areaId(o.area_uid);
+                if (area) {
+                    await placeOrder(
+                        UserAreaOrder,
+                        { area_id: area },
+                        o.position
+                    );
+                }
+            }
+            for (const o of data.goal_orders || []) {
+                const goal = await goalId(o.goal_uid);
+                if (goal) {
+                    await placeOrder(
+                        UserGoalOrder,
+                        { goal_id: goal },
+                        o.position
+                    );
+                }
+            }
+            for (const pa of data.project_areas || []) {
+                const project = await projectId(pa.project_uid);
+                if (!project) continue;
+                const [, created] = await UserProjectArea.findOrCreate({
+                    where: { user_id: userId, project_id: project },
+                    defaults: { area_id: await areaId(pa.area_uid) },
+                    transaction,
+                });
+                count('orders', created);
+            }
+        }
+
+        await transaction.commit();
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
+}
+
 const addStats = (total, part) => {
     for (const [key, value] of Object.entries(part)) {
         total[key] = total[key] || { created: 0, skipped: 0 };
@@ -1358,7 +1864,19 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         !isHosted() &&
         (await isAdmin(userId));
     if (!restoreInstance) {
-        const { stats } = await importOwnData(userId, backupData, options);
+        const { stats, uidRenames, personUids } = await importOwnData(
+            userId,
+            backupData,
+            options
+        );
+        if (options.merge !== false) {
+            await restoreLinkedRecords(
+                [{ userId, data: backupData.data }],
+                uidRenames,
+                personUids,
+                stats
+            );
+        }
         return stats;
     }
 
@@ -1386,6 +1904,8 @@ async function importUserData(userId, backupData, options = { merge: true }) {
     const own = await importOwnData(userId, backupData, options, ctx);
     const stats = own.stats;
     collect(own.uidRenames);
+    const personUids = { ...ctx.personUids, ...own.personUids };
+    const linked = [{ userId, data: backupData.data }];
     for (const { account, backup } of instance.accounts || []) {
         const accountId = ctx.userIdByUid[account?.uid];
         // The importer's own entry is the top-level data, restored above.
@@ -1393,8 +1913,11 @@ async function importUserData(userId, backupData, options = { merge: true }) {
         const result = await importOwnData(accountId, backup, options, ctx);
         addStats(stats, result.stats);
         collect(result.uidRenames);
+        Object.assign(personUids, result.personUids);
+        linked.push({ userId: accountId, data: backup.data });
     }
 
+    await restoreLinkedRecords(linked, renames, personUids, stats);
     await restoreSharing(userId, instance, ctx, renames, extra);
     return { ...stats, ...extra };
 }

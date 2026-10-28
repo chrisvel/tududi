@@ -7,6 +7,7 @@ const {
     User,
     sequelize,
 } = require('../../models');
+const { ciLike } = require('../../utils/db-dialect');
 
 class BillingRepository {
     findAccountByUserId(userId) {
@@ -67,7 +68,7 @@ class BillingRepository {
 
     async listAccounts({ q, page = 1, limit = 50, trial = false }) {
         const offset = (Math.max(1, page) - 1) * limit;
-        const userWhere = q ? { email: { [Op.like]: `%${q}%` } } : undefined;
+        const userWhere = q ? { email: ciLike(`%${q}%`) } : undefined;
         const { rows, count } = await BillingAccount.findAndCountAll({
             where: trial ? this.trialWhere() : undefined,
             include: [

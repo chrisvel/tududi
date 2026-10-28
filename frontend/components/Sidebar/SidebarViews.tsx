@@ -146,7 +146,7 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
             if (response.ok) {
                 const profile = await response.json();
                 if (profile.sidebar_settings) {
-                    // Parse if it's a string (from SQLite JSON storage)
+                    // Parse if it is a string (older rows stored JSON as text)
                     const settings =
                         typeof profile.sidebar_settings === 'string'
                             ? JSON.parse(profile.sidebar_settings)

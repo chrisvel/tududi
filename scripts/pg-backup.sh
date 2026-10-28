@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Dumps the tududi PostgreSQL database to a compressed file and prunes old
-# dumps. Meant for cron on the host (or a sidecar) of a PostgreSQL install;
-# the SQLite file backup in backend/cmd/start.sh does not apply there.
+# dumps. Meant for cron on the host (or a sidecar). The backup service in
+# docker-compose.yml does the same inside compose.
 #
 #   DATABASE_URL=postgres://... ./scripts/pg-backup.sh /var/backups/tududi
 #

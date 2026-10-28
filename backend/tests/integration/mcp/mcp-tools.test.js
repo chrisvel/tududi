@@ -647,7 +647,7 @@ describe('MCP Tools Integration', () => {
                 expect(content.task.recurrence_type).toBe('none');
             });
 
-            it('should create a task with multiple tags without SQLITE_BUSY (issue #1526)', async () => {
+            it('should create a task with multiple tags (issue #1526)', async () => {
                 const response = await callMcpTool(
                     apiTokenValue,
                     'create_task',

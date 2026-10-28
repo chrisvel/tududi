@@ -12,13 +12,15 @@ This documentation is designed for AI assistants and developers working with the
 
 Tududi is a self-hosted task management system with hierarchical organization (Areas > Goals > Projects > Tasks), smart recurring tasks, and multi-channel integration.
 
-**Tech Stack:** React 18 + TypeScript, Express + Sequelize, SQLite (default) or PostgreSQL
+**Tech Stack:** React 18 + TypeScript, Express + Sequelize, PostgreSQL
 
 **Get Started:**
 ```bash
 git clone https://github.com/chrisvel/tududi.git
 cd tududi
 npm install
+docker compose -f docker-compose.dev.yml up -d db   # or any PostgreSQL 14+
+# backend/.env: DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_dev
 npm run db:init
 npm start  # Frontend on :8080, Backend on :3002
 ```
@@ -47,7 +49,7 @@ npm run format:fix       # prettier --write: frontend + backend
 
 **Tests:**
 ```bash
-npm test                              # backend Jest suite (alias: npm run backend:test)
+npm test                              # backend Jest suite (alias: npm run backend:test); needs DATABASE_URL
 npm run backend:test:unit             # backend/tests/unit only
 npm run backend:test:integration      # backend/tests/integration only
 cd backend && npx jest tests/unit/models/task.test.js   # single backend test file
@@ -64,7 +66,7 @@ npm run pre-push   # lint-staged (runs on the staged diff)
 ```
 (`pre-release` runs the full lint:fix + format:fix + test + test:ui suite.)
 
-**Database** (all operate on `backend/`):
+**Database** (all operate on `backend/`, against `DATABASE_URL`):
 ```bash
 npm run db:init             # first-time setup
 npm run db:migrate          # run pending migrations (dev)
@@ -112,15 +114,14 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 
 4. **[Database & Migrations](docs/database.md)**
    - Key models and relationships
-   - Choosing SQLite (default) or PostgreSQL, and how a fresh schema is created
-   - Migration workflow and writing dialect-safe migrations
+   - Connecting to PostgreSQL and how a fresh schema is created
+   - Migration workflow, archived 1.x migrations, and the upgrade gate
    - Common migration operations
 
 5. **[Backups & Restoration](docs/backups.md)**
-   - Automatic SQLite file backups before migrations (PostgreSQL: pg_dump)
-   - Backup retention policies (4 per day, 1 per day for 7 days)
-   - Restoration procedures for development, Docker, and production
-   - Emergency restore after failed migrations
+   - Database backups with pg_dump (compose `backup` service, `scripts/pg-backup.sh`, or by hand)
+   - Per-user JSON exports from Backup & Restore (`/backup`)
+   - Restoring into an empty database, in development, Docker and production
    - Best practices for data safety
 
 6. **[Development Workflow](docs/development-workflow.md)**
@@ -276,9 +277,9 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Known limitations (sub-path deployments, iOS background sync, offline task creation)
     - Web Push notifications for Android, iOS (Home Screen apps) and desktop
 
-25. **[PostgreSQL Deployment](docs/16-postgresql.md)**
-    - Environment variables (`DATABASE_URL`, `DB_*`) and TLS
-    - First-start bootstrap and migration baseline
+25. **[Database (PostgreSQL)](docs/16-postgresql.md)**
+    - PostgreSQL is the only engine; `DATABASE_URL` (or `DB_*`) is required, plus TLS
+    - First-start bootstrap, migration baseline, and the final-1.x upgrade gate
     - Docker Compose example, upgrades, `pg_dump` backups
     - Sizing, tuning and troubleshooting
 
@@ -315,7 +316,7 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
 
 31. **[Kubernetes](docs/22-kubernetes.md)**
     - Example manifests in `docs/examples/kubernetes`
-    - One replica, block storage for SQLite, ingress and backup notes
+    - One replica, PostgreSQL via `DATABASE_URL`, ingress and backup notes
 
 32. **[Onboarding](docs/24-onboarding.md)**
     - The welcome page at `/welcome`: the welcome video and one button, seen once by every account
@@ -351,6 +352,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Opt-in authenticator-app codes with 10 single-use recovery codes; applies after password and SSO sign-in
     - Step-up (password or code) for new API keys; admin reset; CalDAV needs an API key once it is on
     - Required for the hosted superadmin before the admin panel opens
+
+39. **[Moving from SQLite (1.x) to 2.0](docs/30-moving-to-postgres.md)**
+    - 2.0 runs on PostgreSQL only and refuses to start on a volume that still holds the old SQLite file
+    - Instance export on 1.x, import in merge mode on 2.0, `TUDUDI_ALLOW_DIALECT_SWITCH`
+    - What comes across and what has to be set up again
 
 ---
 
@@ -389,7 +395,7 @@ Tududi is a self-hosted task management system designed around hierarchical orga
 
 **Backend:**
 - Express 4.21 + Sequelize 6.37 (ORM)
-- SQLite (default, WAL mode, optimized) or PostgreSQL via `DATABASE_URL`
+- PostgreSQL 14+ via `DATABASE_URL` (required)
 - bcrypt + express-session (auth)
 - Swagger (API docs), Multer (uploads)
 - node-cron (scheduling), Nodemailer (email)

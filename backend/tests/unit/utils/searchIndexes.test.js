@@ -1,22 +1,11 @@
 const { sequelize } = require('../../../models');
-const { isPostgres } = require('../../../utils/db-dialect');
 const {
     ensureSearchIndexes,
     dropSearchIndexes,
     SEARCH_INDEXES,
 } = require('../../../utils/searchIndexes');
 
-const describePg = isPostgres() ? describe : describe.skip;
-const describeSqlite = isPostgres() ? describe.skip : describe;
-
-describeSqlite('search indexes on SQLite', () => {
-    it('is a no-op', async () => {
-        expect(await ensureSearchIndexes(sequelize)).toEqual([]);
-        await expect(dropSearchIndexes(sequelize)).resolves.toBeUndefined();
-    });
-});
-
-describePg('search indexes on PostgreSQL', () => {
+describe('search indexes', () => {
     beforeAll(async () => {
         await sequelize.sync();
     });

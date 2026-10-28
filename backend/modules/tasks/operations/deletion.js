@@ -1,7 +1,6 @@
 const { TaskEvent, TaskAttachment, sequelize } = require('../../../models');
 const taskRepository = require('../repository');
 const { deleteAttachmentFiles } = require('../../../utils/attachment-utils');
-const { withForeignKeyChecksDisabled } = require('../../../utils/db-dialect');
 const { logError } = require('../../../services/logService');
 
 // Removes one task row and everything that hangs off it. Recurring instances
@@ -23,42 +22,37 @@ async function destroyTaskRows(task, { skipWebhooks = false } = {}) {
         logError('Error removing task from CalDAV remotes:', error);
     }
 
-    // Dependent rows are removed in dependency order below, which is
-    // what PostgreSQL relies on; older SQLite databases additionally get
-    // constraint checks switched off for the duration.
-    await withForeignKeyChecksDisabled(sequelize, async () => {
-        await TaskEvent.destroy({
-            where: { task_id: taskId },
-            force: true,
-        });
-
-        await sequelize.query('DELETE FROM tasks_tags WHERE task_id = ?', {
-            replacements: [taskId],
-        });
-
-        await sequelize.query(
-            'DELETE FROM task_relations WHERE source_task_id = ? OR target_task_id = ?',
-            { replacements: [taskId, taskId] }
-        );
-
-        await sequelize.query(
-            'DELETE FROM user_task_orders WHERE task_id = ?',
-            { replacements: [taskId] }
-        );
-
-        await taskRepository.clearRecurringParent(taskId);
-
-        // Unlink attachment files from disk before destroying rows, so a
-        // dangling file never outlives the record that gated its access
-        // (GHSA-43p8-ch4p-gqg4).
-        await deleteAttachmentFiles(task.Attachments);
-        await TaskAttachment.destroy({
-            where: { task_id: taskId },
-            force: true,
-        });
-
-        await task.destroy({ force: true, skipWebhooks });
+    // Dependent rows are removed in dependency order: constraints stay on.
+    await TaskEvent.destroy({
+        where: { task_id: taskId },
+        force: true,
     });
+
+    await sequelize.query('DELETE FROM tasks_tags WHERE task_id = ?', {
+        replacements: [taskId],
+    });
+
+    await sequelize.query(
+        'DELETE FROM task_relations WHERE source_task_id = ? OR target_task_id = ?',
+        { replacements: [taskId, taskId] }
+    );
+
+    await sequelize.query('DELETE FROM user_task_orders WHERE task_id = ?', {
+        replacements: [taskId],
+    });
+
+    await taskRepository.clearRecurringParent(taskId);
+
+    // Unlink attachment files from disk before destroying rows, so a
+    // dangling file never outlives the record that gated its access
+    // (GHSA-43p8-ch4p-gqg4).
+    await deleteAttachmentFiles(task.Attachments);
+    await TaskAttachment.destroy({
+        where: { task_id: taskId },
+        force: true,
+    });
+
+    await task.destroy({ force: true, skipWebhooks });
 }
 
 module.exports = { destroyTaskRows };
