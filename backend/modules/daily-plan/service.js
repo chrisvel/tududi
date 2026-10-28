@@ -310,6 +310,26 @@ async function carryOver(user, date, taskUids) {
     return replaceItems(user, planDate, [...current, ...added]);
 }
 
+// The `today` flag on the task API: true appends the task to today's plan,
+// false takes it off. Removing from a day with no plan creates nothing.
+async function setTaskOnToday(user, taskUid, onToday) {
+    if (onToday) return carryOver(user, 'today', [taskUid]);
+    const { date, plan } = await getPlan(user, 'today');
+    const items = plan?.items || [];
+    if (!items.some((item) => item.task_uid === taskUid)) return null;
+    return replaceItems(
+        user,
+        date,
+        items
+            .filter((item) => item.task_uid !== taskUid)
+            .map((item) => ({
+                task_uid: item.task_uid,
+                start_minute: item.start_minute,
+                duration_minutes: item.duration_minutes,
+            }))
+    );
+}
+
 async function clearPlan(user, date) {
     const timezone = getSafeTimezone(user.timezone);
     const planDate = resolvePlanDate(date, timezone);
@@ -588,6 +608,7 @@ module.exports = {
     startPlan,
     clearPlan,
     carryOver,
+    setTaskOnToday,
     getCandidates,
     parseSuggestedLimit,
     getRanking,
