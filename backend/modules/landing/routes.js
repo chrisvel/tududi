@@ -151,6 +151,20 @@ function buildContactLimiter() {
 
 const CONTACT_LIMITS = { name: 100, message: 5000 };
 
+function xmlEscape(value) {
+    return String(value).replace(
+        /[&<>"']/g,
+        (c) =>
+            ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&apos;',
+            })[c]
+    );
+}
+
 // The chrome follows the remembered language without setting it, the same
 // as the legal pages.
 function rememberedLocale(req) {
@@ -339,7 +353,9 @@ function createLandingRouter(landing) {
     // HTML. X's crawler reads robots.txt before fetching a card's image, and
     // without a usable one shared links got no card.
     router.get('/robots.txt', (req, res) => {
-        res.type('text/plain').send('User-agent: *\nAllow: /\n');
+        res.type('text/plain').send(
+            `User-agent: *\nAllow: /\n\nSitemap: ${siteOrigin.replace(/\/$/, '')}/sitemap.xml\n`
+        );
     });
 
     // Literal paths rather than '/:lang', so nothing outside this list is
@@ -566,6 +582,54 @@ function createLandingRouter(landing) {
             return res.redirect(303, '/contact?sent=1');
         }
     );
+
+    // Built from the same lists the routes above are registered from, so a
+    // new page or locale lands in the sitemap without a second edit. The
+    // translated pages carry the same hreflang alternates their <head> does;
+    // contact and the legal pages are English only, one URL each.
+    const translatedPages = [
+        { paths: landingPaths, url: (locale) => localeUrl(locale) },
+        { paths: cloudPaths, url: (locale) => pageUrl(locale, '/cloud') },
+    ];
+    const singlePages = ['/contact', ...LEGAL_DOCS.map((d) => `/${d.slug}`)];
+    let sitemapXml = null;
+
+    router.get('/sitemap.xml', (req, res) => {
+        if (!sitemapXml) sitemapXml = buildSitemap();
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.type('application/xml').send(sitemapXml);
+    });
+
+    function buildSitemap() {
+        const origin = siteOrigin.replace(/\/$/, '');
+        const entries = [];
+        translatedPages.forEach((page) => {
+            const alternates = [
+                ...LOCALES.map(
+                    (l) =>
+                        `    <xhtml:link rel="alternate" hreflang="${xmlEscape(l.htmlLang)}" href="${xmlEscape(page.url(l.code))}"/>`
+                ),
+                `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(page.url(DEFAULT_LOCALE))}"/>`,
+            ].join('\n');
+            LOCALE_CODES.forEach((code) => {
+                entries.push(
+                    `  <url>\n    <loc>${xmlEscape(page.url(code))}</loc>\n${alternates}\n  </url>`
+                );
+            });
+        });
+        singlePages.forEach((p) => {
+            entries.push(
+                `  <url>\n    <loc>${xmlEscape(`${origin}${p}`)}</loc>\n  </url>`
+            );
+        });
+        return [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+            ...entries,
+            '</urlset>',
+            '',
+        ].join('\n');
+    }
 
     router.use(
         '/landing-assets',

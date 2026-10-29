@@ -6,6 +6,7 @@ jest.mock('../../modules/landing/stats', () => {
 });
 
 const request = require('supertest');
+const { XMLValidator } = require('fast-xml-parser');
 const app = require('../../app');
 const { getConfig } = require('../../config/config');
 const { hostSwitch } = require('../../modules/landing/routes');
@@ -192,6 +193,46 @@ describe('Landing page', () => {
         expect(res.status).toBe(200);
         expect(res.headers['content-type']).toMatch(/^text\/plain/);
         expect(res.text).toContain('User-agent: *');
+        expect(res.text).toContain('Sitemap: https://tududi.com/sitemap.xml');
+    });
+
+    it('serves a sitemap of every marketing page with hreflang alternates', async () => {
+        const res = await request(app)
+            .get('/sitemap.xml')
+            .set('Host', 'tududi.com');
+        expect(res.status).toBe(200);
+        expect(res.headers['content-type']).toMatch(/^application\/xml/);
+        expect(XMLValidator.validate(res.text)).toBe(true);
+
+        const locs = [...res.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+            (m) => m[1]
+        );
+        expect(locs).toEqual(
+            expect.arrayContaining([
+                'https://tududi.com/',
+                'https://tududi.com/de',
+                'https://tududi.com/cloud',
+                'https://tududi.com/de/cloud',
+                'https://tududi.com/contact',
+                'https://tududi.com/terms',
+                'https://tududi.com/privacy',
+                'https://tududi.com/refunds',
+            ])
+        );
+        // Home and cloud in every locale, plus contact and the legal pages.
+        expect(locs).toHaveLength(LOCALE_CODES.length * 2 + 4);
+        expect(new Set(locs).size).toBe(locs.length);
+        expect(res.text).toContain(
+            '<xhtml:link rel="alternate" hreflang="x-default" href="https://tududi.com/cloud"/>'
+        );
+
+        // Every listed page is one the landing host answers itself.
+        for (const loc of locs) {
+            const page = await request(app)
+                .get(new URL(loc).pathname)
+                .set('Host', 'tududi.com');
+            expect(page.status).toBe(200);
+        }
     });
 
     it('gives the landing and cloud pages a link preview card', async () => {
