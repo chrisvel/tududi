@@ -234,7 +234,8 @@
     "habit": "Alışkanlık",
     "assignedTo": "Atanan",
     "subtasks": "Alt görevler",
-    "openFullPage": "Tam görünümü aç"
+    "openFullPage": "Tam görünümü aç",
+    "openPanel": "Yan panelde aç"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",

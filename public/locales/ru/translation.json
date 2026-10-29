@@ -234,7 +234,8 @@
     "habit": "Привычка",
     "assignedTo": "Назначено",
     "subtasks": "Подзадачи",
-    "openFullPage": "Открыть полный вид"
+    "openFullPage": "Открыть полный вид",
+    "openPanel": "Открыть в боковой панели"
   },
   "timeline": {
     "activityTimeline": "Хронология активности",

@@ -234,7 +234,8 @@
     "habit": "습관",
     "assignedTo": "할당됨",
     "subtasks": "하위 작업",
-    "openFullPage": "전체 보기 열기"
+    "openFullPage": "전체 보기 열기",
+    "openPanel": "사이드 패널에서 열기"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",

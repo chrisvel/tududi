@@ -234,7 +234,8 @@
     "habit": "Habit",
     "assignedTo": "Assigned to",
     "subtasks": "Subtasks",
-    "openFullPage": "Open full view"
+    "openFullPage": "Open full view",
+    "openPanel": "Open in side panel"
   },
   "comments": {
     "count": "{{count}} comments",

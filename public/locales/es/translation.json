@@ -895,7 +895,8 @@
     "habit": "Hábito",
     "assignedTo": "Asignado a",
     "subtasks": "Subtareas",
-    "openFullPage": "Abrir vista completa"
+    "openFullPage": "Abrir vista completa",
+    "openPanel": "Abrir en el panel lateral"
   },
   "timeline": {
     "activityTimeline": "Línea de Tiempo de Actividad",

@@ -234,7 +234,8 @@
     "habit": "Nawyk",
     "assignedTo": "Przypisane do",
     "subtasks": "Podzadania",
-    "openFullPage": "Otwórz pełny widok"
+    "openFullPage": "Otwórz pełny widok",
+    "openPanel": "Otwórz w panelu bocznym"
   },
   "timeline": {
     "activityTimeline": "Oś czasu aktywności",

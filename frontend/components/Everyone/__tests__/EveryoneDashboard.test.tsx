@@ -6,6 +6,11 @@ import { MemoryRouter } from 'react-router-dom';
 import EveryoneDashboard from '../EveryoneDashboard';
 import { orderColumns } from '../PeopleBoard';
 
+jest.mock('../../Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: () => null,
+}));
+
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, fallback?: any) =>

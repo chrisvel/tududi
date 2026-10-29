@@ -39,7 +39,7 @@ interface TaskRowExpandedProps {
     onToggleSubtasks: () => void;
     onAddSubtask: (name: string) => void;
     onDelete: (e: React.MouseEvent) => void;
-    fullPagePath: string;
+    onOpenPanel: () => void;
     commentCount: number;
     onCommentCountChange: (count: number) => void;
 }
@@ -77,7 +77,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
     onToggleSubtasks,
     onAddSubtask,
     onDelete,
-    fullPagePath,
+    onOpenPanel,
     commentCount,
     onCommentCountChange,
 }) => {
@@ -329,7 +329,7 @@ const TaskRowExpanded: React.FC<TaskRowExpandedProps> = ({
                     openSection={openSection}
                     onToggleSection={toggleSection}
                     onDelete={onDelete}
-                    fullPagePath={fullPagePath}
+                    onOpenPanel={onOpenPanel}
                     commentCount={commentCount}
                     relationCount={relationCount}
                 />

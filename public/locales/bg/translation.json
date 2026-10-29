@@ -234,7 +234,8 @@
     "habit": "Навик",
     "assignedTo": "Назначено на",
     "subtasks": "Подзадачи",
-    "openFullPage": "Отвори пълен изглед"
+    "openFullPage": "Отвори пълен изглед",
+    "openPanel": "Отвори в страничния панел"
   },
   "timeline": {
     "activityTimeline": "Хронология на активността",

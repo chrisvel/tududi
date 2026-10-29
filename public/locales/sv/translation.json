@@ -234,7 +234,8 @@
     "habit": "Vana",
     "assignedTo": "Tilldelat till",
     "subtasks": "Deluppgifter",
-    "openFullPage": "Öppna fullständig vy"
+    "openFullPage": "Öppna fullständig vy",
+    "openPanel": "Öppna i sidopanelen"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",

@@ -234,7 +234,8 @@
     "habit": "Obicei",
     "assignedTo": "Atribuit lui",
     "subtasks": "Subtask-uri",
-    "openFullPage": "Deschide vizualizarea completă"
+    "openFullPage": "Deschide vizualizarea completă",
+    "openPanel": "Deschide în panoul lateral"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",

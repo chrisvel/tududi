@@ -234,7 +234,8 @@
     "habit": "Tapa",
     "assignedTo": "Osoitettu",
     "subtasks": "Ala-tehtävät",
-    "openFullPage": "Avaa koko näkymä"
+    "openFullPage": "Avaa koko näkymä",
+    "openPanel": "Avaa sivupaneelissa"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",

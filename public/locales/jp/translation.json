@@ -234,7 +234,8 @@
     "habit": "習慣",
     "assignedTo": "割り当て先",
     "subtasks": "サブタスク",
-    "openFullPage": "全画面表示を開く"
+    "openFullPage": "全画面表示を開く",
+    "openPanel": "サイドパネルで開く"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",

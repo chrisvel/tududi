@@ -234,7 +234,8 @@
     "habit": "习惯",
     "assignedTo": "分配给",
     "subtasks": "子任务",
-    "openFullPage": "打开完整视图"
+    "openFullPage": "打开完整视图",
+    "openPanel": "在侧边栏中打开"
   },
   "timeline": {
     "activityTimeline": "活动时间线",

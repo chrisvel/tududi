@@ -234,7 +234,8 @@
     "habit": "Navada",
     "assignedTo": "Dodeljeno",
     "subtasks": "Podnaloge",
-    "openFullPage": "Odpri celoten pogled"
+    "openFullPage": "Odpri celoten pogled",
+    "openPanel": "Odpri v stranski plošči"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",

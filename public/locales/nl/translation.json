@@ -234,7 +234,8 @@
     "habit": "Gewoonte",
     "assignedTo": "Toegewezen aan",
     "subtasks": "Subtaken",
-    "openFullPage": "Volledige weergave openen"
+    "openFullPage": "Volledige weergave openen",
+    "openPanel": "Openen in zijpaneel"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",

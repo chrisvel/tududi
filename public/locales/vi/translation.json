@@ -234,7 +234,8 @@
     "habit": "Thói quen",
     "assignedTo": "Giao cho",
     "subtasks": "Công việc con",
-    "openFullPage": "Mở chế độ xem đầy đủ"
+    "openFullPage": "Mở chế độ xem đầy đủ",
+    "openPanel": "Mở trong bảng bên"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",

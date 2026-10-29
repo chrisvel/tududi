@@ -234,7 +234,8 @@
     "habit": "Звичка",
     "assignedTo": "Призначено",
     "subtasks": "Підзадачі",
-    "openFullPage": "Відкрити повний перегляд"
+    "openFullPage": "Відкрити повний перегляд",
+    "openPanel": "Відкрити в бічній панелі"
   },
   "timeline": {
     "activityTimeline": "Хронологія Активності",

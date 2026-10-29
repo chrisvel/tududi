@@ -234,7 +234,8 @@
     "habit": "Kebiasaan",
     "assignedTo": "Ditetapkan untuk",
     "subtasks": "Subtugas",
-    "openFullPage": "Buka tampilan penuh"
+    "openFullPage": "Buka tampilan penuh",
+    "openPanel": "Buka di panel samping"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",

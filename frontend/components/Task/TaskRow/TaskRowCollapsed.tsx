@@ -35,6 +35,7 @@ import PriorityBadge, {
     PriorityLevel,
     toPriorityLevel,
 } from '../../Shared/PriorityBadge';
+import { openTaskPanel } from '../../../store/taskPanelStore';
 
 interface TaskRowCollapsedProps {
     task: Task;
@@ -395,13 +396,16 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         {task.parent_task && (
                             <span className="flex items-center">
                                 <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
-                                <Link
-                                    to={`/task/${task.parent_task.uid}`}
-                                    onClick={stop}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        stop(e);
+                                        openTaskPanel(task.parent_task!.uid!);
+                                    }}
                                     className="hover:underline max-w-[12rem] truncate"
                                 >
                                     {task.parent_task.name}
-                                </Link>
+                                </button>
                             </span>
                         )}
                         {showProject && (

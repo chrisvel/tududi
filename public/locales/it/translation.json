@@ -234,7 +234,8 @@
     "habit": "Abitudine",
     "assignedTo": "Assegnato a",
     "subtasks": "Sottoattività",
-    "openFullPage": "Apri vista completa"
+    "openFullPage": "Apri vista completa",
+    "openPanel": "Apri nel pannello laterale"
   },
   "timeline": {
     "activityTimeline": "Timeline delle Attività",

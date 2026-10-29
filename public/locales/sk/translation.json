@@ -233,7 +233,8 @@
         "habit": "Návyk",
         "assignedTo": "Priradené",
         "subtasks": "Podúlohy",
-        "openFullPage": "Otvoriť celé zobrazenie"
+        "openFullPage": "Otvoriť celé zobrazenie",
+        "openPanel": "Otvoriť v bočnom paneli"
     },
     "comments": {
         "count": "Komentáre: {{count}}",

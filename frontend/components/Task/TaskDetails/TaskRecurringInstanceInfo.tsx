@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 import { Task } from '../../../entities/Task';
+import { openTaskPanel } from '../../../store/taskPanelStore';
 
 interface TaskRecurringInstanceInfoProps {
     task: Task;
@@ -40,12 +40,13 @@ const TaskRecurringInstanceInfo: React.FC<TaskRecurringInstanceInfoProps> = ({
                 {parentTask && (
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                         <strong>{t('task.parentTask', 'Parent Task')}:</strong>{' '}
-                        <Link
-                            to={`/task/${parentTask.uid}`}
+                        <button
+                            type="button"
+                            onClick={() => openTaskPanel(parentTask.uid!)}
                             className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline font-medium"
                         >
                             {parentTask.name}
-                        </Link>
+                        </button>
                     </p>
                 )}
             </div>

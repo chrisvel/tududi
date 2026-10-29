@@ -234,7 +234,8 @@
     "habit": "Vane",
     "assignedTo": "Tildelt til",
     "subtasks": "Underopgaver",
-    "openFullPage": "Åbn fuld visning"
+    "openFullPage": "Åbn fuld visning",
+    "openPanel": "Åbn i sidepanelet"
   },
   "timeline": {
     "activityTimeline": "Aktivitets Tidslinje",
