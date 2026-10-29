@@ -1109,3 +1109,71 @@ describe('Landing page', () => {
         });
     });
 });
+
+// The app host's robots answers only switch on with the marketing hosts, so
+// a self-hosted instance is never told to hide from search.
+describe('App host robots', () => {
+    const config = getConfig();
+    const original = { ...config.landing };
+
+    beforeAll(() => {
+        config.landing.hosts = ['tududi.com'];
+        config.landing.siteUrl = 'https://tududi.com';
+        config.landing.appUrl = 'https://app.tududi.com';
+    });
+
+    afterAll(() => {
+        Object.assign(config.landing, original);
+    });
+
+    it('serves a plain robots.txt that lets crawlers in to see noindex', async () => {
+        const res = await request(app)
+            .get('/robots.txt')
+            .set('Host', 'app.tududi.com');
+        expect(res.status).toBe(200);
+        expect(res.headers['content-type']).toMatch(/^text\/plain/);
+        expect(res.text).toBe('User-agent: *\nAllow: /\n');
+    });
+
+    it('marks app pages, public notes and the API noindex', async () => {
+        for (const path of [
+            '/',
+            '/today',
+            '/task/abc123',
+            '/public/notes/abc123',
+            '/api/v1/health',
+        ]) {
+            const res = await request(app)
+                .get(path)
+                .set('Host', 'app.tududi.com');
+            expect(res.headers['x-robots-tag']).toBe('noindex, nofollow');
+        }
+    });
+
+    it('leaves sign-in and sign-up indexable', async () => {
+        for (const path of ['/login', '/register', '/register/']) {
+            const res = await request(app)
+                .get(path)
+                .set('Host', 'app.tududi.com');
+            expect(res.headers['x-robots-tag']).toBeUndefined();
+        }
+    });
+
+    it('leaves the marketing host alone', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.status).toBe(200);
+        expect(res.headers['x-robots-tag']).toBeUndefined();
+    });
+
+    it('does nothing when no marketing host is configured', async () => {
+        config.landing.hosts = [];
+        try {
+            const res = await request(app)
+                .get('/today')
+                .set('Host', 'app.tududi.com');
+            expect(res.headers['x-robots-tag']).toBeUndefined();
+        } finally {
+            config.landing.hosts = ['tududi.com'];
+        }
+    });
+});
