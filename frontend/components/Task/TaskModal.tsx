@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
 import { Task, PriorityType } from '../../entities/Task';
 import { updateTask, fetchTaskByUid } from '../../utils/tasksService';
 import { useStore } from '../../store/useStore';
@@ -16,6 +17,7 @@ import {
     isStartAfterDue,
 } from '../../utils/dueDateTime';
 import EntitySidePanel from '../SidePanel/EntitySidePanel';
+import MarkdownRenderer from '../Shared/MarkdownRenderer';
 import {
     SidePanelField,
     SidePanelSection,
@@ -108,12 +110,18 @@ const TaskModal: React.FC<TaskModalProps> = ({
     // typed #tags, +project, ~area and dates are moved into their fields.
     const [nameSeed, setNameSeed] = useState(task.name ?? '');
     const [saving, setSaving] = useState(false);
+    // Like the task page: a written note opens rendered, an empty one opens
+    // ready to type.
+    const [noteTab, setNoteTab] = useState<'edit' | 'preview'>(
+        task.note ? 'preview' : 'edit'
+    );
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!isOpen) return;
         setForm(toFormState(task));
         setNameSeed(task.name ?? '');
+        setNoteTab(task.note ? 'preview' : 'edit');
         setError(null);
     }, [isOpen, task]);
 
@@ -290,13 +298,73 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 label={t('forms.description', 'Description')}
                 htmlFor="taskNote"
             >
-                <textarea
-                    id="taskNote"
-                    value={form.note}
-                    onChange={(e) => setField('note', e.target.value)}
-                    rows={4}
-                    className={`${sidePanelInputClass} resize-none`}
-                />
+                <div className="relative">
+                    <div className="absolute top-2 right-2 z-10 flex space-x-1">
+                        <button
+                            type="button"
+                            onClick={() => setNoteTab('edit')}
+                            className={`p-1.5 rounded-md transition-colors ${
+                                noteTab === 'edit'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700'
+                            }`}
+                            title={t('common.edit', 'Edit')}
+                            aria-pressed={noteTab === 'edit'}
+                            data-testid="task-note-edit-tab"
+                        >
+                            <PencilIcon className="h-3 w-3" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setNoteTab('preview')}
+                            className={`p-1.5 rounded-md transition-colors ${
+                                noteTab === 'preview'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700'
+                            }`}
+                            title={t('common.preview', 'Preview')}
+                            aria-pressed={noteTab === 'preview'}
+                            data-testid="task-note-preview-tab"
+                        >
+                            <EyeIcon className="h-3 w-3" />
+                        </button>
+                    </div>
+                    {noteTab === 'edit' ? (
+                        <textarea
+                            id="taskNote"
+                            value={form.note}
+                            onChange={(e) => setField('note', e.target.value)}
+                            rows={8}
+                            className={`${sidePanelInputClass} resize-y pr-20`}
+                            placeholder={t(
+                                'task.contentPlaceholder',
+                                'Add content here... (Markdown supported)'
+                            )}
+                        />
+                    ) : (
+                        <div
+                            className="min-h-[12rem] rounded-md bg-gray-100 dark:bg-gray-900 px-3 py-2 pr-20 text-sm overflow-y-auto"
+                            data-testid="task-note-preview"
+                        >
+                            {form.note ? (
+                                <MarkdownRenderer
+                                    content={form.note}
+                                    className="prose prose-sm dark:prose-invert max-w-none"
+                                    onContentChange={(note) =>
+                                        setField('note', note)
+                                    }
+                                />
+                            ) : (
+                                <p className="text-gray-500 dark:text-gray-400 italic">
+                                    {t(
+                                        'task.noContentPreview',
+                                        'No content to preview. Switch to Edit mode to add content.'
+                                    )}
+                                </p>
+                            )}
+                        </div>
+                    )}
+                </div>
             </SidePanelField>
 
             <SidePanelSection title={t('task.status.label', 'Status')}>

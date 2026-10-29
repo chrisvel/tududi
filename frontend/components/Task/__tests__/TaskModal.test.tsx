@@ -38,6 +38,13 @@ jest.mock('../../Inbox/QuickCaptureInput', () => ({
     ),
 }));
 
+jest.mock('../../Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: ({ content }: any) => (
+        <div data-testid="markdown-rendered">{content}</div>
+    ),
+}));
+
 jest.mock('../../../utils/inboxService', () => ({
     analyzeInboxText: jest.fn(),
 }));
@@ -117,6 +124,42 @@ describe('TaskModal', () => {
             })
         );
         await waitFor(() => expect(onClose).toHaveBeenCalled());
+    });
+
+    it('opens a written note as rendered markdown and switches to edit', async () => {
+        const onClose = jest.fn();
+        render(
+            <TaskModal
+                isOpen
+                onClose={onClose}
+                task={{ ...task, note: '**Call** the fencer' }}
+            />
+        );
+
+        expect(screen.getByTestId('markdown-rendered')).toHaveTextContent(
+            '**Call** the fencer'
+        );
+        expect(
+            screen.queryByRole('textbox', { name: /description/i })
+        ).toBeNull();
+
+        fireEvent.click(screen.getByTestId('task-note-edit-tab'));
+        fireEvent.change(screen.getByLabelText('Description'), {
+            target: { value: 'Call the fencer today' },
+        });
+        fireEvent.click(screen.getByTestId('task-save-button'));
+
+        await waitFor(() =>
+            expect(updateTask).toHaveBeenCalledWith('t-1', {
+                note: 'Call the fencer today',
+            })
+        );
+    });
+
+    it('opens an empty note ready to type', () => {
+        renderPanel();
+        expect(screen.getByLabelText('Description')).toBeInTheDocument();
+        expect(screen.queryByTestId('task-note-preview')).toBeNull();
     });
 
     it('closes without calling the API when nothing changed', async () => {

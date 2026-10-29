@@ -33,6 +33,12 @@ This document explains how tasks work in tududi from a user behavior perspective
    - Telegram bot
    - API
 
+### Opening a Task
+
+- Clicking a task anywhere in the app (lists, Today and the plan, search, notifications, the calendar, the Everyone board, relations, parent links) opens it in the side panel over the current page. Habits still open their own page.
+- The panel edits name, description, status, priority, project, area, dates and tags. The description is Markdown, with Edit and Preview buttons like the task page; a written note opens in preview.
+- The task page at `/task/:uid` still exists and opens from a direct URL. The link icon next to a task's title copies that URL.
+
 ---
 
 ## **Task Fields & Properties**
@@ -46,7 +52,7 @@ This document explains how tasks work in tududi from a user behavior perspective
 
 6. **Task note is for detailed information**
    - Optional text field for longer descriptions
-   - Supports plain text (no markdown formatting)
+   - Supports Markdown, with Edit and Preview buttons
    - Useful for context, instructions, or reference materials
 
 ### Status Lifecycle
