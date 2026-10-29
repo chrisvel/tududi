@@ -81,13 +81,13 @@ const useCompleteProject = () => {
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="complete-project-title"
-                className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800"
+                className="mx-4 w-full max-w-xl rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800"
                 onClick={(e) => e.stopPropagation()}
                 data-testid="complete-project-dialog"
             >
                 <h3
                     id="complete-project-title"
-                    className="mb-2 text-lg font-semibold text-gray-900 dark:text-white"
+                    className="mb-2 text-lg font-semibold text-gray-900 dark:text-white break-words"
                 >
                     {t('project.completeTitle', 'Complete "{{name}}"?', {
                         name: pending.project.name,

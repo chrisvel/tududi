@@ -234,7 +234,8 @@
     "habit": "Thói quen",
     "assignedTo": "Giao cho",
     "subtasks": "Công việc con",
-    "openFullPage": "Mở chế độ xem đầy đủ"
+    "openFullPage": "Mở chế độ xem đầy đủ",
+    "openPanel": "Mở trong bảng bên"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -1315,6 +1316,8 @@
     "recurringSetup": "Cài đặt lặp lại",
     "notRecurring": "Công việc này chưa lặp lại.",
     "clickToEditTitle": "Nhấp để chỉnh sửa tiêu đề",
+    "copyLink": "Sao chép liên kết công việc",
+    "linkCopied": "Đã sao chép liên kết",
     "clickToEditContent": "Nhấp để chỉnh sửa nội dung",
     "clickToAddContent": "Nhấp để thêm nội dung",
     "clickToEditSubtasks": "Nhấp để chỉnh sửa các công việc con",

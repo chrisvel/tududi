@@ -234,7 +234,8 @@
     "habit": "عادة",
     "assignedTo": "مخصص لـ",
     "subtasks": "المهام الفرعية",
-    "openFullPage": "فتح العرض الكامل"
+    "openFullPage": "فتح العرض الكامل",
+    "openPanel": "فتح في اللوحة الجانبية"
   },
   "timeline": {
     "activityTimeline": "جدول الأنشطة",
@@ -1339,6 +1340,8 @@
     "recurringSetup": "إعداد متكرر",
     "notRecurring": "أضف تفاصيل التكرار",
     "clickToEditTitle": "انقر لتحرير العنوان",
+    "copyLink": "نسخ رابط المهمة",
+    "linkCopied": "تم نسخ الرابط",
     "clickToEditContent": "انقر لتحرير المحتوى",
     "clickToAddContent": "انقر لإضافة محتوى",
     "clickToEditSubtasks": "انقر لتحرير المهام الفرعية",

@@ -3,6 +3,11 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Layout from '../Layout';
 
+jest.mock('../components/Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: () => null,
+}));
+
 jest.mock('react-i18next', () => ({
     initReactI18next: { type: '3rdParty', init: jest.fn() },
     useTranslation: () => ({

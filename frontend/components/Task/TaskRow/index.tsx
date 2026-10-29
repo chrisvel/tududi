@@ -37,6 +37,11 @@ import TaskRowCollapsed from './TaskRowCollapsed';
 import TaskRowExpanded from './TaskRowExpanded';
 import { useTaskRowExpansion } from './TaskRowExpansionContext';
 import { useTaskRowSave } from './useTaskRowSave';
+import {
+    openTaskPanel,
+    TASK_PANEL_SAVED_EVENT,
+    TaskPanelSavedDetail,
+} from '../../../store/taskPanelStore';
 
 const getPriorityBorderClassName = (
     priority?: Task['priority'] | number
@@ -154,9 +159,31 @@ const TaskRow: React.FC<TaskRowProps> = ({
                 onRelationsChanged
             );
     }, [task.uid]);
+    // Saves from the task side panel land here, so the row shows them even
+    // when the page keeps its own copy of the list.
+    const [panelSaved, setPanelSaved] = useState<Task | null>(null);
+    useEffect(() => {
+        setPanelSaved(null);
+    }, [task]);
+    useEffect(() => {
+        const uid = task.uid;
+        if (!uid || task.is_virtual_occurrence) return;
+        const onPanelSaved = (event: Event) => {
+            const saved = (event as CustomEvent<TaskPanelSavedDetail>).detail
+                ?.task;
+            if (saved?.uid === uid) setPanelSaved(saved);
+        };
+        window.addEventListener(TASK_PANEL_SAVED_EVENT, onPanelSaved);
+        return () =>
+            window.removeEventListener(TASK_PANEL_SAVED_EVENT, onPanelSaved);
+    }, [task.uid, task.is_virtual_occurrence]);
     const displayTask = useMemo(
-        () => (blockedOverride ? { ...task, ...blockedOverride } : task),
-        [task, blockedOverride]
+        () => ({
+            ...task,
+            ...(panelSaved || {}),
+            ...(blockedOverride || {}),
+        }),
+        [task, panelSaved, blockedOverride]
     );
 
     const canExpand = !disableExpand && !task.habit_mode && !!task.uid;
@@ -217,9 +244,15 @@ const TaskRow: React.FC<TaskRowProps> = ({
     // A task created by a CalDAV client keeps the uid that client chose,
     // which may hold characters the router cannot take unencoded.
     const encodedUid = encodeURIComponent(task.uid);
-    const fullPagePath = task.habit_mode
-        ? `/habit/${encodedUid}`
-        : `/task/${encodedUid}`;
+    // Tasks open in the side panel; habits keep their own page.
+    const openTask = () => {
+        if (!task.uid) return;
+        if (task.habit_mode) {
+            navigate(`/habit/${encodedUid}`, fromState);
+        } else {
+            openTaskPanel(task.uid);
+        }
+    };
 
     const loadSubtasks = useCallback(async () => {
         if (!task.uid) return;
@@ -239,7 +272,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
             toggle();
             return;
         }
-        if (task.uid) navigate(fullPagePath, fromState);
+        openTask();
     };
 
     const handleSubtasksToggle = async (e: React.MouseEvent) => {
@@ -467,11 +500,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                     editable={isExpanded}
                     onSaveTitle={setters.setTitle}
                     onEscape={collapse}
-                    onEdit={
-                        task.uid
-                            ? () => navigate(fullPagePath, fromState)
-                            : undefined
-                    }
+                    onEdit={task.uid ? openTask : undefined}
                     onDelete={task.uid ? handleDeleteClick : undefined}
                     onActionsMenuOpenChange={setIsActionsMenuOpen}
                 />
@@ -484,7 +513,10 @@ const TaskRow: React.FC<TaskRowProps> = ({
                         open={isExpanded}
                         onExited={handlePanelExited}
                         onDelete={handleDeleteClick}
-                        fullPagePath={fullPagePath}
+                        onOpenPanel={() => {
+                            collapse();
+                            openTask();
+                        }}
                         subtasksOpen={showSubtasks}
                         onToggleSubtasks={() => {
                             void handleSubtasksToggle({

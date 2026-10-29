@@ -9,7 +9,7 @@ import {
     CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getApiPath } from '../../config/paths';
 import { fetchWithCsrf } from '../../utils/csrfService';
 import {
@@ -18,6 +18,7 @@ import {
     declineInvitation,
 } from '../../utils/sharesService';
 import { useStore } from '../../store/useStore';
+import { openTaskPanel } from '../../store/taskPanelStore';
 
 // Direct share invitations carry a numeric id; ones that came through a group
 // carry a string such as "g12".
@@ -53,7 +54,6 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const location = useLocation();
     const loadProjects = useStore((state) => state.projectsStore.loadProjects);
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
@@ -288,9 +288,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
     const handleNotificationClick = (notification: Notification) => {
         if (notification.data?.taskUid) {
             setIsOpen(false);
-            navigate(`/task/${notification.data.taskUid}`, {
-                state: { from: location.pathname + location.search },
-            });
+            openTaskPanel(notification.data.taskUid);
         } else if (notification.data?.projectUid) {
             setIsOpen(false);
             navigate(`/project/${notification.data.projectUid}`);

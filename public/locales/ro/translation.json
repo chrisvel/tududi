@@ -234,7 +234,8 @@
     "habit": "Obicei",
     "assignedTo": "Atribuit lui",
     "subtasks": "Subtask-uri",
-    "openFullPage": "Deschide vizualizarea completă"
+    "openFullPage": "Deschide vizualizarea completă",
+    "openPanel": "Deschide în panoul lateral"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -1318,6 +1319,8 @@
     "recurringSetup": "Configurare recurentă",
     "notRecurring": "Această sarcină nu este încă recurentă.",
     "clickToEditTitle": "Fă clic pentru a edita titlul",
+    "copyLink": "Copiază linkul sarcinii",
+    "linkCopied": "Link copiat",
     "clickToEditContent": "Fă clic pentru a edita conținutul",
     "clickToAddContent": "Fă clic pentru a adăuga conținut",
     "clickToEditSubtasks": "Fă clic pentru a edita subtasks",

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import {
@@ -12,6 +11,7 @@ import { toggleTaskCompletion } from '../../utils/tasksService';
 import { getIntlLocale, parseDateString } from '../../utils/dateUtils';
 import { toPriorityLevel } from '../Shared/PriorityBadge';
 import { isTaskInProgress, isTaskWaiting } from '../../constants/taskStatus';
+import { openTaskPanel } from '../../store/taskPanelStore';
 
 // "Oct 26", with the year only when it isn't this year.
 const shortDate = (date: Date): string =>
@@ -44,8 +44,6 @@ const BoardTaskRow: React.FC<BoardTaskRowProps> = ({
     overlay = false,
 }) => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
-    const location = useLocation();
     const [busy, setBusy] = useState(false);
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: overlay ? `overlay-${task.uid}` : String(task.uid),
@@ -64,9 +62,7 @@ const BoardTaskRow: React.FC<BoardTaskRowProps> = ({
 
     const open = () => {
         if (!task.uid) return;
-        navigate(`/task/${task.uid}`, {
-            state: { from: location.pathname + location.search },
-        });
+        openTaskPanel(task.uid);
     };
 
     const complete = async (e: React.MouseEvent) => {

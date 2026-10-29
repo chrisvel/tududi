@@ -234,7 +234,8 @@
     "habit": "Hábito",
     "assignedTo": "Atribuído a",
     "subtasks": "Subtarefas",
-    "openFullPage": "Abrir visualização completa"
+    "openFullPage": "Abrir visualização completa",
+    "openPanel": "Abrir no painel lateral"
   },
   "timeline": {
     "activityTimeline": "Linha do Tempo de Atividades",
@@ -1316,6 +1317,8 @@
     "recurringSetup": "Configuração Recorrente",
     "notRecurring": "Esta tarefa ainda não é recorrente.",
     "clickToEditTitle": "Clique para editar o título",
+    "copyLink": "Copiar link da tarefa",
+    "linkCopied": "Link copiado",
     "clickToEditContent": "Clique para editar o conteúdo",
     "clickToAddContent": "Clique para adicionar conteúdo",
     "clickToEditSubtasks": "Clique para editar subtarefas",

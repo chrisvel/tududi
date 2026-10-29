@@ -234,7 +234,8 @@
     "habit": "Tapa",
     "assignedTo": "Osoitettu",
     "subtasks": "Ala-tehtävät",
-    "openFullPage": "Avaa koko näkymä"
+    "openFullPage": "Avaa koko näkymä",
+    "openPanel": "Avaa sivupaneelissa"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -1355,6 +1356,8 @@
     "recurringSetup": "Toistuva asetukset",
     "notRecurring": "Tämä tehtävä ei ole vielä toistuva.",
     "clickToEditTitle": "Napsauta muokataksesi otsikkoa",
+    "copyLink": "Kopioi linkki tehtävään",
+    "linkCopied": "Linkki kopioitu",
     "clickToEditContent": "Napsauta muokataksesi sisältöä",
     "clickToAddContent": "Napsauta lisätäksesi sisältöä",
     "clickToEditSubtasks": "Napsauta muokataksesi alitehtäviä",

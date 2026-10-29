@@ -233,7 +233,8 @@
         "habit": "Návyk",
         "assignedTo": "Priradené",
         "subtasks": "Podúlohy",
-        "openFullPage": "Otvoriť celé zobrazenie"
+        "openFullPage": "Otvoriť celé zobrazenie",
+        "openPanel": "Otvoriť v bočnom paneli"
     },
     "comments": {
         "count": "Komentáre: {{count}}",
@@ -1347,6 +1348,8 @@
         "instanceOf": "Toto je výskyt opakujúcej sa úlohy",
         "parentTask": "Nadradená úloha",
         "clickToEditTitle": "Kliknutím upravíte názov",
+        "copyLink": "Kopírovať odkaz na úlohu",
+        "linkCopied": "Odkaz skopírovaný",
         "clickToEditContent": "Kliknutím upravíte obsah",
         "clickToAddContent": "Kliknutím pridáte obsah",
         "clickToEditSubtasks": "Kliknutím upravíte podúlohy",

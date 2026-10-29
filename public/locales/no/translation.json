@@ -235,7 +235,8 @@
     "habit": "Vane",
     "assignedTo": "Tildelt til",
     "subtasks": "Undertasker",
-    "openFullPage": "Åpne full visning"
+    "openFullPage": "Åpne full visning",
+    "openPanel": "Åpne i sidepanelet"
   },
   "timeline": {
     "activityTimeline": "Aktivitetslinje",
@@ -1357,6 +1358,8 @@
     "noDueDate": "Ingen forfallsdato",
     "notRecurring": "Denne oppgaven er ikke gjentakende ennå.",
     "clickToEditTitle": "Klikk for å redigere tittel",
+    "copyLink": "Kopier lenke til oppgaven",
+    "linkCopied": "Lenke kopiert",
     "clickToEditContent": "Klikk for å redigere innhold",
     "clickToAddContent": "Klikk for å legge til innhold",
     "clickToEditSubtasks": "Klikk for å redigere deloppgaver",

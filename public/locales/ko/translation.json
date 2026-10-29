@@ -234,7 +234,8 @@
     "habit": "습관",
     "assignedTo": "할당됨",
     "subtasks": "하위 작업",
-    "openFullPage": "전체 보기 열기"
+    "openFullPage": "전체 보기 열기",
+    "openPanel": "사이드 패널에서 열기"
   },
   "timeline": {
     "activityTimeline": "활동 타임라인",
@@ -1355,6 +1356,8 @@
     "recurringSetup": "반복 설정",
     "notRecurring": "이 작업은 아직 반복되지 않습니다.",
     "clickToEditTitle": "클릭하여 제목 편집",
+    "copyLink": "작업 링크 복사",
+    "linkCopied": "링크가 복사되었습니다",
     "clickToEditContent": "클릭하여 내용 편집",
     "clickToAddContent": "클릭하여 내용 추가",
     "clickToEditSubtasks": "클릭하여 하위 작업 편집",

@@ -31,6 +31,7 @@ import {
     getYesterdayDateString,
 } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
+import CopyTaskLinkButton from '../CopyTaskLinkButton';
 import QuickCaptureInput, {
     QuickCaptureInputHandle,
 } from '../../Inbox/QuickCaptureInput';
@@ -39,6 +40,7 @@ import PriorityBadge, {
     PriorityLevel,
     toPriorityLevel,
 } from '../../Shared/PriorityBadge';
+import { openTaskPanel } from '../../../store/taskPanelStore';
 
 interface TaskRowCollapsedProps {
     task: Task;
@@ -344,6 +346,13 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             {currentName}
                         </span>
                     )}
+                    {!editable && task.uid && !task.is_virtual_occurrence && (
+                        <CopyTaskLinkButton
+                            path={`/${task.habit_mode ? 'habit' : 'task'}/${encodeURIComponent(task.uid)}`}
+                            className="hidden [@media(hover:hover)]:block opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                            iconClassName="h-3.5 w-3.5"
+                        />
+                    )}
                     {task.is_blocked && !isTaskCompleted(task.status) && (
                         <span
                             className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex-shrink-0"
@@ -408,13 +417,16 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         {task.parent_task && (
                             <span className="flex items-center">
                                 <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
-                                <Link
-                                    to={`/task/${task.parent_task.uid}`}
-                                    onClick={stop}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        stop(e);
+                                        openTaskPanel(task.parent_task!.uid!);
+                                    }}
                                     className="hover:underline max-w-[12rem] truncate"
                                 >
                                     {task.parent_task.name}
-                                </Link>
+                                </button>
                             </span>
                         )}
                         {showProject && (

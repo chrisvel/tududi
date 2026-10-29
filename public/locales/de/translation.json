@@ -234,7 +234,8 @@
     "habit": "Gewohnheit",
     "assignedTo": "Zugewiesen an",
     "subtasks": "Unteraufgaben",
-    "openFullPage": "Vollansicht öffnen"
+    "openFullPage": "Vollansicht öffnen",
+    "openPanel": "Im Seitenbereich öffnen"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -1309,6 +1310,8 @@
     "recurringSetup": "Wiederkehrende Einrichtung",
     "notRecurring": "Diese Aufgabe ist noch nicht wiederkehrend.",
     "clickToEditTitle": "Klicken Sie, um den Titel zu bearbeiten",
+    "copyLink": "Link zur Aufgabe kopieren",
+    "linkCopied": "Link kopiert",
     "clickToEditContent": "Klicken Sie, um den Inhalt zu bearbeiten",
     "clickToAddContent": "Klicken Sie, um Inhalt hinzuzufügen",
     "clickToEditSubtasks": "Klicken Sie, um Unteraufgaben zu bearbeiten",

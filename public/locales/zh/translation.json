@@ -234,7 +234,8 @@
     "habit": "习惯",
     "assignedTo": "分配给",
     "subtasks": "子任务",
-    "openFullPage": "打开完整视图"
+    "openFullPage": "打开完整视图",
+    "openPanel": "在侧边栏中打开"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -1315,6 +1316,8 @@
     "recurringSetup": "重复设置",
     "notRecurring": "此任务尚未重复。",
     "clickToEditTitle": "点击编辑标题",
+    "copyLink": "复制任务链接",
+    "linkCopied": "链接已复制",
     "clickToEditContent": "点击编辑内容",
     "clickToAddContent": "点击添加内容",
     "clickToEditSubtasks": "点击编辑子任务",

@@ -234,7 +234,8 @@
     "habit": "Habit",
     "assignedTo": "Assigned to",
     "subtasks": "Subtasks",
-    "openFullPage": "Open full view"
+    "openFullPage": "Open full view",
+    "openPanel": "Open in side panel"
   },
   "comments": {
     "count": "{{count}} comments",
@@ -1402,6 +1403,8 @@
     "instanceOf": "This is an instance of a recurring task",
     "parentTask": "Parent Task",
     "clickToEditTitle": "Click to edit title",
+    "copyLink": "Copy link to task",
+    "linkCopied": "Link copied",
     "clickToEditContent": "Click to edit content",
     "clickToAddContent": "Click to add content",
     "clickToEditSubtasks": "Click to edit subtasks",

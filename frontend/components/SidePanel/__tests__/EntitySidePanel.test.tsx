@@ -1,6 +1,17 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import EntitySidePanel from '../EntitySidePanel';
+import { TaskStatusDropdown } from '../../Task/TaskPanelDropdowns';
+
+jest.mock('react-i18next', () => ({
+    useTranslation: () => ({
+        t: (_key: string, fallback?: string) => fallback ?? _key,
+    }),
+}));
+
+const withStatusMenu = {
+    children: <TaskStatusDropdown value={0} onChange={jest.fn()} />,
+};
 
 const renderPanel = (
     overrides: Partial<React.ComponentProps<typeof EntitySidePanel>> = {}
@@ -27,6 +38,34 @@ describe('EntitySidePanel', () => {
     it('closes on Escape when nothing has changed', async () => {
         const props = renderPanel({ isDirty: false });
         fireEvent.keyDown(document, { key: 'Escape' });
+        await waitFor(() => expect(props.onClose).toHaveBeenCalledTimes(1));
+    });
+
+    it('closes an open dropdown on Escape and stays open itself', async () => {
+        const props = renderPanel(withStatusMenu);
+        fireEvent.click(screen.getByTestId('task-status-select'));
+        expect(document.querySelector('[data-portal-menu]')).not.toBeNull();
+
+        fireEvent.keyDown(document, { key: 'Escape' });
+        expect(document.querySelector('[data-portal-menu]')).toBeNull();
+        expect(props.onClose).not.toHaveBeenCalled();
+
+        fireEvent.keyDown(document, { key: 'Escape' });
+        await waitFor(() => expect(props.onClose).toHaveBeenCalledTimes(1));
+    });
+
+    it('closes an open dropdown on an outside click and stays open itself', async () => {
+        const props = renderPanel(withStatusMenu);
+        fireEvent.click(screen.getByTestId('task-status-select'));
+        const scrim = document.querySelector(
+            'div[aria-hidden="true"]'
+        ) as HTMLElement;
+
+        fireEvent.mouseDown(scrim);
+        expect(document.querySelector('[data-portal-menu]')).toBeNull();
+        expect(props.onClose).not.toHaveBeenCalled();
+
+        fireEvent.mouseDown(scrim);
         await waitFor(() => expect(props.onClose).toHaveBeenCalledTimes(1));
     });
 
