@@ -20,7 +20,8 @@ A public note that the blog does not link never appears on it, and neither does 
 ## Where it is served
 
 - In the app at `/blog`, signed in or out.
-- At the root of every hostname in `TUDUDI_BLOG_HOSTS`. There the server returns the app shell marked with `<meta name="tududi-site" content="blog">`, adds the page title, description and Open Graph tags for the post, and serves `/sitemap.xml`, `/rss.xml` and `/robots.txt`. `frontend/index.tsx` renders the blog instead of the app and skips the service worker.
+- At the root of every hostname in `TUDUDI_BLOG_HOSTS`. There the server returns the app shell marked with `<meta name="tududi-site" content="blog">`, adds `<html lang="en">`, the page title, description, Open Graph tags and (on posts) Article JSON-LD, and serves `/sitemap.xml`, `/rss.xml` and `/robots.txt`.
+- The server also renders the page text into the root element so crawlers see it: a post's H1 and Markdown body in `<article>` (`backend/modules/blog/render.js`, using `marked`; raw HTML shows as text, unsafe link schemes are dropped, `[[links]]` point at posts), and the front page's H1 with a list of post links. React replaces it on mount. An unknown address gets a 404 with `noindex`. `frontend/index.tsx` renders the blog instead of the app and skips the service worker.
 - The landing page links the blog from its nav and footer when `TUDUDI_BLOG_URL` (or the first `TUDUDI_BLOG_HOSTS` entry) gives it an address.
 
 | Variable | Purpose |
@@ -34,6 +35,7 @@ The webpack dev server never sends the blog marker, so check blog-host behaviour
 
 - `backend/modules/blog/service.js`: the front page setting (`settings.blog_note_uid`), the walk over `[[links]]`, slugs and the index/post payloads.
 - `backend/modules/blog/routes.js`: `GET /api/public/blog` and `GET /api/public/blog/posts/:slug`, before authentication, cacheable for five minutes.
-- `backend/modules/blog/hostSwitch.js`: the blog hostnames.
+- `backend/modules/blog/hostSwitch.js`: the blog hostnames and the server-rendered page.
+- `backend/modules/blog/render.js`: Markdown to HTML for the server-rendered page.
 - `GET` / `PUT /api/admin/blog` in the admin module, superadmin only.
 - `frontend/components/Blog/`: the pages; `frontend/components/Admin/AdminBlogSettings.tsx`: the admin popup.

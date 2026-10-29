@@ -130,7 +130,13 @@ async function loadBlog() {
             });
     };
 
-    return { index, posts, slugs, describe, linkedPosts };
+    // The address of the post a [[Title]] link opens, or null.
+    const pathFor = (title) => {
+        const note = byTitle.get(titleKey(title));
+        return note && slugs.has(note.id) ? `/${slugs.get(note.id)}` : null;
+    };
+
+    return { index, posts, slugs, describe, linkedPosts, pathFor };
 }
 
 // Where the call to action on every page sends a reader.
@@ -165,6 +171,45 @@ function postCard(blog, note) {
         excerpt: excerptOf(note.content),
         cover: coverOf(publicContent(note)),
         published_at: note.public_shared_at,
+    };
+}
+
+function indexOf(blog) {
+    if (!blog) throw new NotFoundError('The blog is not available.');
+    const { index } = blog;
+    return {
+        title: (index.title || '').trim(),
+        content: publicContent(index),
+        excerpt: excerptOf(index.content),
+        linked_notes: blog.linkedPosts(index).map(blog.describe),
+        posts: blog.linkedPosts(index).map((note) => postCard(blog, note)),
+        links: siteLinks(),
+    };
+}
+
+function postOf(blog, slug) {
+    const note =
+        blog &&
+        typeof slug === 'string' &&
+        blog.posts.find((p) => blog.slugs.get(p.id) === slug);
+    if (!note) throw new NotFoundError('This post is not available.');
+    const inherit = note.public_inherit_style;
+    return {
+        title: (note.title || '').trim(),
+        slug,
+        content: publicContent(note),
+        excerpt: excerptOf(note.content),
+        color: inherit ? note.color || null : null,
+        background: inherit ? note.background || null : null,
+        published_at: note.public_shared_at,
+        updated_at: note.updated_at,
+        linked_notes: blog.linkedPosts(note).map(blog.describe),
+        more: blog
+            .linkedPosts(blog.index)
+            .filter((p) => p.id !== note.id)
+            .slice(0, 3)
+            .map((p) => postCard(blog, p)),
+        links: siteLinks(),
     };
 }
 
@@ -220,44 +265,19 @@ const blogService = {
     },
 
     async getIndex() {
-        const blog = await loadBlog();
-        if (!blog) throw new NotFoundError('The blog is not available.');
-        const { index } = blog;
-        return {
-            title: (index.title || '').trim(),
-            content: publicContent(index),
-            excerpt: excerptOf(index.content),
-            linked_notes: blog.linkedPosts(index).map(blog.describe),
-            posts: blog.linkedPosts(index).map((note) => postCard(blog, note)),
-            links: siteLinks(),
-        };
+        return indexOf(await loadBlog());
     },
 
     async getPost(slug) {
+        return postOf(await loadBlog(), slug);
+    },
+
+    // What the blog host renders on the server: the front page (no slug) or
+    // a post, with the lookup that turns its [[links]] into addresses.
+    async page(slug) {
         const blog = await loadBlog();
-        const note =
-            blog &&
-            typeof slug === 'string' &&
-            blog.posts.find((p) => blog.slugs.get(p.id) === slug);
-        if (!note) throw new NotFoundError('This post is not available.');
-        const inherit = note.public_inherit_style;
-        return {
-            title: (note.title || '').trim(),
-            slug,
-            content: publicContent(note),
-            excerpt: excerptOf(note.content),
-            color: inherit ? note.color || null : null,
-            background: inherit ? note.background || null : null,
-            published_at: note.public_shared_at,
-            updated_at: note.updated_at,
-            linked_notes: blog.linkedPosts(note).map(blog.describe),
-            more: blog
-                .linkedPosts(blog.index)
-                .filter((p) => p.id !== note.id)
-                .slice(0, 3)
-                .map((p) => postCard(blog, p)),
-            links: siteLinks(),
-        };
+        const content = slug ? postOf(blog, slug) : indexOf(blog);
+        return { ...content, pathFor: blog.pathFor };
     },
 
     // Every post URL with its last change, for the sitemap.
