@@ -109,7 +109,7 @@ describe('Blog front page', () => {
         );
         expect(
             screen.getByText(
-                'Ideas and stories for running a busy home with less in your head.'
+                'Ideas and stories for running a busy home, or a busy team, with less in your head.'
             )
         ).toBeInTheDocument();
 
