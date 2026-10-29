@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { hashColor } from '../../constants/colorPalette';
 import {
-    ChatBubbleLeftIcon,
     ExclamationTriangleIcon,
     HandThumbDownIcon,
     HandThumbUpIcon,
@@ -461,14 +460,7 @@ const TaskComments: React.FC<TaskCommentsProps> = ({
 
     return (
         <div className="w-full">
-            {comments.length === 0 ? (
-                <div className="flex items-center gap-3 py-10 text-gray-500 dark:text-gray-400">
-                    <ChatBubbleLeftIcon className="h-8 w-8 flex-shrink-0 opacity-50" />
-                    <span className="text-sm">
-                        {t('comments.empty', 'No comments yet')}
-                    </span>
-                </div>
-            ) : (
+            {comments.length > 0 && (
                 <div className="space-y-6 mb-6 max-h-[32rem] overflow-y-auto pr-2">
                     {comments.map((comment) => (
                         <div key={comment.uid}>
