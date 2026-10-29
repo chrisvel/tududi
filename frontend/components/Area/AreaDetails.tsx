@@ -354,6 +354,7 @@ const AreaDetails: React.FC = () => {
                                 projects={projectsStore.projects}
                                 onTaskUpdate={handleTaskUpdate}
                                 onTaskDelete={handleTaskDelete}
+                                hideAreaName
                             />
                         )}
                         {completedTasks.length > 0 && (
@@ -367,6 +368,7 @@ const AreaDetails: React.FC = () => {
                                     projects={projectsStore.projects}
                                     onTaskUpdate={handleTaskUpdate}
                                     onTaskDelete={handleTaskDelete}
+                                    hideAreaName
                                     showCompletedTasks={true}
                                 />
                             </div>

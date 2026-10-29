@@ -9,6 +9,7 @@ import QuickCaptureInput from '../Inbox/QuickCaptureInput';
 import { resolveTaskTokens } from '../../utils/taskTokens';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import AreaDropdown from '../Shared/AreaDropdown';
+import { resolveTaskArea } from '../../utils/taskArea';
 import DateTimePicker from '../Shared/DateTimePicker';
 import {
     fromDueParts,
@@ -351,6 +352,14 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     value={form.areaId}
                     onChange={(value) => setField('areaId', value)}
                     areas={areas}
+                    inheritedArea={
+                        resolveTaskArea(
+                            { area_id: form.areaId },
+                            form.projectId,
+                            projects,
+                            areas
+                        ).area
+                    }
                 />
             </SidePanelSection>
 

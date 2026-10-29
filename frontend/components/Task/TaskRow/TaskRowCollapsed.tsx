@@ -15,10 +15,15 @@ import {
     PencilIcon,
     TrashIcon,
 } from '@heroicons/react/24/outline';
-import { FolderIcon, FireIcon } from '@heroicons/react/24/solid';
+import {
+    FolderIcon,
+    FireIcon,
+    Squares2X2Icon,
+} from '@heroicons/react/24/solid';
 import { Task } from '../../../entities/Task';
 import { Project } from '../../../entities/Project';
 import { isTaskCompleted } from '../../../constants/taskStatus';
+import { resolveTaskArea } from '../../../utils/taskArea';
 import {
     parseDateString,
     getTodayDateString,
@@ -39,6 +44,7 @@ interface TaskRowCollapsedProps {
     task: Task;
     project?: Project | null;
     hideProjectName?: boolean;
+    hideAreaName?: boolean;
     hideStatusControl?: boolean;
     condenseStatusControl?: boolean;
     compact?: boolean;
@@ -97,6 +103,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     task,
     project,
     hideProjectName = false,
+    hideAreaName = false,
     hideStatusControl = false,
     condenseStatusControl = false,
     compact = false,
@@ -120,6 +127,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     const titleInputRef = useRef<QuickCaptureInputHandle>(null);
     const pressingInsideTitleRef = useRef(false);
     const projects = useStore((state: any) => state.projectsStore?.projects);
+    const areas = useStore((state: any) => state.areasStore?.areas);
     const [draftName, setDraftName] = useState(currentName);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
@@ -218,10 +226,23 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 
     const deferText = task.defer_until ? formatDefer(task.defer_until) : null;
     const showProject = project && project.name && !hideProjectName;
+    // Where the project is hidden (its own page, subtasks) its area would
+    // only repeat on every row, so the area goes with it.
+    const { area } =
+        hideAreaName || hideProjectName
+            ? { area: null }
+            : resolveTaskArea(
+                  task,
+                  task.project_id ?? project?.id,
+                  projects || [],
+                  areas || []
+              );
+    const showArea = !!area?.name;
     const hasMeta =
         !compact &&
         (!!toPriorityLevel(task.priority) ||
             showProject ||
+            showArea ||
             (task.tags && task.tags.length > 0) ||
             !!task.due_date ||
             (isTaskCompleted(task.status) && !!task.completed_at) ||
@@ -406,6 +427,27 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                 >
                                     {project!.name}
                                 </Link>
+                            </span>
+                        )}
+                        {showArea && (
+                            <span
+                                className="flex items-center"
+                                data-testid="task-row-area"
+                            >
+                                <Squares2X2Icon className="h-3 w-3 mr-1" />
+                                {area!.uid ? (
+                                    <Link
+                                        to={`/area/${area!.uid}-${slug(area!.name)}`}
+                                        onClick={stop}
+                                        className="hover:underline max-w-[12rem] truncate"
+                                    >
+                                        {area!.name}
+                                    </Link>
+                                ) : (
+                                    <span className="max-w-[12rem] truncate">
+                                        {area!.name}
+                                    </span>
+                                )}
                             </span>
                         )}
                         {task.tags && task.tags.length > 0 && (
