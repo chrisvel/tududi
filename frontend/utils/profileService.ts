@@ -36,6 +36,9 @@ interface Profile {
             project_uid?: string | null;
             tags?: string[];
         } | null;
+        everyone?: {
+            column_order?: string[];
+        };
     };
 }
 

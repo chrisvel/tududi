@@ -134,6 +134,34 @@ function sanitizeFocus(focus) {
     return clean;
 }
 
+const MAX_COLUMN_ORDER = 500;
+
+// The Everyone board's column order: person uids, first to last. People
+// not in the list keep the server order after the listed ones.
+function sanitizeEveryone(everyone) {
+    if (!everyone || typeof everyone !== 'object' || Array.isArray(everyone)) {
+        throw new ValidationError('Everyone settings must be an object.');
+    }
+    const rawOrder = everyone.column_order ?? [];
+    if (!Array.isArray(rawOrder)) {
+        throw new ValidationError('The column order must be a list of uids.');
+    }
+    const order = [
+        ...new Set(
+            rawOrder
+                .filter((uid) => typeof uid === 'string')
+                .map((uid) => uid.trim())
+                .filter(Boolean)
+        ),
+    ];
+    if (order.length > MAX_COLUMN_ORDER) {
+        throw new ValidationError(
+            `The column order can hold at most ${MAX_COLUMN_ORDER} people.`
+        );
+    }
+    return { column_order: order };
+}
+
 class UsersService {
     // The user directory is an admin view. Regular users share by typing an
     // exact email, so they never need (and must not get) the full list.
@@ -298,6 +326,7 @@ class UsersService {
             const kept = {};
             if (current?.planning) kept.planning = current.planning;
             if (current?.focus !== undefined) kept.focus = current.focus;
+            if (current?.everyone) kept.everyone = current.everyone;
             allowedUpdates.ui_settings =
                 ui_settings && Object.keys(kept).length > 0
                     ? { ...ui_settings, ...kept }
@@ -750,7 +779,7 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { project, appearance, inbox, focus } = data;
+        const { project, appearance, inbox, focus, everyone } = data;
 
         const currentSettings =
             user.ui_settings && typeof user.ui_settings === 'object'
@@ -793,6 +822,10 @@ class UsersService {
 
         if (focus !== undefined) {
             newSettings.focus = sanitizeFocus(focus);
+        }
+
+        if (everyone !== undefined) {
+            newSettings.everyone = sanitizeEveryone(everyone);
         }
 
         await usersRepository.update(user, { ui_settings: newSettings });

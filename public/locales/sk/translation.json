@@ -2713,7 +2713,9 @@
         "upcoming": "Tento týždeň",
         "noDate": "Bez dátumu",
         "nothing": "Momentálne nič",
-        "empty": "Momentálne nie je nič zdieľané. Zdieľajte oblasť, projekt alebo cieľ, prípadne niekomu priraďte úlohu, a uvidíte to tu."
+        "empty": "Momentálne nie je nič zdieľané. Zdieľajte oblasť, projekt alebo cieľ, prípadne niekomu priraďte úlohu, a uvidíte to tu.",
+        "sortableColumn": "zoraditeľný stĺpec",
+        "reorderFailed": "Poradie stĺpcov sa nepodarilo uložiť."
     },
     "people": {
         "addMember": "Pridať člena",

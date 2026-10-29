@@ -2705,7 +2705,9 @@
     "upcoming": "Minggu ini",
     "noDate": "Tidak ada tanggal",
     "nothing": "Tidak ada saat ini",
-    "empty": "Tidak ada yang dibagikan saat ini. Bagikan area, proyek, atau tujuan, atau tugaskan seseorang sebuah tugas, untuk melihatnya di sini."
+    "empty": "Tidak ada yang dibagikan saat ini. Bagikan area, proyek, atau tujuan, atau tugaskan seseorang sebuah tugas, untuk melihatnya di sini.",
+    "sortableColumn": "kolom yang dapat diurutkan",
+    "reorderFailed": "Tidak dapat menyimpan urutan kolom."
   },
   "people": {
     "addMember": "Tambah anggota",

@@ -3034,7 +3034,9 @@
     "nothing": "Nothing right now",
     "empty": "Nothing shared is on right now. Share an area, project or goal, or assign someone a task, to see it here.",
     "dropHere": "Drop to assign",
-    "reassignFailed": "Could not assign this task."
+    "reassignFailed": "Could not assign this task.",
+    "sortableColumn": "sortable column",
+    "reorderFailed": "Could not save the column order."
   },
   "people": {
     "addMember": "Add member",

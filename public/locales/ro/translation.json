@@ -2713,7 +2713,9 @@
     "upcoming": "Săptămâna aceasta",
     "noDate": "Nicio dată",
     "nothing": "Nimic în acest moment",
-    "empty": "Nimic împărtășit nu este activ acum. Împărtășește o zonă, un proiect sau un obiectiv, sau atribuie cuiva o sarcină, pentru a-l vedea aici."
+    "empty": "Nimic împărtășit nu este activ acum. Împărtășește o zonă, un proiect sau un obiectiv, sau atribuie cuiva o sarcină, pentru a-l vedea aici.",
+    "sortableColumn": "coloană sortabilă",
+    "reorderFailed": "Ordinea coloanelor nu a putut fi salvată."
   },
   "people": {
     "addMember": "Adaugă membru",

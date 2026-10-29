@@ -2715,7 +2715,9 @@
     "upcoming": "W tym tygodniu",
     "noDate": "Brak daty",
     "nothing": "Nic teraz",
-    "empty": "Nic udostępnionego nie jest teraz aktywne. Udostępnij obszar, projekt lub cel, lub przypisz komuś zadanie, aby zobaczyć to tutaj."
+    "empty": "Nic udostępnionego nie jest teraz aktywne. Udostępnij obszar, projekt lub cel, lub przypisz komuś zadanie, aby zobaczyć to tutaj.",
+    "sortableColumn": "kolumna z możliwością sortowania",
+    "reorderFailed": "Nie udało się zapisać kolejności kolumn."
   },
   "people": {
     "addMember": "Dodaj członka",

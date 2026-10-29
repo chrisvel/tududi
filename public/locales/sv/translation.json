@@ -2707,7 +2707,9 @@
     "upcoming": "Denna vecka",
     "noDate": "Inget datum",
     "nothing": "Ingenting just nu",
-    "empty": "Ingenting delat är på just nu. Dela ett område, projekt eller mål, eller tilldela någon en uppgift, för att se det här."
+    "empty": "Ingenting delat är på just nu. Dela ett område, projekt eller mål, eller tilldela någon en uppgift, för att se det här.",
+    "sortableColumn": "sorterbar kolumn",
+    "reorderFailed": "Det gick inte att spara kolumnordningen."
   },
   "people": {
     "addMember": "Lägg till medlem",

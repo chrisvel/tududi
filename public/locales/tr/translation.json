@@ -2707,7 +2707,9 @@
     "upcoming": "Bu hafta",
     "noDate": "Tarih yok",
     "nothing": "Şu anda hiçbir şey yok",
-    "empty": "Şu anda paylaşılan hiçbir şey yok. Burada görmek için bir alan, proje veya hedef paylaşın veya birine görev atayın."
+    "empty": "Şu anda paylaşılan hiçbir şey yok. Burada görmek için bir alan, proje veya hedef paylaşın veya birine görev atayın.",
+    "sortableColumn": "sıralanabilir sütun",
+    "reorderFailed": "Sütun sırası kaydedilemedi."
   },
   "people": {
     "addMember": "Üye ekle",

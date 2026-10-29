@@ -2707,7 +2707,9 @@
     "upcoming": "Tällä viikolla",
     "noDate": "Ei päivämäärää",
     "nothing": "Ei mitään juuri nyt",
-    "empty": "Ei mitään jaettua ole nyt päällä. Jaa alue, projekti tai tavoite, tai määritä joku tehtävään, jotta näet sen täällä."
+    "empty": "Ei mitään jaettua ole nyt päällä. Jaa alue, projekti tai tavoite, tai määritä joku tehtävään, jotta näet sen täällä.",
+    "sortableColumn": "järjestettävä sarake",
+    "reorderFailed": "Sarakkeiden järjestystä ei voitu tallentaa."
   },
   "people": {
     "addMember": "Lisää jäsen",
