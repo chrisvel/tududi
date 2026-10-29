@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Task } from '../../entities/Task';
 import { fetchTaskByUid } from '../../utils/tasksService';
 import { useToast } from '../Shared/ToastContext';
-import {
-    useTaskPanel,
-    TASK_PANEL_SAVED_EVENT,
-    TaskPanelSavedDetail,
-} from '../../store/taskPanelStore';
+import { useTaskPanel } from '../../store/taskPanelStore';
 import TaskModal from './TaskModal';
 
 const TaskPanelHost: React.FC = () => {
@@ -39,21 +35,7 @@ const TaskPanelHost: React.FC = () => {
 
     if (!uid || !task || task.uid !== uid) return null;
 
-    return (
-        <TaskModal
-            isOpen
-            onClose={close}
-            task={task}
-            onSaved={(fresh) =>
-                window.dispatchEvent(
-                    new CustomEvent<TaskPanelSavedDetail>(
-                        TASK_PANEL_SAVED_EVENT,
-                        { detail: { task: fresh } }
-                    )
-                )
-            }
-        />
-    );
+    return <TaskModal isOpen onClose={close} task={task} />;
 };
 
 export default TaskPanelHost;

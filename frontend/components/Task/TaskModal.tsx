@@ -1,8 +1,18 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EyeIcon, PencilIcon } from '@heroicons/react/24/outline';
-import { Task, PriorityType } from '../../entities/Task';
-import { updateTask, fetchTaskByUid } from '../../utils/tasksService';
+import { Task, PriorityType, RecurrenceType } from '../../entities/Task';
+import { Person } from '../../entities/Person';
+import {
+    updateTask,
+    fetchTaskByUid,
+    fetchSubtasks,
+    deleteTask,
+} from '../../utils/tasksService';
+import {
+    fetchPeople,
+    fetchAssignablePeopleForProject,
+} from '../../utils/peopleService';
 import { useStore } from '../../store/useStore';
 import { useToast } from '../Shared/ToastContext';
 import TagInput from '../Tag/TagInput';
@@ -23,7 +33,19 @@ import {
     SidePanelSection,
     sidePanelInputClass,
 } from '../SidePanel/SidePanelParts';
-import { TASK_STATUS, getStatusValue } from '../../constants/taskStatus';
+import { getStatusValue } from '../../constants/taskStatus';
+import PersonDropdown from '../Shared/PersonDropdown';
+import TaskDeferUntilSection from './TaskForm/TaskDeferUntilSection';
+import TaskRecurrenceSection from './TaskForm/TaskRecurrenceSection';
+import TaskSubtasksCard from './TaskDetails/TaskSubtasksCard';
+import TaskAttachmentsCard from './TaskDetails/TaskAttachmentsCard';
+import TaskComments from './TaskComments';
+import { TaskStatusDropdown, TaskProjectDropdown } from './TaskPanelDropdowns';
+import {
+    openTaskPanel,
+    TASK_PANEL_SAVED_EVENT,
+    TaskPanelSavedDetail,
+} from '../../store/taskPanelStore';
 
 interface TaskModalProps {
     isOpen: boolean;
@@ -32,34 +54,16 @@ interface TaskModalProps {
     onSaved?: (task: Task) => void;
 }
 
-const STATUS_OPTIONS: { value: number; key: string; fallback: string }[] = [
-    {
-        value: TASK_STATUS.NOT_STARTED,
-        key: 'task.status.notStarted',
-        fallback: 'Not started',
-    },
-    {
-        value: TASK_STATUS.PLANNED,
-        key: 'task.status.planned',
-        fallback: 'Planned',
-    },
-    {
-        value: TASK_STATUS.IN_PROGRESS,
-        key: 'task.status.inProgress',
-        fallback: 'In progress',
-    },
-    {
-        value: TASK_STATUS.WAITING,
-        key: 'task.status.waiting',
-        fallback: 'Waiting',
-    },
-    { value: TASK_STATUS.DONE, key: 'task.status.done', fallback: 'Done' },
-    {
-        value: TASK_STATUS.CANCELLED,
-        key: 'task.status.cancelled',
-        fallback: 'Cancelled',
-    },
-];
+interface RecurrenceFormState {
+    recurrence_type: RecurrenceType;
+    recurrence_interval: number;
+    recurrence_end_date: string | null;
+    recurrence_weekday: number | null;
+    recurrence_weekdays: number[];
+    recurrence_month_day: number | null;
+    recurrence_week_of_month: number | null;
+    completion_based: boolean;
+}
 
 interface TaskFormState {
     name: string;
@@ -73,6 +77,9 @@ interface TaskFormState {
     startDate: string;
     startTime: string;
     tags: string[];
+    assignedTo: string | null;
+    deferUntil: string;
+    recurrence: RecurrenceFormState;
 }
 
 const toFormState = (task: Task): TaskFormState => ({
@@ -87,10 +94,54 @@ const toFormState = (task: Task): TaskFormState => ({
     startDate: task.start_date ? String(task.start_date).split('T')[0] : '',
     startTime: task.start_time ?? '',
     tags: task.tags?.map((tag) => tag.name) ?? [],
+    assignedTo: task.assigned_to ?? null,
+    deferUntil: task.defer_until ?? '',
+    recurrence: {
+        recurrence_type: (task.recurrence_type || 'none') as RecurrenceType,
+        recurrence_interval: task.recurrence_interval || 1,
+        recurrence_end_date: task.recurrence_end_date || null,
+        recurrence_weekday: task.recurrence_weekday ?? null,
+        recurrence_weekdays: task.recurrence_weekdays || [],
+        recurrence_month_day: task.recurrence_month_day ?? null,
+        recurrence_week_of_month: task.recurrence_week_of_month ?? null,
+        completion_based: !!task.completion_based,
+    },
 });
 
-// Edits the core fields of a task in the side panel. Recurrence, relations,
-// subtasks and reminders stay on the task page.
+// The same payload the task page sends: fields that do not apply to the
+// chosen pattern are cleared.
+const recurrencePayload = (r: RecurrenceFormState): Partial<Task> => ({
+    recurrence_type: r.recurrence_type,
+    recurrence_interval: r.recurrence_interval || 1,
+    recurrence_end_date: r.recurrence_end_date || null,
+    recurrence_weekday:
+        r.recurrence_type === 'weekly' ||
+        r.recurrence_type === 'monthly_weekday'
+            ? (r.recurrence_weekday ?? null)
+            : null,
+    recurrence_weekdays:
+        r.recurrence_type === 'weekly' ? r.recurrence_weekdays || [] : null,
+    recurrence_month_day:
+        r.recurrence_type === 'monthly'
+            ? (r.recurrence_month_day ?? null)
+            : null,
+    recurrence_week_of_month:
+        r.recurrence_type === 'monthly_weekday'
+            ? (r.recurrence_week_of_month ?? null)
+            : null,
+    completion_based: r.completion_based,
+});
+
+const notifyTaskSaved = (task: Task) =>
+    window.dispatchEvent(
+        new CustomEvent<TaskPanelSavedDetail>(TASK_PANEL_SAVED_EVENT, {
+            detail: { task },
+        })
+    );
+
+// Edits a task in the side panel. The form fields save together on Update;
+// subtasks, attachments and comments save as soon as they change, like on the
+// task page. Relations stay on the task page.
 const TaskModal: React.FC<TaskModalProps> = ({
     isOpen,
     onClose,
@@ -116,6 +167,19 @@ const TaskModal: React.FC<TaskModalProps> = ({
         task.note ? 'preview' : 'edit'
     );
     const [error, setError] = useState<string | null>(null);
+    const [people, setPeople] = useState<Person[]>([]);
+    const [subtasks, setSubtasks] = useState<Task[]>([]);
+
+    useEffect(() => {
+        if (!isOpen || !task.uid) return;
+        let cancelled = false;
+        fetchSubtasks(task.uid)
+            .then((list) => !cancelled && setSubtasks(list))
+            .catch(() => !cancelled && setSubtasks([]));
+        return () => {
+            cancelled = true;
+        };
+    }, [isOpen, task.uid]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -124,6 +188,21 @@ const TaskModal: React.FC<TaskModalProps> = ({
         setNoteTab(task.note ? 'preview' : 'edit');
         setError(null);
     }, [isOpen, task]);
+
+    const selectedProjectUid =
+        projects.find((project: any) => project.id === form.projectId)?.uid ??
+        null;
+    useEffect(() => {
+        if (!isOpen) return;
+        const loader = selectedProjectUid
+            ? fetchAssignablePeopleForProject(selectedProjectUid)
+            : fetchPeople();
+        loader.then((list) => setPeople(list || [])).catch(() => setPeople([]));
+    }, [isOpen, selectedProjectUid]);
+    const assignablePeople =
+        task.AssignedTo && !people.some((p) => p.uid === task.AssignedTo!.uid)
+            ? [...people, task.AssignedTo]
+            : people;
 
     const original = toFormState(task);
     const isDirty = (Object.keys(original) as (keyof TaskFormState)[]).some(
@@ -201,6 +280,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
             changes.start_time =
                 form.startDate && form.startTime ? form.startTime : null;
         }
+        if (form.assignedTo !== original.assignedTo)
+            changes.assigned_to = form.assignedTo;
+        if (form.deferUntil !== original.deferUntil)
+            changes.defer_until = form.deferUntil || null;
+        if (
+            !task.recurring_parent_id &&
+            JSON.stringify(form.recurrence) !==
+                JSON.stringify(original.recurrence)
+        ) {
+            Object.assign(changes, recurrencePayload(form.recurrence));
+        }
         if (JSON.stringify(form.tags) !== JSON.stringify(original.tags)) {
             const existing = tagsStore.tags?.map((tag: any) => tag.name) ?? [];
             const newNames = form.tags.filter(
@@ -233,6 +323,20 @@ const TaskModal: React.FC<TaskModalProps> = ({
             );
             return;
         }
+        if (form.deferUntil && form.dueDate && !task.recurring_parent_id) {
+            // Due dates are date-only; any time on the due day is fine
+            const defer = new Date(form.deferUntil);
+            const dueEnd = new Date(`${form.dueDate}T23:59:59.999`);
+            if (defer > dueEnd) {
+                setError(
+                    t(
+                        'task.deferAfterDueError',
+                        'Defer until date cannot be after the due date'
+                    )
+                );
+                return;
+            }
+        }
         setSaving(true);
         const changes = buildChanges(await resolveTokens(form));
         if (Object.keys(changes).length === 0) {
@@ -246,6 +350,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             await updateTask(task.uid!, changes as Partial<Task>);
             const fresh = await fetchTaskByUid(task.uid!);
             useStore.getState().tasksStore.updateTaskInStore(fresh);
+            notifyTaskSaved(fresh);
             onSaved?.(fresh);
             showSuccessToast(t('success.taskUpdated', 'Task updated!'));
             onClose();
@@ -258,6 +363,69 @@ const TaskModal: React.FC<TaskModalProps> = ({
             setSaving(false);
         }
     };
+
+    // Subtask edits save straight away and refresh the parent everywhere
+    const refreshParent = async () => {
+        if (!task.uid) return;
+        try {
+            const fresh = await fetchTaskByUid(task.uid);
+            useStore.getState().tasksStore.updateTaskInStore(fresh);
+            notifyTaskSaved(fresh);
+        } catch {
+            // The subtask itself is saved; the row refreshes on next load
+        }
+    };
+
+    const handleSubtaskUpdate = async (updated: Task) => {
+        if (!updated.uid) return;
+        try {
+            const saved = await updateTask(updated.uid, updated);
+            setSubtasks((prev) =>
+                prev.map((s) => (s.id === saved.id ? { ...s, ...saved } : s))
+            );
+            void refreshParent();
+        } catch {
+            showErrorToast(
+                t('task.statusUpdateError', 'Failed to update status')
+            );
+        }
+    };
+
+    const handleSubtaskDelete = async (subtaskUid: string) => {
+        try {
+            await deleteTask(subtaskUid);
+            setSubtasks((prev) => prev.filter((s) => s.uid !== subtaskUid));
+            void refreshParent();
+        } catch {
+            showErrorToast(t('task.deleteError', 'Failed to delete task'));
+        }
+    };
+
+    const handleQuickAddSubtask = async (name: string) => {
+        if (!task.uid || !task.id) return;
+        const newSubtask = {
+            name,
+            status: 'not_started',
+            today: false,
+            parent_task_id: task.id,
+            _isNew: true,
+            isNew: true,
+            completed_at: null,
+        } as unknown as Task;
+        try {
+            await updateTask(task.uid, {
+                subtasks: [...subtasks, newSubtask],
+            } as Partial<Task>);
+            setSubtasks(await fetchSubtasks(task.uid));
+            void refreshParent();
+        } catch {
+            showErrorToast(
+                t('errors.failedToSaveTask', 'Failed to save task.')
+            );
+        }
+    };
+
+    const isRecurringInstance = !!task.recurring_parent_id;
 
     return (
         <EntitySidePanel
@@ -367,20 +535,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 </div>
             </SidePanelField>
 
-            <SidePanelSection title={t('task.status.label', 'Status')}>
-                <select
-                    aria-label={t('task.status.label', 'Status')}
+            <SidePanelSection title={t('common.status', 'Status')}>
+                <TaskStatusDropdown
                     value={form.status}
-                    onChange={(e) => setField('status', Number(e.target.value))}
-                    className={sidePanelInputClass}
-                    data-testid="task-status-select"
-                >
-                    {STATUS_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {t(option.key, option.fallback)}
-                        </option>
-                    ))}
-                </select>
+                    onChange={(value) => setField('status', value)}
+                />
             </SidePanelSection>
 
             <SidePanelSection title={t('forms.priority', 'Priority')}>
@@ -391,27 +550,11 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </SidePanelSection>
 
             <SidePanelSection title={t('forms.project', 'Project')}>
-                <select
-                    aria-label={t('forms.project', 'Project')}
-                    value={form.projectId ?? ''}
-                    onChange={(e) =>
-                        setField(
-                            'projectId',
-                            e.target.value ? Number(e.target.value) : null
-                        )
-                    }
-                    className={sidePanelInputClass}
-                    data-testid="task-project-select"
-                >
-                    <option value="">
-                        {t('forms.noProject', 'No project')}
-                    </option>
-                    {projects.map((project: any) => (
-                        <option key={project.id} value={project.id}>
-                            {project.name}
-                        </option>
-                    ))}
-                </select>
+                <TaskProjectDropdown
+                    value={form.projectId}
+                    onChange={(value) => setField('projectId', value)}
+                    projects={projects}
+                />
             </SidePanelSection>
 
             <SidePanelSection title={t('common.area', 'Area')}>
@@ -457,6 +600,117 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     onFocus={handleTagInputFocus}
                 />
             </SidePanelSection>
+
+            <SidePanelSection title={t('tasks.assignedTo', 'Assigned to')}>
+                <PersonDropdown
+                    personUid={form.assignedTo}
+                    people={assignablePeople}
+                    onChange={(uid) => setField('assignedTo', uid)}
+                />
+            </SidePanelSection>
+
+            <SidePanelSection title={t('task.deferUntil', 'Defer Until')}>
+                <TaskDeferUntilSection
+                    value={form.deferUntil}
+                    onChange={(value) => setField('deferUntil', value)}
+                    placeholder={t(
+                        'forms.task.deferUntilPlaceholder',
+                        'Select defer until date and time'
+                    )}
+                />
+            </SidePanelSection>
+
+            <SidePanelSection title={t('forms.task.recurrence', 'Recurrence')}>
+                {isRecurringInstance ? (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {t(
+                            'task.instanceOf',
+                            'This is an instance of a recurring task'
+                        )}
+                        {task.recurring_parent_uid && (
+                            <>
+                                {' '}
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        openTaskPanel(
+                                            task.recurring_parent_uid!
+                                        )
+                                    }
+                                    className="text-blue-600 hover:underline dark:text-blue-400"
+                                >
+                                    {t('task.parentTask', 'Parent Task')}
+                                </button>
+                            </>
+                        )}
+                    </p>
+                ) : (
+                    <TaskRecurrenceSection
+                        recurrenceType={form.recurrence.recurrence_type}
+                        recurrenceInterval={form.recurrence.recurrence_interval}
+                        recurrenceEndDate={
+                            form.recurrence.recurrence_end_date || undefined
+                        }
+                        recurrenceWeekday={
+                            form.recurrence.recurrence_weekday ?? undefined
+                        }
+                        recurrenceWeekdays={form.recurrence.recurrence_weekdays}
+                        recurrenceMonthDay={
+                            form.recurrence.recurrence_month_day ?? undefined
+                        }
+                        recurrenceWeekOfMonth={
+                            form.recurrence.recurrence_week_of_month ??
+                            undefined
+                        }
+                        completionBased={form.recurrence.completion_based}
+                        onChange={(field, value) =>
+                            setForm((prev) => {
+                                const recurrence = {
+                                    ...prev.recurrence,
+                                    [field]: value,
+                                };
+                                if (
+                                    field === 'recurrence_type' &&
+                                    value === 'monthly' &&
+                                    !prev.recurrence.recurrence_month_day
+                                ) {
+                                    recurrence.recurrence_month_day =
+                                        new Date().getDate();
+                                }
+                                return { ...prev, recurrence };
+                            })
+                        }
+                    />
+                )}
+            </SidePanelSection>
+
+            {task.uid && (
+                <>
+                    <SidePanelSection title={t('task.subtasks', 'Subtasks')}>
+                        <TaskSubtasksCard
+                            subtasks={subtasks}
+                            projects={projects}
+                            onSubtaskUpdate={handleSubtaskUpdate}
+                            onSubtaskDelete={(uid) =>
+                                void handleSubtaskDelete(uid)
+                            }
+                            onQuickAdd={(name) =>
+                                void handleQuickAddSubtask(name)
+                            }
+                        />
+                    </SidePanelSection>
+
+                    <SidePanelSection
+                        title={t('task.attachments', 'Attachments')}
+                    >
+                        <TaskAttachmentsCard taskUid={task.uid} />
+                    </SidePanelSection>
+
+                    <SidePanelSection title={t('task.comments', 'Comments')}>
+                        <TaskComments task={task} />
+                    </SidePanelSection>
+                </>
+            )}
         </EntitySidePanel>
     );
 };

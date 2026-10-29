@@ -52,6 +52,34 @@ jest.mock('../../../utils/inboxService', () => ({
 jest.mock('../../../utils/tasksService', () => ({
     updateTask: jest.fn(),
     fetchTaskByUid: jest.fn(),
+    fetchSubtasks: jest.fn().mockResolvedValue([]),
+    deleteTask: jest.fn(),
+}));
+
+jest.mock('../../../utils/peopleService', () => ({
+    fetchPeople: jest.fn().mockResolvedValue([]),
+    fetchAssignablePeopleForProject: jest.fn().mockResolvedValue([]),
+}));
+
+jest.mock('../TaskComments', () => ({
+    __esModule: true,
+    default: () => <div data-testid="task-comments" />,
+}));
+
+jest.mock('../TaskDetails/TaskAttachmentsCard', () => ({
+    __esModule: true,
+    default: () => <div data-testid="task-attachments" />,
+}));
+
+jest.mock('../TaskDetails/TaskSubtasksCard', () => ({
+    __esModule: true,
+    default: ({ onQuickAdd }: any) => (
+        <button
+            type="button"
+            data-testid="add-subtask"
+            onClick={() => onQuickAdd('Buy hinges')}
+        />
+    ),
 }));
 
 jest.mock('../../../store/useStore', () => {
@@ -162,6 +190,55 @@ describe('TaskModal', () => {
         expect(screen.queryByTestId('task-note-preview')).toBeNull();
     });
 
+    it('picks a status from the colored dropdown', async () => {
+        renderPanel();
+
+        fireEvent.click(screen.getByTestId('task-status-select'));
+        fireEvent.click(screen.getByTestId('task-status-option-in_progress'));
+        expect(screen.getByTestId('task-status-select')).toHaveAttribute(
+            'data-status',
+            'in_progress'
+        );
+        fireEvent.click(screen.getByTestId('task-save-button'));
+
+        await waitFor(() =>
+            expect(updateTask).toHaveBeenCalledWith('t-1', { status: 1 })
+        );
+    });
+
+    it('shows subtasks, attachments and comments, and adds a subtask straight away', async () => {
+        renderPanel();
+
+        expect(screen.getByTestId('task-attachments')).toBeInTheDocument();
+        expect(screen.getByTestId('task-comments')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId('add-subtask'));
+        await waitFor(() =>
+            expect(updateTask).toHaveBeenCalledWith('t-1', {
+                subtasks: [
+                    expect.objectContaining({
+                        name: 'Buy hinges',
+                        parent_task_id: 1,
+                    }),
+                ],
+            })
+        );
+    });
+
+    it('leaves untouched assignee, defer and recurrence out of the update', async () => {
+        renderPanel();
+
+        fireEvent.click(screen.getByTestId('task-status-select'));
+        fireEvent.click(screen.getByTestId('task-status-option-waiting'));
+        fireEvent.click(screen.getByTestId('task-save-button'));
+
+        await waitFor(() => expect(updateTask).toHaveBeenCalled());
+        const payload = (updateTask as jest.Mock).mock.calls[0][1];
+        expect(payload).not.toHaveProperty('recurrence_type');
+        expect(payload).not.toHaveProperty('defer_until');
+        expect(payload).not.toHaveProperty('assigned_to');
+    });
+
     it('closes without calling the API when nothing changed', async () => {
         const { onClose } = renderPanel();
 
@@ -198,9 +275,8 @@ describe('TaskModal', () => {
     it('sends the chosen project as project_id', async () => {
         renderPanel();
 
-        fireEvent.change(screen.getByTestId('task-project-select'), {
-            target: { value: '7' },
-        });
+        fireEvent.click(screen.getByTestId('task-project-select'));
+        fireEvent.click(screen.getByRole('option', { name: 'Shed' }));
         fireEvent.click(screen.getByTestId('task-save-button'));
 
         await waitFor(() =>

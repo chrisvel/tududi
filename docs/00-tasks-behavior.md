@@ -35,9 +35,11 @@ This document explains how tasks work in tududi from a user behavior perspective
 
 ### Opening a Task
 
-- Clicking a task anywhere in the app (lists, Today and the plan, search, notifications, the calendar, the Everyone board, relations, parent links) opens it in the side panel over the current page. Habits still open their own page.
-- The panel edits name, description, status, priority, project, area, dates and tags. The description is Markdown, with Edit and Preview buttons like the task page; a written note opens in preview.
-- The task page at `/task/:uid` still exists and opens from a direct URL. The link icon next to a task's title copies that URL.
+- Clicking a task anywhere in the app (lists, Today and the plan, search, notifications, the calendar, the Everyone board, parent links) opens it in the side panel over the current page. Habits still open their own page.
+- A task link, `/task/:uid`, opens all tasks with that task in the side panel. The link icon next to a task's title copies it.
+- The panel form saves name, description, status, priority, project, area, start, due, tags, assignee, defer until and recurrence together on Update. Subtasks, attachments and comments save as soon as they change. Relations stay on the full task page, which is at `/task/:uid/details`.
+- The description is Markdown, with Edit and Preview buttons; a written note opens in preview.
+- With a dropdown open, Escape or a click outside closes the dropdown; the panel stays open.
 
 ---
 
