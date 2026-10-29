@@ -377,13 +377,10 @@ const QuickCaptureInput = React.forwardRef<
                 ...(picked.project && destination !== 'project'
                     ? [`+${name(picked.project)}`]
                     : []),
-                // A task or project takes the picked area by uid in
-                // captureOne; the server would re-read its name and miss
-                // names with punctuation or non-ASCII letters.
-                ...(picked.area &&
-                destination !== 'note' &&
-                destination !== 'task' &&
-                destination !== 'project'
+                // Only an inbox item keeps the area as ~Name text; a task or
+                // project takes it by uid in captureOne, since the server
+                // would re-read the name and miss punctuation or non-ASCII.
+                ...(picked.area && destination === 'inbox'
                     ? [`~${name(picked.area.name)}`]
                     : []),
             ];
@@ -1833,6 +1830,23 @@ const QuickCaptureInput = React.forwardRef<
             return cleaned || line.trim();
         };
 
+        // What a failed analysis leaves: the line as typed, nothing parsed
+        const noAnalysis = (line: string): InboxAnalysis => ({
+            parsed_tags: [],
+            parsed_projects: [],
+            cleaned_content: cleanFirstLine(line, null),
+            parsed_due_date: null,
+            parsed_due_time: null,
+            parsed_reminder_at: null,
+            parsed_date_text: null,
+            parsed_recurrence: null,
+            parsed_person: null,
+            parsed_assignee: null,
+            parsed_area: null,
+            suggested_type: null,
+            suggested_reason: null,
+        });
+
         // Create one item of the chosen kind from one raw text. The first
         // line is the title (dates, @people, #tags and +projects are read
         // from it) and the other lines are its notes or body.
@@ -1864,17 +1878,17 @@ const QuickCaptureInput = React.forwardRef<
                     console.error('Error analyzing text:', error);
                 }
                 // An area picked from the list is already known, so it is
-                // used as is instead of being looked up again by name.
-                analysis =
-                    picked.area && analysis
-                        ? {
-                              ...analysis,
-                              parsed_area: {
-                                  uid: picked.area.uid,
-                                  name: picked.area.name,
-                              },
-                          }
-                        : await ensureAnalysisArea(analysis);
+                // used as is instead of being looked up again by name, even
+                // when the analysis failed.
+                analysis = picked.area
+                    ? {
+                          ...(analysis ?? noAnalysis(first)),
+                          parsed_area: {
+                              uid: picked.area.uid,
+                              name: picked.area.name,
+                          },
+                      }
+                    : await ensureAnalysisArea(analysis);
             }
 
             const title = cleanFirstLine(first, analysis);

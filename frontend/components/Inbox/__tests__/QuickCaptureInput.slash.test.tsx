@@ -307,6 +307,43 @@ describe('QuickCaptureInput slash menu', () => {
         }
     );
 
+    it('assigns a picked area to a project by uid', async () => {
+        const { areasStore } = useStore.getState();
+        const before = areasStore.areas;
+        areasStore.setAreas([
+            ...before,
+            { id: 10, uid: 'area-x', name: 'Misc.' },
+        ]);
+        try {
+            chooseTarget('project');
+            type('Offsite /');
+            fireEvent.click(inMenu().getByText('Area'));
+            fireEvent.click(inMenu().getByText('Misc.'));
+            await clickAdd();
+
+            expect(mockCreateArea).not.toHaveBeenCalled();
+            expect(createProject).toHaveBeenCalledWith(
+                expect.objectContaining({ name: 'Offsite', area_id: 10 })
+            );
+        } finally {
+            areasStore.setAreas(before);
+        }
+    });
+
+    it('keeps a picked area when the text analysis fails', async () => {
+        (analyzeInboxText as jest.Mock).mockRejectedValue(new Error('down'));
+        const quiet = jest.spyOn(console, 'error').mockImplementation(() => {});
+        type('Fix tap #urgent /');
+        fireEvent.click(inMenu().getByText('Area'));
+        fireEvent.click(inMenu().getByText('Home Office'));
+        await clickAdd();
+
+        expect(mockCreateTask).toHaveBeenCalledWith(
+            expect.objectContaining({ name: 'Fix tap', area_id: 8 })
+        );
+        quiet.mockRestore();
+    });
+
     it('creates an unknown ~Name typed in the text and strips it from the title', async () => {
         type('#admin #kids +"Monday slides prep" ~Career hi ');
         await clickAdd();
