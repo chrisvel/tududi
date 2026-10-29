@@ -209,6 +209,16 @@ count_users() {
     fi
 }
 USERS_BEFORE="$(count_users)"
+# Stored rows, not the API list: what /api/tasks lists changes between
+# releases (an open recurring template past its due date, for example).
+count_tasks() {
+    if command -v sqlite3 >/dev/null 2>&1; then
+        sqlite3 -readonly "$VOL/production.sqlite3" "SELECT COUNT(*) FROM tasks" 2>/dev/null || echo "?"
+    else
+        echo "?"
+    fi
+}
+TASKS_BEFORE="$(count_tasks)"
 
 # ---------------------------------------------------------------- step 2
 if [ "${SKIP_BUILD:-0}" != "1" ]; then
@@ -258,8 +268,12 @@ else
     check "$([ "$USERS_AFTER" = "$USERS_BEFORE" ]; echo $?)" "new image: no duplicate admin created (users $USERS_BEFORE -> $USERS_AFTER)"
 fi
 
-NEW_COUNT="$(api_task_count "$NEW_PORT" "" "$NEW_JAR")"
-check "$([ "$NEW_COUNT" = "$OLD_COUNT" ]; echo $?)" "new image: task count unchanged ($OLD_COUNT -> $NEW_COUNT)"
+TASKS_AFTER="$(count_tasks)"
+if [ "$TASKS_BEFORE" = "?" ]; then
+    yellow "  note new image: sqlite3 CLI missing, cannot verify the task count"
+else
+    check "$([ "$TASKS_AFTER" = "$TASKS_BEFORE" ]; echo $?)" "new image: task count unchanged ($TASKS_BEFORE -> $TASKS_AFTER)"
+fi
 check "$(api_has_task "$NEW_PORT" "$MARKER" "$NEW_JAR"; echo $?)" "new image: marker task still present"
 for p in /api/projects /api/tags /api/notes /api/tasks/metrics "/api/tasks?type=today" "/api/tasks?type=upcoming"; do
     check "$([ "$(api_get_status "$NEW_PORT" "$p" "$NEW_JAR")" = "200" ]; echo $?)" "new image: GET $p"
