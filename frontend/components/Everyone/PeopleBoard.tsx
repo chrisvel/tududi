@@ -2,12 +2,20 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UsersIcon } from '@heroicons/react/24/outline';
 import {
+    closestCenter,
+    CollisionDetection,
     DndContext,
     DragEndEvent,
     DragOverlay,
     DragStartEvent,
-    useDroppable,
+    rectIntersection,
 } from '@dnd-kit/core';
+import {
+    horizontalListSortingStrategy,
+    SortableContext,
+    useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Task } from '../../entities/Task';
 import {
     EveryoneColumn,
@@ -16,10 +24,12 @@ import {
     EVERYONE_BUCKETS,
 } from '../../utils/everyoneService';
 import { updateTask } from '../../utils/tasksService';
+import { fetchProfile, updateUiSettings } from '../../utils/profileService';
 import BoardTaskRow from './BoardTaskRow';
 import { isTaskCompleted } from '../../constants/taskStatus';
 import { useToast } from '../Shared/ToastContext';
 import {
+    mergeVisibleOrder,
     resetSortableCursor,
     sortableCursorHandlers,
     swallowNextClick,
@@ -92,6 +102,26 @@ export const columnColors = (
     return out;
 };
 
+// Puts columns in the viewer's saved order. People not in it (new shares,
+// or a group board showing people the Everyone board never had) follow in
+// the server's order.
+export const orderColumns = <C extends { person: { uid: string } }>(
+    columns: C[],
+    order: string[]
+): C[] => {
+    const rank = new Map(order.map((uid, i) => [uid, i]));
+    return columns
+        .map((col, i) => ({ col, i }))
+        .sort((a, b) => {
+            const ra = rank.get(a.col.person.uid) ?? order.length + a.i;
+            const rb = rank.get(b.col.person.uid) ?? order.length + b.i;
+            return ra - rb;
+        })
+        .map(({ col }) => col);
+};
+
+const COLUMN_PREFIX = 'person-';
+
 const initials = (name: string): string => {
     const parts = name.trim().split(/\s+/).filter(Boolean);
     if (parts.length === 0) return '?';
@@ -137,19 +167,32 @@ interface PersonColumnProps {
 }
 
 // One person's card. The whole card is a drop target: a task dropped here
-// is assigned to this person.
+// is assigned to this person. The header is the handle that moves the card.
 const PersonColumn: React.FC<PersonColumnProps> = ({
     col,
     color,
     onTaskUpdate,
 }) => {
     const { t } = useTranslation();
-    const { setNodeRef, isOver, active } = useDroppable({
-        id: `person-${col.person.uid}`,
-        data: { personUid: col.person.uid },
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        setActivatorNodeRef,
+        transform,
+        transition,
+        isDragging,
+        isOver,
+        active,
+    } = useSortable({
+        id: `${COLUMN_PREFIX}${col.person.uid}`,
+        data: { personUid: col.person.uid, column: true },
     });
     const dragFromElsewhere =
-        !!active && active.data.current?.personUid !== col.person.uid;
+        !!active &&
+        !active.data.current?.column &&
+        active.data.current?.personUid !== col.person.uid;
+    const name = col.is_self ? t('everyone.you', 'You') : col.person.name;
 
     const total = EVERYONE_BUCKETS.reduce(
         (n, b) => n + (col[b] as Task[]).length,
@@ -163,21 +206,37 @@ const PersonColumn: React.FC<PersonColumnProps> = ({
         <section
             ref={setNodeRef}
             data-testid={`person-column-${col.person.uid}`}
-            className="relative flex flex-col flex-1 max-h-full min-w-[16rem] max-w-[22rem] shrink-0 overflow-hidden rounded-xl bg-white transition-colors dark:bg-gray-900/60"
-            style={
-                isOver && dragFromElsewhere
+            data-dragging={isDragging || undefined}
+            className={`relative flex flex-col flex-1 max-h-full min-w-[16rem] max-w-[22rem] shrink-0 overflow-hidden rounded-xl bg-white transition-colors dark:bg-gray-900/60 ${
+                isDragging ? 'z-20 shadow-2xl' : ''
+            }`}
+            style={{
+                transform: CSS.Translate.toString(transform),
+                transition,
+                ...(isOver && dragFromElsewhere
                     ? { backgroundColor: `${color}1f` }
-                    : undefined
-            }
+                    : {}),
+            }}
         >
             <div className="h-1 shrink-0" style={{ backgroundColor: color }} />
-            <div className="shrink-0 flex items-center gap-2.5 px-3 pt-3 pb-2">
+            <div
+                ref={setActivatorNodeRef}
+                {...attributes}
+                {...listeners}
+                aria-roledescription={t(
+                    'everyone.sortableColumn',
+                    'sortable column'
+                )}
+                aria-label={name}
+                data-testid={`person-column-handle-${col.person.uid}`}
+                className={`shrink-0 flex items-center gap-2.5 px-3 pt-3 pb-2 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 ${
+                    isDragging ? 'cursor-grabbing' : 'cursor-grab'
+                }`}
+            >
                 <PersonAvatar name={col.person.name} color={color} />
                 <div className="min-w-0">
                     <div className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
-                        {col.is_self
-                            ? t('everyone.you', 'You')
-                            : col.person.name}
+                        {name}
                     </div>
                     {col.is_self && (
                         <div className="truncate text-xs text-gray-400 dark:text-gray-500">
@@ -254,9 +313,30 @@ function PeopleBoard<T extends EveryoneResponse>({
     const [data, setData] = useState<T | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [dragging, setDragging] = useState<Task | null>(null);
+    // Saved per user and shared by the Everyone and group boards
+    const [order, setOrder] = useState<string[]>([]);
     const { showErrorToast } = useToast();
     const sensors = useSortableSensors();
     const colors = useMemo(() => columnColors(columns ?? []), [columns]);
+    const ordered = useMemo(
+        () => (columns ? orderColumns(columns, order) : null),
+        [columns, order]
+    );
+
+    useEffect(() => {
+        let cancelled = false;
+        fetchProfile()
+            .then((profile) => {
+                const saved = profile.ui_settings?.everyone?.column_order;
+                if (!cancelled && Array.isArray(saved)) setOrder(saved);
+            })
+            .catch(() => {
+                // The server order is fine without it
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     const load = useCallback(async () => {
         try {
@@ -347,6 +427,48 @@ function PeopleBoard<T extends EveryoneResponse>({
         });
     }, []);
 
+    // A board may show only some of the people in the saved order (a group
+    // board), so the moved columns swap within the slots they already hold.
+    const reorderColumns = useCallback(
+        (event: DragEndEvent) => {
+            const from = event.active.data.current?.personUid as
+                string | undefined;
+            const to = event.over?.data.current?.personUid as
+                string | undefined;
+            if (!ordered || !from || !to || from === to) return;
+            const visible = ordered.map((c) => c.person.uid);
+            const next = [...visible];
+            next.splice(visible.indexOf(from), 1);
+            next.splice(visible.indexOf(to), 0, from);
+            const full = [
+                ...order,
+                ...visible.filter((uid) => !order.includes(uid)),
+            ];
+            const merged = mergeVisibleOrder(full, next);
+            setOrder(merged);
+            updateUiSettings({ everyone: { column_order: merged } }).catch(
+                (e: any) =>
+                    showErrorToast(
+                        e?.message ||
+                            t(
+                                'everyone.reorderFailed',
+                                'Could not save the column order.'
+                            )
+                    )
+            );
+        },
+        [order, ordered, showErrorToast, t]
+    );
+
+    // Columns pick the nearest slot; tasks need the card they are over.
+    const collisionDetection: CollisionDetection = useCallback(
+        (args) =>
+            args.active.data.current?.column
+                ? closestCenter(args)
+                : rectIntersection(args),
+        []
+    );
+
     const handleDragStart = useCallback((event: DragStartEvent) => {
         sortableCursorHandlers.onDragStart();
         setDragging((event.active.data.current?.task as Task) ?? null);
@@ -357,6 +479,10 @@ function PeopleBoard<T extends EveryoneResponse>({
             resetSortableCursor();
             setDragging(null);
             swallowNextClick();
+            if (event.active.data.current?.column) {
+                reorderColumns(event);
+                return;
+            }
             const task = event.active.data.current?.task as Task | undefined;
             const from = event.active.data.current?.personUid as
                 string | undefined;
@@ -378,7 +504,7 @@ function PeopleBoard<T extends EveryoneResponse>({
             }
             load();
         },
-        [load, moveLocally, showErrorToast, t]
+        [load, moveLocally, reorderColumns, showErrorToast, t]
     );
 
     const handleDragCancel = useCallback(() => {
@@ -396,7 +522,7 @@ function PeopleBoard<T extends EveryoneResponse>({
         );
     }
 
-    if (!columns) {
+    if (!columns || !ordered) {
         return (
             <div className="px-4 sm:px-6 py-6">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -469,20 +595,28 @@ function PeopleBoard<T extends EveryoneResponse>({
 
             <DndContext
                 sensors={sensors}
+                collisionDetection={collisionDetection}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onDragCancel={handleDragCancel}
             >
-                <div className="flex-1 min-h-0 flex items-start gap-4 overflow-x-auto pb-4">
-                    {columns.map((col) => (
-                        <PersonColumn
-                            key={col.person.uid}
-                            col={col}
-                            color={colors[col.person.uid]}
-                            onTaskUpdate={handleTaskUpdate}
-                        />
-                    ))}
-                </div>
+                <SortableContext
+                    items={ordered.map(
+                        (col) => `${COLUMN_PREFIX}${col.person.uid}`
+                    )}
+                    strategy={horizontalListSortingStrategy}
+                >
+                    <div className="flex-1 min-h-0 flex items-start gap-4 overflow-x-auto pb-4">
+                        {ordered.map((col) => (
+                            <PersonColumn
+                                key={col.person.uid}
+                                col={col}
+                                color={colors[col.person.uid]}
+                                onTaskUpdate={handleTaskUpdate}
+                            />
+                        ))}
+                    </div>
+                </SortableContext>
                 <DragOverlay dropAnimation={null}>
                     {dragging ? (
                         <ul className="w-[18rem]">

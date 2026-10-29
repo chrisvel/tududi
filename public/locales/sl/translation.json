@@ -2715,7 +2715,9 @@
     "upcoming": "Ta teden",
     "noDate": "Brez datuma",
     "nothing": "Trenutno nič",
-    "empty": "Trenutno ni nič deljeno. Delite področje, projekt ali cilj, ali dodelite nalogo nekomu, da ga vidite tukaj."
+    "empty": "Trenutno ni nič deljeno. Delite področje, projekt ali cilj, ali dodelite nalogo nekomu, da ga vidite tukaj.",
+    "sortableColumn": "razvrstljiv stolpec",
+    "reorderFailed": "Vrstnega reda stolpcev ni bilo mogoče shraniti."
   },
   "people": {
     "addMember": "Dodaj člana",

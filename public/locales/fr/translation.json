@@ -2710,7 +2710,9 @@
     "upcoming": "Cette semaine",
     "noDate": "Pas de date",
     "nothing": "Rien en ce moment",
-    "empty": "Rien de partagé n'est en cours en ce moment. Partagez un domaine, un projet ou un objectif, ou assignez une tâche à quelqu'un pour le voir ici."
+    "empty": "Rien de partagé n'est en cours en ce moment. Partagez un domaine, un projet ou un objectif, ou assignez une tâche à quelqu'un pour le voir ici.",
+    "sortableColumn": "colonne triable",
+    "reorderFailed": "Impossible d'enregistrer l'ordre des colonnes."
   },
   "people": {
     "addMember": "Ajouter un membre",

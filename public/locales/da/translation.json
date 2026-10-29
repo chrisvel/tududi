@@ -2707,7 +2707,9 @@
     "upcoming": "Denne uge",
     "noDate": "Ingen dato",
     "nothing": "Intet lige nu",
-    "empty": "Intet delt er på lige nu. Del et område, projekt eller mål, eller tildel nogen en opgave for at se det her."
+    "empty": "Intet delt er på lige nu. Del et område, projekt eller mål, eller tildel nogen en opgave for at se det her.",
+    "sortableColumn": "sorterbar kolonne",
+    "reorderFailed": "Kunne ikke gemme kolonnernes rækkefølge."
   },
   "people": {
     "addMember": "Tilføj medlem",

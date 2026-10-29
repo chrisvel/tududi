@@ -2705,7 +2705,9 @@
     "upcoming": "Tuần này",
     "noDate": "Không có ngày",
     "nothing": "Hiện tại không có gì",
-    "empty": "Không có gì được chia sẻ hiện tại. Chia sẻ một khu vực, dự án hoặc mục tiêu, hoặc giao cho ai đó một công việc, để thấy nó ở đây."
+    "empty": "Không có gì được chia sẻ hiện tại. Chia sẻ một khu vực, dự án hoặc mục tiêu, hoặc giao cho ai đó một công việc, để thấy nó ở đây.",
+    "sortableColumn": "cột có thể sắp xếp",
+    "reorderFailed": "Không thể lưu thứ tự cột."
   },
   "people": {
     "addMember": "Thêm thành viên",

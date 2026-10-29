@@ -2710,7 +2710,9 @@
     "upcoming": "Esta semana",
     "noDate": "Sem data",
     "nothing": "Nada no momento",
-    "empty": "Nada compartilhado está ativo no momento. Compartilhe uma área, projeto ou meta, ou atribua uma tarefa a alguém, para vê-lo aqui."
+    "empty": "Nada compartilhado está ativo no momento. Compartilhe uma área, projeto ou meta, ou atribua uma tarefa a alguém, para vê-lo aqui.",
+    "sortableColumn": "coluna ordenável",
+    "reorderFailed": "Não foi possível guardar a ordem das colunas."
   },
   "people": {
     "addMember": "Adicionar membro",

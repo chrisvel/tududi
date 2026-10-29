@@ -2712,7 +2712,9 @@
     "upcoming": "Denne uken",
     "noDate": "Ingen dato",
     "nothing": "Ingenting akkurat nå",
-    "empty": "Ingenting delt er på akkurat nå. Del et område, prosjekt eller mål, eller tildel noen en oppgave, for å se det her."
+    "empty": "Ingenting delt er på akkurat nå. Del et område, prosjekt eller mål, eller tildel noen en oppgave, for å se det her.",
+    "sortableColumn": "sorterbar kolonne",
+    "reorderFailed": "Kunne ikke lagre rekkefølgen på kolonnene."
   },
   "people": {
     "addMember": "Legg til medlem",

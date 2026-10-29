@@ -109,7 +109,7 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 18. **`/everyone` shows what each person in your workspace has on.** The sidebar link appears once you share with someone or are in a group with someone, and can be hidden under Profile > Sidebar.
 
-19. **There is one column per person.** You come first, then members, then contacts that have tasks. A member with nothing to do still gets a column. Each column groups tasks into Overdue, Today, Tomorrow, Upcoming (the next seven days) and No date. Tasks due more than a week away are left off until they get closer.
+19. **There is one column per person.** You come first, then members, then contacts that have tasks. Drag a column by its header to put people in your own order; it is saved to your account (`ui_settings.everyone.column_order`) and used on group boards too, with people not in it following in the default order. A member with nothing to do still gets a column. Each column groups tasks into Overdue, Today, Tomorrow, Upcoming (the next seven days) and No date. Tasks due more than a week away are left off until they get closer.
 
 20. **A task is shown under its assignee, or under whoever created it if nobody is assigned.** Habits are left out, and a recurring task is shown once with its current due date. Days are worked out in your own timezone. You can open and complete tasks from the board.
 

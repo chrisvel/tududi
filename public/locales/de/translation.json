@@ -2716,7 +2716,9 @@
     "upcoming": "Diese Woche",
     "noDate": "Kein Datum",
     "nothing": "Gerade nichts",
-    "empty": "Gerade ist nichts geteilt. Teilen Sie einen Bereich, ein Projekt oder ein Ziel oder weisen Sie jemandem eine Aufgabe zu, um es hier zu sehen."
+    "empty": "Gerade ist nichts geteilt. Teilen Sie einen Bereich, ein Projekt oder ein Ziel oder weisen Sie jemandem eine Aufgabe zu, um es hier zu sehen.",
+    "sortableColumn": "sortierbare Spalte",
+    "reorderFailed": "Die Spaltenreihenfolge konnte nicht gespeichert werden."
   },
   "people": {
     "addMember": "Mitglied hinzufügen",

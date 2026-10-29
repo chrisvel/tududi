@@ -2707,7 +2707,9 @@
     "upcoming": "Deze week",
     "noDate": "Geen datum",
     "nothing": "Niets op dit moment",
-    "empty": "Er is momenteel niets gedeeld. Deel een gebied, project of doel, of wijs iemand een taak toe, om het hier te zien."
+    "empty": "Er is momenteel niets gedeeld. Deel een gebied, project of doel, of wijs iemand een taak toe, om het hier te zien.",
+    "sortableColumn": "sorteerbare kolom",
+    "reorderFailed": "De kolomvolgorde kon niet worden opgeslagen."
   },
   "people": {
     "addMember": "Lid toevoegen",

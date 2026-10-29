@@ -2697,7 +2697,9 @@
     "upcoming": "Esta semana",
     "noDate": "Sin fecha",
     "nothing": "Nada en este momento",
-    "empty": "Nada compartido está disponible en este momento. Comparte un área, proyecto u objetivo, o asigna a alguien una tarea, para verlo aquí."
+    "empty": "Nada compartido está disponible en este momento. Comparte un área, proyecto u objetivo, o asigna a alguien una tarea, para verlo aquí.",
+    "sortableColumn": "columna ordenable",
+    "reorderFailed": "No se pudo guardar el orden de las columnas."
   },
   "people": {
     "addMember": "Añadir miembro",

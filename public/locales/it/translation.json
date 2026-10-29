@@ -2710,7 +2710,9 @@
     "upcoming": "Questa settimana",
     "noDate": "Nessuna data",
     "nothing": "Niente in questo momento",
-    "empty": "Niente condiviso è attualmente disponibile. Condividi un'area, un progetto o un obiettivo, oppure assegna a qualcuno un'attività per vederlo qui."
+    "empty": "Niente condiviso è attualmente disponibile. Condividi un'area, un progetto o un obiettivo, oppure assegna a qualcuno un'attività per vederlo qui.",
+    "sortableColumn": "colonna ordinabile",
+    "reorderFailed": "Impossibile salvare l'ordine delle colonne."
   },
   "people": {
     "addMember": "Aggiungi membro",
