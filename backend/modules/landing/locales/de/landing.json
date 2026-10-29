@@ -535,5 +535,10 @@
       }
     },
     "turn": "Schreib es einmal auf. Gib ihm einen Platz. Lass es deinen Kopf verlassen."
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "lede": "Unter dieser Adresse gibt es nichts. Vielleicht wurde sie verschoben, oder der Link enthält einen Tippfehler.",
+    "home": "Zurück zu tududi"
   }
 }

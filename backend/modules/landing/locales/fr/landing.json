@@ -535,5 +535,10 @@
       }
     },
     "turn": "Écrivez-le une fois. Donnez-lui une place. Laissez-le quitter votre tête."
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "lede": "Il n'y a rien à cette adresse. Elle a peut-être été déplacée, ou le lien contient une faute de frappe.",
+    "home": "Retour à tududi"
   }
 }

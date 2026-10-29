@@ -535,5 +535,10 @@
       }
     },
     "turn": "Kirjoita se kerran. Anna sille paikka. Anna sen lähteä päästäsi."
+  },
+  "notFound": {
+    "title": "Sivua ei löytynyt",
+    "lede": "Tästä osoitteesta ei löydy mitään. Sivu on ehkä siirretty, tai linkissä on kirjoitusvirhe.",
+    "home": "Takaisin tududiin"
   }
 }

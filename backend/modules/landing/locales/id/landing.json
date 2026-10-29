@@ -535,5 +535,10 @@
       }
     },
     "turn": "Tulis sekali. Beri tempat. Biarkan ia keluar dari kepala Anda."
+  },
+  "notFound": {
+    "title": "Halaman tidak ditemukan",
+    "lede": "Tidak ada apa pun di alamat ini. Mungkin sudah dipindahkan, atau tautannya salah ketik.",
+    "home": "Kembali ke tududi"
   }
 }

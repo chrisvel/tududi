@@ -535,5 +535,10 @@
       }
     },
     "turn": "Escríbelo una vez. Dale un lugar. Deja que salga de tu cabeza."
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "lede": "No hay nada en esta dirección. Puede que se haya movido o que el enlace tenga un error.",
+    "home": "Volver a tududi"
   }
 }
