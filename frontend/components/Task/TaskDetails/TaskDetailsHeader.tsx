@@ -11,6 +11,7 @@ import {
     ArrowUpIcon,
     ArrowDownIcon,
     SparklesIcon,
+    LinkIcon,
 } from '@heroicons/react/24/outline';
 import { Link, useNavigate } from 'react-router-dom';
 import Tooltip from '../../Shared/Tooltip';
@@ -20,6 +21,7 @@ import { formatDateTime } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
 import { getStatusValue } from '../../../constants/taskStatus';
 import QuickCaptureInput from '../../Inbox/QuickCaptureInput';
+import { getBasePath } from '../../../config/paths';
 
 interface TaskDetailsHeaderProps {
     task: Task;
@@ -81,6 +83,7 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
         useState<React.CSSProperties>({});
     const [actionsMenuReady, setActionsMenuReady] = useState(false);
     const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
+    const [linkCopied, setLinkCopied] = useState(false);
     const pressingInsideTitleRef = useRef(false);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const actionsMenuDropdownRef = useRef<HTMLDivElement>(null);
@@ -178,6 +181,19 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     const handleTitleBlur = () => {
         if (pressingInsideTitleRef.current) return;
         void handleSaveTitle();
+    };
+
+    const taskLink = `${window.location.origin}${getBasePath()}/task/${task.uid}`;
+
+    const handleCopyLink = async (e: React.MouseEvent) => {
+        e.preventDefault();
+        try {
+            await navigator.clipboard.writeText(taskLink);
+            setLinkCopied(true);
+            setTimeout(() => setLinkCopied(false), 2000);
+        } catch {
+            // Clipboard blocked: the icon is still a plain link to copy by hand
+        }
     };
 
     const handleStatusControlUpdate = async (updatedTask: Task) => {
@@ -319,6 +335,35 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     >
                                         {task.name}
                                     </h2>
+                                    {task.uid && (
+                                        <a
+                                            href={taskLink}
+                                            onClick={handleCopyLink}
+                                            className="-ml-2 flex-shrink-0 p-1 rounded text-gray-300 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-600 dark:hover:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+                                            title={
+                                                linkCopied
+                                                    ? t(
+                                                          'task.linkCopied',
+                                                          'Link copied'
+                                                      )
+                                                    : t(
+                                                          'task.copyLink',
+                                                          'Copy link to task'
+                                                      )
+                                            }
+                                            aria-label={t(
+                                                'task.copyLink',
+                                                'Copy link to task'
+                                            )}
+                                            data-testid="task-copy-link"
+                                        >
+                                            {linkCopied ? (
+                                                <CheckIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                            ) : (
+                                                <LinkIcon className="h-4 w-4" />
+                                            )}
+                                        </a>
+                                    )}
 
                                     <div className="flex items-center gap-2 flex-wrap min-w-0">
                                         <TaskStatusControl

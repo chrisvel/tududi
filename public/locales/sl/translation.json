@@ -1318,6 +1318,8 @@
     "recurringSetup": "Nastavitev ponavljanja",
     "notRecurring": "Ta naloga še ni ponavljajoča.",
     "clickToEditTitle": "Kliknite za urejanje naslova",
+    "copyLink": "Kopiraj povezavo do opravila",
+    "linkCopied": "Povezava kopirana",
     "clickToEditContent": "Kliknite za urejanje vsebine",
     "clickToAddContent": "Kliknite za dodajanje vsebine",
     "clickToEditSubtasks": "Kliknite za urejanje podnalog",

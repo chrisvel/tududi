@@ -1355,6 +1355,8 @@
     "recurringSetup": "Gentagen opsætning",
     "notRecurring": "Denne opgave er ikke gentagende endnu.",
     "clickToEditTitle": "Klik for at redigere titel",
+    "copyLink": "Kopiér link til opgaven",
+    "linkCopied": "Link kopieret",
     "clickToEditContent": "Klik for at redigere indhold",
     "clickToAddContent": "Klik for at tilføje indhold",
     "clickToEditSubtasks": "Klik for at redigere underopgaver",

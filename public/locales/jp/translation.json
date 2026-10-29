@@ -1576,6 +1576,8 @@
     "recurringSetup": "繰り返し設定",
     "notRecurring": "このタスクはまだ繰り返しではありません。",
     "clickToEditTitle": "タイトルを編集するにはクリック",
+    "copyLink": "タスクへのリンクをコピー",
+    "linkCopied": "リンクをコピーしました",
     "clickToEditContent": "内容を編集するにはクリック",
     "clickToAddContent": "内容を追加するにはクリック",
     "clickToEditSubtasks": "サブタスクを編集するにはクリック",

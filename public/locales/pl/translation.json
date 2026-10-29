@@ -1317,6 +1317,8 @@
     "recurringSetup": "Ustawienia powtarzalności",
     "notRecurring": "To zadanie jeszcze nie jest powtarzalne.",
     "clickToEditTitle": "Kliknij, aby edytować tytuł",
+    "copyLink": "Kopiuj link do zadania",
+    "linkCopied": "Skopiowano link",
     "clickToEditContent": "Kliknij, aby edytować treść",
     "clickToAddContent": "Kliknij, aby dodać treść",
     "clickToEditSubtasks": "Kliknij, aby edytować podzadania",

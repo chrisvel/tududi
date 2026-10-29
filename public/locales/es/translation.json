@@ -1332,6 +1332,8 @@
     "recurringSetup": "Configuración recurrente",
     "notRecurring": "Esta tarea aún no es recurrente.",
     "clickToEditTitle": "Haz clic para editar el título",
+    "copyLink": "Copiar enlace a la tarea",
+    "linkCopied": "Enlace copiado",
     "clickToEditContent": "Haz clic para editar el contenido",
     "clickToAddContent": "Haz clic para agregar contenido",
     "clickToEditSubtasks": "Haz clic para editar subtareas",

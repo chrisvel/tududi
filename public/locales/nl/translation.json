@@ -1356,6 +1356,8 @@
     "recurringSetup": "Terugkerende instellingen",
     "notRecurring": "Deze taak is nog niet terugkerend.",
     "clickToEditTitle": "Klik om titel te bewerken",
+    "copyLink": "Link naar taak kopiëren",
+    "linkCopied": "Link gekopieerd",
     "clickToEditContent": "Klik om inhoud te bewerken",
     "clickToAddContent": "Klik om inhoud toe te voegen",
     "clickToEditSubtasks": "Klik om subtaken te bewerken",

@@ -1316,6 +1316,8 @@
     "recurringSetup": "Tekrarlayan Ayar",
     "notRecurring": "Bu görev henüz tekrarlanmıyor.",
     "clickToEditTitle": "Başlığı düzenlemek için tıklayın",
+    "copyLink": "Görev bağlantısını kopyala",
+    "linkCopied": "Bağlantı kopyalandı",
     "clickToEditContent": "İçeriği düzenlemek için tıklayın",
     "clickToAddContent": "İçerik eklemek için tıklayın",
     "clickToEditSubtasks": "Alt görevleri düzenlemek için tıklayın",

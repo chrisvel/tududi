@@ -1315,6 +1315,8 @@
     "recurringSetup": "重复设置",
     "notRecurring": "此任务尚未重复。",
     "clickToEditTitle": "点击编辑标题",
+    "copyLink": "复制任务链接",
+    "linkCopied": "链接已复制",
     "clickToEditContent": "点击编辑内容",
     "clickToAddContent": "点击添加内容",
     "clickToEditSubtasks": "点击编辑子任务",

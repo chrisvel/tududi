@@ -1354,6 +1354,8 @@
     "recurringSetup": "Pengaturan Berulang",
     "notRecurring": "Tugas ini belum berulang.",
     "clickToEditTitle": "Klik untuk mengedit judul",
+    "copyLink": "Salin tautan tugas",
+    "linkCopied": "Tautan disalin",
     "clickToEditContent": "Klik untuk mengedit konten",
     "clickToAddContent": "Klik untuk menambah konten",
     "clickToEditSubtasks": "Klik untuk mengedit subtugas",

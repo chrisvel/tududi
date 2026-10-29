@@ -1356,6 +1356,8 @@
     "recurringSetup": "Impostazione ricorrente",
     "notRecurring": "Questo compito non è ancora ricorrente.",
     "clickToEditTitle": "Clicca per modificare il titolo",
+    "copyLink": "Copia link all'attività",
+    "linkCopied": "Link copiato",
     "clickToEditContent": "Clicca per modificare il contenuto",
     "clickToAddContent": "Clicca per aggiungere contenuto",
     "clickToEditSubtasks": "Clicca per modificare i sottocompiti",

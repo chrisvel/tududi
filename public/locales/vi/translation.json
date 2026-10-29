@@ -1315,6 +1315,8 @@
     "recurringSetup": "Cài đặt lặp lại",
     "notRecurring": "Công việc này chưa lặp lại.",
     "clickToEditTitle": "Nhấp để chỉnh sửa tiêu đề",
+    "copyLink": "Sao chép liên kết công việc",
+    "linkCopied": "Đã sao chép liên kết",
     "clickToEditContent": "Nhấp để chỉnh sửa nội dung",
     "clickToAddContent": "Nhấp để thêm nội dung",
     "clickToEditSubtasks": "Nhấp để chỉnh sửa các công việc con",
