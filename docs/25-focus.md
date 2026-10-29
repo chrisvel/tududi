@@ -23,7 +23,7 @@ Everything else is unscoped: the Calendar, Kanban and Eisenhower boards, the Inb
 
 ## Picking and clearing
 
-The chip reads **Focus** when none is set, and the scope otherwise, as `Area › Project · #tag`. On phones only the icon shows, with a dot while a Focus is set. Clicking it opens a small panel with the area, the projects of that area, and tags; **Apply** saves, **Clear** removes it. On wider screens an × next to the chip clears it in one click.
+The chip reads **Focus** when none is set, and the scope otherwise, as `Area › Project · #tag`. On phones only the icon shows, with a dot while a Focus is set. Clicking it opens a small panel with the area, the projects of that area, and tags (once an area or project is picked, only the tags used inside it are suggested); **Apply** saves, **Clear** removes it. On wider screens an × next to the chip clears it in one click.
 
 An empty list while a Focus is set says "Showing Work only" with a link to clear it, so an empty page is not mistaken for an empty account.
 
@@ -55,6 +55,7 @@ Endpoints that accept them:
 | `GET /api/notes`                 | `area_uid` means notes of projects in the area                                                                                                |
 | `GET /api/projects`              | `area_uid` is the same as the existing `area`                                                                                                 |
 | `GET /api/search`                | `area_uid` and `project_uid` (tags were already a search filter)                                                                              |
+| `GET /api/tags`                  | `area_uid` and `project_uid` only: tags used by the tasks, notes or projects in scope                                                         |
 | `PUT /api/profile/ui-settings`   | Body `{ focus: { area_uid, project_uid?, tags? } }` saves the chip's Focus; `{ focus: null }` clears it. Up to ten tags; uids are not checked |
 
 A scope naming something the user cannot see matches nothing. The tasks endpoint's `area_uid` now includes tasks inherited through a project in the area; the Area detail page relies on this.

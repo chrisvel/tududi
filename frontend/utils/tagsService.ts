@@ -26,15 +26,25 @@ export const refreshTagCountsIfTagsChanged = (payload?: {
         );
 };
 
-export const fetchTags = async (): Promise<Tag[]> => {
+// A scope (area_uid / project_uid) returns only the tags used inside it.
+export const fetchTags = async (
+    scope: { area_uid?: string; project_uid?: string } = {}
+): Promise<Tag[]> => {
     try {
-        const response = await fetch(getApiPath('tags'), {
-            credentials: 'include',
-            headers: {
-                Accept: 'application/json',
-                'Cache-Control': 'no-cache',
-            },
-        });
+        const params = new URLSearchParams();
+        if (scope.area_uid) params.set('area_uid', scope.area_uid);
+        if (scope.project_uid) params.set('project_uid', scope.project_uid);
+        const query = params.toString();
+        const response = await fetch(
+            getApiPath(query ? `tags?${query}` : 'tags'),
+            {
+                credentials: 'include',
+                headers: {
+                    Accept: 'application/json',
+                    'Cache-Control': 'no-cache',
+                },
+            }
+        );
         await handleAuthResponse(response, 'Failed to fetch tags.');
         return await response.json();
     } catch (error) {
