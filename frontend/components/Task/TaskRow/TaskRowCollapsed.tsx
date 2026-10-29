@@ -26,6 +26,7 @@ import {
     getYesterdayDateString,
 } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
+import CopyTaskLinkButton from '../CopyTaskLinkButton';
 import QuickCaptureInput, {
     QuickCaptureInputHandle,
 } from '../../Inbox/QuickCaptureInput';
@@ -322,6 +323,13 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         >
                             {currentName}
                         </span>
+                    )}
+                    {!editable && task.uid && !task.is_virtual_occurrence && (
+                        <CopyTaskLinkButton
+                            path={`/${task.habit_mode ? 'habit' : 'task'}/${encodeURIComponent(task.uid)}`}
+                            className="hidden [@media(hover:hover)]:block opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                            iconClassName="h-3.5 w-3.5"
+                        />
                     )}
                     {task.is_blocked && !isTaskCompleted(task.status) && (
                         <span

@@ -424,6 +424,29 @@ describe('TaskRow', () => {
         });
     });
 
+    it('copies the task link from the title icon without opening the row', async () => {
+        const writeText = jest.fn().mockResolvedValue(undefined);
+        Object.assign(navigator, { clipboard: { writeText } });
+        renderRow(baseTask(), { disableExpand: true });
+
+        fireEvent.click(screen.getByTestId('task-copy-link'));
+
+        await waitFor(() =>
+            expect(writeText).toHaveBeenCalledWith(
+                `${window.location.origin}/task/task-1`
+            )
+        );
+        expect(navigateMock).not.toHaveBeenCalled();
+    });
+
+    it('links habit rows to the habit page', () => {
+        renderRow(baseTask({ habit_mode: true }));
+        expect(screen.getByTestId('task-copy-link')).toHaveAttribute(
+            'href',
+            `${window.location.origin}/habit/task-1`
+        );
+    });
+
     it('navigates to the full page when expansion is disabled', () => {
         renderRow(baseTask(), { disableExpand: true });
         fireEvent.click(screen.getByText('Buy tickets'));
