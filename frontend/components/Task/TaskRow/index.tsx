@@ -64,6 +64,8 @@ export interface TaskRowProps {
     onTaskDelete: (taskUid: string) => void;
     projects: Project[];
     hideProjectName?: boolean;
+    // Set on an area's own page, where every row is in that area.
+    hideAreaName?: boolean;
     onToggleToday?: (taskId: number, task?: Task) => Promise<void>;
     isUpcomingView?: boolean;
     showCompletedTasks?: boolean;
@@ -86,6 +88,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
     onTaskDelete,
     projects,
     hideProjectName = false,
+    hideAreaName = false,
     isUpcomingView = false,
     showCompletedTasks = false,
     isInCompletedSection = false,
@@ -445,6 +448,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                     task={displayTask}
                     project={project}
                     hideProjectName={hideProjectName}
+                    hideAreaName={hideAreaName}
                     hideStatusControl={hideStatusControl}
                     condenseStatusControl={isUpcomingView}
                     compact={compact}

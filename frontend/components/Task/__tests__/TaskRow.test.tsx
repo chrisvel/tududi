@@ -7,6 +7,8 @@ import { Task } from '../../../entities/Task';
 import * as tasksService from '../../../utils/tasksService';
 import * as inboxService from '../../../utils/inboxService';
 
+import { useStore } from '../../../store/useStore';
+
 const navigateMock = jest.fn();
 
 jest.mock('react-router-dom', () => ({
@@ -177,6 +179,38 @@ describe('TaskRow', () => {
         expect(
             screen.queryByPlaceholderText('Task name')
         ).not.toBeInTheDocument();
+    });
+
+    describe('area chip', () => {
+        const state = (useStore as any).getState();
+        const projectTask = () =>
+            baseTask({
+                project_id: 10,
+                Project: { id: 10, uid: 'p1', name: 'Gym' } as any,
+            });
+
+        beforeEach(() => {
+            state.projectsStore.projects = [
+                { id: 10, uid: 'p1', name: 'Gym', area_id: 1 },
+            ];
+            state.areasStore.areas = [{ id: 1, uid: 'a1', name: 'Health' }];
+        });
+        afterEach(() => {
+            state.projectsStore.projects = [];
+            state.areasStore.areas = [];
+        });
+
+        it('shows the area a task takes from its project', () => {
+            renderRow(projectTask());
+            expect(screen.getByTestId('task-row-area')).toHaveTextContent(
+                'Health'
+            );
+        });
+
+        it('hides the area on the area page', () => {
+            renderRow(projectTask(), { hideAreaName: true });
+            expect(screen.queryByTestId('task-row-area')).toBeNull();
+        });
     });
 
     it('shows the blocked badge when a linked task starts blocking it (#1810)', async () => {
