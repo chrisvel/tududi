@@ -278,7 +278,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         // Only render the first line for the preview
         const firstLine = text.split('\n')[0];
         const re =
-            /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
+            /#([\w-]+)|\+(?:"((?:\\["\\]|[^"])+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
         const nodes: React.ReactNode[] = [];
         let last = 0;
         let m: RegExpExecArray | null;
@@ -361,7 +361,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 );
             } else {
                 // +project
-                const projectName = m[2] || m[3];
+                const projectName = m[2]
+                    ? readProjectTokenName(`"${m[2]}"`)
+                    : m[3];
                 nodes.push(
                     <span
                         key={`proj-${idx}`}

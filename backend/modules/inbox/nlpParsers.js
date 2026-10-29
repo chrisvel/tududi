@@ -54,7 +54,7 @@ const WEEKDAY_PATTERN =
 // length so the date parsers never match inside them and indexes stay aligned.
 const maskTokens = (text) =>
     text.replace(
-        /https?:\/\/\S+|(^|\s)([#+@~](?:"[^"]*"|\S+))/g,
+        /https?:\/\/\S+|(^|\s)([#+@~](?:"(?:\\["\\]|[^"])*"|\S+))/g,
         (match, lead = '') =>
             match.startsWith('http')
                 ? ' '.repeat(match.length)

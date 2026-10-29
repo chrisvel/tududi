@@ -220,6 +220,15 @@ describe('inbox natural-language parsing', () => {
             });
         });
 
+        it('finds no date inside a project name with an escaped quote', () => {
+            const result = processInboxItem(
+                '+"Q4 \\" Friday plan" call bob',
+                options
+            );
+            expect(result.parsed_projects).toEqual(['Q4 " Friday plan']);
+            expect(result.parsed_due_date).toBeNull();
+        });
+
         it('leaves no dangling "until" in the title', () => {
             const result = processInboxItem(
                 'Visit plumbers office to pay for water meter until next thursday',
