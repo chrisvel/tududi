@@ -703,7 +703,10 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     <SidePanelSection
                         title={t('task.attachments', 'Attachments')}
                     >
-                        <TaskAttachmentsCard taskUid={task.uid} />
+                        <TaskAttachmentsCard
+                            taskUid={task.uid}
+                            showTitle={false}
+                        />
                     </SidePanelSection>
 
                     <SidePanelSection title={t('task.comments', 'Comments')}>
