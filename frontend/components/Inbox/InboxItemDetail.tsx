@@ -24,6 +24,7 @@ import {
     InboxAnalysis,
 } from '../../utils/inboxService';
 import { carriedTokens, withCarried } from '../../utils/carriedTokens';
+import { readProjectTokenName } from '../../utils/inboxTokens';
 
 interface InboxItemDetailProps {
     item: InboxItem;
@@ -141,6 +142,13 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
             ) {
                 inQuotes = true;
                 currentToken += char;
+            } else if (
+                char === '\\' &&
+                inQuotes &&
+                (text[i + 1] === '"' || text[i + 1] === '\\')
+            ) {
+                currentToken += char + text[i + 1];
+                i++;
             } else if (char === '"' && inQuotes) {
                 inQuotes = false;
                 currentToken += char;
@@ -204,12 +212,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     groupEnd++;
                 for (let j = i; j < groupEnd; j++) {
                     if (tokens[j].startsWith('+')) {
-                        let projectName = tokens[j].substring(1);
-                        if (
-                            projectName.startsWith('"') &&
-                            projectName.endsWith('"')
-                        )
-                            projectName = projectName.slice(1, -1);
+                        const projectName = readProjectTokenName(
+                            tokens[j].substring(1)
+                        );
                         if (projectName && !matches.includes(projectName)) {
                             matches.push(projectName);
                             return matches;
@@ -273,7 +278,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
         // Only render the first line for the preview
         const firstLine = text.split('\n')[0];
         const re =
-            /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
+            /#([\w-]+)|\+(?:"((?:\\["\\]|[^"])+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
         const nodes: React.ReactNode[] = [];
         let last = 0;
         let m: RegExpExecArray | null;
@@ -356,7 +361,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 );
             } else {
                 // +project
-                const projectName = m[2] || m[3];
+                const projectName = m[2]
+                    ? readProjectTokenName(`"${m[2]}"`)
+                    : m[3];
                 nodes.push(
                     <span
                         key={`proj-${idx}`}
@@ -650,7 +657,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     ref={composerRef}
                     mode="edit"
                     initialValue={cleanedEditText ?? fullContent}
-                    carriedText={cleanedEditText === null ? '' : carriedEditText}
+                    carriedText={
+                        cleanedEditText === null ? '' : carriedEditText
+                    }
                     hidePrimaryButton
                     projects={projects}
                     onSubmitOverride={handleSubmitEdit}

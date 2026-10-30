@@ -68,6 +68,26 @@ describe('inboxProcessingService', () => {
             expect(result.cleaned_content).toBe(longText);
             expect(result.cleaned_content.length).toBe(longText.length);
         });
+
+        it('should read an escaped quote inside a quoted project name', () => {
+            const result = processInboxItem('+"foo \\" bar" Buy milk');
+
+            expect(result.parsed_projects).toEqual(['foo " bar']);
+            expect(result.cleaned_content).toBe('Buy milk');
+        });
+
+        it('should read an escaped backslash inside a quoted project name', () => {
+            const result = processInboxItem('Buy milk +"C:\\\\ drive"');
+
+            expect(result.parsed_projects).toEqual(['C:\\ drive']);
+            expect(result.cleaned_content).toBe('Buy milk');
+        });
+
+        it('should keep a backslash that escapes nothing', () => {
+            const result = processInboxItem('+"a\\b c" Buy milk');
+
+            expect(result.parsed_projects).toEqual(['a\\b c']);
+        });
     });
 
     describe('containsUrl', () => {

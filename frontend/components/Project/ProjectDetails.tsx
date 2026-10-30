@@ -46,6 +46,7 @@ import { exportTasks } from '../../utils/spreadsheetService';
 import { spreadsheetErrorText } from '../Spreadsheet/errorText';
 import NewItemButton from '../Shared/NewItemButton';
 import { onCaptureSaved, openCapture } from '../../utils/captureUi';
+import { formatProjectTokenName } from '../../utils/inboxTokens';
 import BannerEditModal from './BannerEditModal';
 import ProjectShareModal from './ProjectShareModal';
 import ProjectModal from './ProjectModal';
@@ -454,9 +455,7 @@ const ProjectDetails: React.FC = () => {
     // Opens the capture box on a task or note with this project filled in
     const openCaptureForProject = (target: 'task' | 'note' = 'task') => {
         if (!project) return;
-        const token = /\s/.test(project.name)
-            ? `+"${project.name}"`
-            : `+${project.name}`;
+        const token = `+${formatProjectTokenName(project.name)}`;
         openCapture(target, null, `${token} `, {
             uid: project.uid,
             name: project.name,
