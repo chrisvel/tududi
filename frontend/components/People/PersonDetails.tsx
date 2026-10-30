@@ -27,6 +27,7 @@ import { removeMember } from '../../utils/membersService';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskList from '../Task/TaskList';
 import { useStore } from '../../store/useStore';
+import { memberRoleLabel } from './memberRoleLabel';
 
 const RELATIONSHIP_LABELS: Record<string, string> = {
     family: 'Family',
@@ -192,7 +193,7 @@ const PersonDetails: React.FC = () => {
                     <>
                         <span className="rounded-md bg-gray-100 px-2 py-0.5 font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300">
                             {person.kind === 'member'
-                                ? t('people.member', 'Member')
+                                ? memberRoleLabel(person, t)
                                 : t('people.contact', 'Contact')}
                         </span>
                         <span>

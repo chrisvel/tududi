@@ -64,7 +64,11 @@ const projectsController = {
         try {
             const uid = extractUidFromSlug(req.params.uidSlug);
             const timezone = req.currentUser?.timezone;
-            const project = await projectsService.getByUid(uid, timezone);
+            const project = await projectsService.getByUid(
+                uid,
+                timezone,
+                getAuthenticatedUserId(req)
+            );
             res.json(project);
         } catch (error) {
             next(error);

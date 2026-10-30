@@ -14,6 +14,7 @@ const {
 } = require('../../services/workspaceMembers');
 const accountsService = require('../../services/accountsService');
 const { logError } = require('../../services/logService');
+const { resourcePhrase } = require('../../utils/resourcePhrases');
 const { Notification } = require('../../models');
 const {
     ValidationError,
@@ -235,8 +236,8 @@ class SharesService {
                 userId: target.id,
                 type: 'share_invitation',
                 title: accepted
-                    ? `${inviterLabel} shared a ${resourceType} with you`
-                    : `${inviterLabel} invited you to a ${resourceType}`,
+                    ? `${inviterLabel} shared ${resourcePhrase(resourceType)} with you`
+                    : `${inviterLabel} invited you to ${resourcePhrase(resourceType)}`,
                 message: accepted
                     ? `"${resourceLabel}" was shared with you (${accessLabel}). It is in your workspace now.`
                     : `"${resourceLabel}" was shared with you (${accessLabel}). Accept to add it to your workspace.`,

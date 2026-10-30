@@ -129,6 +129,21 @@ describe('People page', () => {
             ).toBeInTheDocument();
         });
 
+        it('labels the account owner and admins', async () => {
+            (fetchPeople as jest.Mock).mockResolvedValue([
+                { ...people[0], name: 'Olivia', account_role: 'owner' },
+                { ...people[2], name: 'Adam', account_role: 'admin' },
+                { ...people[1], account_status: 'active' },
+                people[3],
+            ]);
+            renderPage();
+            await screen.findByText('Olivia');
+
+            expect(screen.getByText('Owner')).toBeInTheDocument();
+            expect(screen.getByText('Admin')).toBeInTheDocument();
+            expect(screen.getAllByText('Member')).toHaveLength(1);
+        });
+
         it('shows the relationship of a contact', async () => {
             renderPage();
             await screen.findByText('Plumber');
