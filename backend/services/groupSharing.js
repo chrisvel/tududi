@@ -23,6 +23,7 @@ const {
 } = require('./permissionsCalculators');
 const { logError } = require('./logService');
 const { NotFoundError } = require('../shared/errors');
+const { unassignAfterAccessLoss } = require('./assignmentCleanup');
 
 const LEVEL_RANK = { ro: 1, rw: 2 };
 const INSERT_CHUNK_SIZE = 500;
@@ -286,8 +287,20 @@ async function grantToGroup({
     return share;
 }
 
+// The (user, project) pairs a set of group rows reaches, for taking people
+// off the open tasks of projects they can no longer open.
+async function projectPairsOf(where, tx) {
+    const rows = await GroupPermission.findAll({
+        where: { ...where, resource_type: 'project' },
+        attributes: ['user_id', 'resource_uid'],
+        raw: true,
+        transaction: tx,
+    });
+    return rows.map((r) => ({ userId: r.user_id, projectUid: r.resource_uid }));
+}
+
 async function revokeFromGroup({ group, resourceType, resourceUid }) {
-    await sequelize.transaction(async (tx) => {
+    const pairs = await sequelize.transaction(async (tx) => {
         const share = await GroupShare.findOne({
             where: {
                 group_id: group.id,
@@ -301,12 +314,15 @@ async function revokeFromGroup({ group, resourceType, resourceUid }) {
                 'This resource is not shared with the group'
             );
         }
+        const lost = await projectPairsOf({ group_share_id: share.id }, tx);
         await GroupPermission.destroy({
             where: { group_share_id: share.id },
             transaction: tx,
         });
         await share.destroy({ transaction: tx });
+        return lost;
     });
+    await unassignAfterAccessLoss(pairs);
 }
 
 // The groups a resource is shared with, with how many members have accepted
@@ -420,12 +436,12 @@ async function addMembers({ group, userIds, addedByUserId }) {
 // Removes a member and only the access that came through this group. Direct
 // shares and other groups keep working. Returns whether they were a member.
 async function removeMember({ group, userId }) {
-    return sequelize.transaction(async (tx) => {
+    const pairs = await sequelize.transaction(async (tx) => {
         const removed = await UserGroupMember.destroy({
             where: { group_id: group.id, user_id: userId },
             transaction: tx,
         });
-        if (!removed) return false;
+        if (!removed) return null;
 
         const shares = await GroupShare.findAll({
             where: { group_id: group.id },
@@ -433,15 +449,17 @@ async function removeMember({ group, userId }) {
             raw: true,
             transaction: tx,
         });
-        await GroupPermission.destroy({
-            where: {
-                user_id: userId,
-                group_share_id: shares.map((s) => s.id),
-            },
-            transaction: tx,
-        });
-        return true;
+        const where = {
+            user_id: userId,
+            group_share_id: shares.map((s) => s.id),
+        };
+        const lost = await projectPairsOf(where, tx);
+        await GroupPermission.destroy({ where, transaction: tx });
+        return lost;
     });
+    if (!pairs) return false;
+    await unassignAfterAccessLoss(pairs);
+    return true;
 }
 
 // Called when a project lands in an area or goal that is shared with a group:

@@ -4,6 +4,9 @@ const sharesRepository = require('./repository');
 const groupsRepository = require('../groups/repository');
 const { execAction } = require('../../services/execAction');
 const groupSharing = require('../../services/groupSharing');
+const {
+    unassignAfterShareRevoke,
+} = require('../../services/assignmentCleanup');
 const { isAdmin } = require('../../services/rolesService');
 const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const accountsService = require('../../services/accountsService');
@@ -289,6 +292,11 @@ class SharesService {
             resourceType: resource_type,
             resourceUid: resource_uid,
         });
+        await unassignAfterShareRevoke(
+            Number(target_user_id),
+            resource_type,
+            resource_uid
+        );
 
         return null; // 204 No Content
     }

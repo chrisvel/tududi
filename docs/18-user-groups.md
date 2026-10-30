@@ -51,6 +51,17 @@ Being in a group with someone makes you part of each other's workspace, even whe
 
 Assigning a task still gives the assignee access to that task only. The group does not share anything by itself.
 
+### Losing access unassigns open tasks
+
+Assigning a task gives the assignee access to that task on its own, so when someone's access to a project ends, their open tasks there (not done, archived or cancelled, subtasks included) are unassigned. Otherwise they would keep opening and editing them. This runs after every way access can end:
+
+- removing them from a group the project, its area or its goal is shared with
+- deleting such a group
+- revoking a direct or group share on the project, its area or its goal
+- moving the project out of a shared area or goal, or restricting it
+
+Access is re-checked first: anyone who still reaches the project through ownership, the area, a direct share or another group keeps their tasks, and so does anyone the task itself is shared with. Completed tasks keep their assignee. The project owner gets one notification per project and person, saying how many tasks were unassigned. The code is in `backend/services/assignmentCleanup.js`.
+
 ### Overlap rules
 
 - Access is the highest level across a direct share and every group grant.
@@ -120,5 +131,6 @@ Anything that goes through `permissionsService.getAccess`, `getSharedUidsForUser
 - Group grants and membership: `/backend/services/groupSharing.js`
 - Reading shared access: `/backend/services/permissionSources.js`
 - Container mirroring: `/backend/services/containerShareSync.js`
+- Unassigning after access ends: `/backend/services/assignmentCleanup.js`
 - Admin page: `/frontend/components/Admin/AdminUsersPage.tsx` (tab shell), `/frontend/components/Admin/AdminGroupsPanel.tsx` (Groups tab)
 - Share dialog: `/frontend/components/Shared/ShareModal.tsx`

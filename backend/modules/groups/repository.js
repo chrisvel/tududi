@@ -191,11 +191,22 @@ class GroupsRepository {
         return result;
     }
 
+    // Returns the (user, project) pairs the group's grants reached, so the
+    // caller can take members off tasks in projects they lost.
     async destroyWithGrants(group) {
         return sequelize.transaction(async (transaction) => {
             const shares = await GroupShare.findAll({
                 where: { group_id: group.id },
                 attributes: ['id'],
+                raw: true,
+                transaction,
+            });
+            const projectRows = await GroupPermission.findAll({
+                where: {
+                    group_share_id: { [Op.in]: shares.map((s) => s.id) },
+                    resource_type: 'project',
+                },
+                attributes: ['user_id', 'resource_uid'],
                 raw: true,
                 transaction,
             });
@@ -214,6 +225,10 @@ class GroupsRepository {
                 transaction,
             });
             await group.destroy({ transaction });
+            return projectRows.map((r) => ({
+                userId: r.user_id,
+                projectUid: r.resource_uid,
+            }));
         });
     }
 }
