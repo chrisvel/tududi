@@ -535,5 +535,10 @@
       }
     },
     "turn": "Scrie-l o dată. Dă-i un loc. Lasă-l să-ți iasă din cap."
+  },
+  "notFound": {
+    "title": "Pagina nu a fost găsită",
+    "lede": "La această adresă nu există nimic. Poate a fost mutată sau linkul conține o greșeală.",
+    "home": "Înapoi la tududi"
   }
 }

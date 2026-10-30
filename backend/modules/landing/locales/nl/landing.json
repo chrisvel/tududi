@@ -535,5 +535,10 @@
       }
     },
     "turn": "Schrijf het één keer op. Geef het een plek. Laat het je hoofd verlaten."
+  },
+  "notFound": {
+    "title": "Pagina niet gevonden",
+    "lede": "Op dit adres staat niets. Misschien is de pagina verplaatst, of zit er een typfout in de link.",
+    "home": "Terug naar tududi"
   }
 }

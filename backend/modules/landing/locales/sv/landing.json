@@ -535,5 +535,10 @@
       }
     },
     "turn": "Skriv det en gång. Ge det en plats. Låt det lämna ditt huvud."
+  },
+  "notFound": {
+    "title": "Sidan hittades inte",
+    "lede": "Det finns ingenting på den här adressen. Den kan ha flyttats, eller så har länken ett stavfel.",
+    "home": "Tillbaka till tududi"
   }
 }

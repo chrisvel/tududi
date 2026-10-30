@@ -535,5 +535,10 @@
       }
     },
     "turn": "Zapiši enkrat. Daj temu mesto. Pusti, da zapusti tvojo glavo."
+  },
+  "notFound": {
+    "title": "Strani ni mogoče najti",
+    "lede": "Na tem naslovu ni ničesar. Morda je bila premaknjena ali pa je v povezavi tipkarska napaka.",
+    "home": "Nazaj na tududi"
   }
 }

@@ -535,5 +535,10 @@
       }
     },
     "turn": "Scrivilo una volta. Dagli un posto. Lascia che esca dalla tua testa."
+  },
+  "notFound": {
+    "title": "Pagina non trovata",
+    "lede": "Non c'è nulla a questo indirizzo. Potrebbe essere stata spostata, o il link contiene un errore.",
+    "home": "Torna a tududi"
   }
 }

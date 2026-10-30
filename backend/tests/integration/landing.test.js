@@ -165,6 +165,90 @@ describe('Landing page', () => {
         expect(offsite.status).toBe(404);
     });
 
+    it('sends old shared links and app files to the app', async () => {
+        for (const p of [
+            '/task/abc',
+            '/project/abc-my-project',
+            '/public/notes/token123',
+            '/today/plan',
+            '/favicon.ico',
+            '/sw.js',
+            '/locales/en/translation.json',
+        ]) {
+            const res = await request(app).get(p).set('Host', 'tududi.com');
+            expect([p, res.status]).toEqual([p, 301]);
+            expect(res.headers.location).toBe(`https://app.tududi.com${p}`);
+        }
+    });
+
+    it('answers a path that is no page with a real 404', async () => {
+        for (const p of [
+            '/this-page-does-not-exist',
+            '/teams/x',
+            '/wp-login.php',
+        ]) {
+            const res = await request(app).get(p).set('Host', 'tududi.com');
+            expect([p, res.status]).toEqual([p, 404]);
+            expect(res.headers['x-robots-tag']).toBe('noindex');
+            expect(res.text).toContain(
+                '<meta name="robots" content="noindex">'
+            );
+            expect(res.text).toContain('data-testid="not-found"');
+            expect(res.text).not.toContain('<div id="root"');
+        }
+        const fr = await request(app)
+            .get('/nope')
+            .set('Host', 'tududi.com')
+            .set('Cookie', 'tududi_lang=fr');
+        expect(fr.status).toBe(404);
+        expect(fr.text).toContain('Page introuvable');
+    });
+
+    it('points /pricing and /features at their sections', async () => {
+        const pricing = await request(app)
+            .get('/pricing')
+            .set('Host', 'tududi.com');
+        expect(pricing.status).toBe(301);
+        expect(pricing.headers.location).toBe('/#pricing');
+        const features = await request(app)
+            .get('/features')
+            .set('Host', 'tududi.com');
+        expect(features.status).toBe(301);
+        expect(features.headers.location).toBe('/#features');
+    });
+
+    it('sends /blog to the blog host, keeping the post', async () => {
+        const blogUrl = config.landing.blogUrl;
+        config.landing.blogUrl = 'https://blog.tududi.com';
+        try {
+            const root = await request(app)
+                .get('/blog')
+                .set('Host', 'tududi.com');
+            expect(root.status).toBe(301);
+            expect(root.headers.location).toBe('https://blog.tududi.com/');
+            const post = await request(app)
+                .get('/blog/a-post?ref=x')
+                .set('Host', 'tududi.com');
+            expect(post.status).toBe(301);
+            expect(post.headers.location).toBe(
+                'https://blog.tududi.com/a-post?ref=x'
+            );
+        } finally {
+            config.landing.blogUrl = blogUrl;
+        }
+        // Without a blog host the app's own /blog answers.
+        config.landing.blogUrl = null;
+        try {
+            const res = await request(app)
+                .get('/blog')
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(301);
+            expect(res.headers.location).toBe('https://app.tududi.com/blog');
+        } finally {
+            config.landing.blogUrl = blogUrl;
+        }
+    });
+
     it('keeps the API reachable on a landing host', async () => {
         const res = await request(app)
             .get('/api/health')

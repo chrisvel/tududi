@@ -535,5 +535,10 @@
         "alt": "Today with the next task, the agenda and meetings from two calendars"
       }
     }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "lede": "There is nothing at this address. It may have moved, or the link may have a typo.",
+    "home": "Back to tududi"
   }
 }
