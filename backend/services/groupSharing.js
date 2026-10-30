@@ -22,6 +22,7 @@ const {
     projectSubtreeChanges,
 } = require('./permissionsCalculators');
 const { logError } = require('./logService');
+const { resourcePhrase } = require('../utils/resourcePhrases');
 const { NotFoundError } = require('../shared/errors');
 
 const LEVEL_RANK = { ro: 1, rw: 2 };
@@ -188,7 +189,7 @@ async function notifyInvitees(share, group, userIds) {
             await Notification.createNotification({
                 userId: row.user_id,
                 type: 'share_invitation',
-                title: `${inviterLabel} shared a ${share.resource_type} with ${group.name}`,
+                title: `${inviterLabel} shared ${resourcePhrase(share.resource_type)} with ${group.name}`,
                 message: `"${resourceLabel}" was shared with the group "${group.name}" (${accessLabel}). Accept to add it to your workspace.`,
                 data: {
                     invitationId: `g${row.id}`,

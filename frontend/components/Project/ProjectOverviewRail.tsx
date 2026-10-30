@@ -24,6 +24,7 @@ import { fetchAssignablePeopleForProject } from '../../utils/peopleService';
 import { Person } from '../../entities/Person';
 import { avatarTint } from '../../utils/avatarTint';
 import { getApiPath } from '../../config/paths';
+import { canManageProjectShares } from '../../utils/projectShareCache';
 
 interface ProjectOverviewRailProps {
     project: Project;
@@ -194,16 +195,21 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
         new Map()
     );
 
+    const canManageShares = canManageProjectShares(project);
+
     useEffect(() => {
         if (!project.uid) return;
         let cancelled = false;
-        listShares('project', project.uid)
-            .then((rows) => {
-                if (!cancelled) setPeople(rows);
-            })
-            .catch(() => {
-                // The panel still shows the share button without the list.
-            });
+        // Members who can't manage the project would only get a 403.
+        if (canManageShares) {
+            listShares('project', project.uid)
+                .then((rows) => {
+                    if (!cancelled) setPeople(rows);
+                })
+                .catch(() => {
+                    // The panel still shows the share button without the list.
+                });
+        }
         fetchAssignablePeopleForProject(project.uid)
             .then((list) => {
                 if (cancelled) return;
@@ -221,7 +227,7 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
         return () => {
             cancelled = true;
         };
-    }, [project.uid, project.share_count]);
+    }, [project.uid, project.share_count, canManageShares]);
 
     const roleLabel = (row: ListSharesResponseRow) => {
         if (row.is_owner || row.access_level === 'owner') {

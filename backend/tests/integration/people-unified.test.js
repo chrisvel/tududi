@@ -5,6 +5,7 @@ const {
     Person,
     UserGroup,
     UserGroupMember,
+    Role,
     sequelize,
 } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
@@ -135,6 +136,20 @@ describe('The People list', () => {
             expect(byName(people, 'Admin').kind).toBe('member');
             expect(byName(people, 'Kid').kind).toBe('member');
             expect(byName(people, 'Plumber').kind).toBe('contact');
+        });
+
+        it('marks the instance admin as admin on a self-hosted instance', async () => {
+            await Role.destroy({ where: {} });
+            await Role.create({ user_id: admin.id, is_admin: true });
+
+            const people = await list(wifeAgent);
+
+            expect(byName(people, 'Admin').account_role).toBe('admin');
+            expect(byName(people, 'Wife').account_role).toBe('member');
+            expect(byName(people, 'Kid').account_role).toBe('member');
+            expect(byName(people, 'Plumber')).not.toHaveProperty(
+                'account_role'
+            );
         });
 
         it('says whether a member can sign in', async () => {

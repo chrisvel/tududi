@@ -7,6 +7,7 @@ const { selfPersonName } = require('../../utils/selfPersonName');
 const { accountStatusOf } = require('../admin/accountStatus');
 const signInLinkService = require('../members/signInLinkService');
 const membersService = require('../members/service');
+const accountsService = require('../../services/accountsService');
 const {
     NotFoundError,
     ValidationError,
@@ -45,9 +46,10 @@ class PeopleService {
             ])
         );
 
-        const [signInLinkIds, manageableIds] = await Promise.all([
+        const [signInLinkIds, manageableIds, accountRoles] = await Promise.all([
             signInLinkService.issuableAccountIds(userId, accountIds),
             membersService.manageableAccountIds(userId, accountIds),
+            this.accountRoles(userId, accountIds),
         ]);
 
         return people.map((p) => {
@@ -61,9 +63,42 @@ class PeopleService {
                 entry.account_status = status.get(p.linked_user_id);
                 entry.can_sign_in_link = signInLinkIds.has(p.linked_user_id);
                 entry.can_manage = manageableIds.has(p.linked_user_id);
+                entry.account_role =
+                    accountRoles.get(p.linked_user_id) || 'member';
             }
             return entry;
         });
+    }
+
+    // 'owner' or 'admin' for the members who are one, by user id. On a hosted
+    // instance only the viewer's own account is described (its owner and
+    // account admins); members of other accounts stay plain members.
+    // Self-hosted has no owner, so only instance admins are marked.
+    async accountRoles(userId, accountIds) {
+        const roles = new Map();
+        if (!accountIds.length) return roles;
+
+        if (!accountsService.isHosted()) {
+            const rows = await peopleRepository.findRoleRows(accountIds);
+            rows.filter((r) => r.is_admin).forEach((r) =>
+                roles.set(r.user_id, 'admin')
+            );
+            return roles;
+        }
+
+        const account = await accountsService.getAccount(userId);
+        if (!account) return roles;
+        const rows = await peopleRepository.findRoleRows(
+            accountIds,
+            account.id
+        );
+        rows.filter((r) => r.is_admin || r.role === 'account_admin').forEach(
+            (r) => roles.set(r.user_id, 'admin')
+        );
+        if (accountIds.includes(account.owner_user_id)) {
+            roles.set(account.owner_user_id, 'owner');
+        }
+        return roles;
     }
 
     async describeOne(userId, person) {

@@ -8,6 +8,7 @@ const {
     Person,
     Permission,
     TaskAttachment,
+    Role,
     sequelize,
 } = require('../../models');
 const {
@@ -92,6 +93,24 @@ describe('Project Sharing Integration Tests', () => {
             expect(sharedProject).toBeDefined();
             expect(sharedProject.is_shared).toBe(true);
             expect(sharedProject.share_count).toBeGreaterThan(0);
+        });
+
+        test('says who may manage the shares, in the list and the detail', async () => {
+            await Role.destroy({ where: {} });
+            const canShare = async (agent) => {
+                const list = await agent.get('/api/projects');
+                const listed = list.body.projects.find(
+                    (p) => p.uid === project.uid
+                );
+                const detail = await agent.get(`/api/project/${project.uid}`);
+                return [listed.can_share, detail.body.can_share];
+            };
+
+            expect(await canShare(ownerAgent)).toEqual([true, true]);
+            expect(await canShare(sharedUserAgent)).toEqual([false, false]);
+
+            await Role.create({ user_id: sharedUser.id, is_admin: true });
+            expect(await canShare(sharedUserAgent)).toEqual([true, true]);
         });
 
         test('project with only a pending invitation still shows as shared', async () => {

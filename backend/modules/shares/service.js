@@ -8,6 +8,7 @@ const { isAdmin } = require('../../services/rolesService');
 const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
 const accountsService = require('../../services/accountsService');
 const { logError } = require('../../services/logService');
+const { resourcePhrase } = require('../../utils/resourcePhrases');
 const { Notification } = require('../../models');
 const {
     ValidationError,
@@ -217,7 +218,7 @@ class SharesService {
             await Notification.createNotification({
                 userId: target.id,
                 type: 'share_invitation',
-                title: `${inviterLabel} invited you to a ${resourceType}`,
+                title: `${inviterLabel} invited you to ${resourcePhrase(resourceType)}`,
                 message: `"${resourceLabel}" was shared with you (${accessLabel}). Accept to add it to your workspace.`,
                 data: {
                     invitationId: direct ? direct.id : null,

@@ -35,13 +35,16 @@ class ForbiddenError extends AppError {
 // 402: the action is fine, the plan is not. `details` lets the client show
 // which limit was hit and what the current plan is.
 class PlanLimitError extends AppError {
-    constructor(resource, limit, current, plan) {
+    // `reason` is the entitlement reason when it changes what the app should
+    // offer, e.g. 'override' for a comped plan that can't be bought up.
+    constructor(resource, limit, current, plan, reason) {
         super(
             `Your ${plan} plan allows ${limit} ${resource === 'storage' ? 'bytes of storage' : resource + 's'}`,
             402,
             'PLAN_LIMIT_REACHED'
         );
         this.details = { resource, limit, current, plan };
+        if (reason) this.details.reason = reason;
     }
 
     toJSON() {

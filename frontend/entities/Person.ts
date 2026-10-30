@@ -20,6 +20,9 @@ export interface Person {
     // A member the viewer created (or any member, for an admin): it may be
     // renamed, given an email or removed.
     can_manage?: boolean;
+    // A member's place in the viewer's account: its owner, an admin, or
+    // anyone else. Missing on contacts and from older servers.
+    account_role?: 'owner' | 'admin' | 'member';
     created_at?: string;
     updated_at?: string;
 }

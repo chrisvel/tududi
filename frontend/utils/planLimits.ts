@@ -13,6 +13,8 @@ export interface PlanLimitDetail {
         current?: number;
         feature?: string;
         plan?: string;
+        // 'override' when the plan is comped and can't be changed by checkout
+        reason?: string;
     };
 }
 
