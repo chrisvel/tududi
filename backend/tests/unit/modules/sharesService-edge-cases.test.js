@@ -25,6 +25,7 @@ jest.mock('../../../services/rolesService', () => ({
 }));
 jest.mock('../../../services/workspaceMembers', () => ({
     getWorkspaceUserIds: jest.fn(),
+    getVisibleMemberIds: jest.fn(),
 }));
 jest.mock('../../../services/logService', () => ({
     ...jest.requireActual('../../../services/logService'),
@@ -36,7 +37,7 @@ const repo = require('../../../modules/shares/repository');
 const groupsRepository = require('../../../modules/groups/repository');
 const { execAction } = require('../../../services/execAction');
 const groupSharing = require('../../../services/groupSharing');
-const { getWorkspaceUserIds } = require('../../../services/workspaceMembers');
+const { getVisibleMemberIds } = require('../../../services/workspaceMembers');
 const { logError } = require('../../../services/logService');
 const { Notification } = require('../../../models');
 const { NotFoundError, ValidationError } = require('../../../shared/errors');
@@ -73,7 +74,7 @@ describe('sharesService edge cases', () => {
 
     describe('listCandidates', () => {
         it('labels members by name, email or as "Member", sorted', async () => {
-            getWorkspaceUserIds.mockResolvedValue([2, 3, 4]);
+            getVisibleMemberIds.mockResolvedValue([2, 3, 4]);
             repo.findCandidateUsers.mockResolvedValue([
                 { id: 2, uid: 'b', name: 'Zoe', surname: null, email: null },
                 {
