@@ -183,6 +183,8 @@ const billingModule = require('./modules/billing');
 });
 // Paddle's default payment link (pay an invoice, replace a failed card).
 app.get('/billing/pay', billingModule.payPage);
+// The voluntary Supporter license for people who self-host.
+app.get('/supporter', billingModule.supporterPage);
 
 // Body parsing (skip for CalDAV routes which need raw body access)
 app.use((req, res, next) => {

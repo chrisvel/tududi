@@ -259,6 +259,9 @@ sign-in. Paddle's review refuses a domain that opens on a sign-in page, so
 the hosted tududi uses `https://tududi.com/billing/pay`, served by the same
 app as `app.tududi.com`. Without a default payment link, the overlay opens
 over the billing tab instead, which needs the app's own domain approved.
+`/supporter` sells the voluntary Supporter license (a one-time price,
+`PADDLE_SUPPORTER_PRICE_ID`, defaulting to the live tududi price) on the
+same approved domain; it attaches to no account, so the webhook ignores it.
 Add a notification destination at `https://your-host/api/billing/webhook`
 with `subscription.created`, `subscription.updated`,
 `subscription.activated`, `subscription.trialing`,

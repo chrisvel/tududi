@@ -581,6 +581,24 @@ describe('Paddle default payment link', () => {
         expect(res.text).not.toContain("Environment.set('sandbox')");
     });
 
+    it('serves the Supporter license checkout without a login', async () => {
+        config.hosted.enabled = true;
+        config.hosted.paddle.clientToken = 'live_test_token';
+        const res = await request(app).get('/supporter');
+        expect(res.status).toBe(200);
+        expect(res.text).toContain('cdn.paddle.com/paddle/v2/paddle.js');
+        expect(res.text).toContain(
+            `var priceId = "${config.hosted.paddle.supporterPriceId}"`
+        );
+        expect(res.text).toContain('Paddle.Checkout.open');
+    });
+
+    it('has no Supporter page outside hosted mode', async () => {
+        config.hosted.paddle.clientToken = 'live_test_token';
+        const res = await request(app).get('/supporter');
+        expect(res.status).toBe(404);
+    });
+
     it('is served on the marketing host, not sent on to the app', async () => {
         config.hosted.enabled = true;
         config.hosted.paddle.clientToken = 'live_test_token';

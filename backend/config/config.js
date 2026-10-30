@@ -205,6 +205,13 @@ const config = {
             // Price ids by plan:
             // {"pro":{"month":"pri_…","year":"pri_…"},"team_5":{…}}
             prices: parseJsonEnv(process.env.PADDLE_PRICES_JSON),
+            // One-time price of the Supporter license sold at /supporter;
+            // defaults to the live tududi price outside the sandbox.
+            supporterPriceId:
+                process.env.PADDLE_SUPPORTER_PRICE_ID ||
+                (process.env.PADDLE_ENVIRONMENT === 'sandbox'
+                    ? undefined
+                    : 'pri_01m5ysqptat0zfg4e1w40xaq3e'),
         },
         // Which provider sells new subscriptions. Explicit BILLING_PROVIDER
         // wins; otherwise Paddle when it has a key, then Lemon Squeezy when
