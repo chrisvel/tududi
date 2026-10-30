@@ -5,7 +5,10 @@ const groupsRepository = require('../groups/repository');
 const { execAction } = require('../../services/execAction');
 const groupSharing = require('../../services/groupSharing');
 const { isAdmin } = require('../../services/rolesService');
-const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
+const {
+    getWorkspaceUserIds,
+    getVisibleMemberIds,
+} = require('../../services/workspaceMembers');
 const accountsService = require('../../services/accountsService');
 const { logError } = require('../../services/logService');
 const { Notification } = require('../../models');
@@ -62,10 +65,11 @@ class SharesService {
         return Boolean(accountId) && group.account_id === accountId;
     }
 
-    // The people the user can pick in the share modal: their workspace (see
-    // workspaceMembers), so the list never reveals other accounts.
+    // The people the user can pick in the share modal: the members they may
+    // see (see getVisibleMemberIds), so the list never reveals other accounts,
+    // nor a hosted account's roster to a member who is not its admin.
     async listCandidates(userId) {
-        const ids = await getWorkspaceUserIds(userId);
+        const ids = await getVisibleMemberIds(userId);
         const users = await sharesRepository.findCandidateUsers(ids);
         return users
             .map((user) => ({
