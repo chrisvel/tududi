@@ -38,15 +38,13 @@ describe('anonymous limit and the sign-in page', () => {
     it('does not count sign-in page loads under /api or /api/v1', async () => {
         const ip = nextIp();
 
-        // A team behind one address loading the sign-in page many times
-        for (let round = 0; round < 3; round++) {
-            for (const base of ['/api', '/api/v1']) {
-                for (const path of signInPagePaths) {
-                    const response = await request(app)
-                        .get(`${base}${path}`)
-                        .set('X-Forwarded-For', ip);
-                    expect(response.status).not.toBe(429);
-                }
+        // More sign-in page loads than the anonymous budget of 3 allows
+        for (const base of ['/api', '/api/v1']) {
+            for (const path of signInPagePaths) {
+                const response = await request(app)
+                    .get(`${base}${path}`)
+                    .set('X-Forwarded-For', ip);
+                expect(response.status).not.toBe(429);
             }
         }
 
@@ -61,6 +59,19 @@ describe('anonymous limit and the sign-in page', () => {
             .get('/api/tasks')
             .set('X-Forwarded-For', ip);
         expect(limited.status).toBe(429);
+    });
+
+    it('still caps sign-in page loads at ten times the anonymous budget', async () => {
+        const ip = nextIp();
+        const statuses = [];
+        for (let i = 0; i < 31; i++) {
+            const response = await request(app)
+                .get('/api/version')
+                .set('X-Forwarded-For', ip);
+            statuses.push(response.status);
+        }
+        expect(statuses.slice(0, 30)).not.toContain(429);
+        expect(statuses[30]).toBe(429);
     });
 
     it('still counts other methods on the same paths', async () => {

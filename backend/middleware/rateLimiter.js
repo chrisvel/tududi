@@ -262,6 +262,26 @@ const apiLimiter = rateLimit({
     },
 });
 
+// The sign-in page reads skipped above still get a per-IP ceiling, ten times
+// the anonymous budget, so a whole office can sign in while a script hammering
+// them is still stopped.
+const signInPageLimiter = rateLimit({
+    store: createRateLimitStore('sign-in-page'),
+    windowMs: rateLimitConfig.api.windowMs,
+    max: rateLimitConfig.api.max * 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => !rateLimitConfig.enabled || !isSignInPageRequest(req),
+    handler: (req, res) => {
+        res.status(429).json({
+            error: 'Rate limit exceeded',
+            message:
+                'You have exceeded the maximum number of requests. Please try again later.',
+            retryAfter: retryAfterSeconds(req),
+        });
+    },
+});
+
 /**
  * Rate limiting for authenticated API requests
  * More lenient limits for authenticated users
@@ -481,6 +501,7 @@ module.exports = {
     isSignInPageRequest,
     retryAfterSeconds,
     apiLimiter,
+    signInPageLimiter,
     authenticatedApiLimiter,
     createResourceLimiter,
     apiKeyManagementLimiter,

@@ -10,6 +10,7 @@ const {
     loginLimiter,
     loginEmailLimiter,
     signupLimiter,
+    signInPageLimiter,
 } = require('../../middleware/rateLimiter');
 const { csrfMiddleware } = require('../../middleware/csrf');
 const { requireCaptcha } = require('../../middleware/captcha');
@@ -17,7 +18,11 @@ const { requireCaptcha } = require('../../middleware/captcha');
 router.get('/version', authController.getVersion);
 router.get('/config', authController.getPublicConfig);
 router.get('/registration-status', authController.getRegistrationStatus);
-router.get('/password-auth-status', authController.getPasswordAuthStatus);
+router.get(
+    '/password-auth-status',
+    signInPageLimiter,
+    authController.getPasswordAuthStatus
+);
 router.get('/csrf-token', csrfMiddleware, authController.getCsrfToken);
 router.post(
     '/register',
