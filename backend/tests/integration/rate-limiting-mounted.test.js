@@ -25,7 +25,7 @@ describe('rate limiting is mounted on every API base path', () => {
         async (base) => {
             // The limiter runs before route auth, so the header is present
             // whether or not the route itself needs a login.
-            const response = await request(app).get(`${base}/version`);
+            const response = await request(app).get(`${base}/tasks`);
 
             expect(response.headers['ratelimit-limit']).toBe('1000');
         }

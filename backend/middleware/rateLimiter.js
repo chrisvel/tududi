@@ -41,6 +41,48 @@ const requestIdentity = (req) => {
 
 const identityOrIpKey = (req) => requestIdentity(req) || ipKeyGenerator(req.ip);
 
+// Seconds until the caller may try again. resetTime is a Date, so dividing it
+// directly gave an epoch timestamp instead of a wait.
+const retryAfterSeconds = (req) => {
+    const resetTime = req.rateLimit?.resetTime;
+    if (!resetTime) return undefined;
+    const ms = new Date(resetTime).getTime() - Date.now();
+    return Math.max(1, Math.ceil(ms / 1000));
+};
+
+// Read-only endpoints the sign-in page calls before anyone is signed in. One
+// browser sign-in used to cost about nine anonymous requests, so a team behind
+// one NAT address hit the anonymous limit on login (#2015). POST /login keeps
+// its own per-IP and per-email limiters.
+const API_VERSION = process.env.API_VERSION || 'v1';
+const SIGN_IN_PAGE_PATHS = new Set([
+    '/current_user',
+    '/feature-flags',
+    '/registration-status',
+    '/oidc/providers',
+    '/password-auth-status',
+    '/config',
+    '/version',
+    '/csrf-token',
+]);
+
+// The limiter is mounted on /api and on /api/<version>, and a versioned request
+// also passes the /api mount, so match on the full path with either prefix cut.
+const isSignInPageRequest = (req) => {
+    if (req.method !== 'GET') return false;
+    let path = `${req.baseUrl || ''}${req.path}`;
+    const versioned = `/api/${API_VERSION}/`;
+    if (path.startsWith(versioned)) {
+        path = path.slice(versioned.length - 1);
+    } else if (path.startsWith('/api/')) {
+        path = path.slice('/api'.length);
+    } else {
+        return false;
+    }
+    if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1);
+    return SIGN_IN_PAGE_PATHS.has(path);
+};
+
 /**
  * Strict rate limiting for authentication endpoints
  * Prevents brute force attacks on login/register
@@ -60,7 +102,7 @@ const authLimiter = rateLimit({
             error: 'Too many authentication attempts',
             message:
                 'You have exceeded the maximum number of login attempts. Please try again after 15 minutes.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -82,7 +124,7 @@ const oidcLimiter = rateLimit({
             error: 'Too many authentication attempts',
             message:
                 'You have exceeded the maximum number of login attempts. Please try again after 15 minutes.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -103,7 +145,7 @@ const signInLinkLimiter = rateLimit({
             error: 'Too many sign-in link requests',
             message:
                 'Too many requests from this network. Please try again in a few minutes.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -134,7 +176,7 @@ const createAuthEmailLimiter = (name, extraOptions = {}) =>
                 error: 'Too many authentication attempts',
                 message:
                     'Too many attempts for this account. Please try again after 15 minutes.',
-                retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+                retryAfter: retryAfterSeconds(req),
             });
         },
         ...extraOptions,
@@ -159,7 +201,7 @@ const loginLimiter = rateLimit({
             error: 'Too many authentication attempts',
             message:
                 'You have exceeded the maximum number of login attempts. Please try again after 15 minutes.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -185,7 +227,7 @@ const signupLimiter = rateLimit({
             error: 'Too many sign-ups',
             message:
                 'Too many accounts were created from this network today. Please try again tomorrow.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -205,6 +247,8 @@ const apiLimiter = rateLimit({
     skip: (req) => {
         // Skip if rate limiting is disabled
         if (!rateLimitConfig.enabled) return true;
+        // Sign-in page loads are cheap reads and must not use up the budget
+        if (isSignInPageRequest(req)) return true;
         // Callers with a session or Bearer credential use the per-identity limiter
         return !!requestIdentity(req);
     },
@@ -213,7 +257,7 @@ const apiLimiter = rateLimit({
             error: 'Rate limit exceeded',
             message:
                 'You have exceeded the maximum number of requests. Please try again later.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -241,7 +285,7 @@ const authenticatedApiLimiter = rateLimit({
             error: 'Rate limit exceeded',
             message:
                 'You have exceeded the maximum number of requests. Please try again later.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -263,7 +307,7 @@ const createResourceLimiter = rateLimit({
             error: 'Rate limit exceeded',
             message:
                 'You have exceeded the maximum number of resource creation requests. Please try again later.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -285,7 +329,7 @@ const apiKeyManagementLimiter = rateLimit({
             error: 'Rate limit exceeded',
             message:
                 'You have exceeded the maximum number of API key management requests. Please try again later.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -310,7 +354,7 @@ const bearerFailureLimiter = rateLimit({
     handler: (req, res) => {
         res.status(429).json({
             error: 'Too many failed authentication attempts',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -340,7 +384,7 @@ const passwordConfirmLimiter = rateLimit({
             error: 'Rate limit exceeded',
             message:
                 'Too many attempts to change account credentials. Please try again later.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -361,7 +405,7 @@ const uploadsLimiter = rateLimit({
             error: 'Rate limit exceeded',
             message:
                 'You have exceeded the maximum number of file requests. Please try again later.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -390,7 +434,7 @@ const caldavAuthLimiter = rateLimit({
             .set('WWW-Authenticate', 'Basic realm="Tududi CalDAV"')
             .json({
                 error: 'Too many authentication attempts',
-                retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+                retryAfter: retryAfterSeconds(req),
             });
     },
 });
@@ -414,7 +458,7 @@ const mfaLimiter = rateLimit({
     handler: (req, res) => {
         res.status(429).json({
             error: 'Too many attempts. Please try again later.',
-            retryAfter: Math.ceil(req.rateLimit.resetTime / 1000),
+            retryAfter: retryAfterSeconds(req),
         });
     },
 });
@@ -434,6 +478,8 @@ module.exports = {
     uploadsLimiter,
     requestIdentity,
     authEmailKey,
+    isSignInPageRequest,
+    retryAfterSeconds,
     apiLimiter,
     authenticatedApiLimiter,
     createResourceLimiter,
