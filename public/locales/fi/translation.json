@@ -2778,7 +2778,12 @@
     "removed": "Jäsen poistettu",
     "updated": "Jäsen päivitetty",
     "invitationSent": "Kutsu lähetetty",
-    "failedToRemove": "Jäsenen poistaminen epäonnistui"
+    "failedToRemove": "Jäsenen poistaminen epäonnistui",
+    "openTasksCount": "Henkilölle {{name}} osoitetut avoimet tehtävät: {{count}}",
+    "handTo": "Siirrä tehtävät henkilölle",
+    "handToYou": "{{name}} (sinä)",
+    "leaveUnassigned": "Ei kenellekään, jätä osoittamatta",
+    "handToHint": "Hän saa yhden ilmoituksen tehtävien määrästä. Valmiit tehtävät pysyvät ennallaan."
   },
   "signInLink": {
     "action": "Kirjautumislinkki",

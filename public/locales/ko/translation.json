@@ -2776,7 +2776,12 @@
     "removed": "멤버를 삭제했습니다",
     "updated": "멤버를 업데이트했습니다",
     "invitationSent": "초대를 보냈습니다",
-    "failedToRemove": "멤버를 삭제하지 못했습니다"
+    "failedToRemove": "멤버를 삭제하지 못했습니다",
+    "openTasksCount": "{{name}}에게 할당된 열린 작업: {{count}}",
+    "handTo": "작업을 넘겨받을 사람",
+    "handToYou": "{{name}} (나)",
+    "leaveUnassigned": "없음, 할당하지 않은 채로 두기",
+    "handToHint": "작업 수가 담긴 알림이 한 번만 전송됩니다. 완료된 작업은 그대로 유지됩니다."
   },
   "signInLink": {
     "action": "로그인 링크",

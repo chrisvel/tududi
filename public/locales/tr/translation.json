@@ -2778,7 +2778,12 @@
     "removed": "Üye çıkarıldı",
     "updated": "Üye güncellendi",
     "invitationSent": "Davet gönderildi",
-    "failedToRemove": "Üye çıkarılamadı"
+    "failedToRemove": "Üye çıkarılamadı",
+    "openTasksCount": "{{name}} kişisine atanmış açık görevler: {{count}}",
+    "handTo": "Görevlerini devret",
+    "handToYou": "{{name}} (siz)",
+    "leaveUnassigned": "Kimse, atanmamış bırak",
+    "handToHint": "Görev sayısını içeren tek bir bildirim alır. Tamamlanan görevler olduğu gibi kalır."
   },
   "signInLink": {
     "action": "Oturum açma bağlantısı",

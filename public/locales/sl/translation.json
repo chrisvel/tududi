@@ -2786,7 +2786,12 @@
     "removed": "Član odstranjen",
     "updated": "Član posodobljen",
     "invitationSent": "Vabilo poslano",
-    "failedToRemove": "Člana ni bilo mogoče odstraniti"
+    "failedToRemove": "Člana ni bilo mogoče odstraniti",
+    "openTasksCount": "Odprta opravila, dodeljena {{name}}: {{count}}",
+    "handTo": "Predaj opravila",
+    "handToYou": "{{name}} (vi)",
+    "leaveUnassigned": "Nikomur, pusti jih nedodeljena",
+    "handToHint": "Prejme eno obvestilo s številom opravil. Dokončana opravila ostanejo, kot so."
   },
   "signInLink": {
     "action": "Povezava za prijavo",

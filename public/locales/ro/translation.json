@@ -2784,7 +2784,12 @@
     "removed": "Membru eliminat",
     "updated": "Membru actualizat",
     "invitationSent": "Invitație trimisă",
-    "failedToRemove": "Membrul nu a putut fi eliminat"
+    "failedToRemove": "Membrul nu a putut fi eliminat",
+    "openTasksCount": "Sarcini deschise atribuite lui {{name}}: {{count}}",
+    "handTo": "Predă sarcinile către",
+    "handToYou": "{{name}} (tu)",
+    "leaveUnassigned": "Nimeni, lasă-le neatribuite",
+    "handToHint": "Va primi o singură notificare cu numărul de sarcini. Sarcinile finalizate rămân neschimbate."
   },
   "signInLink": {
     "action": "Link de autentificare",

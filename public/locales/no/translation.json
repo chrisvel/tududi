@@ -2783,7 +2783,12 @@
     "removed": "Medlemmet ble fjernet",
     "updated": "Medlemmet ble oppdatert",
     "invitationSent": "Invitasjon sendt",
-    "failedToRemove": "Kunne ikke fjerne medlemmet"
+    "failedToRemove": "Kunne ikke fjerne medlemmet",
+    "openTasksCount": "Åpne oppgaver tildelt {{name}}: {{count}}",
+    "handTo": "Gi oppgavene til",
+    "handToYou": "{{name}} (deg)",
+    "leaveUnassigned": "Ingen, la dem stå uten tildeling",
+    "handToHint": "De får ett varsel med antall oppgaver. Fullførte oppgaver forblir som de er."
   },
   "signInLink": {
     "action": "Innloggingslenke",

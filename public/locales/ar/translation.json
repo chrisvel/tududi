@@ -2794,7 +2794,12 @@
     "removed": "تمت إزالة العضو",
     "updated": "تم تحديث العضو",
     "invitationSent": "تم إرسال الدعوة",
-    "failedToRemove": "تعذّرت إزالة العضو"
+    "failedToRemove": "تعذّرت إزالة العضو",
+    "openTasksCount": "المهام المفتوحة المسندة إلى {{name}}: {{count}}",
+    "handTo": "تسليم مهامه إلى",
+    "handToYou": "{{name}} (أنت)",
+    "leaveUnassigned": "لا أحد، اتركها بلا تعيين",
+    "handToHint": "سيصله إشعار واحد بعدد المهام. المهام المنجزة تبقى كما هي."
   },
   "signInLink": {
     "action": "رابط تسجيل الدخول",

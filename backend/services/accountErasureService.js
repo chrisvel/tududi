@@ -83,7 +83,10 @@ async function unlinkWithin(baseDir, relativeOrAbsolute) {
 // point at. Used for admin deletion and for self-service account deletion.
 // Rows go inside one transaction; files are removed only after it commits,
 // so a rollback never leaves rows pointing at missing files.
-async function eraseUserAccount(userId) {
+// `beforeErase(transaction)` runs first inside the same transaction, so work
+// that must happen before the rows go (such as handing tasks over) is undone
+// with everything else if the erasure fails.
+async function eraseUserAccount(userId, { beforeErase } = {}) {
     // Stop charging before removing the rows that point at Stripe
     const { billingService } = require('../modules/billing');
     await billingService.cancelForDeletedUser(userId);
@@ -108,6 +111,8 @@ async function eraseUserAccount(userId) {
                 'Cannot delete the last remaining admin'
             );
         }
+
+        if (beforeErase) await beforeErase(transaction);
 
         const tx = { transaction };
         const byUser = { where: { user_id: userId }, ...tx };

@@ -2776,7 +2776,12 @@
     "removed": "Đã xóa thành viên",
     "updated": "Đã cập nhật thành viên",
     "invitationSent": "Đã gửi lời mời",
-    "failedToRemove": "Không xóa được thành viên"
+    "failedToRemove": "Không xóa được thành viên",
+    "openTasksCount": "Công việc đang mở được giao cho {{name}}: {{count}}",
+    "handTo": "Giao công việc của họ cho",
+    "handToYou": "{{name}} (bạn)",
+    "leaveUnassigned": "Không ai, để chưa giao",
+    "handToHint": "Người đó nhận một thông báo kèm số lượng công việc. Công việc đã xong giữ nguyên."
   },
   "signInLink": {
     "action": "Liên kết đăng nhập",

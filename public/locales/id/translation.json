@@ -2776,7 +2776,12 @@
     "removed": "Anggota dihapus",
     "updated": "Anggota diperbarui",
     "invitationSent": "Undangan terkirim",
-    "failedToRemove": "Gagal menghapus anggota"
+    "failedToRemove": "Gagal menghapus anggota",
+    "openTasksCount": "Tugas terbuka yang ditugaskan ke {{name}}: {{count}}",
+    "handTo": "Serahkan tugasnya kepada",
+    "handToYou": "{{name}} (Anda)",
+    "leaveUnassigned": "Tidak ada, biarkan tanpa penanggung jawab",
+    "handToHint": "Mereka menerima satu pemberitahuan berisi jumlah tugas. Tugas yang selesai tetap seperti semula."
   },
   "signInLink": {
     "action": "Tautan masuk",

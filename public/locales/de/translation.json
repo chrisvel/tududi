@@ -2787,7 +2787,12 @@
     "removed": "Mitglied entfernt",
     "updated": "Mitglied aktualisiert",
     "invitationSent": "Einladung gesendet",
-    "failedToRemove": "Mitglied konnte nicht entfernt werden"
+    "failedToRemove": "Mitglied konnte nicht entfernt werden",
+    "openTasksCount": "Offene Aufgaben von {{name}}: {{count}}",
+    "handTo": "Aufgaben übergeben an",
+    "handToYou": "{{name}} (Sie)",
+    "leaveUnassigned": "Niemand, nicht zuweisen",
+    "handToHint": "Die Person erhält eine Benachrichtigung mit der Anzahl der Aufgaben. Erledigte Aufgaben bleiben unverändert."
   },
   "signInLink": {
     "action": "Anmeldelink",
