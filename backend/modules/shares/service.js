@@ -99,7 +99,9 @@ class SharesService {
     }
 
     // Sharing is an invitation: the recipient sees nothing until they accept.
-    // The response is the same whether or not the email belongs to an account,
+    // The exception is a share from an admin of the recipient's own account
+    // on a hosted instance, which applies at once and only tells them. The
+    // response is the same whether or not the email belongs to an account,
     // so this endpoint cannot be used to check who has signed up. A share
     // targets one user by email, one workspace member by id, or a whole group
     // by uid.
@@ -175,6 +177,10 @@ class SharesService {
             );
         }
 
+        const accepted = await accountsService.isAdminOfAccountOf(
+            userId,
+            target.id
+        );
         const actionId = await execAction({
             verb: 'share_grant',
             actorUserId: userId,
@@ -182,7 +188,7 @@ class SharesService {
             resourceType: resource_type,
             resourceUid: resource_uid,
             accessLevel: access_level,
-            status: 'pending',
+            status: accepted ? 'accepted' : 'pending',
         });
 
         await this.notifyInvitee({
@@ -192,6 +198,7 @@ class SharesService {
             resourceType: resource_type,
             accessLevel: access_level,
             actionId,
+            accepted,
         });
 
         return null; // 204 No Content
@@ -204,6 +211,7 @@ class SharesService {
         resourceType,
         accessLevel,
         actionId,
+        accepted = false,
     }) {
         try {
             const actor = await sharesRepository.findUserById(actorUserId, [
@@ -221,13 +229,24 @@ class SharesService {
             const accessLabel =
                 accessLevel === 'rw' ? 'read & write' : 'read only';
 
+            // An accepted share carries no invitation id, so the bell shows
+            // it as a notice without Accept and Decline.
             await Notification.createNotification({
                 userId: target.id,
                 type: 'share_invitation',
-                title: `${inviterLabel} invited you to a ${resourceType}`,
-                message: `"${resourceLabel}" was shared with you (${accessLabel}). Accept to add it to your workspace.`,
+                title: accepted
+                    ? `${inviterLabel} shared a ${resourceType} with you`
+                    : `${inviterLabel} invited you to a ${resourceType}`,
+                message: accepted
+                    ? `"${resourceLabel}" was shared with you (${accessLabel}). It is in your workspace now.`
+                    : `"${resourceLabel}" was shared with you (${accessLabel}). Accept to add it to your workspace.`,
                 data: {
-                    invitationId: direct ? direct.id : null,
+                    invitationId: direct && !accepted ? direct.id : null,
+                    accepted,
+                    projectUid:
+                        accepted && resourceType === 'project'
+                            ? resource.uid
+                            : undefined,
                     actionId,
                     resourceType,
                     resourceUid: resource.uid,

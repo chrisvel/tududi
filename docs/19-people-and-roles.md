@@ -61,6 +61,8 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 10a. **The Share dialog lists the members of your workspace by name.** Pick one to send them an invitation, including a member without an email. Members who already have access are greyed out. "Someone else, by email" invites anyone else with their exact email address, which is also all the dialog shows when your workspace has nobody else in it yet. Emails of other members are never listed (`GET /api/shares/candidates`).
 
+10b. **On a hosted instance, a share from an admin of your own account applies straight away.** When the account owner or another account admin shares an item with you, directly or through a group, you see it at once and get a notice instead of an invitation to accept. A share from a member who is not an admin, or from someone in another account, still waits for you to accept it. On a self-hosted instance every share is an invitation.
+
 ### Members without an email
 
 11. **Anyone with the invite permission can add a member from the People page.** Add member asks for a name, an optional email, an optional password and a role. With an email the member is invited by email. With an email and a password they are signed up. With neither, they are added as a member with no password, who signs in with a sign-in link (rules 14c to 14g). An admin always has the permission, and can also add members in Admin > Access > Users.
