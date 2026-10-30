@@ -7,6 +7,17 @@
  *     security:
  *       - cookieAuth: []
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: area_uid
+ *         schema:
+ *           type: string
+ *         description: Only tags used by tasks, notes or projects in this area
+ *       - in: query
+ *         name: project_uid
+ *         schema:
+ *           type: string
+ *         description: Only tags used by this project, its tasks or its notes
  *     responses:
  *       200:
  *         description: List of tags

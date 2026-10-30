@@ -1,6 +1,6 @@
 'use strict';
 
-const { Tag, sequelize } = require('../../models');
+const { Tag, Task, Note, Project, sequelize } = require('../../models');
 const { Op } = require('sequelize');
 const BaseRepository = require('../../shared/database/BaseRepository');
 
@@ -55,6 +55,34 @@ class TagsRepository extends BaseRepository {
             ],
             order: [[sequelize.fn('LOWER', sequelize.col('name')), 'ASC']],
         });
+    }
+
+    // Ids of this user's tags carried by any of the tasks, notes or projects
+    // the where clauses pick (null skips that kind).
+    async findIdsUsedBy(userId, { taskWhere, noteWhere, projectWhere }) {
+        const include = [
+            {
+                model: this.model,
+                attributes: ['id'],
+                where: { user_id: userId },
+                through: { attributes: [] },
+                required: true,
+            },
+        ];
+        const lookups = [
+            [Task, taskWhere],
+            [Note, noteWhere],
+            [Project, projectWhere],
+        ].map(([model, where]) =>
+            where
+                ? model.findAll({ where, attributes: ['id'], include })
+                : Promise.resolve([])
+        );
+        const ids = new Set();
+        (await Promise.all(lookups)).flat().forEach((item) => {
+            (item.Tags || []).forEach((tag) => ids.add(tag.id));
+        });
+        return [...ids];
     }
 
     /**
