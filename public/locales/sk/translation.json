@@ -2766,7 +2766,12 @@
         "nameRequiredWithoutEmail": "Ak nie je zadaný e-mail, zadajte meno",
         "failedToAdd": "Člena sa nepodarilo pridať",
         "seatNote": "Každý člen zaberá jedno miesto vášho plánu. Odstránením člena sa miesto uvoľní pre niekoho iného.",
-        "removeConfirm": "Odstrániť {{name}}? Jeho účet a všetko v ňom sa vymaže a túto akciu nie je možné vrátiť späť. V tududi Cloud sa jeho miesto uvoľní pre niekoho iného."
+        "removeConfirm": "Odstrániť {{name}}? Jeho účet a všetko v ňom sa vymaže a túto akciu nie je možné vrátiť späť. V tududi Cloud sa jeho miesto uvoľní pre niekoho iného.",
+        "openTasksCount": "Otvorené úlohy priradené {{name}}: {{count}}",
+        "handTo": "Odovzdať úlohy",
+        "handToYou": "{{name}} (vy)",
+        "leaveUnassigned": "Nikomu, nechať nepriradené",
+        "handToHint": "Dostane jedno upozornenie s počtom úloh. Dokončené úlohy zostanú tak, ako sú."
     },
     "signInLink": {
         "action": "Prihlasovací odkaz",

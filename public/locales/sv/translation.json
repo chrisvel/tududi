@@ -2769,7 +2769,12 @@
     "removed": "Medlemmen togs bort",
     "updated": "Medlemmen uppdaterades",
     "invitationSent": "Inbjudan skickad",
-    "failedToRemove": "Det gick inte att ta bort medlemmen"
+    "failedToRemove": "Det gick inte att ta bort medlemmen",
+    "openTasksCount": "Öppna uppgifter tilldelade {{name}}: {{count}}",
+    "handTo": "Lämna över uppgifterna till",
+    "handToYou": "{{name}} (du)",
+    "leaveUnassigned": "Ingen, lämna dem otilldelade",
+    "handToHint": "Personen får en avisering med antalet uppgifter. Klara uppgifter lämnas som de är."
   },
   "signInLink": {
     "action": "Inloggningslänk",

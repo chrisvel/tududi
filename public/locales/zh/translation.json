@@ -2767,7 +2767,12 @@
     "removed": "成员已移除",
     "updated": "成员已更新",
     "invitationSent": "邀请已发送",
-    "failedToRemove": "移除成员失败"
+    "failedToRemove": "移除成员失败",
+    "openTasksCount": "分配给 {{name}} 的未完成任务：{{count}}",
+    "handTo": "将其任务交给",
+    "handToYou": "{{name}}（你）",
+    "leaveUnassigned": "无人，保持未分配",
+    "handToHint": "对方会收到一条包含任务数量的通知。已完成的任务保持不变。"
   },
   "signInLink": {
     "action": "登录链接",

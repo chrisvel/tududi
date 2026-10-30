@@ -22,6 +22,7 @@ import PersonModal from './PersonModal';
 import PersonHero from './PersonHero';
 import SignInLinkModal from './SignInLinkModal';
 import MemberEditModal from './MemberEditModal';
+import MemberRemoveDialog from './MemberRemoveDialog';
 import { removeMember } from '../../utils/membersService';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import TaskList from '../Task/TaskList';
@@ -133,10 +134,10 @@ const PersonDetails: React.FC = () => {
         }
     };
 
-    const handleRemoveMember = async () => {
+    const handleRemoveMember = async (reassignTo: number | null) => {
         if (person?.linked_user_id == null) return;
         try {
-            await removeMember(person.linked_user_id);
+            await removeMember(person.linked_user_id, reassignTo);
             showSuccessToast(t('members.removed', 'Member removed'));
             navigate('/people');
         } catch (err: unknown) {
@@ -386,14 +387,10 @@ const PersonDetails: React.FC = () => {
                 />
             )}
 
-            {memberRemoveOpen && (
-                <ConfirmDialog
-                    title={t('members.remove', 'Remove member')}
-                    message={t('members.removeConfirm', {
-                        defaultValue:
-                            'Remove {{name}}? Their account and everything in it is deleted, and this cannot be undone. On tududi Cloud their seat is taken off your subscription.',
-                        name: person.name,
-                    })}
+            {memberRemoveOpen && person.linked_user_id != null && (
+                <MemberRemoveDialog
+                    memberId={person.linked_user_id}
+                    memberName={person.name}
                     onConfirm={handleRemoveMember}
                     onCancel={() => setMemberRemoveOpen(false)}
                 />

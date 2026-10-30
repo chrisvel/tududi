@@ -2767,7 +2767,12 @@
     "removed": "メンバーを削除しました",
     "updated": "メンバーを更新しました",
     "invitationSent": "招待を送信しました",
-    "failedToRemove": "メンバーを削除できませんでした"
+    "failedToRemove": "メンバーを削除できませんでした",
+    "openTasksCount": "{{name}} に割り当てられた未完了のタスク: {{count}}",
+    "handTo": "タスクの引き継ぎ先",
+    "handToYou": "{{name}}（あなた）",
+    "leaveUnassigned": "なし（未割り当てのままにする）",
+    "handToHint": "引き継ぎ先にはタスク数を記した通知が1件だけ届きます。完了したタスクはそのままです。"
   },
   "signInLink": {
     "action": "サインインリンク",

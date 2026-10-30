@@ -3096,7 +3096,12 @@
     "removed": "Member removed",
     "updated": "Member updated",
     "invitationSent": "Invitation sent",
-    "failedToRemove": "Failed to remove member"
+    "failedToRemove": "Failed to remove member",
+    "openTasksCount": "Open tasks assigned to {{name}}: {{count}}",
+    "handTo": "Hand their tasks to",
+    "handToYou": "{{name}} (you)",
+    "leaveUnassigned": "Nobody, leave them unassigned",
+    "handToHint": "They get one notice with the number of tasks. Done tasks stay as they are."
   },
   "signInLink": {
     "action": "Sign-in link",

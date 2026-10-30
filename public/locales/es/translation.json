@@ -2759,7 +2759,12 @@
     "removed": "Miembro quitado",
     "updated": "Miembro actualizado",
     "invitationSent": "Invitación enviada",
-    "failedToRemove": "No se pudo quitar el miembro"
+    "failedToRemove": "No se pudo quitar el miembro",
+    "openTasksCount": "Tareas abiertas asignadas a {{name}}: {{count}}",
+    "handTo": "Pasar sus tareas a",
+    "handToYou": "{{name}} (tú)",
+    "leaveUnassigned": "Nadie, dejarlas sin asignar",
+    "handToHint": "Recibirá un único aviso con el número de tareas. Las tareas hechas no cambian."
   },
   "signInLink": {
     "action": "Enlace de acceso",

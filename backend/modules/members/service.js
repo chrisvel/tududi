@@ -1,7 +1,14 @@
 'use strict';
 
 const { Op } = require('sequelize');
-const { sequelize, User, Person, Role } = require('../../models');
+const {
+    sequelize,
+    User,
+    Person,
+    Role,
+    Task,
+    Notification,
+} = require('../../models');
 const rolesService = require('../../services/rolesService');
 const seats = require('../../services/seatsService');
 const accounts = require('../../services/accountsService');
@@ -16,6 +23,11 @@ const {
     getDefaultNotificationPreferences,
 } = require('../../utils/notificationPreferences');
 const { logError } = require('../../services/logService');
+const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
+const {
+    shouldSendInAppNotification,
+    deliverySources,
+} = require('../../utils/notificationPreferences');
 const {
     NotFoundError,
     ConflictError,
@@ -86,6 +98,135 @@ function assertMayGrant(actorIsAdmin, actorIsAccountAdmin, input) {
     }
     if (capabilities !== undefined && !actorIsAccountAdmin) {
         throw new ForbiddenError('Only an admin can set permissions');
+    }
+}
+
+// Done, archived and cancelled tasks stay with whoever they were assigned to.
+const CLOSED_TASK_STATUSES = [
+    Task.STATUS.DONE,
+    Task.STATUS.ARCHIVED,
+    Task.STATUS.CANCELLED,
+];
+
+// The person that stands for an account in assignee lists.
+function findSelfPerson(userId, options = {}) {
+    return Person.findOne({
+        where: { user_id: userId, linked_user_id: userId },
+        ...options,
+    });
+}
+
+// Open tasks, subtasks included, that are assigned to the member and survive
+// the removal. The member's own tasks go with their account, so they are not
+// counted and not handed over.
+function openAssignedTasksWhere(memberId, personUid) {
+    return {
+        assigned_to: personUid,
+        user_id: { [Op.ne]: memberId },
+        status: { [Op.notIn]: CLOSED_TASK_STATUSES },
+    };
+}
+
+async function countOpenAssignedTasks(memberId) {
+    const person = await findSelfPerson(memberId, { attributes: ['uid'] });
+    if (!person) return 0;
+    return Task.count({ where: openAssignedTasksWhere(memberId, person.uid) });
+}
+
+// Who may take over a removed member's tasks: the remover, or someone the
+// remover works with. On a hosted instance that is the account the member
+// belongs to (the remover's own, unless the superadmin is removing), so tasks
+// never cross into another customer's account.
+async function handoffCandidateIds(actorId, memberId) {
+    let ids = [];
+    if (accounts.isHosted()) {
+        const actorIsAdmin = await rolesService.isAdmin(actorId);
+        ids = await accounts.getAccountUserIds(
+            actorIsAdmin ? memberId : actorId
+        );
+    }
+    if (ids.length === 0) ids = await getWorkspaceUserIds(actorId);
+    return new Set([actorId, ...ids].filter((id) => id !== memberId));
+}
+
+// The account a removed member's tasks go to, given as a user id or the uid
+// of that account's person. Anything the remover may not hand to is told it
+// does not exist.
+async function resolveHandoffTarget(actorId, memberId, reassignTo) {
+    let userId = null;
+    if (typeof reassignTo === 'number' || /^\d+$/.test(String(reassignTo))) {
+        userId = Number(reassignTo);
+    } else if (typeof reassignTo === 'string' && reassignTo.trim()) {
+        const person = await Person.findOne({
+            where: { uid: reassignTo.trim() },
+            attributes: ['user_id', 'linked_user_id'],
+            raw: true,
+        });
+        if (!person || person.linked_user_id !== person.user_id) {
+            throw new NotFoundError('Member to hand the tasks to not found');
+        }
+        userId = person.linked_user_id;
+    }
+    if (!Number.isSafeInteger(userId) || userId <= 0) {
+        throw new ValidationError(
+            'reassign_to must be a member id or person uid'
+        );
+    }
+    if (userId === memberId) {
+        throw new ValidationError(
+            'The tasks cannot be handed to the member being removed'
+        );
+    }
+    const candidates = await handoffCandidateIds(actorId, memberId);
+    const [target, person] = candidates.has(userId)
+        ? await Promise.all([
+              User.findByPk(userId, {
+                  attributes: [
+                      'id',
+                      'name',
+                      'email',
+                      'notification_preferences',
+                  ],
+              }),
+              findSelfPerson(userId, { attributes: ['uid', 'name'] }),
+          ])
+        : [null, null];
+    if (!target || !person) {
+        throw new NotFoundError('Member to hand the tasks to not found');
+    }
+    return { user: target, person };
+}
+
+// One notice for the whole handover, not one per task. Best effort: the
+// member is already removed when this runs.
+async function notifyHandoff(actorId, target, member, count) {
+    try {
+        if (count === 0 || target.id === actorId) return;
+        if (!shouldSendInAppNotification(target, 'task_assigned')) return;
+        const actor = await User.findByPk(actorId, {
+            attributes: ['name', 'email'],
+        });
+        const actorLabel = actor?.name || actor?.email || 'Someone';
+        const memberLabel =
+            [member.name, member.surname].filter(Boolean).join(' ') ||
+            member.email ||
+            'a removed member';
+        const tasksLabel = count === 1 ? '1 task' : `${count} tasks`;
+        await Notification.createNotification({
+            userId: target.id,
+            type: 'task_assigned',
+            title: `${actorLabel} handed you ${tasksLabel} from ${memberLabel}`,
+            message: `${memberLabel} was removed, and their open tasks are now assigned to you.`,
+            data: {
+                reason: 'member_removed',
+                count,
+                assignedByUserId: actorId,
+                removedMemberName: memberLabel,
+            },
+            sources: deliverySources(target, 'task_assigned'),
+        });
+    } catch (err) {
+        logError(err, 'Failed to notify the member who took over the tasks');
     }
 }
 
@@ -321,10 +462,72 @@ class MembersService {
         );
     }
 
-    // Deletes a member's account and everything in it, which frees its seat.
-    async removeMember(actorId, memberId) {
+    // What removing a member would leave behind: how many open tasks are
+    // assigned to them, and who could take those over (the remover first).
+    async getHandoff(actorId, memberId) {
         const member = await findManagedMember(actorId, memberId);
-        await eraseUserAccount(member.id);
+        const [count, candidateIds] = await Promise.all([
+            countOpenAssignedTasks(member.id),
+            handoffCandidateIds(actorId, member.id),
+        ]);
+        const people = await Person.findAll({
+            where: { linked_user_id: { [Op.in]: Array.from(candidateIds) } },
+            attributes: ['uid', 'name', 'user_id', 'linked_user_id'],
+            raw: true,
+        });
+        const candidates = people
+            .filter((p) => p.user_id === p.linked_user_id)
+            .map((p) => ({
+                id: p.user_id,
+                person_uid: p.uid,
+                name: p.name,
+                is_self: p.user_id === actorId,
+            }))
+            .sort(
+                (a, b) =>
+                    Number(b.is_self) - Number(a.is_self) ||
+                    String(a.name).localeCompare(String(b.name))
+            );
+        return { open_assigned_tasks: count, candidates };
+    }
+
+    // Deletes a member's account and everything in it, which frees its seat.
+    // Open tasks assigned to them go to `reassign_to` when it is given, and
+    // that member gets one notice; without it they are left unassigned.
+    async removeMember(actorId, memberId, { reassignTo } = {}) {
+        const member = await findManagedMember(actorId, memberId);
+        const handoff =
+            reassignTo === undefined || reassignTo === null || reassignTo === ''
+                ? null
+                : await resolveHandoffTarget(actorId, member.id, reassignTo);
+
+        let handedOver = 0;
+        await eraseUserAccount(member.id, {
+            beforeErase: handoff
+                ? async (transaction) => {
+                      const person = await findSelfPerson(member.id, {
+                          attributes: ['uid'],
+                          transaction,
+                      });
+                      if (!person) return;
+                      [handedOver] = await Task.update(
+                          { assigned_to: handoff.person.uid },
+                          {
+                              where: openAssignedTasksWhere(
+                                  member.id,
+                                  person.uid
+                              ),
+                              transaction,
+                          }
+                      );
+                  }
+                : undefined,
+        });
+
+        if (handoff) {
+            await notifyHandoff(actorId, handoff.user, member, handedOver);
+        }
+        return { reassigned_tasks: handedOver };
     }
 
     async sendEmails(user, { verify, invite }) {

@@ -2769,7 +2769,12 @@
     "removed": "Lid verwijderd",
     "updated": "Lid bijgewerkt",
     "invitationSent": "Uitnodiging verstuurd",
-    "failedToRemove": "Lid verwijderen mislukt"
+    "failedToRemove": "Lid verwijderen mislukt",
+    "openTasksCount": "Open taken toegewezen aan {{name}}: {{count}}",
+    "handTo": "Taken overdragen aan",
+    "handToYou": "{{name}} (jij)",
+    "leaveUnassigned": "Niemand, laat ze zonder toewijzing",
+    "handToHint": "Diegene krijgt één melding met het aantal taken. Afgeronde taken blijven zoals ze zijn."
   },
   "signInLink": {
     "action": "Inloglink",

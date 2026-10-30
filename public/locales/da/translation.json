@@ -2769,7 +2769,12 @@
     "removed": "Medlemmet blev fjernet",
     "updated": "Medlemmet blev opdateret",
     "invitationSent": "Invitation sendt",
-    "failedToRemove": "Kunne ikke fjerne medlemmet"
+    "failedToRemove": "Kunne ikke fjerne medlemmet",
+    "openTasksCount": "Åbne opgaver tildelt {{name}}: {{count}}",
+    "handTo": "Giv opgaverne til",
+    "handToYou": "{{name}} (dig)",
+    "leaveUnassigned": "Ingen, lad dem være utildelte",
+    "handToHint": "De får én besked med antallet af opgaver. Færdige opgaver forbliver som de er."
   },
   "signInLink": {
     "action": "Login-link",

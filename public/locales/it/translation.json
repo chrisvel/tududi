@@ -2772,7 +2772,12 @@
     "removed": "Membro rimosso",
     "updated": "Membro aggiornato",
     "invitationSent": "Invito inviato",
-    "failedToRemove": "Impossibile rimuovere il membro"
+    "failedToRemove": "Impossibile rimuovere il membro",
+    "openTasksCount": "Attività aperte assegnate a {{name}}: {{count}}",
+    "handTo": "Passa le sue attività a",
+    "handToYou": "{{name}} (tu)",
+    "leaveUnassigned": "Nessuno, lasciale non assegnate",
+    "handToHint": "Riceverà un solo avviso con il numero di attività. Le attività completate restano come sono."
   },
   "signInLink": {
     "action": "Link di accesso",
