@@ -123,6 +123,9 @@ async function pageFor(req, origin) {
         }
     } catch (error) {
         if (!(error instanceof NotFoundError)) throw error;
+        // An older address of a renamed post moves for good to the new one.
+        const moved = match ? await blogService.movedTo(match[1]) : null;
+        if (moved) return { redirect: `/${moved}` };
         // The front page stays up while the blog is not set up; the
         // frontend shows the message.
         if (match) status = 404;
@@ -260,7 +263,11 @@ function hostSwitch({ shellPath, cacheShell }) {
             // by the static handlers further down.
             if (/\.[a-z0-9]+$/i.test(req.path)) return next();
 
-            const { status, title, tags, body } = await pageFor(req, origin);
+            const { redirect, status, title, tags, body } = await pageFor(
+                req,
+                origin
+            );
+            if (redirect) return res.redirect(301, redirect);
             const html = withLang(readShell())
                 .replace(
                     /<title>[^<]*<\/title>/,

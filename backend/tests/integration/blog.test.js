@@ -35,7 +35,9 @@ describe('Blog', () => {
     });
 
     afterEach(async () => {
-        await Setting.destroy({ where: { key: 'blog_note_uid' } });
+        await Setting.destroy({
+            where: { key: ['blog_note_uid', 'blog_slug_history'] },
+        });
     });
 
     // A front page linking two posts, one of which links a third; plus a
@@ -368,6 +370,58 @@ describe('Blog', () => {
                 );
                 expect(res.text).toContain('content="blog"');
             }
+        });
+
+        it('moves an old address of a renamed post to the new one', async () => {
+            const { index, family } = await buildBlog();
+            await adminAgent.put('/api/admin/blog').send({ note: index.uid });
+            const blog = (path) =>
+                request(app).get(path).set('Host', 'blog.tududi.com');
+
+            expect((await blog('/how-to-organize-a-family')).status).toBe(200);
+
+            await family.update({ title: 'Running a family, week by week' });
+            await index.update({
+                content: index.content.replace(
+                    '[[How to organize a family]]',
+                    '[[Running a family, week by week]]'
+                ),
+            });
+
+            const moved = await blog('/how-to-organize-a-family');
+            expect(moved.status).toBe(301);
+            expect(moved.headers.location).toBe(
+                '/running-a-family-week-by-week'
+            );
+            expect((await blog('/running-a-family-week-by-week')).status).toBe(
+                200
+            );
+            // A slug the blog never served is still a plain 404.
+            expect((await blog('/how-to-organise-a-family')).status).toBe(404);
+        });
+
+        it('lets a new post take a slug a renamed post left behind', async () => {
+            const { index, pricing } = await buildBlog();
+            await adminAgent.put('/api/admin/blog').send({ note: index.uid });
+            const blog = (path) =>
+                request(app).get(path).set('Host', 'blog.tududi.com');
+
+            expect((await blog('/why-cloud')).status).toBe(200);
+            await pricing.update({ title: 'Why tududi Cloud' });
+            await Note.create(
+                share({
+                    title: 'Why Cloud',
+                    content: 'A newer take.',
+                    user_id: admin.id,
+                })
+            );
+            await index.update({
+                content: `${index.content.replace('[[Why Cloud]]', '[[Why tududi Cloud]]')}\n\n[[Why Cloud]]`,
+            });
+
+            const res = await blog('/why-cloud');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('<p>A newer take.</p>');
         });
 
         it('still marks the front page when the blog is not set up', async () => {
