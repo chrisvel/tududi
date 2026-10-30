@@ -1520,7 +1520,16 @@
         "historyDuration_other": "trval {{count}} dní",
         "reopen": "Znova otvoriť",
         "reopened": "„{{name}}“ je opäť v procese",
-        "loadError": "Nepodarilo sa načítať projekty"
+        "loadError": "Nepodarilo sa načítať projekty",
+        "unavailable": {
+            "noAccessTitle": "K tomuto projektu nemáte prístup",
+            "noAccessHint": "Požiadajte vlastníka projektu, aby ho s vami zdieľal.",
+            "notFoundTitle": "Tento projekt neexistuje alebo bol odstránený",
+            "notFoundHint": "Skontrolujte odkaz alebo nájdite projekt vo svojom zozname.",
+            "failedTitle": "Podrobnosti projektu sa nepodarilo načítať.",
+            "failedHint": "Skontrolujte pripojenie a znova načítajte stránku.",
+            "backToProjects": "Späť na projekty"
+        }
     },
     "projectStatus": {
         "not_started": "Nezačatý",

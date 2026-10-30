@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import UpgradeModal from './components/Billing/UpgradeModal';
 import TrialBanner from './components/Billing/TrialBanner';
@@ -383,12 +383,22 @@ const Layout: React.FC<LayoutProps> = ({
     // forcing a fresh fetch on remount) must not swap out `{children}` -
     // doing so unmounts the routed page mid-fetch, which re-triggers its
     // mount effect and refetches again, looping forever (issue #1427).
+    // The same holds for a store's first load once the page is on screen:
+    // a page opened from a link mounts, then Layout or the page starts
+    // loading areas, and swapping the page out here made it fetch its data
+    // a second time (#2022). So the loader only ever covers a page that has
+    // not been shown yet.
+    const pageShown = useRef(false);
     const isLoading =
-        (isNotesLoading && !hasNotesLoaded) ||
-        (isAreasLoading && !hasAreasLoaded) ||
-        (isTasksLoading && !hasTasksLoaded) ||
-        (isProjectsLoading && !hasProjectsLoaded) ||
-        (isTagsLoading && !hasTagsLoaded);
+        !pageShown.current &&
+        ((isNotesLoading && !hasNotesLoaded) ||
+            (isAreasLoading && !hasAreasLoaded) ||
+            (isTasksLoading && !hasTasksLoaded) ||
+            (isProjectsLoading && !hasProjectsLoaded) ||
+            (isTagsLoading && !hasTagsLoaded));
+    useEffect(() => {
+        if (!isLoading) pageShown.current = true;
+    });
     const isError =
         isNotesError ||
         isAreasError ||

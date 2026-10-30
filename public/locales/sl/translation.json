@@ -1495,7 +1495,16 @@
     "historyDuration_other": "trajal {{count}} dni",
     "reopen": "Znova odpri",
     "reopened": "»{{name}}« je spet v teku",
-    "loadError": "Projektov ni bilo mogoče naložiti"
+    "loadError": "Projektov ni bilo mogoče naložiti",
+    "unavailable": {
+      "noAccessTitle": "Do tega projekta nimate dostopa",
+      "noAccessHint": "Prosite lastnika projekta, naj ga deli z vami.",
+      "notFoundTitle": "Ta projekt ne obstaja ali je bil izbrisan",
+      "notFoundHint": "Preverite povezavo ali poiščite projekt na svojem seznamu.",
+      "failedTitle": "Podrobnosti projekta ni bilo mogoče naložiti.",
+      "failedHint": "Preverite povezavo in znova naložite stran.",
+      "backToProjects": "Nazaj na projekte"
+    }
   },
   "projectItem": {
     "edit": "Uredi",

@@ -1017,7 +1017,16 @@
     "historyDuration_other": "duró {{count}} días",
     "reopen": "Reabrir",
     "reopened": "«{{name}}» vuelve a estar en curso",
-    "loadError": "Error al cargar los proyectos"
+    "loadError": "Error al cargar los proyectos",
+    "unavailable": {
+      "noAccessTitle": "No tienes acceso a este proyecto",
+      "noAccessHint": "Pide al propietario del proyecto que lo comparta contigo.",
+      "notFoundTitle": "Este proyecto no existe o fue eliminado",
+      "notFoundHint": "Revisa el enlace o busca el proyecto en tu lista.",
+      "failedTitle": "No se pudieron cargar los detalles del proyecto.",
+      "failedHint": "Revisa tu conexión y vuelve a cargar la página.",
+      "backToProjects": "Volver a Proyectos"
+    }
   },
   "projectItem": {
     "edit": "Editar",
