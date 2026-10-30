@@ -6,7 +6,7 @@
 
 ## Overview
 
-A group is a named set of users that an admin maintains. Anyone who owns a project, area, goal, note or task can share it with a whole group instead of inviting people one by one. Members are invited like any other collaborator and see the item after they accept.
+A group is a named set of users that an admin maintains. Anyone who owns a project, area, goal, note or task can share it with a whole group instead of inviting people one by one. Members are invited like any other collaborator and see the item after they accept, unless an admin of their own account made the share on a hosted instance (see Invitations).
 
 Groups are managed by admins and belong to the instance, not to a user. Any signed-in user can pick a group when sharing.
 
@@ -33,6 +33,8 @@ Sharing works for every shareable type. Sharing a project or area also covers th
 Every member gets a `share_invitation` notification and a pending invitation, exactly like a direct share. Nothing is visible until they accept. Declining removes only that member's access.
 
 A member who already holds accepted access at that level or higher (from a direct share or another group) is accepted silently. A grant that would raise their level asks again.
+
+On a hosted instance, a grant made by an admin of the member's own account (its owner or a member made admin) applies to that member at once. They get a `share_invitation` notification with `invitationId: null` and `accepted: true`, which the bell shows as a notice without Accept or Decline. Members who join the group later follow the same rule, judged against whoever made the grant. Members from another account, grants made by a member who is not an admin, and every grant on a self-hosted instance stay invitations.
 
 ### Membership changes are live
 
