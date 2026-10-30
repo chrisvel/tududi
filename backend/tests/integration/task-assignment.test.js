@@ -132,6 +132,183 @@ describe('Task assignment notifies and surfaces to the assignee', () => {
     });
 });
 
+describe('A burst of assignments collapses into one notification', () => {
+    let owner, assignee, other, ownerAgent, assigneeAgent, otherAgent;
+    let assigneeSelfPerson, project;
+
+    const assign = (agent, name) =>
+        agent.post('/api/task').send({
+            name,
+            project_uid: project.uid,
+            assigned_to: assigneeSelfPerson.uid,
+        });
+
+    const assignedNotices = () =>
+        Notification.findAll({
+            where: { user_id: assignee.id, type: 'task_assigned' },
+            order: [['id', 'ASC']],
+        });
+
+    beforeEach(async () => {
+        owner = await createTestUser({
+            email: `batchowner_${Date.now()}@example.com`,
+            name: 'Owner',
+        });
+        assignee = await createTestUser({
+            email: `batchassignee_${Date.now()}@example.com`,
+            name: 'Assignee',
+        });
+        other = await createTestUser({
+            email: `batchother_${Date.now()}@example.com`,
+            name: 'Other',
+        });
+        await peopleService.createSelfPerson(owner);
+        assigneeSelfPerson = await peopleService.createSelfPerson(assignee);
+        await peopleService.createSelfPerson(other);
+
+        ownerAgent = await login(owner);
+        assigneeAgent = await login(assignee);
+        otherAgent = await login(other);
+
+        const res = await ownerAgent
+            .post('/api/project')
+            .send({ name: 'Site handover' });
+        project = res.body;
+        for (const user of [assignee, other]) {
+            await ownerAgent.post('/api/shares').send({
+                resource_type: 'project',
+                resource_uid: project.uid,
+                target_user_email: user.email,
+                access_level: 'rw',
+            });
+        }
+        await acceptAllInvitations(assigneeAgent);
+        await acceptAllInvitations(otherAgent);
+    });
+
+    it('keeps the single-task wording and link for one assignment', async () => {
+        const created = await assign(ownerAgent, 'Check the keys');
+        expect(created.status).toBe(201);
+
+        const notices = await assignedNotices();
+        expect(notices).toHaveLength(1);
+        expect(notices[0].title).toBe('Owner assigned you a task');
+        expect(notices[0].message).toBe(
+            '"Check the keys" was assigned to you.'
+        );
+        expect(notices[0].data.taskUid).toBe(created.body.uid);
+        expect(notices[0].data.count).toBe(1);
+    });
+
+    it('gives the assignee one unread notification for five quick assignments', async () => {
+        const uids = [];
+        for (let i = 1; i <= 5; i++) {
+            const res = await assign(ownerAgent, `Snag ${i}`);
+            expect(res.status).toBe(201);
+            uids.push(res.body.uid);
+        }
+
+        const notices = await assignedNotices();
+        expect(notices).toHaveLength(1);
+        expect(notices[0].read_at).toBeNull();
+        expect(notices[0].title).toBe('Owner assigned you 5 tasks');
+        expect(notices[0].data.count).toBe(5);
+        expect(notices[0].data.taskUids).toEqual(uids);
+        expect(notices[0].data.taskUid).toBe(uids[4]);
+
+        const unread = await Notification.count({
+            where: {
+                user_id: assignee.id,
+                type: 'task_assigned',
+                read_at: null,
+            },
+        });
+        expect(unread).toBe(1);
+    });
+
+    it('starts a new notification once the earlier one is read', async () => {
+        await assign(ownerAgent, 'Snag 1');
+        await assign(ownerAgent, 'Snag 2');
+        const [first] = await assignedNotices();
+        await first.markAsRead();
+
+        await assign(ownerAgent, 'Snag 3');
+
+        const notices = await assignedNotices();
+        expect(notices).toHaveLength(2);
+        expect(notices[0].data.count).toBe(2);
+        expect(notices[1].title).toBe('Owner assigned you a task');
+        expect(notices[1].data.count).toBe(1);
+    });
+
+    it('starts a new notification once the earlier one is outside the window', async () => {
+        await assign(ownerAgent, 'Snag 1');
+        const [first] = await assignedNotices();
+        await Notification.update(
+            { created_at: new Date(Date.now() - 11 * 60 * 1000) },
+            { where: { id: first.id }, silent: true }
+        );
+
+        await assign(ownerAgent, 'Snag 2');
+
+        const notices = await assignedNotices();
+        expect(notices).toHaveLength(2);
+        expect(notices.map((n) => n.data.count)).toEqual([1, 1]);
+    });
+
+    it('sends one notification for a spreadsheet import full of assignments', async () => {
+        const rows = Array.from(
+            { length: 6 },
+            (_, i) => `Row ${i + 1},${assignee.email},${project.name}`
+        );
+        const upload = await ownerAgent
+            .post('/api/imports')
+            .attach(
+                'file',
+                Buffer.from(['Name,Assignee,Project', ...rows].join('\n')),
+                'handover.csv'
+            );
+        expect(upload.status).toBe(201);
+        const job = upload.body;
+
+        const committed = await ownerAgent
+            .post(`/api/imports/${job.uid}/commit`)
+            .send({
+                sheet: 0,
+                header_row: job.sheets[0].header_row,
+                mapping: job.sheets[0].suggested_mapping,
+                target: { mode: 'column' },
+                hierarchy: 'auto',
+                date_order: 'auto',
+            });
+        expect(committed.status).toBe(200);
+
+        const assigned = await Task.count({
+            where: { assigned_to: assigneeSelfPerson.uid },
+        });
+        expect(assigned).toBe(6);
+
+        const notices = await assignedNotices();
+        expect(notices).toHaveLength(1);
+        expect(notices[0].title).toBe('Owner assigned you 6 tasks');
+        expect(notices[0].data.count).toBe(6);
+    });
+
+    it('keeps assignments from different people in separate notifications', async () => {
+        expect((await assign(ownerAgent, 'From owner 1')).status).toBe(201);
+        expect((await assign(otherAgent, 'From other')).status).toBe(201);
+        expect((await assign(ownerAgent, 'From owner 2')).status).toBe(201);
+
+        const notices = await assignedNotices();
+        expect(notices).toHaveLength(2);
+        const byAssigner = Object.fromEntries(
+            notices.map((n) => [n.data.assignedByUserId, n])
+        );
+        expect(byAssigner[owner.id].title).toBe('Owner assigned you 2 tasks');
+        expect(byAssigner[other.id].title).toBe('Other assigned you a task');
+    });
+});
+
 describe('assigned_to=me filter when the account has no linked person', () => {
     it('shows no tasks instead of falling back to unassigned tasks', async () => {
         const orphan = await createTestUser({
