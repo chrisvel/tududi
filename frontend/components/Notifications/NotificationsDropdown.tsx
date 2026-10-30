@@ -37,6 +37,8 @@ interface Notification {
     created_at: string;
     data?: {
         taskUid?: string;
+        taskUids?: string[];
+        count?: number;
         projectUid?: string;
         invitationId?: InvitationId;
         resourceType?: string;
@@ -286,7 +288,13 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
     };
 
     const handleNotificationClick = (notification: Notification) => {
-        if (notification.data?.taskUid) {
+        if (
+            notification.type === 'task_assigned' &&
+            (notification.data?.count ?? 1) > 1
+        ) {
+            setIsOpen(false);
+            navigate('/tasks?assigned_to=me&status=active');
+        } else if (notification.data?.taskUid) {
             setIsOpen(false);
             openTaskPanel(notification.data.taskUid);
         } else if (notification.data?.projectUid) {

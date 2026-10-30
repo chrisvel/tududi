@@ -1207,7 +1207,16 @@
     "historyDuration_other": "{{count}} 日かかりました",
     "reopen": "再開",
     "reopened": "「{{name}}」を進行中に戻しました",
-    "loadError": "プロジェクトを読み込めませんでした"
+    "loadError": "プロジェクトを読み込めませんでした",
+    "unavailable": {
+      "noAccessTitle": "このプロジェクトへのアクセス権がありません",
+      "noAccessHint": "プロジェクトの所有者に共有を依頼してください。",
+      "notFoundTitle": "このプロジェクトは存在しないか、削除されました",
+      "notFoundHint": "リンクを確認するか、一覧からプロジェクトを探してください。",
+      "failedTitle": "プロジェクトの詳細を読み込めませんでした。",
+      "failedHint": "接続を確認して、ページを再読み込みしてください。",
+      "backToProjects": "プロジェクトに戻る"
+    }
   },
   "projectItem": {
     "edit": "編集",
@@ -2773,7 +2782,12 @@
     "removed": "メンバーを削除しました",
     "updated": "メンバーを更新しました",
     "invitationSent": "招待を送信しました",
-    "failedToRemove": "メンバーを削除できませんでした"
+    "failedToRemove": "メンバーを削除できませんでした",
+    "openTasksCount": "{{name}} に割り当てられた未完了のタスク: {{count}}",
+    "handTo": "タスクの引き継ぎ先",
+    "handToYou": "{{name}}（あなた）",
+    "leaveUnassigned": "なし（未割り当てのままにする）",
+    "handToHint": "引き継ぎ先にはタスク数を記した通知が1件だけ届きます。完了したタスクはそのままです。"
   },
   "signInLink": {
     "action": "サインインリンク",

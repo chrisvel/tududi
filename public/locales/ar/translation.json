@@ -1499,7 +1499,16 @@
     "historyDuration_other": "استغرق {{count}} يوم",
     "reopen": "إعادة فتح",
     "reopened": "عاد \"{{name}}\" قيد التنفيذ",
-    "loadError": "فشل تحميل المشاريع"
+    "loadError": "فشل تحميل المشاريع",
+    "unavailable": {
+      "noAccessTitle": "ليس لديك صلاحية الوصول إلى هذا المشروع",
+      "noAccessHint": "اطلب من مالك المشروع مشاركته معك.",
+      "notFoundTitle": "هذا المشروع غير موجود أو تم حذفه",
+      "notFoundHint": "تحقق من الرابط، أو ابحث عن المشروع في قائمتك.",
+      "failedTitle": "تعذر تحميل تفاصيل المشروع.",
+      "failedHint": "تحقق من اتصالك وأعد تحميل الصفحة.",
+      "backToProjects": "العودة إلى المشاريع"
+    }
   },
   "projectItem": {
     "edit": "تعديل",
@@ -2791,7 +2800,12 @@
     "removed": "تمت إزالة العضو",
     "updated": "تم تحديث العضو",
     "invitationSent": "تم إرسال الدعوة",
-    "failedToRemove": "تعذّرت إزالة العضو"
+    "failedToRemove": "تعذّرت إزالة العضو",
+    "openTasksCount": "المهام المفتوحة المسندة إلى {{name}}: {{count}}",
+    "handTo": "تسليم مهامه إلى",
+    "handToYou": "{{name}} (أنت)",
+    "leaveUnassigned": "لا أحد، اتركها بلا تعيين",
+    "handToHint": "سيصله إشعار واحد بعدد المهام. المهام المنجزة تبقى كما هي."
   },
   "signInLink": {
     "action": "رابط تسجيل الدخول",

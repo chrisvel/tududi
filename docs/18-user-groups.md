@@ -6,7 +6,7 @@
 
 ## Overview
 
-A group is a named set of users that an admin maintains. Anyone who owns a project, area, goal, note or task can share it with a whole group instead of inviting people one by one. Members are invited like any other collaborator and see the item after they accept.
+A group is a named set of users that an admin maintains. Anyone who owns a project, area, goal, note or task can share it with a whole group instead of inviting people one by one. Members are invited like any other collaborator and see the item after they accept, unless an admin of their own account made the share on a hosted instance (see Invitations).
 
 Groups are managed by admins and belong to the instance, not to a user. Any signed-in user can pick a group when sharing.
 
@@ -34,6 +34,8 @@ Every member gets a `share_invitation` notification and a pending invitation, ex
 
 A member who already holds accepted access at that level or higher (from a direct share or another group) is accepted silently. A grant that would raise their level asks again.
 
+On a hosted instance, a grant made by an admin of the member's own account (its owner or a member made admin) applies to that member at once. They get a `share_invitation` notification with `invitationId: null` and `accepted: true`, which the bell shows as a notice without Accept or Decline. Members who join the group later follow the same rule, judged against whoever made the grant. Members from another account, grants made by a member who is not an admin, and every grant on a self-hosted instance stay invitations.
+
 ### Membership changes are live
 
 - **Adding a member** invites them to everything already shared with the group.
@@ -50,6 +52,17 @@ Being in a group with someone makes you part of each other's workspace, even whe
 - A member added without an email (see [People, Members and Roles](19-people-and-roles.md)) can be in a group like anyone else. The member lists show their name and "No email".
 
 Assigning a task still gives the assignee access to that task only. The group does not share anything by itself.
+
+### Losing access unassigns open tasks
+
+Assigning a task gives the assignee access to that task on its own, so when someone's access to a project ends, their open tasks there (not done, archived or cancelled, subtasks included) are unassigned. Otherwise they would keep opening and editing them. This runs after every way access can end:
+
+- removing them from a group the project, its area or its goal is shared with
+- deleting such a group
+- revoking a direct or group share on the project, its area or its goal
+- moving the project out of a shared area or goal, or restricting it
+
+Access is re-checked first: anyone who still reaches the project through ownership, the area, a direct share or another group keeps their tasks, and so does anyone the task itself is shared with. Completed tasks keep their assignee. The project owner gets one notification per project and person, saying how many tasks were unassigned. The code is in `backend/services/assignmentCleanup.js`.
 
 ### Overlap rules
 
@@ -120,5 +133,6 @@ Anything that goes through `permissionsService.getAccess`, `getSharedUidsForUser
 - Group grants and membership: `/backend/services/groupSharing.js`
 - Reading shared access: `/backend/services/permissionSources.js`
 - Container mirroring: `/backend/services/containerShareSync.js`
+- Unassigning after access ends: `/backend/services/assignmentCleanup.js`
 - Admin page: `/frontend/components/Admin/AdminUsersPage.tsx` (tab shell), `/frontend/components/Admin/AdminGroupsPanel.tsx` (Groups tab)
 - Share dialog: `/frontend/components/Shared/ShareModal.tsx`

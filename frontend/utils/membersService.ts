@@ -114,13 +114,54 @@ export const updateMember = async (
     return response.json();
 };
 
+export interface HandoffCandidate {
+    id: number;
+    person_uid: string;
+    name: string;
+    is_self: boolean;
+}
+
+export interface MemberHandoff {
+    open_assigned_tasks: number;
+    candidates: HandoffCandidate[];
+}
+
+// How many open tasks a member has, and who could take them over when the
+// member is removed (you first).
+export const fetchMemberHandoff = async (
+    memberId: number
+): Promise<MemberHandoff> => {
+    const response = await fetchWithCsrf(
+        getApiPath(`members/${memberId}/handoff`),
+        {
+            credentials: 'include',
+            headers: { Accept: 'application/json' },
+        }
+    );
+    if (!response.ok) {
+        throw await failure(response, 'Failed to load the member.');
+    }
+    return response.json();
+};
+
 // Deletes a member you added, with everything in their account. On tududi
-// Cloud this also gives their seat back.
-export const removeMember = async (memberId: number): Promise<void> => {
+// Cloud this also gives their seat back. With `reassignTo` (a member id) their
+// open tasks go to that member, who gets one notice; without it the tasks are
+// left unassigned.
+export const removeMember = async (
+    memberId: number,
+    reassignTo?: number | null
+): Promise<void> => {
     const response = await fetchWithCsrf(getApiPath(`members/${memberId}`), {
         method: 'DELETE',
         credentials: 'include',
-        headers: { Accept: 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify(
+            reassignTo != null ? { reassign_to: reassignTo } : {}
+        ),
     });
     if (!response.ok) {
         throw await failure(response, 'Failed to remove the member.');

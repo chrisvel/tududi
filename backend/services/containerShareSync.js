@@ -15,6 +15,7 @@ const {
 const { applyPerms } = require('./applyPerms');
 const { projectSubtreeChanges } = require('./permissionsCalculators');
 const { mirrorContainerGrants } = require('./groupSharing');
+const { unassignAfterAccessLoss } = require('./assignmentCleanup');
 const { logError } = require('./logService');
 
 async function findContainers(tx, { area_id, goal_id }) {
@@ -287,26 +288,71 @@ async function dropGroupShares(tx, project, containers, subtree) {
     }
 }
 
+// The users who hold the project through one of these containers, directly
+// or through a group.
+async function containerHolderIds(tx, project, containers) {
+    const ids = new Set();
+    for (const container of containers) {
+        const direct = await Permission.findAll({
+            where: {
+                resource_type: container.type,
+                resource_uid: container.uid,
+            },
+            attributes: ['user_id'],
+            transaction: tx,
+            raw: true,
+        });
+        direct.forEach((r) => ids.add(r.user_id));
+
+        const shares = await GroupShare.findAll({
+            where: {
+                resource_type: container.type,
+                resource_uid: container.uid,
+            },
+            attributes: ['id'],
+            transaction: tx,
+            raw: true,
+        });
+        if (shares.length === 0) continue;
+        const grouped = await GroupPermission.findAll({
+            where: {
+                group_share_id: { [Op.in]: shares.map((g) => g.id) },
+                resource_type: 'project',
+                resource_uid: project.uid,
+            },
+            attributes: ['user_id'],
+            transaction: tx,
+            raw: true,
+        });
+        grouped.forEach((r) => ids.add(r.user_id));
+    }
+    return Array.from(ids);
+}
+
 // Takes back what an area or goal grant wrote onto a project, when the project
 // leaves that area or goal or is restricted. `from` names the containers
 // ({ area_id, goal_id }); without it, the project's current ones. Shares made
 // on the project itself are kept. Throws, so a restrict that could not take
 // access back is not reported as done.
 async function dropProjectSharesFromContainer(projectId, from = null) {
-    await sequelize.transaction(async (tx) => {
+    const pairs = await sequelize.transaction(async (tx) => {
         const project = await Project.findByPk(projectId, {
             attributes: ['id', 'uid', 'area_id', 'goal_id'],
             transaction: tx,
         });
-        if (!project) return;
+        if (!project) return [];
 
         const containers = await findContainers(tx, from || project);
-        if (containers.length === 0) return;
+        if (containers.length === 0) return [];
 
+        const holders = await containerHolderIds(tx, project, containers);
         const subtree = await projectSubtree(tx, project.id);
         await dropDirectShares(tx, project, containers, subtree);
         await dropGroupShares(tx, project, containers, subtree);
+        return holders.map((userId) => ({ userId, projectUid: project.uid }));
     });
+    // Whoever is now out of the project comes off its open tasks.
+    await unassignAfterAccessLoss(pairs);
 }
 
 module.exports = {

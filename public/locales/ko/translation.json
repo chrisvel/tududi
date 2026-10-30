@@ -1489,7 +1489,16 @@
     "historyDuration_other": "{{count}}일 걸림",
     "reopen": "다시 열기",
     "reopened": "\"{{name}}\"이(가) 다시 진행 중입니다",
-    "loadError": "프로젝트를 불러오지 못했습니다"
+    "loadError": "프로젝트를 불러오지 못했습니다",
+    "unavailable": {
+      "noAccessTitle": "이 프로젝트에 대한 접근 권한이 없습니다",
+      "noAccessHint": "프로젝트 소유자에게 공유를 요청하세요.",
+      "notFoundTitle": "이 프로젝트는 존재하지 않거나 삭제되었습니다",
+      "notFoundHint": "링크를 확인하거나 목록에서 프로젝트를 찾아보세요.",
+      "failedTitle": "프로젝트 세부 정보를 불러오지 못했습니다.",
+      "failedHint": "연결을 확인하고 페이지를 새로 고치세요.",
+      "backToProjects": "프로젝트로 돌아가기"
+    }
   },
   "projectItem": {
     "edit": "편집",
@@ -2773,7 +2782,12 @@
     "removed": "멤버를 삭제했습니다",
     "updated": "멤버를 업데이트했습니다",
     "invitationSent": "초대를 보냈습니다",
-    "failedToRemove": "멤버를 삭제하지 못했습니다"
+    "failedToRemove": "멤버를 삭제하지 못했습니다",
+    "openTasksCount": "{{name}}에게 할당된 열린 작업: {{count}}",
+    "handTo": "작업을 넘겨받을 사람",
+    "handToYou": "{{name}} (나)",
+    "leaveUnassigned": "없음, 할당하지 않은 채로 두기",
+    "handToHint": "작업 수가 담긴 알림이 한 번만 전송됩니다. 완료된 작업은 그대로 유지됩니다."
   },
   "signInLink": {
     "action": "로그인 링크",

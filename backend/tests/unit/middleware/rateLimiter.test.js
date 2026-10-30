@@ -35,6 +35,7 @@ const {
     loginLimiter,
     caldavAuthLimiter,
     requestIdentity,
+    isSignInPageRequest,
 } = require('../../../middleware/rateLimiter');
 
 let ipCounter = 0;
@@ -109,6 +110,38 @@ describe('requestIdentity', () => {
         expect(
             requestIdentity({ headers: { authorization: 'Basic abc' } })
         ).toBeNull();
+    });
+});
+
+describe('isSignInPageRequest', () => {
+    const req = (method, baseUrl, path) => ({ method, baseUrl, path });
+
+    it('matches the sign-in page reads under /api and /api/v1', () => {
+        expect(isSignInPageRequest(req('GET', '/api', '/current_user'))).toBe(
+            true
+        );
+        expect(
+            isSignInPageRequest(req('GET', '/api', '/v1/oidc/providers'))
+        ).toBe(true);
+        expect(
+            isSignInPageRequest(req('GET', '/api/v1', '/feature-flags'))
+        ).toBe(true);
+        expect(isSignInPageRequest(req('GET', '/api', '/config/'))).toBe(true);
+    });
+
+    it('leaves everything else to the limiter', () => {
+        expect(isSignInPageRequest(req('POST', '/api', '/login'))).toBe(false);
+        expect(isSignInPageRequest(req('POST', '/api', '/config'))).toBe(false);
+        expect(isSignInPageRequest(req('GET', '/api', '/tasks'))).toBe(false);
+        expect(
+            isSignInPageRequest(req('GET', '/api', '/current_user/extra'))
+        ).toBe(false);
+        expect(isSignInPageRequest(req('GET', '', '/current_user'))).toBe(
+            false
+        );
+        expect(
+            isSignInPageRequest(req('GET', '/api', '/v2/current_user'))
+        ).toBe(false);
     });
 });
 

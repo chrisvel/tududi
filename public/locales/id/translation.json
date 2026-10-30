@@ -1489,7 +1489,16 @@
     "historyDuration_other": "memakan waktu {{count}} hari",
     "reopen": "Buka kembali",
     "reopened": "\"{{name}}\" kembali berjalan",
-    "loadError": "Gagal memuat proyek"
+    "loadError": "Gagal memuat proyek",
+    "unavailable": {
+      "noAccessTitle": "Anda tidak memiliki akses ke proyek ini",
+      "noAccessHint": "Minta pemilik proyek untuk membagikannya kepada Anda.",
+      "notFoundTitle": "Proyek ini tidak ada atau telah dihapus",
+      "notFoundHint": "Periksa tautannya, atau cari proyek di daftar Anda.",
+      "failedTitle": "Gagal memuat detail proyek.",
+      "failedHint": "Periksa koneksi Anda dan muat ulang halaman.",
+      "backToProjects": "Kembali ke Proyek"
+    }
   },
   "projectItem": {
     "edit": "Sunting",
@@ -2773,7 +2782,12 @@
     "removed": "Anggota dihapus",
     "updated": "Anggota diperbarui",
     "invitationSent": "Undangan terkirim",
-    "failedToRemove": "Gagal menghapus anggota"
+    "failedToRemove": "Gagal menghapus anggota",
+    "openTasksCount": "Tugas terbuka yang ditugaskan ke {{name}}: {{count}}",
+    "handTo": "Serahkan tugasnya kepada",
+    "handToYou": "{{name}} (Anda)",
+    "leaveUnassigned": "Tidak ada, biarkan tanpa penanggung jawab",
+    "handToHint": "Mereka menerima satu pemberitahuan berisi jumlah tugas. Tugas yang selesai tetap seperti semula."
   },
   "signInLink": {
     "action": "Tautan masuk",

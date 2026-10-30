@@ -1495,7 +1495,16 @@
     "historyDuration_other": "a durat {{count}} de zile",
     "reopen": "Redeschide",
     "reopened": "„{{name}}” este din nou în desfășurare",
-    "loadError": "Nu s-au putut încărca proiectele"
+    "loadError": "Nu s-au putut încărca proiectele",
+    "unavailable": {
+      "noAccessTitle": "Nu ai acces la acest proiect",
+      "noAccessHint": "Roagă-l pe proprietarul proiectului să îl partajeze cu tine.",
+      "notFoundTitle": "Acest proiect nu există sau a fost șters",
+      "notFoundHint": "Verifică linkul sau caută proiectul în lista ta.",
+      "failedTitle": "Nu s-au putut încărca detaliile proiectului.",
+      "failedHint": "Verifică-ți conexiunea și reîncarcă pagina.",
+      "backToProjects": "Înapoi la proiecte"
+    }
   },
   "projectItem": {
     "edit": "Editează",
@@ -2781,7 +2790,12 @@
     "removed": "Membru eliminat",
     "updated": "Membru actualizat",
     "invitationSent": "Invitație trimisă",
-    "failedToRemove": "Membrul nu a putut fi eliminat"
+    "failedToRemove": "Membrul nu a putut fi eliminat",
+    "openTasksCount": "Sarcini deschise atribuite lui {{name}}: {{count}}",
+    "handTo": "Predă sarcinile către",
+    "handToYou": "{{name}} (tu)",
+    "leaveUnassigned": "Nimeni, lasă-le neatribuite",
+    "handToHint": "Va primi o singură notificare cu numărul de sarcini. Sarcinile finalizate rămân neschimbate."
   },
   "signInLink": {
     "action": "Link de autentificare",

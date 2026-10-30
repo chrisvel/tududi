@@ -1017,7 +1017,16 @@
     "historyDuration_other": "duró {{count}} días",
     "reopen": "Reabrir",
     "reopened": "«{{name}}» vuelve a estar en curso",
-    "loadError": "Error al cargar los proyectos"
+    "loadError": "Error al cargar los proyectos",
+    "unavailable": {
+      "noAccessTitle": "No tienes acceso a este proyecto",
+      "noAccessHint": "Pide al propietario del proyecto que lo comparta contigo.",
+      "notFoundTitle": "Este proyecto no existe o fue eliminado",
+      "notFoundHint": "Revisa el enlace o busca el proyecto en tu lista.",
+      "failedTitle": "No se pudieron cargar los detalles del proyecto.",
+      "failedHint": "Revisa tu conexión y vuelve a cargar la página.",
+      "backToProjects": "Volver a Proyectos"
+    }
   },
   "projectItem": {
     "edit": "Editar",
@@ -2765,7 +2774,12 @@
     "removed": "Miembro quitado",
     "updated": "Miembro actualizado",
     "invitationSent": "Invitación enviada",
-    "failedToRemove": "No se pudo quitar el miembro"
+    "failedToRemove": "No se pudo quitar el miembro",
+    "openTasksCount": "Tareas abiertas asignadas a {{name}}: {{count}}",
+    "handTo": "Pasar sus tareas a",
+    "handToYou": "{{name}} (tú)",
+    "leaveUnassigned": "Nadie, dejarlas sin asignar",
+    "handToHint": "Recibirá un único aviso con el número de tareas. Las tareas hechas no cambian."
   },
   "signInLink": {
     "action": "Enlace de acceso",

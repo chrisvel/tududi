@@ -1520,7 +1520,16 @@
         "historyDuration_other": "trval {{count}} dní",
         "reopen": "Znova otvoriť",
         "reopened": "„{{name}}“ je opäť v procese",
-        "loadError": "Nepodarilo sa načítať projekty"
+        "loadError": "Nepodarilo sa načítať projekty",
+        "unavailable": {
+            "noAccessTitle": "K tomuto projektu nemáte prístup",
+            "noAccessHint": "Požiadajte vlastníka projektu, aby ho s vami zdieľal.",
+            "notFoundTitle": "Tento projekt neexistuje alebo bol odstránený",
+            "notFoundHint": "Skontrolujte odkaz alebo nájdite projekt vo svojom zozname.",
+            "failedTitle": "Podrobnosti projektu sa nepodarilo načítať.",
+            "failedHint": "Skontrolujte pripojenie a znova načítajte stránku.",
+            "backToProjects": "Späť na projekty"
+        }
     },
     "projectStatus": {
         "not_started": "Nezačatý",
@@ -2772,7 +2781,12 @@
         "nameRequiredWithoutEmail": "Ak nie je zadaný e-mail, zadajte meno",
         "failedToAdd": "Člena sa nepodarilo pridať",
         "seatNote": "Každý člen zaberá jedno miesto vášho plánu. Odstránením člena sa miesto uvoľní pre niekoho iného.",
-        "removeConfirm": "Odstrániť {{name}}? Jeho účet a všetko v ňom sa vymaže a túto akciu nie je možné vrátiť späť. V tududi Cloud sa jeho miesto uvoľní pre niekoho iného."
+        "removeConfirm": "Odstrániť {{name}}? Jeho účet a všetko v ňom sa vymaže a túto akciu nie je možné vrátiť späť. V tududi Cloud sa jeho miesto uvoľní pre niekoho iného.",
+        "openTasksCount": "Otvorené úlohy priradené {{name}}: {{count}}",
+        "handTo": "Odovzdať úlohy",
+        "handToYou": "{{name}} (vy)",
+        "leaveUnassigned": "Nikomu, nechať nepriradené",
+        "handToHint": "Dostane jedno upozornenie s počtom úloh. Dokončené úlohy zostanú tak, ako sú."
     },
     "signInLink": {
         "action": "Prihlasovací odkaz",

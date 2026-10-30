@@ -395,6 +395,7 @@ const { logError } = require('./services/logService');
 // Rate limiting middleware
 const {
     apiLimiter,
+    signInPageLimiter,
     authenticatedApiLimiter,
     bearerFailureLimiter,
 } = require('./middleware/rateLimiter');
@@ -513,6 +514,7 @@ healthPaths.forEach(registerHealthCheck);
 const registerRateLimiting = (basePath) => {
     app.use(basePath, bearerFailureLimiter);
     app.use(basePath, apiLimiter);
+    app.use(basePath, signInPageLimiter);
     app.use(basePath, authenticatedApiLimiter);
 };
 

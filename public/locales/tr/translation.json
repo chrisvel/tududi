@@ -1491,7 +1491,16 @@
     "historyDuration_other": "{{count}} gün sürdü",
     "reopen": "Yeniden aç",
     "reopened": "\"{{name}}\" yeniden devam ediyor",
-    "loadError": "Projeler yüklenemedi"
+    "loadError": "Projeler yüklenemedi",
+    "unavailable": {
+      "noAccessTitle": "Bu projeye erişiminiz yok",
+      "noAccessHint": "Proje sahibinden projeyi sizinle paylaşmasını isteyin.",
+      "notFoundTitle": "Bu proje mevcut değil veya silinmiş",
+      "notFoundHint": "Bağlantıyı kontrol edin ya da projeyi listenizde bulun.",
+      "failedTitle": "Proje ayrıntıları yüklenemedi.",
+      "failedHint": "Bağlantınızı kontrol edip sayfayı yeniden yükleyin.",
+      "backToProjects": "Projelere dön"
+    }
   },
   "projectItem": {
     "edit": "Düzenle",
@@ -2775,7 +2784,12 @@
     "removed": "Üye çıkarıldı",
     "updated": "Üye güncellendi",
     "invitationSent": "Davet gönderildi",
-    "failedToRemove": "Üye çıkarılamadı"
+    "failedToRemove": "Üye çıkarılamadı",
+    "openTasksCount": "{{name}} kişisine atanmış açık görevler: {{count}}",
+    "handTo": "Görevlerini devret",
+    "handToYou": "{{name}} (siz)",
+    "leaveUnassigned": "Kimse, atanmamış bırak",
+    "handToHint": "Görev sayısını içeren tek bir bildirim alır. Tamamlanan görevler olduğu gibi kalır."
   },
   "signInLink": {
     "action": "Oturum açma bağlantısı",

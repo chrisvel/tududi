@@ -1584,7 +1584,16 @@
     "historyDuration_other": "took {{count}} days",
     "reopen": "Reopen",
     "reopened": "\"{{name}}\" is back in progress",
-    "loadError": "Failed to load projects"
+    "loadError": "Failed to load projects",
+    "unavailable": {
+      "noAccessTitle": "You don't have access to this project",
+      "noAccessHint": "Ask the project's owner to share it with you.",
+      "notFoundTitle": "This project doesn't exist or was deleted",
+      "notFoundHint": "Check the link, or find the project in your list.",
+      "failedTitle": "Failed to load project details.",
+      "failedHint": "Check your connection and reload the page.",
+      "backToProjects": "Back to Projects"
+    }
   },
   "projectStatus": {
     "not_started": "Not Started",
@@ -3102,7 +3111,12 @@
     "removed": "Member removed",
     "updated": "Member updated",
     "invitationSent": "Invitation sent",
-    "failedToRemove": "Failed to remove member"
+    "failedToRemove": "Failed to remove member",
+    "openTasksCount": "Open tasks assigned to {{name}}: {{count}}",
+    "handTo": "Hand their tasks to",
+    "handToYou": "{{name}} (you)",
+    "leaveUnassigned": "Nobody, leave them unassigned",
+    "handToHint": "They get one notice with the number of tasks. Done tasks stay as they are."
   },
   "signInLink": {
     "action": "Sign-in link",

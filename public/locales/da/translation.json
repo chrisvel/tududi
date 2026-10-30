@@ -1491,7 +1491,16 @@
     "historyDuration_other": "tog {{count}} dage",
     "reopen": "Genåbn",
     "reopened": "\"{{name}}\" er i gang igen",
-    "loadError": "Kunne ikke indlæse projekter"
+    "loadError": "Kunne ikke indlæse projekter",
+    "unavailable": {
+      "noAccessTitle": "Du har ikke adgang til dette projekt",
+      "noAccessHint": "Bed projektets ejer om at dele det med dig.",
+      "notFoundTitle": "Dette projekt findes ikke eller er slettet",
+      "notFoundHint": "Tjek linket, eller find projektet på din liste.",
+      "failedTitle": "Projektdetaljerne kunne ikke indlæses.",
+      "failedHint": "Tjek din forbindelse, og genindlæs siden.",
+      "backToProjects": "Tilbage til projekter"
+    }
   },
   "projectItem": {
     "edit": "Rediger",
@@ -2775,7 +2784,12 @@
     "removed": "Medlemmet blev fjernet",
     "updated": "Medlemmet blev opdateret",
     "invitationSent": "Invitation sendt",
-    "failedToRemove": "Kunne ikke fjerne medlemmet"
+    "failedToRemove": "Kunne ikke fjerne medlemmet",
+    "openTasksCount": "Åbne opgaver tildelt {{name}}: {{count}}",
+    "handTo": "Giv opgaverne til",
+    "handToYou": "{{name}} (dig)",
+    "leaveUnassigned": "Ingen, lad dem være utildelte",
+    "handToHint": "De får én besked med antallet af opgaver. Færdige opgaver forbliver som de er."
   },
   "signInLink": {
     "action": "Login-link",

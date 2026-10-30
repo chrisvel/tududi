@@ -1495,7 +1495,16 @@
     "historyDuration_other": "trwał {{count}} dnia",
     "reopen": "Otwórz ponownie",
     "reopened": "„{{name}}” znów jest w toku",
-    "loadError": "Nie udało się wczytać projektów"
+    "loadError": "Nie udało się wczytać projektów",
+    "unavailable": {
+      "noAccessTitle": "Nie masz dostępu do tego projektu",
+      "noAccessHint": "Poproś właściciela projektu, aby go Tobie udostępnił.",
+      "notFoundTitle": "Ten projekt nie istnieje lub został usunięty",
+      "notFoundHint": "Sprawdź link albo znajdź projekt na swojej liście.",
+      "failedTitle": "Nie udało się wczytać szczegółów projektu.",
+      "failedHint": "Sprawdź połączenie i odśwież stronę.",
+      "backToProjects": "Wróć do projektów"
+    }
   },
   "projectItem": {
     "edit": "Edytuj",
@@ -2783,7 +2792,12 @@
     "removed": "Członek usunięty",
     "updated": "Członek zaktualizowany",
     "invitationSent": "Zaproszenie wysłane",
-    "failedToRemove": "Nie udało się usunąć członka"
+    "failedToRemove": "Nie udało się usunąć członka",
+    "openTasksCount": "Otwarte zadania przypisane do {{name}}: {{count}}",
+    "handTo": "Przekaż zadania osobie",
+    "handToYou": "{{name}} (ty)",
+    "leaveUnassigned": "Nikomu, zostaw bez przypisania",
+    "handToHint": "Ta osoba dostanie jedno powiadomienie z liczbą zadań. Ukończone zadania pozostają bez zmian."
   },
   "signInLink": {
     "action": "Link do logowania",

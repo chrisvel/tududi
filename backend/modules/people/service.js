@@ -2,7 +2,10 @@
 
 const peopleRepository = require('./repository');
 const { isAdmin } = require('../../services/rolesService');
-const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
+const {
+    getWorkspaceUserIds,
+    getVisibleMemberIds,
+} = require('../../services/workspaceMembers');
 const { selfPersonName } = require('../../utils/selfPersonName');
 const { accountStatusOf } = require('../admin/accountStatus');
 const signInLinkService = require('../members/signInLinkService');
@@ -171,10 +174,10 @@ class PeopleService {
     }
 
     // Everyone the caller works with, for tasks that are not in a project:
-    // their own people plus the self-person of every account they share with
-    // or are in a group with.
+    // their own people plus the self-person of every member they may see
+    // (see getVisibleMemberIds).
     async getAssignable(userId, filters = {}) {
-        const memberUserIds = await getWorkspaceUserIds(userId);
+        const memberUserIds = await getVisibleMemberIds(userId);
         return this.getAssignableForUsers(userId, memberUserIds, filters);
     }
 

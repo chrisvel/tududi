@@ -56,6 +56,10 @@ import ProjectAttachmentsWidget from './ProjectAttachmentsWidget';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
 import { useProjectMetrics } from './useProjectMetrics';
 import useCompleteProject from './useCompleteProject';
+import ProjectUnavailable, {
+    ProjectLoadError,
+    projectLoadErrorFrom,
+} from './ProjectUnavailable';
 import {
     matchesTaskStatusFilter,
     TaskStatusFilter,
@@ -77,7 +81,7 @@ const ProjectDetails: React.FC = () => {
     const [panelTask, setPanelTask] = useState<Task | null>(null);
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState<ProjectLoadError | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] = useState(false);
@@ -180,7 +184,7 @@ const ProjectDetails: React.FC = () => {
         const loadProjectData = async () => {
             try {
                 if (!project) setLoading(true);
-                setError(false);
+                setError(null);
                 const projectData = await fetchProjectBySlug(uidSlug);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
@@ -205,8 +209,8 @@ const ProjectDetails: React.FC = () => {
                     })
                 );
                 setLoading(false);
-            } catch {
-                setError(true);
+            } catch (err) {
+                setError(projectLoadErrorFrom(err));
                 setLoading(false);
             }
         };
@@ -625,20 +629,8 @@ const ProjectDetails: React.FC = () => {
     );
 
     if (loading) return <LoadingSpinner message="Loading project details..." />;
-    if (error)
-        return (
-            <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-red-500 text-lg">
-                    Failed to load project details.
-                </div>
-            </div>
-        );
-    if (!project)
-        return (
-            <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-red-500 text-lg">Project not found.</div>
-            </div>
-        );
+    if (error) return <ProjectUnavailable reason={error} />;
+    if (!project) return <ProjectUnavailable reason="notFound" />;
 
     const renderStatusFilter = () => (
         <div className="space-y-3">
