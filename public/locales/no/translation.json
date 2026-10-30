@@ -1492,7 +1492,16 @@
     "historyDuration_other": "tok {{count}} dager",
     "reopen": "Gjenåpne",
     "reopened": "«{{name}}» er i gang igjen",
-    "loadError": "Kunne ikke laste inn prosjekter"
+    "loadError": "Kunne ikke laste inn prosjekter",
+    "unavailable": {
+      "noAccessTitle": "Du har ikke tilgang til dette prosjektet",
+      "noAccessHint": "Be eieren av prosjektet om å dele det med deg.",
+      "notFoundTitle": "Dette prosjektet finnes ikke eller er slettet",
+      "notFoundHint": "Sjekk lenken, eller finn prosjektet i listen din.",
+      "failedTitle": "Kunne ikke laste inn prosjektdetaljene.",
+      "failedHint": "Sjekk tilkoblingen og last inn siden på nytt.",
+      "backToProjects": "Tilbake til prosjekter"
+    }
   },
   "projectItem": {
     "edit": "Rediger",

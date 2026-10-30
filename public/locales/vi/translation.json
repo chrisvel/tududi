@@ -1489,7 +1489,16 @@
     "historyDuration_other": "mất {{count}} ngày",
     "reopen": "Mở lại",
     "reopened": "\"{{name}}\" đã quay lại trạng thái đang thực hiện",
-    "loadError": "Không thể tải dự án"
+    "loadError": "Không thể tải dự án",
+    "unavailable": {
+      "noAccessTitle": "Bạn không có quyền truy cập dự án này",
+      "noAccessHint": "Hãy nhờ chủ sở hữu dự án chia sẻ với bạn.",
+      "notFoundTitle": "Dự án này không tồn tại hoặc đã bị xóa",
+      "notFoundHint": "Kiểm tra liên kết hoặc tìm dự án trong danh sách của bạn.",
+      "failedTitle": "Không thể tải chi tiết dự án.",
+      "failedHint": "Kiểm tra kết nối và tải lại trang.",
+      "backToProjects": "Quay lại Dự án"
+    }
   },
   "projectItem": {
     "edit": "Chỉnh sửa",

@@ -1493,7 +1493,16 @@
     "historyDuration_other": "levou {{count}} dias",
     "reopen": "Reabrir",
     "reopened": "\"{{name}}\" voltou a estar em andamento",
-    "loadError": "Falha ao carregar projetos"
+    "loadError": "Falha ao carregar projetos",
+    "unavailable": {
+      "noAccessTitle": "Você não tem acesso a este projeto",
+      "noAccessHint": "Peça ao proprietário do projeto para compartilhá-lo com você.",
+      "notFoundTitle": "Este projeto não existe ou foi excluído",
+      "notFoundHint": "Verifique o link ou encontre o projeto na sua lista.",
+      "failedTitle": "Falha ao carregar os detalhes do projeto.",
+      "failedHint": "Verifique sua conexão e recarregue a página.",
+      "backToProjects": "Voltar aos projetos"
+    }
   },
   "projectItem": {
     "edit": "Editar",

@@ -1491,7 +1491,16 @@
     "historyDuration_other": "kesti {{count}} päivää",
     "reopen": "Avaa uudelleen",
     "reopened": "\"{{name}}\" on taas käynnissä",
-    "loadError": "Projektien lataus epäonnistui"
+    "loadError": "Projektien lataus epäonnistui",
+    "unavailable": {
+      "noAccessTitle": "Sinulla ei ole pääsyä tähän projektiin",
+      "noAccessHint": "Pyydä projektin omistajaa jakamaan se kanssasi.",
+      "notFoundTitle": "Tätä projektia ei ole olemassa tai se on poistettu",
+      "notFoundHint": "Tarkista linkki tai etsi projekti listastasi.",
+      "failedTitle": "Projektin tietojen lataus epäonnistui.",
+      "failedHint": "Tarkista yhteytesi ja lataa sivu uudelleen.",
+      "backToProjects": "Takaisin projekteihin"
+    }
   },
   "projectItem": {
     "edit": "Muokkaa",

@@ -1489,7 +1489,16 @@
     "historyDuration_other": "用时 {{count}} 天",
     "reopen": "重新打开",
     "reopened": "“{{name}}”已恢复为进行中",
-    "loadError": "加载项目失败"
+    "loadError": "加载项目失败",
+    "unavailable": {
+      "noAccessTitle": "你没有访问此项目的权限",
+      "noAccessHint": "请让项目所有者与你共享。",
+      "notFoundTitle": "此项目不存在或已被删除",
+      "notFoundHint": "请检查链接，或在列表中查找该项目。",
+      "failedTitle": "无法加载项目详情。",
+      "failedHint": "请检查网络连接并重新加载页面。",
+      "backToProjects": "返回项目"
+    }
   },
   "projectItem": {
     "edit": "编辑",

@@ -1491,7 +1491,16 @@
     "historyDuration_other": "duurde {{count}} dagen",
     "reopen": "Heropenen",
     "reopened": "\"{{name}}\" is weer bezig",
-    "loadError": "Projecten laden mislukt"
+    "loadError": "Projecten laden mislukt",
+    "unavailable": {
+      "noAccessTitle": "Je hebt geen toegang tot dit project",
+      "noAccessHint": "Vraag de eigenaar van het project om het met je te delen.",
+      "notFoundTitle": "Dit project bestaat niet of is verwijderd",
+      "notFoundHint": "Controleer de link of zoek het project in je lijst.",
+      "failedTitle": "Projectdetails konden niet worden geladen.",
+      "failedHint": "Controleer je verbinding en laad de pagina opnieuw.",
+      "backToProjects": "Terug naar projecten"
+    }
   },
   "projectItem": {
     "edit": "Bewerken",

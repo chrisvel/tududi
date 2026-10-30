@@ -1489,7 +1489,16 @@
     "historyDuration_other": "{{count}}일 걸림",
     "reopen": "다시 열기",
     "reopened": "\"{{name}}\"이(가) 다시 진행 중입니다",
-    "loadError": "프로젝트를 불러오지 못했습니다"
+    "loadError": "프로젝트를 불러오지 못했습니다",
+    "unavailable": {
+      "noAccessTitle": "이 프로젝트에 대한 접근 권한이 없습니다",
+      "noAccessHint": "프로젝트 소유자에게 공유를 요청하세요.",
+      "notFoundTitle": "이 프로젝트는 존재하지 않거나 삭제되었습니다",
+      "notFoundHint": "링크를 확인하거나 목록에서 프로젝트를 찾아보세요.",
+      "failedTitle": "프로젝트 세부 정보를 불러오지 못했습니다.",
+      "failedHint": "연결을 확인하고 페이지를 새로 고치세요.",
+      "backToProjects": "프로젝트로 돌아가기"
+    }
   },
   "projectItem": {
     "edit": "편집",

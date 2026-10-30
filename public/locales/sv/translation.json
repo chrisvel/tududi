@@ -1491,7 +1491,16 @@
     "historyDuration_other": "tog {{count}} dagar",
     "reopen": "Öppna igen",
     "reopened": "\"{{name}}\" pågår igen",
-    "loadError": "Det gick inte att läsa in projekt"
+    "loadError": "Det gick inte att läsa in projekt",
+    "unavailable": {
+      "noAccessTitle": "Du har inte åtkomst till det här projektet",
+      "noAccessHint": "Be projektets ägare att dela det med dig.",
+      "notFoundTitle": "Det här projektet finns inte eller har tagits bort",
+      "notFoundHint": "Kontrollera länken eller hitta projektet i din lista.",
+      "failedTitle": "Det gick inte att läsa in projektdetaljerna.",
+      "failedHint": "Kontrollera anslutningen och läs in sidan igen.",
+      "backToProjects": "Tillbaka till projekt"
+    }
   },
   "projectItem": {
     "edit": "Ändra",

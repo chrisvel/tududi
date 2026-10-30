@@ -1637,7 +1637,16 @@
     "historyDuration_other": "dauerte {{count}} Tage",
     "reopen": "Wieder öffnen",
     "reopened": "„{{name}}“ ist wieder in Bearbeitung",
-    "loadError": "Projekte konnten nicht geladen werden"
+    "loadError": "Projekte konnten nicht geladen werden",
+    "unavailable": {
+      "noAccessTitle": "Du hast keinen Zugriff auf dieses Projekt",
+      "noAccessHint": "Bitte den Eigentümer des Projekts, es mit dir zu teilen.",
+      "notFoundTitle": "Dieses Projekt existiert nicht oder wurde gelöscht",
+      "notFoundHint": "Prüfe den Link oder suche das Projekt in deiner Liste.",
+      "failedTitle": "Projektdetails konnten nicht geladen werden.",
+      "failedHint": "Prüfe deine Verbindung und lade die Seite neu.",
+      "backToProjects": "Zurück zu den Projekten"
+    }
   },
   "projectItem": {
     "edit": "Bearbeiten",
