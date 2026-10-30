@@ -1,5 +1,13 @@
 const { Op } = require('sequelize');
-const { Project, Task, Note, Area, Goal, Person } = require('../models');
+const {
+    sequelize,
+    Project,
+    Task,
+    Note,
+    Area,
+    Goal,
+    Person,
+} = require('../models');
 const { isAdmin } = require('./rolesService');
 const permissionSources = require('./permissionSources');
 
@@ -78,13 +86,28 @@ async function looseAreaAccess(userId, areaId) {
     return level || ACCESS.NONE;
 }
 
-// The tasks that are the user's own work: ones they own and ones assigned to
-// them. Personal views (Today, Upcoming, the plan and its suggestions, the
-// brief) AND this with the visible-tasks where, so everything else in a shared
-// project or area stays on its own page instead of filling everyone's day.
+// The tasks that are the user's own work: ones assigned to them, and ones they
+// own that are not assigned to someone else's account. Personal views (Today,
+// Upcoming, the plan and its suggestions, the brief) AND this with the
+// visible-tasks where, so everything else in a shared project or area stays on
+// its own page instead of filling everyone's day. A task the user assigned to
+// another member counts for that member only; one assigned to a contact
+// without an account (a child, a plumber) is only a label and stays the
+// owner's work.
 async function myWorkWhere(userId) {
     const myPersonUids = await getMyPersonUids(userId);
-    const conditions = [{ user_id: userId }];
+    const otherAccountPersonUids = sequelize.literal(
+        `(SELECT uid FROM people WHERE linked_user_id IS NOT NULL AND linked_user_id <> ${Number(userId)})`
+    );
+    const conditions = [
+        {
+            user_id: userId,
+            [Op.or]: [
+                { assigned_to: null },
+                { assigned_to: { [Op.notIn]: otherAccountPersonUids } },
+            ],
+        },
+    ];
     if (myPersonUids.length > 0) {
         conditions.push({ assigned_to: { [Op.in]: myPersonUids } });
     }
