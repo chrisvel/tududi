@@ -7,6 +7,7 @@ const {
     Person,
     Role,
     Task,
+    Project,
     Notification,
 } = require('../../models');
 const rolesService = require('../../services/rolesService');
@@ -130,7 +131,34 @@ function openAssignedTasksWhere(memberId, personUid) {
 async function countOpenAssignedTasks(memberId) {
     const person = await findSelfPerson(memberId, { attributes: ['uid'] });
     if (!person) return 0;
-    return Task.count({ where: openAssignedTasksWhere(memberId, person.uid) });
+    const others = await Task.count({
+        where: openAssignedTasksWhere(memberId, person.uid),
+    });
+    // Their own open tasks in someone else's project pass to the project
+    // owner on removal, so they are handed over with the rest.
+    const own = await Task.findAll({
+        where: {
+            ...openAssignedTasksWhere(memberId, person.uid),
+            user_id: memberId,
+            project_id: { [Op.ne]: null },
+        },
+        attributes: ['project_id'],
+        raw: true,
+    });
+    if (own.length === 0) return others;
+    const othersProjects = new Set(
+        (
+            await Project.findAll({
+                where: {
+                    id: [...new Set(own.map((t) => t.project_id))],
+                    user_id: { [Op.ne]: memberId },
+                },
+                attributes: ['id'],
+                raw: true,
+            })
+        ).map((p) => p.id)
+    );
+    return others + own.filter((t) => othersProjects.has(t.project_id)).length;
 }
 
 // Who may take over a removed member's tasks: the remover, or someone the
