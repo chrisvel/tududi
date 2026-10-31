@@ -159,7 +159,7 @@ async function handleApiGet(request) {
 
         // A 401 means the session expired or a different user is now active.
         // Clear cached data so the next user cannot see stale responses.
-        if (response.status === 401 || response.status === 403) {
+        if (response.status === 401) {
             clearUserData().then(() => {
                 self.clients.matchAll({ type: 'window' }).then((clients) =>
                     clients.forEach((client) =>
@@ -167,6 +167,18 @@ async function handleApiGet(request) {
                     )
                 );
             });
+            return response;
+        }
+
+        // A 403 only means this user cannot see this one resource (a
+        // restricted project, for example). Keep the rest of the cache and
+        // the offline queue, and drop just this response so it does not stay
+        // readable offline.
+        if (response.status === 403) {
+            await caches
+                .open(API_CACHE)
+                .then((cache) => cache.delete(request))
+                .catch(() => undefined);
             return response;
         }
 
@@ -320,7 +332,10 @@ async function replayQueuedRequests() {
                 headers,
                 body: entry.body || undefined,
             });
-            if (response.ok) {
+            // A 403 will not turn into a success on a later try (the user
+            // lost access to what the edit touches), so drop just this entry.
+            // Anything else that is not ok stays queued for the next sync.
+            if (response.ok || response.status === 403) {
                 const delTx = db.transaction(SYNC_QUEUE, 'readwrite');
                 delTx.objectStore(SYNC_QUEUE).delete(entry.id);
             }
