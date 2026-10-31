@@ -14,7 +14,7 @@ A public note that the blog does not link never appears on it, and neither does 
 ## What readers see
 
 - Posts render with the same article component as a note's public link (`frontend/components/PublicNote/PublicNoteArticle.tsx`), with the blog navbar, a Cloud offer and more posts around it.
-- A post's address is its slugified title (`/how-to-organize-a-family-with-tududi`); a repeated title gets `-2`. Renaming a note changes its address.
+- A post's address is its slugified title (`/how-to-organize-a-family-with-tududi`); a repeated title gets `-2`. Renaming a note changes its address; the old one answers with a 301 to the new one (served slugs are kept in `settings.blog_slug_history`), as long as the post stays on the blog and no other post takes the old slug. Update the `[[link]]` in the front page note too, or the renamed post drops off the blog.
 - Cards show the share date, the first image as a cover and the first plain paragraph as the summary.
 
 ## Where it is served
