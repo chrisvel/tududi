@@ -2128,7 +2128,16 @@
     "groupAlreadyShared": "redan delat",
     "groupHint": "Varje medlem får en inbjudan, och personer som läggs till i gruppen senare bjuds också in.",
     "sharedWithGroups": "Delat med grupper",
-    "groupCounts": "{{accepted}} accepterade, {{pending}} väntande"
+    "groupCounts": "{{accepted}} accepterade, {{pending}} väntande",
+    "leave": {
+      "action": "Lämna",
+      "projectTitle": "Lämna projekt",
+      "areaTitle": "Lämna område",
+      "projectMessage": "Du ser inte längre \"{{name}}\" eller dess uppgifter, och dina öppna uppgifter där tilldelas inte längre dig. Personen som delade det får ett meddelande.",
+      "areaMessage": "Du ser inte längre \"{{name}}\" eller projekten som delas med det, och dina öppna uppgifter där tilldelas inte längre dig. Personen som delade det får ett meddelande.",
+      "left": "Du lämnade \"{{name}}\"",
+      "failed": "Det gick inte att lämna. Försök igen."
+    }
   },
   "views": {
     "title": "Smart Vyer",

@@ -2128,7 +2128,16 @@
     "groupAlreadyShared": "zaten paylaşıldı",
     "groupHint": "Her üye bir davet alır ve gruba sonradan eklenenler de davet edilir.",
     "sharedWithGroups": "Gruplarla paylaşılan",
-    "groupCounts": "{{accepted}} kabul edildi, {{pending}} bekliyor"
+    "groupCounts": "{{accepted}} kabul edildi, {{pending}} bekliyor",
+    "leave": {
+      "action": "Ayrıl",
+      "projectTitle": "Projeden ayrıl",
+      "areaTitle": "Alandan ayrıl",
+      "projectMessage": "Artık \"{{name}}\" ve görevlerini görmeyeceksin, oradaki açık görevlerin de artık sana atanmış olmayacak. Paylaşan kişiye bildirilecek.",
+      "areaMessage": "Artık \"{{name}}\" ve onunla paylaşılan projeleri görmeyeceksin, oradaki açık görevlerin de artık sana atanmış olmayacak. Paylaşan kişiye bildirilecek.",
+      "left": "\"{{name}}\" öğesinden ayrıldın",
+      "failed": "Ayrılamadı. Lütfen tekrar dene."
+    }
   },
   "views": {
     "title": "Akıllı Görünümler",

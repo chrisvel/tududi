@@ -54,6 +54,7 @@ import ProjectTimeline from './Timeline/ProjectTimeline';
 import ProjectOverviewRail from './ProjectOverviewRail';
 import ProjectAttachmentsWidget from './ProjectAttachmentsWidget';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
+import { leaveShare } from '../../utils/sharesService';
 import { useProjectMetrics } from './useProjectMetrics';
 import useCompleteProject from './useCompleteProject';
 import ProjectUnavailable, {
@@ -85,6 +86,7 @@ const ProjectDetails: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] = useState(false);
+    const [isLeaveConfirmOpen, setIsLeaveConfirmOpen] = useState(false);
     const [previewNote, setPreviewNote] = useState<Note | null>(null);
     const [view, setView] = useState<'tasks' | 'timeline'>(() => {
         try {
@@ -455,6 +457,29 @@ const ProjectDetails: React.FC = () => {
         navigate('/projects');
     };
 
+    // The viewer gives up a project shared with them, then it leaves their lists
+    const handleLeaveProject = async () => {
+        setIsLeaveConfirmOpen(false);
+        if (!project?.uid) return;
+        try {
+            await leaveShare('project', project.uid);
+        } catch {
+            showErrorToast(
+                t('shares.leave.failed', 'Could not leave. Please try again.')
+            );
+            return;
+        }
+        projectsStore.setProjects(
+            projectsStore.projects.filter((p) => p.uid !== project.uid)
+        );
+        showSuccessToast(
+            t('shares.leave.left', 'You left "{{name}}"', {
+                name: project.name,
+            })
+        );
+        navigate('/projects');
+    };
+
     // Opens the capture box on a task or note with this project filled in
     const openCaptureForProject = (target: 'task' | 'note' = 'task') => {
         if (!project) return;
@@ -732,6 +757,7 @@ const ProjectDetails: React.FC = () => {
                     setIsConfirmDialogOpen(true);
                 }}
                 onShareClick={() => setIsShareModalOpen(true)}
+                onLeaveClick={() => setIsLeaveConfirmOpen(true)}
                 onSaveAsTemplate={
                     templatesEnabled ? handleSaveAsTemplate : undefined
                 }
@@ -1076,6 +1102,25 @@ const ProjectDetails: React.FC = () => {
                             onConfirm={handleConfirmSaveAsTemplate}
                             onCancel={() => setIsTemplateConfirmOpen(false)}
                             confirmButtonText={t('common.save', 'Save')}
+                        />
+                    )}
+                    {isLeaveConfirmOpen && (
+                        <ConfirmDialog
+                            title={t(
+                                'shares.leave.projectTitle',
+                                'Leave project'
+                            )}
+                            message={t(
+                                'shares.leave.projectMessage',
+                                'You will no longer see "{{name}}" or its tasks, and your open tasks there will be unassigned. The person who shared it will be told.',
+                                { name: project?.name }
+                            )}
+                            onConfirm={handleLeaveProject}
+                            onCancel={() => setIsLeaveConfirmOpen(false)}
+                            confirmButtonText={t(
+                                'shares.leave.action',
+                                'Leave'
+                            )}
                         />
                     )}
                     {completeDialog}

@@ -2131,7 +2131,16 @@
     "groupAlreadyShared": "déjà partagé",
     "groupHint": "Chaque membre reçoit une invitation, et les personnes ajoutées plus tard au groupe sont aussi invitées.",
     "sharedWithGroups": "Partagé avec des groupes",
-    "groupCounts": "{{accepted}} acceptées, {{pending}} en attente"
+    "groupCounts": "{{accepted}} acceptées, {{pending}} en attente",
+    "leave": {
+      "action": "Quitter",
+      "projectTitle": "Quitter le projet",
+      "areaTitle": "Quitter le domaine",
+      "projectMessage": "Vous ne verrez plus \"{{name}}\" ni ses tâches, et vos tâches ouvertes ne vous seront plus attribuées. La personne qui l'a partagé sera prévenue.",
+      "areaMessage": "Vous ne verrez plus \"{{name}}\" ni les projets partagés avec lui, et vos tâches ouvertes ne vous seront plus attribuées. La personne qui l'a partagé sera prévenue.",
+      "left": "Vous avez quitté \"{{name}}\"",
+      "failed": "Impossible de quitter. Veuillez réessayer."
+    }
   },
   "views": {
     "title": "Vues intelligentes",

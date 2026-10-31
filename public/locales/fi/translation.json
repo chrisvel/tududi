@@ -2128,7 +2128,16 @@
     "groupAlreadyShared": "jo jaettu",
     "groupHint": "Jokainen jäsen saa kutsun, ja myöhemmin ryhmään lisättävät kutsutaan myös.",
     "sharedWithGroups": "Jaettu ryhmien kanssa",
-    "groupCounts": "{{accepted}} hyväksytty, {{pending}} odottaa"
+    "groupCounts": "{{accepted}} hyväksytty, {{pending}} odottaa",
+    "leave": {
+      "action": "Poistu",
+      "projectTitle": "Poistu projektista",
+      "areaTitle": "Poistu alueelta",
+      "projectMessage": "Et enää näe kohdetta \"{{name}}\" tai sen tehtäviä, ja avoimet tehtäväsi siellä eivät ole enää sinulle osoitettuja. Jakajalle ilmoitetaan.",
+      "areaMessage": "Et enää näe kohdetta \"{{name}}\" tai sen kanssa jaettuja projekteja, ja avoimet tehtäväsi siellä eivät ole enää sinulle osoitettuja. Jakajalle ilmoitetaan.",
+      "left": "Poistuit kohteesta \"{{name}}\"",
+      "failed": "Poistuminen epäonnistui. Yritä uudelleen."
+    }
   },
   "views": {
     "title": "Älykkäät näkymät",

@@ -11,6 +11,7 @@ const {
 } = require('../../shared/errors');
 const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
+const permissionSources = require('../../services/permissionSources');
 const { isAdmin } = require('../../services/rolesService');
 const scopeService = require('../../services/scopeService');
 const { sortTags } = require('../tasks/core/serializers');
@@ -506,6 +507,17 @@ class ProjectsService {
             can_share: viewerId
                 ? project.user_id === viewerId || (await isAdmin(viewerId))
                 : false,
+            // shared with the viewer on its own, so they may leave it
+            can_leave:
+                viewerId && project.user_id !== viewerId
+                    ? (
+                          await permissionSources.findLeavableUids(
+                              viewerId,
+                              'project',
+                              [project.uid]
+                          )
+                      ).has(project.uid)
+                    : false,
         };
     }
 

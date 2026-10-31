@@ -2131,7 +2131,16 @@
     "groupAlreadyShared": "já partilhado",
     "groupHint": "Cada membro recebe um convite, e as pessoas adicionadas ao grupo mais tarde também são convidadas.",
     "sharedWithGroups": "Partilhado com grupos",
-    "groupCounts": "{{accepted}} aceites, {{pending}} pendentes"
+    "groupCounts": "{{accepted}} aceites, {{pending}} pendentes",
+    "leave": {
+      "action": "Sair",
+      "projectTitle": "Sair do projeto",
+      "areaTitle": "Sair da área",
+      "projectMessage": "Você deixará de ver \"{{name}}\" e as suas tarefas, e as suas tarefas abertas lá deixarão de estar atribuídas a você. A pessoa que o compartilhou será avisada.",
+      "areaMessage": "Você deixará de ver \"{{name}}\" e os projetos compartilhados com ela, e as suas tarefas abertas lá deixarão de estar atribuídas a você. A pessoa que a compartilhou será avisada.",
+      "left": "Você saiu de \"{{name}}\"",
+      "failed": "Não foi possível sair. Tente novamente."
+    }
   },
   "views": {
     "title": "Visões Inteligentes",
