@@ -2126,7 +2126,16 @@
     "groupAlreadyShared": "共有済み",
     "groupHint": "各メンバーに招待が届き、後からグループに追加された人も招待されます。",
     "sharedWithGroups": "グループと共有",
-    "groupCounts": "承諾 {{accepted}} 件、保留 {{pending}} 件"
+    "groupCounts": "承諾 {{accepted}} 件、保留 {{pending}} 件",
+    "leave": {
+      "action": "退出",
+      "projectTitle": "プロジェクトから退出",
+      "areaTitle": "エリアから退出",
+      "projectMessage": "「{{name}}」とそのタスクは表示されなくなり、そこにある未完了のタスクの担当も外れます。共有した人に通知されます。",
+      "areaMessage": "「{{name}}」と、一緒に共有されたプロジェクトは表示されなくなり、そこにある未完了のタスクの担当も外れます。共有した人に通知されます。",
+      "left": "「{{name}}」から退出しました",
+      "failed": "退出できませんでした。もう一度お試しください。"
+    }
   },
   "views": {
     "title": "スマートビュー",

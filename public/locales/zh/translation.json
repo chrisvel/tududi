@@ -2126,7 +2126,16 @@
     "groupAlreadyShared": "已共享",
     "groupHint": "每位成员都会收到邀请，之后加入群组的人也会被邀请。",
     "sharedWithGroups": "已与群组共享",
-    "groupCounts": "已接受 {{accepted}} 个，待处理 {{pending}} 个"
+    "groupCounts": "已接受 {{accepted}} 个，待处理 {{pending}} 个",
+    "leave": {
+      "action": "退出",
+      "projectTitle": "退出项目",
+      "areaTitle": "退出领域",
+      "projectMessage": "你将不再看到“{{name}}”及其任务，你在其中未完成的任务也将不再分配给你。分享者会收到通知。",
+      "areaMessage": "你将不再看到“{{name}}”及随之分享的项目，你在其中未完成的任务也将不再分配给你。分享者会收到通知。",
+      "left": "你已退出“{{name}}”",
+      "failed": "无法退出，请重试。"
+    }
   },
   "views": {
     "title": "智能视图",

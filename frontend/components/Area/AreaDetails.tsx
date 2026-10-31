@@ -18,6 +18,9 @@ import TaskList from '../Task/TaskList';
 import ProjectItem from '../Project/ProjectItem';
 import useProjectCardActions from '../Project/useProjectCardActions';
 import ShareModal from '../Shared/ShareModal';
+import ConfirmDialog from '../Shared/ConfirmDialog';
+import { useToast } from '../Shared/ToastContext';
+import { leaveShare } from '../../utils/sharesService';
 import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 
 type AreaTab = 'projects' | 'goals' | 'tasks';
@@ -26,6 +29,7 @@ const AreaDetails: React.FC = () => {
     const { t } = useTranslation();
     const { uidSlug } = useParams<{ uidSlug: string }>();
     const navigate = useNavigate();
+    const { showSuccessToast, showErrorToast } = useToast();
 
     const areasStore = useStore((state: any) => state.areasStore);
     const projectsStore = useStore((state: any) => state.projectsStore);
@@ -39,6 +43,7 @@ const AreaDetails: React.FC = () => {
     const [loadingTasks, setLoadingTasks] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isLeaveConfirmOpen, setIsLeaveConfirmOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<AreaTab>('projects');
     const [showFinished, setShowFinished] = useState(false);
 
@@ -175,18 +180,42 @@ const AreaDetails: React.FC = () => {
             description: areaData.description,
             color: areaData.color,
         });
+        // The update answer has no can_leave, so keep what the list knew
         areasStore.setAreas(
             areasStore.areas.map((a: Area) =>
-                a.uid === result.uid ? result : a
+                a.uid === result.uid ? { ...a, ...result } : a
             )
         );
-        setArea(result);
+        setArea({ ...area, ...result });
         setIsEditModalOpen(false);
         const slug = result.name
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-|-$/g, '');
         navigate(`/area/${result.uid}-${slug}`, { replace: true });
+    };
+
+    // The viewer gives up an area shared with them, and with it the projects
+    // it brought along
+    const handleLeaveArea = async () => {
+        setIsLeaveConfirmOpen(false);
+        if (!area?.uid) return;
+        try {
+            await leaveShare('area', area.uid);
+        } catch {
+            showErrorToast(
+                t('shares.leave.failed', 'Could not leave. Please try again.')
+            );
+            return;
+        }
+        areasStore.setAreas(
+            areasStore.areas.filter((a: Area) => a.uid !== area.uid)
+        );
+        refreshProjects().catch(() => undefined);
+        showSuccessToast(
+            t('shares.leave.left', 'You left "{{name}}"', { name: area.name })
+        );
+        navigate('/areas');
     };
 
     if (isLoading) {
@@ -235,6 +264,7 @@ const AreaDetails: React.FC = () => {
                 totalCount={areaTasks.length}
                 onShareClick={() => setIsShareModalOpen(true)}
                 onEditClick={() => setIsEditModalOpen(true)}
+                onLeaveClick={() => setIsLeaveConfirmOpen(true)}
             />
 
             <div className="mb-4">
@@ -394,6 +424,20 @@ const AreaDetails: React.FC = () => {
                 resourceUid={area.uid || null}
                 resourceName={area.name}
             />
+
+            {isLeaveConfirmOpen && (
+                <ConfirmDialog
+                    title={t('shares.leave.areaTitle', 'Leave area')}
+                    message={t(
+                        'shares.leave.areaMessage',
+                        'You will no longer see "{{name}}" or the projects shared with it, and your open tasks there will be unassigned. The person who shared it will be told.',
+                        { name: area.name }
+                    )}
+                    onConfirm={handleLeaveArea}
+                    onCancel={() => setIsLeaveConfirmOpen(false)}
+                    confirmButtonText={t('shares.leave.action', 'Leave')}
+                />
+            )}
         </div>
     );
 };

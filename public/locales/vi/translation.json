@@ -2126,7 +2126,16 @@
     "groupAlreadyShared": "đã được chia sẻ",
     "groupHint": "Mỗi thành viên nhận một lời mời, và những người được thêm vào nhóm sau này cũng được mời.",
     "sharedWithGroups": "Chia sẻ với các nhóm",
-    "groupCounts": "{{accepted}} đã chấp nhận, {{pending}} đang chờ"
+    "groupCounts": "{{accepted}} đã chấp nhận, {{pending}} đang chờ",
+    "leave": {
+      "action": "Rời khỏi",
+      "projectTitle": "Rời khỏi dự án",
+      "areaTitle": "Rời khỏi lĩnh vực",
+      "projectMessage": "Bạn sẽ không còn thấy \"{{name}}\" hay các công việc của nó, và các công việc đang mở của bạn ở đó sẽ không còn được giao cho bạn. Người đã chia sẻ sẽ được thông báo.",
+      "areaMessage": "Bạn sẽ không còn thấy \"{{name}}\" hay các dự án được chia sẻ cùng nó, và các công việc đang mở của bạn ở đó sẽ không còn được giao cho bạn. Người đã chia sẻ sẽ được thông báo.",
+      "left": "Bạn đã rời khỏi \"{{name}}\"",
+      "failed": "Không thể rời khỏi. Vui lòng thử lại."
+    }
   },
   "views": {
     "title": "Chế độ xem thông minh",

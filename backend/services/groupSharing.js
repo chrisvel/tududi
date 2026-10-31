@@ -545,6 +545,16 @@ async function removeMember({ group, userId }) {
     return true;
 }
 
+// Takes one member off group grants while they stay in the group: their rows
+// for those grants go, the same as declining the invitation, and the other
+// members keep theirs. Sharing with the group again asks them again.
+async function leaveGroupShares({ userId, groupShareIds }) {
+    if (groupShareIds.length === 0) return;
+    await GroupPermission.destroy({
+        where: { user_id: userId, group_share_id: groupShareIds },
+    });
+}
+
 // Called when a project lands in an area or goal that is shared with a group:
 // copies each member's container access onto the project and everything in
 // it. Rows keep the container grant's status, so a member who has not
@@ -612,5 +622,6 @@ module.exports = {
     listForResource,
     addMembers,
     removeMember,
+    leaveGroupShares,
     mirrorContainerGrants,
 };

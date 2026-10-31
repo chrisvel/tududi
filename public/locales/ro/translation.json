@@ -2133,7 +2133,16 @@
     "groupAlreadyShared": "deja partajat",
     "groupHint": "Fiecare membru primește o invitație, iar persoanele adăugate ulterior în grup sunt invitate și ele.",
     "sharedWithGroups": "Partajat cu grupuri",
-    "groupCounts": "{{accepted}} acceptate, {{pending}} în așteptare"
+    "groupCounts": "{{accepted}} acceptate, {{pending}} în așteptare",
+    "leave": {
+      "action": "Părăsește",
+      "projectTitle": "Părăsește proiectul",
+      "areaTitle": "Părăsește zona",
+      "projectMessage": "Nu vei mai vedea \"{{name}}\" sau sarcinile sale, iar sarcinile tale deschise de acolo nu îți vor mai fi atribuite. Persoana care l-a partajat va fi anunțată.",
+      "areaMessage": "Nu vei mai vedea \"{{name}}\" sau proiectele partajate cu ea, iar sarcinile tale deschise de acolo nu îți vor mai fi atribuite. Persoana care a partajat-o va fi anunțată.",
+      "left": "Ai părăsit \"{{name}}\"",
+      "failed": "Nu s-a putut părăsi. Încearcă din nou."
+    }
   },
   "views": {
     "title": "Vizualizări inteligente",

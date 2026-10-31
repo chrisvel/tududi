@@ -325,6 +325,102 @@ class SharesService {
         return null; // 204 No Content
     }
 
+    // The recipient gives up a share: their direct share and every group
+    // grant on the item are removed for them alone (they stay in the
+    // group), their open tasks there are unassigned like after any other
+    // access loss, and whoever shared it is told once.
+    async leaveShare(userId, data) {
+        const { resource_type, resource_uid } = data || {};
+        if (!resource_type || !resource_uid) {
+            throw new ValidationError('Missing parameters');
+        }
+        if (!SHAREABLE_TYPES.has(resource_type)) {
+            throw new ValidationError('Unsupported resource type');
+        }
+
+        const resource = await sharesRepository.findResourceSummary(
+            resource_type,
+            resource_uid
+        );
+        if (!resource) {
+            throw new NotFoundError('Resource not found');
+        }
+        if (resource.user_id === userId) {
+            throw new ValidationError('You own this item and cannot leave it.');
+        }
+
+        const { direct, groupRows } = await sharesRepository.findHeldShares(
+            userId,
+            resource_type,
+            resource_uid
+        );
+        if (!direct && groupRows.length === 0) {
+            throw new NotFoundError('This item is not shared with you');
+        }
+
+        const sharerIds = new Set();
+        if (direct) {
+            await execAction({
+                verb: 'share_revoke',
+                actorUserId: userId,
+                targetUserId: userId,
+                resourceType: resource_type,
+                resourceUid: resource_uid,
+            });
+            sharerIds.add(direct.granted_by_user_id);
+        }
+        if (groupRows.length > 0) {
+            await groupSharing.leaveGroupShares({
+                userId,
+                groupShareIds: groupRows.map((r) => r.group_share_id),
+            });
+            groupRows.forEach((r) =>
+                sharerIds.add(r.GroupShare.granted_by_user_id)
+            );
+        }
+
+        await unassignAfterShareRevoke(userId, resource_type, resource_uid);
+        await this.notifySharers({
+            leaverId: userId,
+            sharerIds,
+            resource,
+            resourceType: resource_type,
+        });
+        return null; // 204 No Content
+    }
+
+    async notifySharers({ leaverId, sharerIds, resource, resourceType }) {
+        try {
+            const leaver = await sharesRepository.findUserById(leaverId, [
+                'id',
+                'email',
+                'name',
+            ]);
+            const leaverLabel = leaver?.name || leaver?.email || 'Someone';
+            const resourceLabel = resource.name || resourceType;
+            for (const sharerId of sharerIds) {
+                if (!sharerId || sharerId === leaverId) continue;
+                await Notification.createNotification({
+                    userId: sharerId,
+                    type: 'system',
+                    title: `${leaverLabel} left ${resourcePhrase(resourceType)} you shared`,
+                    message: `${leaverLabel} left "${resourceLabel}" and no longer has access to it.`,
+                    data: {
+                        reason: 'share_left',
+                        resourceType,
+                        resourceUid: resource.uid,
+                        resourceName: resource.name,
+                        leftUserId: leaverId,
+                        leftUserName: leaver?.name || null,
+                    },
+                });
+            }
+        } catch (error) {
+            // The share is already gone; a failed notice must not undo it.
+            logError('Failed to notify about a share being left:', error);
+        }
+    }
+
     async getShares(userId, resourceType, resourceUid) {
         if (!resourceType || !resourceUid) {
             throw new ValidationError('Missing parameters');

@@ -2128,7 +2128,16 @@
     "groupAlreadyShared": "al gedeeld",
     "groupHint": "Elk lid krijgt een uitnodiging, en mensen die later aan de groep worden toegevoegd, worden ook uitgenodigd.",
     "sharedWithGroups": "Gedeeld met groepen",
-    "groupCounts": "{{accepted}} geaccepteerd, {{pending}} in behandeling"
+    "groupCounts": "{{accepted}} geaccepteerd, {{pending}} in behandeling",
+    "leave": {
+      "action": "Verlaten",
+      "projectTitle": "Project verlaten",
+      "areaTitle": "Gebied verlaten",
+      "projectMessage": "Je ziet \"{{name}}\" en de taken ervan niet meer, en je open taken daar worden niet meer aan jou toegewezen. De persoon die het heeft gedeeld krijgt een melding.",
+      "areaMessage": "Je ziet \"{{name}}\" en de projecten die ermee gedeeld zijn niet meer, en je open taken daar worden niet meer aan jou toegewezen. De persoon die het heeft gedeeld krijgt een melding.",
+      "left": "Je hebt \"{{name}}\" verlaten",
+      "failed": "Verlaten is mislukt. Probeer het opnieuw."
+    }
   },
   "views": {
     "title": "Slimme Weergaven",

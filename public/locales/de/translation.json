@@ -2137,7 +2137,16 @@
     "groupAlreadyShared": "bereits geteilt",
     "groupHint": "Jedes Mitglied erhält eine Einladung, und später zur Gruppe hinzugefügte Personen werden ebenfalls eingeladen.",
     "sharedWithGroups": "Mit Gruppen geteilt",
-    "groupCounts": "{{accepted}} angenommen, {{pending}} ausstehend"
+    "groupCounts": "{{accepted}} angenommen, {{pending}} ausstehend",
+    "leave": {
+      "action": "Verlassen",
+      "projectTitle": "Projekt verlassen",
+      "areaTitle": "Bereich verlassen",
+      "projectMessage": "Du siehst \"{{name}}\" und seine Aufgaben nicht mehr, und deine offenen Aufgaben dort werden nicht mehr dir zugewiesen. Die Person, die es geteilt hat, wird benachrichtigt.",
+      "areaMessage": "Du siehst \"{{name}}\" und die damit geteilten Projekte nicht mehr, und deine offenen Aufgaben dort werden nicht mehr dir zugewiesen. Die Person, die es geteilt hat, wird benachrichtigt.",
+      "left": "Du hast \"{{name}}\" verlassen",
+      "failed": "Verlassen fehlgeschlagen. Bitte versuche es erneut."
+    }
   },
   "views": {
     "title": "Intelligente Ansichten",

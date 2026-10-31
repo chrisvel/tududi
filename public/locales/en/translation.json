@@ -2653,7 +2653,16 @@
     "groupAlreadyShared": "already shared",
     "groupHint": "Every member gets an invitation, and people added to the group later are invited too.",
     "sharedWithGroups": "Shared with groups",
-    "groupCounts": "{{accepted}} accepted, {{pending}} pending"
+    "groupCounts": "{{accepted}} accepted, {{pending}} pending",
+    "leave": {
+      "action": "Leave",
+      "projectTitle": "Leave project",
+      "areaTitle": "Leave area",
+      "projectMessage": "You will no longer see \"{{name}}\" or its tasks, and your open tasks there will be unassigned. The person who shared it will be told.",
+      "areaMessage": "You will no longer see \"{{name}}\" or the projects shared with it, and your open tasks there will be unassigned. The person who shared it will be told.",
+      "left": "You left \"{{name}}\"",
+      "failed": "Could not leave. Please try again."
+    }
   },
   "views": {
     "title": "Smart Views",

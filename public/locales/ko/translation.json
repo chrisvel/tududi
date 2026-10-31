@@ -2126,7 +2126,16 @@
     "groupAlreadyShared": "이미 공유됨",
     "groupHint": "모든 멤버가 초대를 받고, 나중에 그룹에 추가되는 사람도 초대됩니다.",
     "sharedWithGroups": "그룹과 공유됨",
-    "groupCounts": "수락 {{accepted}}개, 대기 {{pending}}개"
+    "groupCounts": "수락 {{accepted}}개, 대기 {{pending}}개",
+    "leave": {
+      "action": "나가기",
+      "projectTitle": "프로젝트 나가기",
+      "areaTitle": "영역 나가기",
+      "projectMessage": "\"{{name}}\"와(과) 그 작업이 더 이상 보이지 않으며, 그곳에서 진행 중인 작업의 담당도 해제됩니다. 공유한 사람에게 알림이 갑니다.",
+      "areaMessage": "\"{{name}}\"와(과) 함께 공유된 프로젝트가 더 이상 보이지 않으며, 그곳에서 진행 중인 작업의 담당도 해제됩니다. 공유한 사람에게 알림이 갑니다.",
+      "left": "\"{{name}}\"에서 나갔습니다",
+      "failed": "나가지 못했습니다. 다시 시도해 주세요."
+    }
   },
   "views": {
     "title": "스마트 뷰",

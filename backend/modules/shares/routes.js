@@ -7,6 +7,7 @@ const sharesController = require('./controller');
 router.post('/shares', sharesController.create);
 router.delete('/shares', sharesController.delete);
 router.get('/shares', sharesController.getAll);
+router.post('/shares/leave', sharesController.leave);
 
 router.get('/shares/candidates', sharesController.listCandidates);
 router.get('/shares/invitations', sharesController.listInvitations);

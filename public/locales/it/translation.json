@@ -2131,7 +2131,16 @@
     "groupAlreadyShared": "già condiviso",
     "groupHint": "Ogni membro riceve un invito, e anche le persone aggiunte al gruppo in seguito vengono invitate.",
     "sharedWithGroups": "Condiviso con gruppi",
-    "groupCounts": "{{accepted}} accettati, {{pending}} in attesa"
+    "groupCounts": "{{accepted}} accettati, {{pending}} in attesa",
+    "leave": {
+      "action": "Abbandona",
+      "projectTitle": "Abbandona progetto",
+      "areaTitle": "Abbandona area",
+      "projectMessage": "Non vedrai più \"{{name}}\" né le sue attività, e le tue attività aperte lì non ti saranno più assegnate. La persona che l'ha condiviso verrà avvisata.",
+      "areaMessage": "Non vedrai più \"{{name}}\" né i progetti condivisi con essa, e le tue attività aperte lì non ti saranno più assegnate. La persona che l'ha condivisa verrà avvisata.",
+      "left": "Hai abbandonato \"{{name}}\"",
+      "failed": "Impossibile abbandonare. Riprova."
+    }
   },
   "views": {
     "title": "Visualizzazioni Intelligenti",
