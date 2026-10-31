@@ -135,7 +135,7 @@ sync      → replay queued mutations (Background Sync API)
 | Name | Contents | Cleared when |
 |------|----------|-------------|
 | `tududi-v2` | Static assets (JS, CSS, fonts, icons, manifest) | SW activate removes old versions |
-| `tududi-api-v1` | API GET responses | 401/403 from any live fetch; CLEAR_CACHE message; manual SW update |
+| `tududi-api-v1` | API GET responses | 401 from any live fetch; CLEAR_CACHE message; manual SW update. A 403 removes only that request's entry |
 
 ### Offline mutation queue
 
@@ -145,7 +145,7 @@ Mutations that fail due to network error are stored in an IndexedDB database nam
 { id, url, method, headers (auth headers stripped), body, sessionId, timestamp }
 ```
 
-The Background Sync API fires the `tududi-sync` event when connectivity returns. Before replaying each entry the SW re-fetches a fresh CSRF token (`GET /api/csrf-token`) and overwrites whatever `x-csrf-token`/`X-CSRF-Token` header was captured at queue time — a token fetched while offline (see below) may be missing or stale by replay time, and the session-scoped CSRF secret backing it doesn't rotate, so a freshly-issued token is always valid. If the refresh itself fails, the entry replays with its original header and is left queued for the next sync attempt. The SW replays entries in order, deleting successfully-replayed entries from the store. After all replays it sends `{ type: 'SYNC_COMPLETE' }` to all open windows; `frontend/index.tsx` handles this by calling SWR's global `mutate(() => true)` to revalidate all cached data.
+The Background Sync API fires the `tududi-sync` event when connectivity returns. Before replaying each entry the SW re-fetches a fresh CSRF token (`GET /api/csrf-token`) and overwrites whatever `x-csrf-token`/`X-CSRF-Token` header was captured at queue time — a token fetched while offline (see below) may be missing or stale by replay time, and the session-scoped CSRF secret backing it doesn't rotate, so a freshly-issued token is always valid. If the refresh itself fails, the entry replays with its original header and is left queued for the next sync attempt. The SW replays entries in order, deleting successfully-replayed entries from the store. An entry that gets a 403 is also deleted, since the user no longer has access and a retry cannot succeed; other failed entries stay queued. After all replays it sends `{ type: 'SYNC_COMPLETE' }` to all open windows; `frontend/index.tsx` handles this by calling SWR's global `mutate(() => true)` to revalidate all cached data.
 
 **CSRF tokens while offline:** every mutating request needs a CSRF token, normally fetched via `getCsrfToken()` (`frontend/utils/csrfService.ts`) — itself a `GET`, so it's never queued by the SW. If that fetch fails (e.g. offline), `getCsrfToken()` resolves `''` instead of throwing, so the caller's actual mutating `fetch()` still fires and reaches `handleApiMutation` to be queued, rather than aborting before the request is ever made. Frontend code that receives the synthetic `202` response must check for it (`isQueuedOfflineResponse()` / `handleAuthResponse()` throwing `OfflineQueuedError`, both in `frontend/utils/authUtils.ts`) rather than treating the `{ queued: true }` placeholder body as the real resource.
 
@@ -225,7 +225,8 @@ The service worker caches API responses and queues mutations across page navigat
 **Risk 1 — Cached data visible to next user:** If User A logs out and User B logs in, the API cache could serve User A's task list to User B.
 
 **Mitigation:**
-- `handleApiGet` detects 401/403 responses from live fetches and calls `clearUserData()`, which deletes `tududi-api-v1` and purges the mutation queue.
+- `handleApiGet` detects 401 responses from live fetches and calls `clearUserData()`, which deletes `tududi-api-v1` and purges the mutation queue.
+- A 403 is a normal "no access" answer for one resource (restricted projects, the no-access page), not a sign-out. It leaves the cache and queue alone and deletes only the cached copy of that request, so a resource the user lost access to is not served offline.
 - `App.tsx` calls `notifySwClearCache()` when `/api/current_user` returns 401.
 - `Navbar.tsx` calls `notifySwClearCache()` in `handleLogout()` before navigating to `/login`.
 - The SW handles the `CLEAR_CACHE` postMessage by deleting the API cache and clearing IndexedDB.
