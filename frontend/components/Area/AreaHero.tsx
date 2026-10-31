@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { TFunction } from 'i18next';
 import {
+    ArrowRightStartOnRectangleIcon,
     FolderIcon,
     PencilSquareIcon,
     ShareIcon,
@@ -18,6 +19,8 @@ interface AreaHeroProps {
     totalCount: number;
     onShareClick: () => void;
     onEditClick: () => void;
+    // Offered when the area is shared with the viewer (can_leave)
+    onLeaveClick?: () => void;
 }
 
 // Same card as the project and goal headers: tinted surface, icon tile,
@@ -32,6 +35,7 @@ const AreaHero: React.FC<AreaHeroProps> = ({
     totalCount,
     onShareClick,
     onEditClick,
+    onLeaveClick,
 }) => {
     const tint = area.color || '#3b82f6';
     const percent =
@@ -111,6 +115,17 @@ const AreaHero: React.FC<AreaHeroProps> = ({
                             <PencilSquareIcon className="h-4 w-4" />
                             {t('common.edit', 'Edit')}
                         </button>
+                        {onLeaveClick && area.can_leave && (
+                            <button
+                                type="button"
+                                onClick={onLeaveClick}
+                                className={actionClass}
+                                data-testid="area-leave"
+                            >
+                                <ArrowRightStartOnRectangleIcon className="h-4 w-4" />
+                                {t('shares.leave.action', 'Leave')}
+                            </button>
+                        )}
                     </div>
                 </div>
 

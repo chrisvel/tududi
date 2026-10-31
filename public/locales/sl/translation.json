@@ -2134,7 +2134,16 @@
     "groupAlreadyShared": "že deljeno",
     "groupHint": "Vsak član dobi vabilo, povabljeni pa so tudi tisti, ki so v skupino dodani pozneje.",
     "sharedWithGroups": "Deljeno s skupinami",
-    "groupCounts": "{{accepted}} sprejetih, {{pending}} čakajočih"
+    "groupCounts": "{{accepted}} sprejetih, {{pending}} čakajočih",
+    "leave": {
+      "action": "Zapusti",
+      "projectTitle": "Zapusti projekt",
+      "areaTitle": "Zapusti področje",
+      "projectMessage": "Ne boste več videli \"{{name}}\" ali njegovih opravil, vaša odprta opravila tam pa vam ne bodo več dodeljena. Oseba, ki ga je delila, bo obveščena.",
+      "areaMessage": "Ne boste več videli \"{{name}}\" ali projektov, deljenih z njim, vaša odprta opravila tam pa vam ne bodo več dodeljena. Oseba, ki ga je delila, bo obveščena.",
+      "left": "Zapustili ste \"{{name}}\"",
+      "failed": "Zapuščanje ni uspelo. Poskusite znova."
+    }
   },
   "views": {
     "title": "Pametni pogledi",

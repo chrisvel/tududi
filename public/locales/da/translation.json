@@ -2128,7 +2128,16 @@
     "groupAlreadyShared": "allerede delt",
     "groupHint": "Hvert medlem får en invitation, og personer, der senere føjes til gruppen, inviteres også.",
     "sharedWithGroups": "Delt med grupper",
-    "groupCounts": "{{accepted}} accepteret, {{pending}} afventer"
+    "groupCounts": "{{accepted}} accepteret, {{pending}} afventer",
+    "leave": {
+      "action": "Forlad",
+      "projectTitle": "Forlad projekt",
+      "areaTitle": "Forlad område",
+      "projectMessage": "Du kan ikke længere se \"{{name}}\" eller dets opgaver, og dine åbne opgaver der bliver ikke længere tildelt dig. Personen, der delte det, får besked.",
+      "areaMessage": "Du kan ikke længere se \"{{name}}\" eller de projekter, der er delt med det, og dine åbne opgaver der bliver ikke længere tildelt dig. Personen, der delte det, får besked.",
+      "left": "Du forlod \"{{name}}\"",
+      "failed": "Kunne ikke forlade. Prøv igen."
+    }
   },
   "views": {
     "title": "Smarte Visninger",

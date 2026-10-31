@@ -2126,7 +2126,16 @@
     "groupAlreadyShared": "sudah dibagikan",
     "groupHint": "Setiap anggota mendapat undangan, dan orang yang ditambahkan ke grup nanti juga diundang.",
     "sharedWithGroups": "Dibagikan dengan grup",
-    "groupCounts": "{{accepted}} diterima, {{pending}} tertunda"
+    "groupCounts": "{{accepted}} diterima, {{pending}} tertunda",
+    "leave": {
+      "action": "Keluar",
+      "projectTitle": "Keluar dari proyek",
+      "areaTitle": "Keluar dari area",
+      "projectMessage": "Anda tidak akan lagi melihat \"{{name}}\" atau tugasnya, dan tugas terbuka Anda di sana tidak lagi ditugaskan kepada Anda. Orang yang membagikannya akan diberi tahu.",
+      "areaMessage": "Anda tidak akan lagi melihat \"{{name}}\" atau proyek yang dibagikan bersamanya, dan tugas terbuka Anda di sana tidak lagi ditugaskan kepada Anda. Orang yang membagikannya akan diberi tahu.",
+      "left": "Anda keluar dari \"{{name}}\"",
+      "failed": "Gagal keluar. Silakan coba lagi."
+    }
   },
   "views": {
     "title": "Tampilan Cerdas",

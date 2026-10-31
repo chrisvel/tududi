@@ -2369,7 +2369,16 @@
         "groupAlreadyShared": "už zdieľané",
         "groupHint": "Každý člen dostane pozvánku a pozvaní budú aj ľudia, ktorí sa do skupiny pridajú neskôr.",
         "sharedWithGroups": "Zdieľané so skupinami",
-        "groupCounts": "Prijaté: {{accepted}}, čaká sa: {{pending}}"
+        "groupCounts": "Prijaté: {{accepted}}, čaká sa: {{pending}}",
+        "leave": {
+            "action": "Opustiť",
+            "projectTitle": "Opustiť projekt",
+            "areaTitle": "Opustiť oblasť",
+            "projectMessage": "Už neuvidíte \"{{name}}\" ani jeho úlohy a vaše otvorené úlohy tam už nebudú priradené vám. Osoba, ktorá ho zdieľala, dostane upozornenie.",
+            "areaMessage": "Už neuvidíte \"{{name}}\" ani projekty zdieľané s ňou a vaše otvorené úlohy tam už nebudú priradené vám. Osoba, ktorá ju zdieľala, dostane upozornenie.",
+            "left": "Opustili ste \"{{name}}\"",
+            "failed": "Opustenie zlyhalo. Skúste to znova."
+        }
     },
     "views": {
         "title": "Inteligentné zobrazenia",

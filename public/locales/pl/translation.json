@@ -2134,7 +2134,16 @@
     "groupAlreadyShared": "już udostępniono",
     "groupHint": "Każdy członek dostaje zaproszenie, a osoby dodane do grupy później też są zapraszane.",
     "sharedWithGroups": "Udostępnione grupom",
-    "groupCounts": "{{accepted}} przyjętych, {{pending}} oczekujących"
+    "groupCounts": "{{accepted}} przyjętych, {{pending}} oczekujących",
+    "leave": {
+      "action": "Opuść",
+      "projectTitle": "Opuść projekt",
+      "areaTitle": "Opuść obszar",
+      "projectMessage": "Nie będziesz już widzieć \"{{name}}\" ani jego zadań, a twoje otwarte zadania przestaną być do ciebie przypisane. Osoba, która to udostępniła, zostanie powiadomiona.",
+      "areaMessage": "Nie będziesz już widzieć \"{{name}}\" ani udostępnionych w nim projektów, a twoje otwarte zadania przestaną być do ciebie przypisane. Osoba, która to udostępniła, zostanie powiadomiona.",
+      "left": "Opuszczono \"{{name}}\"",
+      "failed": "Nie udało się opuścić. Spróbuj ponownie."
+    }
   },
   "views": {
     "title": "Inteligentne Widoki",
