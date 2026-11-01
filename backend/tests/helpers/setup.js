@@ -2,18 +2,17 @@
 // so pointing the models at a database here gives every file its own
 // isolated database.
 //
-// SQLite (default): a throwaway file per test file under /tmp.
-// PostgreSQL (DATABASE_URL or DB_DIALECT=postgres set): one database per
-// Jest worker, created by globalSetup.js, with tables recreated per file.
+// One PostgreSQL database per Jest worker, created by globalSetup.js, with
+// tables recreated per file. DATABASE_URL defaults to the dev compose db.
 
-const { testDatabaseName } = require('./test-db');
+const { applyDefaultTestDatabase, testDatabaseName } = require('./test-db');
 
 // Telegram is off by default; the suite covers it switched on.
 if (process.env.TELEGRAM_ENABLED === undefined) {
     process.env.TELEGRAM_ENABLED = 'true';
 }
 
-if (process.env.DATABASE_URL || process.env.DB_DIALECT) {
+function pointAtWorkerDatabase() {
     const workerDb = testDatabaseName(process.env.JEST_WORKER_ID || '1');
     if (process.env.DATABASE_URL) {
         const url = new URL(process.env.DATABASE_URL);
@@ -22,15 +21,15 @@ if (process.env.DATABASE_URL || process.env.DB_DIALECT) {
     } else {
         process.env.DB_NAME = workerDb;
     }
-} else {
-    const testId = require('crypto').randomBytes(4).toString('hex');
-    process.env.DB_FILE = `/tmp/test-${testId}.sqlite3`;
 }
 
-const { sequelize } = require('../../models');
-const { isSqlite, truncateTables } = require('../../utils/db-dialect');
+applyDefaultTestDatabase();
+pointAtWorkerDatabase();
 
-// Children before parents: PostgreSQL deletes these with constraints on.
+const { sequelize } = require('../../models');
+const { truncateTables } = require('../../utils/db-dialect');
+
+// Children before parents: deleted with constraints on.
 const CLEANUP_TABLES = [
     'tasks_tags',
     'notes_tags',
@@ -99,11 +98,6 @@ const CLEANUP_TABLES = [
 beforeAll(async () => {
     // Ensure test database is clean and created with proper schema
     await sequelize.sync({ force: true });
-
-    if (isSqlite()) {
-        // Disable foreign key constraints for tests to avoid issues with test data creation
-        await sequelize.query('PRAGMA foreign_keys = OFF');
-    }
 }, 60000);
 
 beforeEach(async () => {

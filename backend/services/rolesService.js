@@ -28,7 +28,7 @@ const ROLE_DEFAULTS = {
 
 // Accepts either a user's uid (string) or numeric id. Callers pass both, and
 // comparing an integer against the varchar uid column is an error on
-// PostgreSQL (SQLite silently evaluated it to "no match").
+// PostgreSQL.
 function isHosted() {
     return getConfig().hosted?.enabled === true;
 }
@@ -163,7 +163,7 @@ async function assertCan(userUidOrId, capability) {
 
 // Counts the admins inside the caller's transaction and locks their rows, so
 // two people demoting or deleting the last two admins at the same moment
-// cannot both pass the check (SQLite has one writer, so it needs no lock).
+// cannot both pass the check.
 async function assertAnotherAdminRemains(transaction, message) {
     const admins = await Role.findAll({
         where: { is_admin: true },

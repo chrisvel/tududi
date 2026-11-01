@@ -2,7 +2,6 @@ const request = require('supertest');
 const app = require('../../app');
 const { Task, Project, Area, Note, Tag, User } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
-const { isPostgres } = require('../../utils/db-dialect');
 const moment = require('moment-timezone');
 
 describe('Universal Search Routes', () => {
@@ -1485,10 +1484,6 @@ describe('Universal Search Routes', () => {
             });
 
             it('should perform case-insensitive search for ASCII characters', async () => {
-                // NOTE: SQLite's LOWER() function only supports ASCII characters
-                // For Unicode (Cyrillic, Greek, etc.), search is case-sensitive
-                // This is a known limitation of SQLite without ICU extension
-
                 // Create test data with mixed case ASCII
                 await Task.create({
                     user_id: user.id,
@@ -1558,13 +1553,9 @@ describe('Universal Search Routes', () => {
                 );
             });
 
-            it('should demonstrate Cyrillic search limitation', async () => {
-                // NOTE: This test documents the current Cyrillic search limitation
-                // SQLite's LOWER() only works with ASCII, so our search uses:
-                //   - JavaScript toLowerCase() on search query: "Тест" -> "тест"
-                //   - SQLite LOWER() on database: "Тест Русский" -> "Тест Русский" (unchanged)
-                // Result: Case-insensitive search doesn't work for Cyrillic
-                // Future improvement: Add ICU extension, FTS5, or normalized search fields
+            it('should search Cyrillic text case-insensitively', async () => {
+                // The query is lowercased in JavaScript and PostgreSQL's
+                // LOWER() is Unicode-aware, so Cyrillic matches in any case.
 
                 // Create test data with Cyrillic text (all lowercase to match search query)
                 await Task.create({
@@ -1629,8 +1620,7 @@ describe('Universal Search Routes', () => {
                     status: 0,
                 });
 
-                // Lowercase search will NOT find uppercase Cyrillic on SQLite
-                // (limitation); PostgreSQL's LOWER() is Unicode-aware and does.
+                // Lowercase search finds uppercase Cyrillic too.
                 const response4 = await agent.get('/api/search').query({
                     q: 'тест uppercase',
                     filters: 'Task',
@@ -1640,7 +1630,7 @@ describe('Universal Search Routes', () => {
                     (r) => r.type === 'Task'
                 );
                 expect(tasks4.some((t) => t.name.includes('UPPERCASE'))).toBe(
-                    isPostgres()
+                    true
                 );
             });
         });

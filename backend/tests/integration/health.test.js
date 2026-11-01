@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const request = require('supertest');
 const app = require('../../app');
 const { sequelize } = require('../../models');
@@ -54,8 +56,13 @@ describe('Health endpoints', () => {
     });
 
     it('reports pending migrations as degraded', async () => {
-        await sequelize.query(
-            'DELETE FROM "SequelizeMeta" WHERE name = (SELECT name FROM "SequelizeMeta" ORDER BY name DESC LIMIT 1)'
+        // A migration file on disk that SequelizeMeta has not recorded.
+        const migrationsDir = path.join(__dirname, '..', '..', 'migrations');
+        const readdirSync = fs.readdirSync;
+        jest.spyOn(fs, 'readdirSync').mockImplementation((dir, ...rest) =>
+            path.resolve(String(dir)) === migrationsDir
+                ? ['20990101000000-not-yet-run.js']
+                : readdirSync(dir, ...rest)
         );
 
         const res = await request(app).get('/api/health/ready');

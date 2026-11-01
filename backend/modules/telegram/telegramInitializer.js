@@ -1,6 +1,6 @@
 const telegramPoller = require('./telegramPoller');
 const { User } = require('../../models');
-const { setConfig, getConfig } = require('../../config/config');
+const { getConfig } = require('../../config/config');
 const config = getConfig();
 
 async function initializeTelegramPolling() {

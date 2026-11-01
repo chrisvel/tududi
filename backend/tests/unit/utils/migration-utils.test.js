@@ -197,7 +197,7 @@ describe('migration-utils', () => {
             expect(queryInterface.removeColumn).not.toHaveBeenCalled();
         });
 
-        it('should remove column on non-SQLite dialect', async () => {
+        it('should remove the column', async () => {
             queryInterface.describeTable.mockResolvedValue({
                 id: {},
                 title: {},
@@ -211,52 +211,6 @@ describe('migration-utils', () => {
                 'tasks',
                 'old_col'
             );
-        });
-
-        it('should use table recreation strategy on SQLite', async () => {
-            queryInterface.describeTable.mockResolvedValue({
-                id: {
-                    type: 'INTEGER',
-                    primaryKey: true,
-                    autoIncrement: true,
-                    allowNull: false,
-                },
-                title: { type: 'TEXT', allowNull: true },
-                remove_me: { type: 'TEXT', allowNull: true },
-            });
-            queryInterface.sequelize.getDialect.mockReturnValue('sqlite');
-
-            await safeRemoveColumn(queryInterface, 'tasks', 'remove_me');
-
-            // Should have called multiple queries for SQLite recreation
-            const calls = queryInterface.sequelize.query.mock.calls.map(
-                (c) => c[0]
-            );
-            expect(
-                calls.some((q) => q.includes('PRAGMA foreign_keys = OFF'))
-            ).toBe(true);
-            expect(
-                calls.some((q) => q.includes('CREATE TABLE tasks_new'))
-            ).toBe(true);
-            expect(calls.some((q) => q.includes('INSERT INTO tasks_new'))).toBe(
-                true
-            );
-            expect(calls.some((q) => q.includes('DROP TABLE tasks'))).toBe(
-                true
-            );
-            expect(
-                calls.some((q) =>
-                    q.includes('ALTER TABLE tasks_new RENAME TO tasks')
-                )
-            ).toBe(true);
-            expect(
-                calls.some((q) => q.includes('PRAGMA foreign_keys = ON'))
-            ).toBe(true);
-            // remove_me should not appear in CREATE TABLE
-            const createCall = calls.find((q) =>
-                q.includes('CREATE TABLE tasks_new')
-            );
-            expect(createCall).not.toContain('remove_me');
         });
 
         it('should re-throw errors', async () => {
@@ -292,7 +246,7 @@ describe('migration-utils', () => {
             expect(queryInterface.changeColumn).not.toHaveBeenCalled();
         });
 
-        it('should change column on non-SQLite dialect', async () => {
+        it('should change the column', async () => {
             queryInterface.showAllTables.mockResolvedValue(['tasks']);
             queryInterface.describeTable.mockResolvedValue({
                 id: {},
@@ -308,38 +262,6 @@ describe('migration-utils', () => {
                 'title',
                 newDef
             );
-        });
-
-        it('should use table recreation on SQLite', async () => {
-            queryInterface.showAllTables.mockResolvedValue(['tasks']);
-            queryInterface.describeTable.mockResolvedValue({
-                id: {
-                    type: 'INTEGER',
-                    primaryKey: true,
-                    autoIncrement: true,
-                    allowNull: false,
-                },
-                title: { type: 'TEXT', allowNull: true },
-            });
-            queryInterface.showIndex.mockResolvedValue([]);
-            queryInterface.sequelize.getDialect.mockReturnValue('sqlite');
-
-            await safeChangeColumn(queryInterface, 'tasks', 'title', {
-                type: { toSql: () => 'VARCHAR(255)' },
-                allowNull: false,
-            });
-
-            const calls = queryInterface.sequelize.query.mock.calls.map(
-                (c) => c[0]
-            );
-            expect(
-                calls.some((q) => q.includes('CREATE TABLE tasks_new'))
-            ).toBe(true);
-            const createCall = calls.find((q) =>
-                q.includes('CREATE TABLE tasks_new')
-            );
-            expect(createCall).toContain('VARCHAR(255)');
-            expect(createCall).toContain('NOT NULL');
         });
 
         it('should re-throw errors', async () => {

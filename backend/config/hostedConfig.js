@@ -40,11 +40,6 @@ function hostedConfigProblems(env = process.env, config = getConfig()) {
             'ENABLE_EMAIL=true with EMAIL_SMTP_HOST is required: registration and password reset depend on email'
         );
     }
-    if (config.db?.dialect !== 'postgres') {
-        problems.push(
-            'DATABASE_URL must point at PostgreSQL: SQLite cannot serve several processes or many concurrent users'
-        );
-    }
 
     return problems;
 }

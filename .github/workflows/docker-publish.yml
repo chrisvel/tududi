@@ -143,7 +143,7 @@ jobs:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           docker run --rm --entrypoint sh "chrisvel/tududi@$DIGEST" -c \
-            "cd /app/backend && node -e \"require('sequelize'); require('sqlite3'); require('express')\""
+            "cd /app/backend && node -e \"require('sequelize'); require('pg'); require('express')\""
 
       - name: Export digest
         env:

@@ -2,7 +2,6 @@ const request = require('supertest');
 const app = require('../../app');
 const { Task, sequelize } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
-const { isPostgres } = require('../../utils/db-dialect');
 
 describe('Subtasks Completion Logic Integration', () => {
     let testUser;
@@ -427,20 +426,17 @@ describe('Subtasks Completion Logic Integration', () => {
                 priority: Task.PRIORITY.MEDIUM,
             });
 
-            // Delete parent task (in test environment, FK constraints are disabled)
+            // Delete parent task
             await agent
                 .delete(`/api/task/${parentTask.uid}`)
 
                 .expect(200);
 
-            // Verify subtask remains (orphaned). With FK constraints disabled
-            // (SQLite tests) it still points at the deleted parent; PostgreSQL
-            // enforces ON DELETE SET NULL on parent_task_id.
+            // Verify subtask remains (orphaned): ON DELETE SET NULL on
+            // parent_task_id.
             const remainingSubtask = await Task.findByPk(subtask.id);
             expect(remainingSubtask).not.toBeNull();
-            expect(remainingSubtask.parent_task_id).toBe(
-                isPostgres() ? null : parentTask.id
-            );
+            expect(remainingSubtask.parent_task_id).toBeNull();
         });
     });
 
@@ -611,9 +607,8 @@ describe('Subtasks Completion Logic Integration', () => {
                 password: 'password123',
             });
             const sessionCookie = loginResponse.headers['set-cookie'];
-            // Batches of 10 keep the load realistic: 50 simultaneous writers
-            // starve each other on SQLite's single write lock when the suite
-            // runs in parallel.
+            // Batches of 10 keep the load realistic when the suite runs in
+            // parallel.
             const batchSize = 10;
             const responses = [];
 

@@ -187,7 +187,7 @@ npm run lint:fix
      await queryInterface.removeIndex('tasks', 'tasks_due_date_index');
    }
    ```
-   Migrations run on both SQLite and PostgreSQL, and fresh installs create the schema from the models before migrations run, so every migration must be idempotent and dialect-safe. Use the `safe*` helpers, lowercase table names, `true`/`false` for booleans, and no `PRAGMA` or hand-rolled table rebuilds. Full checklist: [database.md](database.md#writing-dialect-safe-migrations).
+   Migrations run on PostgreSQL only, and fresh installs create the schema from the models and record every migration as applied, so a migration only ever runs on an existing database. Keep it idempotent: use the `safe*` helpers, lowercase table names and `true`/`false` for booleans. Full checklist: [database.md](database.md#writing-migrations).
 
 3. **Test migration**
    ```bash
