@@ -3,6 +3,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TaskDetails from '../TaskDetails';
 
+jest.mock('../../Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: () => null,
+}));
+
 jest.mock('react-router-dom', () => ({
     useParams: () => ({ uid: 'task-1' }),
     useNavigate: () => jest.fn(),

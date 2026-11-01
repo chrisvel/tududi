@@ -234,7 +234,8 @@
     "habit": "習慣",
     "assignedTo": "割り当て先",
     "subtasks": "サブタスク",
-    "openFullPage": "全画面表示を開く"
+    "openFullPage": "全画面表示を開く",
+    "openPanel": "サイドパネルで開く"
   },
   "timeline": {
     "activityTimeline": "アクティビティタイムライン",
@@ -1206,7 +1207,16 @@
     "historyDuration_other": "{{count}} 日かかりました",
     "reopen": "再開",
     "reopened": "「{{name}}」を進行中に戻しました",
-    "loadError": "プロジェクトを読み込めませんでした"
+    "loadError": "プロジェクトを読み込めませんでした",
+    "unavailable": {
+      "noAccessTitle": "このプロジェクトへのアクセス権がありません",
+      "noAccessHint": "プロジェクトの所有者に共有を依頼してください。",
+      "notFoundTitle": "このプロジェクトは存在しないか、削除されました",
+      "notFoundHint": "リンクを確認するか、一覧からプロジェクトを探してください。",
+      "failedTitle": "プロジェクトの詳細を読み込めませんでした。",
+      "failedHint": "接続を確認して、ページを再読み込みしてください。",
+      "backToProjects": "プロジェクトに戻る"
+    }
   },
   "projectItem": {
     "edit": "編集",
@@ -1576,6 +1586,8 @@
     "recurringSetup": "繰り返し設定",
     "notRecurring": "このタスクはまだ繰り返しではありません。",
     "clickToEditTitle": "タイトルを編集するにはクリック",
+    "copyLink": "タスクへのリンクをコピー",
+    "linkCopied": "リンクをコピーしました",
     "clickToEditContent": "内容を編集するにはクリック",
     "clickToAddContent": "内容を追加するにはクリック",
     "clickToEditSubtasks": "サブタスクを編集するにはクリック",
@@ -2114,7 +2126,16 @@
     "groupAlreadyShared": "共有済み",
     "groupHint": "各メンバーに招待が届き、後からグループに追加された人も招待されます。",
     "sharedWithGroups": "グループと共有",
-    "groupCounts": "承諾 {{accepted}} 件、保留 {{pending}} 件"
+    "groupCounts": "承諾 {{accepted}} 件、保留 {{pending}} 件",
+    "leave": {
+      "action": "退出",
+      "projectTitle": "プロジェクトから退出",
+      "areaTitle": "エリアから退出",
+      "projectMessage": "「{{name}}」とそのタスクは表示されなくなり、そこにある未完了のタスクの担当も外れます。共有した人に通知されます。",
+      "areaMessage": "「{{name}}」と、一緒に共有されたプロジェクトは表示されなくなり、そこにある未完了のタスクの担当も外れます。共有した人に通知されます。",
+      "left": "「{{name}}」から退出しました",
+      "failed": "退出できませんでした。もう一度お試しください。"
+    }
   },
   "views": {
     "title": "スマートビュー",
@@ -2646,6 +2667,10 @@
     "perSeatNote": "（あなたを含めて {{seats}} 席）",
     "membersNeedTeam": "Pro は 1 人用です。チームプランならメンバーを追加できます（3 席から）。",
     "seatsFull": "プランの {{seats}} 席はすべて使用中です。さらに人を追加するには、大きいチームプランに変更してください。",
+    "seatsFullTitle": "すべての席が使用中です",
+    "seatsFullContact": "プランの {{seats}} 席はすべて使用中です。さらに人を追加するにはお問い合わせください。",
+    "seatsContactHint": "{{email}} までメールをいただければ、プランに席を追加します。",
+    "contactUs": "お問い合わせ",
     "changePlan": "プランを変更",
     "planChanged": "プランを変更しました。"
   },
@@ -2705,7 +2730,9 @@
     "upcoming": "今週",
     "noDate": "日付なし",
     "nothing": "今は何もありません",
-    "empty": "現在共有されているものはありません。ここに表示するために、エリア、プロジェクト、または目標を共有するか、誰かにタスクを割り当ててください。"
+    "empty": "現在共有されているものはありません。ここに表示するために、エリア、プロジェクト、または目標を共有するか、誰かにタスクを割り当ててください。",
+    "sortableColumn": "並べ替え可能な列",
+    "reorderFailed": "列の順序を保存できませんでした。"
   },
   "people": {
     "addMember": "メンバーを追加",
@@ -2714,6 +2741,8 @@
     "filterMembers": "メンバー",
     "filterContacts": "連絡先",
     "member": "メンバー",
+    "owner": "オーナー",
+    "admin": "管理者",
     "memberNoSignIn": "メンバー（まだサインインできません）",
     "giveAccount": "アカウントを付与",
     "memberAdded": "メンバーを追加しました",
@@ -2762,7 +2791,12 @@
     "removed": "メンバーを削除しました",
     "updated": "メンバーを更新しました",
     "invitationSent": "招待を送信しました",
-    "failedToRemove": "メンバーを削除できませんでした"
+    "failedToRemove": "メンバーを削除できませんでした",
+    "openTasksCount": "{{name}} に割り当てられた未完了のタスク: {{count}}",
+    "handTo": "タスクの引き継ぎ先",
+    "handToYou": "{{name}}（あなた）",
+    "leaveUnassigned": "なし（未割り当てのままにする）",
+    "handToHint": "引き継ぎ先にはタスク数を記した通知が1件だけ届きます。完了したタスクはそのままです。"
   },
   "signInLink": {
     "action": "サインインリンク",

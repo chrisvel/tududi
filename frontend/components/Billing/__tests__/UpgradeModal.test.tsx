@@ -53,4 +53,40 @@ describe('UpgradeModal', () => {
             'All 5 seats of your plan are in use.'
         );
     });
+
+    it('asks a full comped Team plan to contact us instead of See plans', () => {
+        renderModal();
+        act(() =>
+            broadcastPlanLimit({
+                code: 'PLAN_LIMIT_REACHED',
+                details: {
+                    resource: 'member',
+                    limit: 4,
+                    current: 4,
+                    plan: 'team_5',
+                    reason: 'override',
+                },
+            } as any)
+        );
+
+        expect(screen.getByTestId('upgrade-modal')).toHaveTextContent(
+            'All 5 seats of your plan are in use. Contact us to add more people.'
+        );
+        expect(screen.getByTestId('upgrade-modal-contact')).toHaveTextContent(
+            'info@tududi.com'
+        );
+        expect(screen.getByTestId('upgrade-modal-contact-cta')).toHaveAttribute(
+            'href',
+            'mailto:info@tududi.com'
+        );
+        expect(screen.queryByTestId('upgrade-modal-cta')).toBeNull();
+    });
+
+    it('keeps See plans for a paid plan that is full', () => {
+        renderModal();
+        memberLimit(4, 'team_5');
+
+        expect(screen.getByTestId('upgrade-modal-cta')).toBeInTheDocument();
+        expect(screen.queryByTestId('upgrade-modal-contact-cta')).toBeNull();
+    });
 });

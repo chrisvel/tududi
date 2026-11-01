@@ -50,7 +50,15 @@ async function assertCanAddSeat(ownerId) {
     if (limit === null || limit === undefined) return;
     const current = await countMembers(ownerId);
     if (current + 1 > limit) {
-        throw new PlanLimitError('member', limit, current, ent.plan);
+        // A comped plan has no bigger bucket to check out; the app asks the
+        // account to contact us instead.
+        throw new PlanLimitError(
+            'member',
+            limit,
+            current,
+            ent.plan,
+            ent.reason === 'override' ? 'override' : undefined
+        );
     }
 }
 

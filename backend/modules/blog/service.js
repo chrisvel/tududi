@@ -8,6 +8,10 @@ const { extractUidFromSlug } = require('../../utils/slug-utils');
 const { NotFoundError, ValidationError } = require('../../shared/errors');
 
 const SETTING_KEY = 'blog_note_uid';
+// Every slug a post has been served under, with the note's uid, so an old
+// address still finds a renamed post.
+const SLUG_HISTORY_KEY = 'blog_slug_history';
+const MAX_SLUG_HISTORY = 500;
 
 const WIKILINK = /\[\[([^[\]\n]+?)\]\]/g;
 const NOTE_FILE_LINK = /\/api\/uploads\/note-files\/([A-Za-z0-9._-]+)/g;
@@ -77,6 +81,41 @@ async function getNoteUid() {
     return setting && setting.value ? setting.value : null;
 }
 
+async function readSlugHistory() {
+    const setting = await Setting.findOne({
+        where: { key: SLUG_HISTORY_KEY },
+    });
+    try {
+        const parsed = JSON.parse(setting ? setting.value : '{}');
+        return new Map(
+            Object.entries(parsed && typeof parsed === 'object' ? parsed : {})
+        );
+    } catch {
+        return new Map();
+    }
+}
+
+// Adds the slugs the blog serves now to the history. Writes only when a
+// post has a slug the history has not seen; the oldest entries go first
+// past the cap.
+async function rememberSlugs(posts, slugs) {
+    const history = await readSlugHistory();
+    let changed = false;
+    for (const note of posts) {
+        const slug = slugs.get(note.id);
+        if (history.get(slug) === note.uid) continue;
+        history.delete(slug);
+        history.set(slug, note.uid);
+        changed = true;
+    }
+    if (!changed) return;
+    const kept = [...history].slice(-MAX_SLUG_HISTORY);
+    await Setting.upsert({
+        key: SLUG_HISTORY_KEY,
+        value: JSON.stringify(Object.fromEntries(kept)),
+    });
+}
+
 // The blog as it stands: the front page note and every public note of the
 // same owner reachable from it through [[links]], in the order a reader
 // would find them. A public note that the blog does not link stays off it.
@@ -114,6 +153,7 @@ async function loadBlog() {
     }
 
     const slugs = assignSlugs(posts);
+    await rememberSlugs(posts, slugs);
     const describe = (note) => ({
         title: (note.title || '').trim(),
         slug: slugs.get(note.id),
@@ -130,7 +170,13 @@ async function loadBlog() {
             });
     };
 
-    return { index, posts, slugs, describe, linkedPosts };
+    // The address of the post a [[Title]] link opens, or null.
+    const pathFor = (title) => {
+        const note = byTitle.get(titleKey(title));
+        return note && slugs.has(note.id) ? `/${slugs.get(note.id)}` : null;
+    };
+
+    return { index, posts, slugs, describe, linkedPosts, pathFor };
 }
 
 // Where the call to action on every page sends a reader.
@@ -165,6 +211,45 @@ function postCard(blog, note) {
         excerpt: excerptOf(note.content),
         cover: coverOf(publicContent(note)),
         published_at: note.public_shared_at,
+    };
+}
+
+function indexOf(blog) {
+    if (!blog) throw new NotFoundError('The blog is not available.');
+    const { index } = blog;
+    return {
+        title: (index.title || '').trim(),
+        content: publicContent(index),
+        excerpt: excerptOf(index.content),
+        linked_notes: blog.linkedPosts(index).map(blog.describe),
+        posts: blog.linkedPosts(index).map((note) => postCard(blog, note)),
+        links: siteLinks(),
+    };
+}
+
+function postOf(blog, slug) {
+    const note =
+        blog &&
+        typeof slug === 'string' &&
+        blog.posts.find((p) => blog.slugs.get(p.id) === slug);
+    if (!note) throw new NotFoundError('This post is not available.');
+    const inherit = note.public_inherit_style;
+    return {
+        title: (note.title || '').trim(),
+        slug,
+        content: publicContent(note),
+        excerpt: excerptOf(note.content),
+        color: inherit ? note.color || null : null,
+        background: inherit ? note.background || null : null,
+        published_at: note.public_shared_at,
+        updated_at: note.updated_at,
+        linked_notes: blog.linkedPosts(note).map(blog.describe),
+        more: blog
+            .linkedPosts(blog.index)
+            .filter((p) => p.id !== note.id)
+            .slice(0, 3)
+            .map((p) => postCard(blog, p)),
+        links: siteLinks(),
     };
 }
 
@@ -220,44 +305,30 @@ const blogService = {
     },
 
     async getIndex() {
-        const blog = await loadBlog();
-        if (!blog) throw new NotFoundError('The blog is not available.');
-        const { index } = blog;
-        return {
-            title: (index.title || '').trim(),
-            content: publicContent(index),
-            excerpt: excerptOf(index.content),
-            linked_notes: blog.linkedPosts(index).map(blog.describe),
-            posts: blog.linkedPosts(index).map((note) => postCard(blog, note)),
-            links: siteLinks(),
-        };
+        return indexOf(await loadBlog());
     },
 
     async getPost(slug) {
+        return postOf(await loadBlog(), slug);
+    },
+
+    // What the blog host renders on the server: the front page (no slug) or
+    // a post, with the lookup that turns its [[links]] into addresses.
+    async page(slug) {
         const blog = await loadBlog();
-        const note =
-            blog &&
-            typeof slug === 'string' &&
-            blog.posts.find((p) => blog.slugs.get(p.id) === slug);
-        if (!note) throw new NotFoundError('This post is not available.');
-        const inherit = note.public_inherit_style;
-        return {
-            title: (note.title || '').trim(),
-            slug,
-            content: publicContent(note),
-            excerpt: excerptOf(note.content),
-            color: inherit ? note.color || null : null,
-            background: inherit ? note.background || null : null,
-            published_at: note.public_shared_at,
-            updated_at: note.updated_at,
-            linked_notes: blog.linkedPosts(note).map(blog.describe),
-            more: blog
-                .linkedPosts(blog.index)
-                .filter((p) => p.id !== note.id)
-                .slice(0, 3)
-                .map((p) => postCard(blog, p)),
-            links: siteLinks(),
-        };
+        const content = slug ? postOf(blog, slug) : indexOf(blog);
+        return { ...content, pathFor: blog.pathFor };
+    },
+
+    // The slug a post serves under now, when the given one is an older
+    // address of it (the note was renamed). Null otherwise.
+    async movedTo(slug) {
+        const blog = await loadBlog();
+        if (!blog || typeof slug !== 'string') return null;
+        const uid = (await readSlugHistory()).get(slug);
+        const note = uid && blog.posts.find((p) => p.uid === uid);
+        const current = note ? blog.slugs.get(note.id) : null;
+        return current && current !== slug ? current : null;
     },
 
     // Every post URL with its last change, for the sitemap.

@@ -3,6 +3,11 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Layout from '../Layout';
 
+jest.mock('../components/Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: () => null,
+}));
+
 jest.mock('react-i18next', () => ({
     initReactI18next: { type: '3rdParty', init: jest.fn() },
     useTranslation: () => ({
@@ -198,6 +203,48 @@ describe('Layout loading gate', () => {
         expect(screen.getByTestId('routed-page')).toBeInTheDocument();
         expect(screen.queryByText('common.loading')).not.toBeInTheDocument();
     });
+    it('keeps the routed page mounted when a store starts its first load after the page is shown', () => {
+        // A page opened from a link mounts, then areas start loading. Swapping
+        // the page out for the loader remounted it, so it fetched twice (#2022).
+        let mounts = 0;
+        const Page = () => {
+            React.useEffect(() => {
+                mounts += 1;
+            }, []);
+            return <div data-testid="routed-page">Project page</div>;
+        };
+        const layout = () => (
+            <Layout
+                currentUser={{ email: 'user@example.com' } as any}
+                setCurrentUser={jest.fn()}
+                isDarkMode={false}
+                toggleDarkMode={jest.fn()}
+            >
+                <Page />
+            </Layout>
+        );
+        storeState = {
+            ...baseStoreState,
+            areasStore: { ...baseStoreState.areasStore, hasLoaded: false },
+        };
+        const { rerender } = render(layout());
+
+        storeState = {
+            ...baseStoreState,
+            areasStore: {
+                ...baseStoreState.areasStore,
+                isLoading: true,
+                hasLoaded: false,
+            },
+        };
+        rerender(layout());
+        expect(screen.getByTestId('routed-page')).toBeInTheDocument();
+
+        storeState = baseStoreState;
+        rerender(layout());
+        expect(mounts).toBe(1);
+    });
+
     it('keeps the routed page when a store fails to load and retries that store', () => {
         const loadAreas = jest.fn();
         storeState = {

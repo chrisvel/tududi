@@ -125,6 +125,27 @@ describe('Share invitations (consent + no user enumeration)', () => {
         expect(notification.data.invitationId).toBeTruthy();
     });
 
+    it('names the shared type with the right article', async () => {
+        await share(invitee.email);
+        const area = await Area.create({ name: 'Home', user_id: owner.id });
+        await ownerAgent.post('/api/shares').send({
+            resource_type: 'area',
+            resource_uid: area.uid,
+            target_user_email: invitee.email,
+            access_level: 'ro',
+        });
+
+        const titles = (
+            await Notification.findAll({
+                where: { user_id: invitee.id, type: 'share_invitation' },
+                order: [['id', 'ASC']],
+            })
+        ).map((n) => n.title);
+        expect(titles).toHaveLength(2);
+        expect(titles[0]).toMatch(/ invited you to a project$/);
+        expect(titles[1]).toMatch(/ invited you to an area$/);
+    });
+
     it('grants access to the project and its tasks once accepted', async () => {
         await share(invitee.email, 'rw');
         const list = await inviteeAgent.get('/api/shares/invitations');

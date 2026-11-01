@@ -234,7 +234,8 @@
     "habit": "Alışkanlık",
     "assignedTo": "Atanan",
     "subtasks": "Alt görevler",
-    "openFullPage": "Tam görünümü aç"
+    "openFullPage": "Tam görünümü aç",
+    "openPanel": "Yan panelde aç"
   },
   "timeline": {
     "activityTimeline": "Etkinlik Zaman Çizelgesi",
@@ -1316,6 +1317,8 @@
     "recurringSetup": "Tekrarlayan Ayar",
     "notRecurring": "Bu görev henüz tekrarlanmıyor.",
     "clickToEditTitle": "Başlığı düzenlemek için tıklayın",
+    "copyLink": "Görev bağlantısını kopyala",
+    "linkCopied": "Bağlantı kopyalandı",
     "clickToEditContent": "İçeriği düzenlemek için tıklayın",
     "clickToAddContent": "İçerik eklemek için tıklayın",
     "clickToEditSubtasks": "Alt görevleri düzenlemek için tıklayın",
@@ -1488,7 +1491,16 @@
     "historyDuration_other": "{{count}} gün sürdü",
     "reopen": "Yeniden aç",
     "reopened": "\"{{name}}\" yeniden devam ediyor",
-    "loadError": "Projeler yüklenemedi"
+    "loadError": "Projeler yüklenemedi",
+    "unavailable": {
+      "noAccessTitle": "Bu projeye erişiminiz yok",
+      "noAccessHint": "Proje sahibinden projeyi sizinle paylaşmasını isteyin.",
+      "notFoundTitle": "Bu proje mevcut değil veya silinmiş",
+      "notFoundHint": "Bağlantıyı kontrol edin ya da projeyi listenizde bulun.",
+      "failedTitle": "Proje ayrıntıları yüklenemedi.",
+      "failedHint": "Bağlantınızı kontrol edip sayfayı yeniden yükleyin.",
+      "backToProjects": "Projelere dön"
+    }
   },
   "projectItem": {
     "edit": "Düzenle",
@@ -2116,7 +2128,16 @@
     "groupAlreadyShared": "zaten paylaşıldı",
     "groupHint": "Her üye bir davet alır ve gruba sonradan eklenenler de davet edilir.",
     "sharedWithGroups": "Gruplarla paylaşılan",
-    "groupCounts": "{{accepted}} kabul edildi, {{pending}} bekliyor"
+    "groupCounts": "{{accepted}} kabul edildi, {{pending}} bekliyor",
+    "leave": {
+      "action": "Ayrıl",
+      "projectTitle": "Projeden ayrıl",
+      "areaTitle": "Alandan ayrıl",
+      "projectMessage": "Artık \"{{name}}\" ve görevlerini görmeyeceksin, oradaki açık görevlerin de artık sana atanmış olmayacak. Paylaşan kişiye bildirilecek.",
+      "areaMessage": "Artık \"{{name}}\" ve onunla paylaşılan projeleri görmeyeceksin, oradaki açık görevlerin de artık sana atanmış olmayacak. Paylaşan kişiye bildirilecek.",
+      "left": "\"{{name}}\" öğesinden ayrıldın",
+      "failed": "Ayrılamadı. Lütfen tekrar dene."
+    }
   },
   "views": {
     "title": "Akıllı Görünümler",
@@ -2648,6 +2669,10 @@
     "perSeatNote": "(siz dahil {{seats}} koltuk)",
     "membersNeedTeam": "Pro tek kişiliktir. Ekip planı, 3 koltuktan başlayarak üye eklemenizi sağlar.",
     "seatsFull": "Planınızdaki {{seats}} koltuğun hepsi kullanımda. Daha fazla kişi eklemek için daha büyük bir Ekip planına geçin.",
+    "seatsFullTitle": "Tüm koltuklar dolu",
+    "seatsFullContact": "Planınızdaki {{seats}} koltuğun hepsi kullanımda. Daha fazla kişi eklemek için bizimle iletişime geçin.",
+    "seatsContactHint": "{{email}} adresine yazın, planınıza koltuk ekleyelim.",
+    "contactUs": "Bize ulaşın",
     "changePlan": "Planı değiştir",
     "planChanged": "Planınız değiştirildi."
   },
@@ -2707,7 +2732,9 @@
     "upcoming": "Bu hafta",
     "noDate": "Tarih yok",
     "nothing": "Şu anda hiçbir şey yok",
-    "empty": "Şu anda paylaşılan hiçbir şey yok. Burada görmek için bir alan, proje veya hedef paylaşın veya birine görev atayın."
+    "empty": "Şu anda paylaşılan hiçbir şey yok. Burada görmek için bir alan, proje veya hedef paylaşın veya birine görev atayın.",
+    "sortableColumn": "sıralanabilir sütun",
+    "reorderFailed": "Sütun sırası kaydedilemedi."
   },
   "people": {
     "addMember": "Üye ekle",
@@ -2716,6 +2743,8 @@
     "filterMembers": "Üyeler",
     "filterContacts": "Kişiler",
     "member": "Üye",
+    "owner": "Sahip",
+    "admin": "Yönetici",
     "memberNoSignIn": "Üye, henüz oturum açamaz",
     "giveAccount": "Hesap ver",
     "memberAdded": "Üye eklendi",
@@ -2764,7 +2793,12 @@
     "removed": "Üye çıkarıldı",
     "updated": "Üye güncellendi",
     "invitationSent": "Davet gönderildi",
-    "failedToRemove": "Üye çıkarılamadı"
+    "failedToRemove": "Üye çıkarılamadı",
+    "openTasksCount": "{{name}} kişisine atanmış açık görevler: {{count}}",
+    "handTo": "Görevlerini devret",
+    "handToYou": "{{name}} (siz)",
+    "leaveUnassigned": "Kimse, atanmamış bırak",
+    "handToHint": "Görev sayısını içeren tek bir bildirim alır. Tamamlanan görevler olduğu gibi kalır."
   },
   "signInLink": {
     "action": "Oturum açma bağlantısı",

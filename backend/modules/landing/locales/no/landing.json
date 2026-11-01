@@ -535,5 +535,10 @@
       }
     },
     "turn": "Skriv det én gang. Gi det en plass. La det forlate hodet ditt."
+  },
+  "notFound": {
+    "title": "Siden ble ikke funnet",
+    "lede": "Det finnes ingenting på denne adressen. Den kan ha blitt flyttet, eller lenken kan ha en skrivefeil.",
+    "home": "Tilbake til tududi"
   }
 }

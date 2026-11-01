@@ -537,5 +537,10 @@
       }
     },
     "turn": "Napíšte to raz. Dajte tomu miesto. Nechajte to odísť z hlavy."
+  },
+  "notFound": {
+    "title": "Stránka sa nenašla",
+    "lede": "Na tejto adrese nič nie je. Možno bola presunutá alebo je v odkaze preklep.",
+    "home": "Späť na tududi"
   }
 }

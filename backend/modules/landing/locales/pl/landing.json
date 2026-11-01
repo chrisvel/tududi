@@ -535,5 +535,10 @@
       }
     },
     "turn": "Zapisz raz. Daj temu miejsce. Pozwól temu opuścić twoją głowę."
+  },
+  "notFound": {
+    "title": "Nie znaleziono strony",
+    "lede": "Pod tym adresem nic nie ma. Strona mogła zostać przeniesiona albo link zawiera literówkę.",
+    "home": "Wróć do tududi"
   }
 }

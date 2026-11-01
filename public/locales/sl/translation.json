@@ -234,7 +234,8 @@
     "habit": "Navada",
     "assignedTo": "Dodeljeno",
     "subtasks": "Podnaloge",
-    "openFullPage": "Odpri celoten pogled"
+    "openFullPage": "Odpri celoten pogled",
+    "openPanel": "Odpri v stranski plošči"
   },
   "timeline": {
     "activityTimeline": "Časovnica aktivnosti",
@@ -1318,6 +1319,8 @@
     "recurringSetup": "Nastavitev ponavljanja",
     "notRecurring": "Ta naloga še ni ponavljajoča.",
     "clickToEditTitle": "Kliknite za urejanje naslova",
+    "copyLink": "Kopiraj povezavo do opravila",
+    "linkCopied": "Povezava kopirana",
     "clickToEditContent": "Kliknite za urejanje vsebine",
     "clickToAddContent": "Kliknite za dodajanje vsebine",
     "clickToEditSubtasks": "Kliknite za urejanje podnalog",
@@ -1492,7 +1495,16 @@
     "historyDuration_other": "trajal {{count}} dni",
     "reopen": "Znova odpri",
     "reopened": "»{{name}}« je spet v teku",
-    "loadError": "Projektov ni bilo mogoče naložiti"
+    "loadError": "Projektov ni bilo mogoče naložiti",
+    "unavailable": {
+      "noAccessTitle": "Do tega projekta nimate dostopa",
+      "noAccessHint": "Prosite lastnika projekta, naj ga deli z vami.",
+      "notFoundTitle": "Ta projekt ne obstaja ali je bil izbrisan",
+      "notFoundHint": "Preverite povezavo ali poiščite projekt na svojem seznamu.",
+      "failedTitle": "Podrobnosti projekta ni bilo mogoče naložiti.",
+      "failedHint": "Preverite povezavo in znova naložite stran.",
+      "backToProjects": "Nazaj na projekte"
+    }
   },
   "projectItem": {
     "edit": "Uredi",
@@ -2122,7 +2134,16 @@
     "groupAlreadyShared": "že deljeno",
     "groupHint": "Vsak član dobi vabilo, povabljeni pa so tudi tisti, ki so v skupino dodani pozneje.",
     "sharedWithGroups": "Deljeno s skupinami",
-    "groupCounts": "{{accepted}} sprejetih, {{pending}} čakajočih"
+    "groupCounts": "{{accepted}} sprejetih, {{pending}} čakajočih",
+    "leave": {
+      "action": "Zapusti",
+      "projectTitle": "Zapusti projekt",
+      "areaTitle": "Zapusti področje",
+      "projectMessage": "Ne boste več videli \"{{name}}\" ali njegovih opravil, vaša odprta opravila tam pa vam ne bodo več dodeljena. Oseba, ki ga je delila, bo obveščena.",
+      "areaMessage": "Ne boste več videli \"{{name}}\" ali projektov, deljenih z njim, vaša odprta opravila tam pa vam ne bodo več dodeljena. Oseba, ki ga je delila, bo obveščena.",
+      "left": "Zapustili ste \"{{name}}\"",
+      "failed": "Zapuščanje ni uspelo. Poskusite znova."
+    }
   },
   "views": {
     "title": "Pametni pogledi",
@@ -2656,6 +2677,10 @@
     "perSeatNote": "(mesta: {{seats}}, vključno z vami)",
     "membersNeedTeam": "Pro je za eno osebo. S paketom Ekipa lahko dodajate člane, od 3 mest naprej.",
     "seatsFull": "Vsa mesta vašega paketa ({{seats}}) so zasedena. Preidite na večji paket Ekipa, da dodate več oseb.",
+    "seatsFullTitle": "Vsa mesta so zasedena",
+    "seatsFullContact": "Vsa mesta vašega paketa ({{seats}}) so zasedena. Pišite nam, da dodate več oseb.",
+    "seatsContactHint": "Pišite na {{email}} in vašemu paketu bomo dodali mesta.",
+    "contactUs": "Pišite nam",
     "changePlan": "Zamenjaj paket",
     "planChanged": "Vaš paket je bil zamenjan."
   },
@@ -2715,7 +2740,9 @@
     "upcoming": "Ta teden",
     "noDate": "Brez datuma",
     "nothing": "Trenutno nič",
-    "empty": "Trenutno ni nič deljeno. Delite področje, projekt ali cilj, ali dodelite nalogo nekomu, da ga vidite tukaj."
+    "empty": "Trenutno ni nič deljeno. Delite področje, projekt ali cilj, ali dodelite nalogo nekomu, da ga vidite tukaj.",
+    "sortableColumn": "razvrstljiv stolpec",
+    "reorderFailed": "Vrstnega reda stolpcev ni bilo mogoče shraniti."
   },
   "people": {
     "addMember": "Dodaj člana",
@@ -2724,6 +2751,8 @@
     "filterMembers": "Člani",
     "filterContacts": "Stiki",
     "member": "Član",
+    "owner": "Lastnik",
+    "admin": "Skrbnik",
     "memberNoSignIn": "Član, se še ne more prijaviti",
     "giveAccount": "Dodeli račun",
     "memberAdded": "Član dodan",
@@ -2772,7 +2801,12 @@
     "removed": "Član odstranjen",
     "updated": "Član posodobljen",
     "invitationSent": "Vabilo poslano",
-    "failedToRemove": "Člana ni bilo mogoče odstraniti"
+    "failedToRemove": "Člana ni bilo mogoče odstraniti",
+    "openTasksCount": "Odprta opravila, dodeljena {{name}}: {{count}}",
+    "handTo": "Predaj opravila",
+    "handToYou": "{{name}} (vi)",
+    "leaveUnassigned": "Nikomur, pusti jih nedodeljena",
+    "handToHint": "Prejme eno obvestilo s številom opravil. Dokončana opravila ostanejo, kot so."
   },
   "signInLink": {
     "action": "Povezava za prijavo",

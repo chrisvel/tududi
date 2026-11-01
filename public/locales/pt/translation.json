@@ -234,7 +234,8 @@
     "habit": "Hábito",
     "assignedTo": "Atribuído a",
     "subtasks": "Subtarefas",
-    "openFullPage": "Abrir visualização completa"
+    "openFullPage": "Abrir visualização completa",
+    "openPanel": "Abrir no painel lateral"
   },
   "timeline": {
     "activityTimeline": "Linha do Tempo de Atividades",
@@ -1316,6 +1317,8 @@
     "recurringSetup": "Configuração Recorrente",
     "notRecurring": "Esta tarefa ainda não é recorrente.",
     "clickToEditTitle": "Clique para editar o título",
+    "copyLink": "Copiar link da tarefa",
+    "linkCopied": "Link copiado",
     "clickToEditContent": "Clique para editar o conteúdo",
     "clickToAddContent": "Clique para adicionar conteúdo",
     "clickToEditSubtasks": "Clique para editar subtarefas",
@@ -1490,7 +1493,16 @@
     "historyDuration_other": "levou {{count}} dias",
     "reopen": "Reabrir",
     "reopened": "\"{{name}}\" voltou a estar em andamento",
-    "loadError": "Falha ao carregar projetos"
+    "loadError": "Falha ao carregar projetos",
+    "unavailable": {
+      "noAccessTitle": "Você não tem acesso a este projeto",
+      "noAccessHint": "Peça ao proprietário do projeto para compartilhá-lo com você.",
+      "notFoundTitle": "Este projeto não existe ou foi excluído",
+      "notFoundHint": "Verifique o link ou encontre o projeto na sua lista.",
+      "failedTitle": "Falha ao carregar os detalhes do projeto.",
+      "failedHint": "Verifique sua conexão e recarregue a página.",
+      "backToProjects": "Voltar aos projetos"
+    }
   },
   "projectItem": {
     "edit": "Editar",
@@ -2119,7 +2131,16 @@
     "groupAlreadyShared": "já partilhado",
     "groupHint": "Cada membro recebe um convite, e as pessoas adicionadas ao grupo mais tarde também são convidadas.",
     "sharedWithGroups": "Partilhado com grupos",
-    "groupCounts": "{{accepted}} aceites, {{pending}} pendentes"
+    "groupCounts": "{{accepted}} aceites, {{pending}} pendentes",
+    "leave": {
+      "action": "Sair",
+      "projectTitle": "Sair do projeto",
+      "areaTitle": "Sair da área",
+      "projectMessage": "Você deixará de ver \"{{name}}\" e as suas tarefas, e as suas tarefas abertas lá deixarão de estar atribuídas a você. A pessoa que o compartilhou será avisada.",
+      "areaMessage": "Você deixará de ver \"{{name}}\" e os projetos compartilhados com ela, e as suas tarefas abertas lá deixarão de estar atribuídas a você. A pessoa que a compartilhou será avisada.",
+      "left": "Você saiu de \"{{name}}\"",
+      "failed": "Não foi possível sair. Tente novamente."
+    }
   },
   "views": {
     "title": "Visões Inteligentes",
@@ -2651,6 +2672,10 @@
     "perSeatNote": "({{seats}} lugares, incluindo você)",
     "membersNeedTeam": "O Pro é para uma pessoa. Um plano Equipe permite adicionar membros, a partir de 3 lugares.",
     "seatsFull": "Todos os {{seats}} lugares do seu plano estão em uso. Mude para um plano Equipe maior para adicionar mais pessoas.",
+    "seatsFullTitle": "Todos os lugares estão ocupados",
+    "seatsFullContact": "Todos os {{seats}} lugares do seu plano estão em uso. Fale conosco para adicionar mais pessoas.",
+    "seatsContactHint": "Envie um email para {{email}} e adicionaremos lugares ao seu plano.",
+    "contactUs": "Fale conosco",
     "changePlan": "Mudar de plano",
     "planChanged": "O seu plano foi alterado."
   },
@@ -2710,7 +2735,9 @@
     "upcoming": "Esta semana",
     "noDate": "Sem data",
     "nothing": "Nada no momento",
-    "empty": "Nada compartilhado está ativo no momento. Compartilhe uma área, projeto ou meta, ou atribua uma tarefa a alguém, para vê-lo aqui."
+    "empty": "Nada compartilhado está ativo no momento. Compartilhe uma área, projeto ou meta, ou atribua uma tarefa a alguém, para vê-lo aqui.",
+    "sortableColumn": "coluna ordenável",
+    "reorderFailed": "Não foi possível guardar a ordem das colunas."
   },
   "people": {
     "addMember": "Adicionar membro",
@@ -2719,6 +2746,8 @@
     "filterMembers": "Membros",
     "filterContacts": "Contactos",
     "member": "Membro",
+    "owner": "Proprietário",
+    "admin": "Administrador",
     "memberNoSignIn": "Membro, ainda não pode iniciar sessão",
     "giveAccount": "Dar conta",
     "memberAdded": "Membro adicionado",
@@ -2767,7 +2796,12 @@
     "removed": "Membro removido",
     "updated": "Membro atualizado",
     "invitationSent": "Convite enviado",
-    "failedToRemove": "Não foi possível remover o membro"
+    "failedToRemove": "Não foi possível remover o membro",
+    "openTasksCount": "Tarefas abertas atribuídas a {{name}}: {{count}}",
+    "handTo": "Passar as tarefas para",
+    "handToYou": "{{name}} (você)",
+    "leaveUnassigned": "Ninguém, deixar sem responsável",
+    "handToHint": "Essa pessoa recebe um único aviso com o número de tarefas. As tarefas concluídas ficam como estão."
   },
   "signInLink": {
     "action": "Link de acesso",

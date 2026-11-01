@@ -11,6 +11,8 @@ const {
 } = require('../../shared/errors');
 const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
+const permissionSources = require('../../services/permissionSources');
+const { isAdmin } = require('../../services/rolesService');
 const scopeService = require('../../services/scopeService');
 const { sortTags } = require('../tasks/core/serializers');
 const {
@@ -318,6 +320,9 @@ class ProjectsService {
             await projectsRepository.getUserProjectAreaOverrides(userId);
         const positions =
             await projectsRepository.getUserProjectPositions(userId);
+        // Who may list and change a project's shares: its owner or an
+        // instance admin, the same rule the shares API enforces.
+        const viewerIsAdmin = await isAdmin(userId);
 
         const enhancedProjects = projects
             .map((project) => {
@@ -356,6 +361,7 @@ class ProjectsService {
                     user_uid: projectJson.User?.uid,
                     share_count: shareCount,
                     is_shared: sharedUids.has(project.uid),
+                    can_share: isOwner || viewerIsAdmin,
                     is_stalled: isStalled,
                     sort_position: positions[project.id] ?? null,
                 };
@@ -421,7 +427,7 @@ class ProjectsService {
     /**
      * Get project by UID.
      */
-    async getByUid(uid, userTimezone) {
+    async getByUid(uid, userTimezone, viewerId = null) {
         const validatedUid = validateUid(uid);
         const project =
             await projectsRepository.findByUidWithIncludes(validatedUid);
@@ -498,6 +504,20 @@ class ProjectsService {
             user_id: project.user_id,
             share_count: shareCount,
             is_shared: sharedUids.has(project.uid),
+            can_share: viewerId
+                ? project.user_id === viewerId || (await isAdmin(viewerId))
+                : false,
+            // shared with the viewer on its own, so they may leave it
+            can_leave:
+                viewerId && project.user_id !== viewerId
+                    ? (
+                          await permissionSources.findLeavableUids(
+                              viewerId,
+                              'project',
+                              [project.uid]
+                          )
+                      ).has(project.uid)
+                    : false,
         };
     }
 

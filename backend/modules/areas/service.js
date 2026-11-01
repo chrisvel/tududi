@@ -10,6 +10,7 @@ const {
     ValidationError,
 } = require('../../shared/errors');
 const permissionsService = require('../../services/permissionsService');
+const permissionSources = require('../../services/permissionSources');
 const { ACCESS } = permissionsService;
 
 const MAX_REORDER_AREAS = 5000;
@@ -27,9 +28,16 @@ class AreasService {
     async getAll(userId) {
         const areas = await areasRepository.findAllByUser(userId);
         const positions = await areasRepository.getUserAreaPositions(userId);
+        // Areas shared with the user on their own, which they may leave
+        const leavable = await permissionSources.findLeavableUids(
+            userId,
+            'area',
+            areas.map((area) => area.uid)
+        );
         return areas.map((area) => ({
             ...area,
             sort_position: positions[area.id] ?? null,
+            can_leave: leavable.has(area.uid),
         }));
     }
 

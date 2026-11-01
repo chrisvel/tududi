@@ -8,12 +8,16 @@ interface AreaDropdownProps {
     value: number | null;
     onChange: (value: number | null) => void;
     areas: Area[];
+    // Shown greyed when no area is picked: the area the task takes from its
+    // project. Picking an area overrides it; it is never saved by itself.
+    inheritedArea?: Area | null;
 }
 
 const AreaDropdown: React.FC<AreaDropdownProps> = ({
     value,
     onChange,
     areas,
+    inheritedArea = null,
 }) => {
     const { t } = useTranslation();
 
@@ -89,11 +93,21 @@ const AreaDropdown: React.FC<AreaDropdownProps> = ({
             >
                 <span className="flex items-center space-x-2">
                     <Squares2X2Icon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    <span>
-                        {selectedArea
-                            ? selectedArea.name
-                            : t('common.none', 'No Area')}
-                    </span>
+                    {selectedArea ? (
+                        <span>{selectedArea.name}</span>
+                    ) : inheritedArea ? (
+                        <span
+                            className="text-gray-500 dark:text-gray-400"
+                            data-testid="area-dropdown-inherited"
+                        >
+                            {inheritedArea.name}
+                            <span className="ml-1.5 text-xs">
+                                {t('area.viaProject', 'via project')}
+                            </span>
+                        </span>
+                    ) : (
+                        <span>{t('common.none', 'No Area')}</span>
+                    )}
                 </span>
                 <ChevronDownIcon className="w-5 h-5 text-gray-500 dark:text-gray-300" />
             </button>

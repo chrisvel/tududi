@@ -234,7 +234,8 @@
     "habit": "Gewoonte",
     "assignedTo": "Toegewezen aan",
     "subtasks": "Subtaken",
-    "openFullPage": "Volledige weergave openen"
+    "openFullPage": "Volledige weergave openen",
+    "openPanel": "Openen in zijpaneel"
   },
   "timeline": {
     "activityTimeline": "Activiteit Tijdlijn",
@@ -1356,6 +1357,8 @@
     "recurringSetup": "Terugkerende instellingen",
     "notRecurring": "Deze taak is nog niet terugkerend.",
     "clickToEditTitle": "Klik om titel te bewerken",
+    "copyLink": "Link naar taak kopiëren",
+    "linkCopied": "Link gekopieerd",
     "clickToEditContent": "Klik om inhoud te bewerken",
     "clickToAddContent": "Klik om inhoud toe te voegen",
     "clickToEditSubtasks": "Klik om subtaken te bewerken",
@@ -1488,7 +1491,16 @@
     "historyDuration_other": "duurde {{count}} dagen",
     "reopen": "Heropenen",
     "reopened": "\"{{name}}\" is weer bezig",
-    "loadError": "Projecten laden mislukt"
+    "loadError": "Projecten laden mislukt",
+    "unavailable": {
+      "noAccessTitle": "Je hebt geen toegang tot dit project",
+      "noAccessHint": "Vraag de eigenaar van het project om het met je te delen.",
+      "notFoundTitle": "Dit project bestaat niet of is verwijderd",
+      "notFoundHint": "Controleer de link of zoek het project in je lijst.",
+      "failedTitle": "Projectdetails konden niet worden geladen.",
+      "failedHint": "Controleer je verbinding en laad de pagina opnieuw.",
+      "backToProjects": "Terug naar projecten"
+    }
   },
   "projectItem": {
     "edit": "Bewerken",
@@ -2116,7 +2128,16 @@
     "groupAlreadyShared": "al gedeeld",
     "groupHint": "Elk lid krijgt een uitnodiging, en mensen die later aan de groep worden toegevoegd, worden ook uitgenodigd.",
     "sharedWithGroups": "Gedeeld met groepen",
-    "groupCounts": "{{accepted}} geaccepteerd, {{pending}} in behandeling"
+    "groupCounts": "{{accepted}} geaccepteerd, {{pending}} in behandeling",
+    "leave": {
+      "action": "Verlaten",
+      "projectTitle": "Project verlaten",
+      "areaTitle": "Gebied verlaten",
+      "projectMessage": "Je ziet \"{{name}}\" en de taken ervan niet meer, en je open taken daar worden niet meer aan jou toegewezen. De persoon die het heeft gedeeld krijgt een melding.",
+      "areaMessage": "Je ziet \"{{name}}\" en de projecten die ermee gedeeld zijn niet meer, en je open taken daar worden niet meer aan jou toegewezen. De persoon die het heeft gedeeld krijgt een melding.",
+      "left": "Je hebt \"{{name}}\" verlaten",
+      "failed": "Verlaten is mislukt. Probeer het opnieuw."
+    }
   },
   "views": {
     "title": "Slimme Weergaven",
@@ -2648,6 +2669,10 @@
     "perSeatNote": "({{seats}} plekken, jij inbegrepen)",
     "membersNeedTeam": "Pro is voor één persoon. Met een Team-abonnement kun je leden toevoegen, vanaf 3 plekken.",
     "seatsFull": "Alle {{seats}} plekken van je abonnement zijn in gebruik. Stap over op een groter Team-abonnement om meer mensen toe te voegen.",
+    "seatsFullTitle": "Alle plekken zijn bezet",
+    "seatsFullContact": "Alle {{seats}} plekken van je abonnement zijn in gebruik. Neem contact met ons op om meer mensen toe te voegen.",
+    "seatsContactHint": "Mail naar {{email}} en we voegen plekken toe aan je abonnement.",
+    "contactUs": "Neem contact op",
     "changePlan": "Abonnement wijzigen",
     "planChanged": "Je abonnement is gewijzigd."
   },
@@ -2707,7 +2732,9 @@
     "upcoming": "Deze week",
     "noDate": "Geen datum",
     "nothing": "Niets op dit moment",
-    "empty": "Er is momenteel niets gedeeld. Deel een gebied, project of doel, of wijs iemand een taak toe, om het hier te zien."
+    "empty": "Er is momenteel niets gedeeld. Deel een gebied, project of doel, of wijs iemand een taak toe, om het hier te zien.",
+    "sortableColumn": "sorteerbare kolom",
+    "reorderFailed": "De kolomvolgorde kon niet worden opgeslagen."
   },
   "people": {
     "addMember": "Lid toevoegen",
@@ -2716,6 +2743,8 @@
     "filterMembers": "Leden",
     "filterContacts": "Contacten",
     "member": "Lid",
+    "owner": "Eigenaar",
+    "admin": "Beheerder",
     "memberNoSignIn": "Lid, kan nog niet inloggen",
     "giveAccount": "Account geven",
     "memberAdded": "Lid toegevoegd",
@@ -2764,7 +2793,12 @@
     "removed": "Lid verwijderd",
     "updated": "Lid bijgewerkt",
     "invitationSent": "Uitnodiging verstuurd",
-    "failedToRemove": "Lid verwijderen mislukt"
+    "failedToRemove": "Lid verwijderen mislukt",
+    "openTasksCount": "Open taken toegewezen aan {{name}}: {{count}}",
+    "handTo": "Taken overdragen aan",
+    "handToYou": "{{name}} (jij)",
+    "leaveUnassigned": "Niemand, laat ze zonder toewijzing",
+    "handToHint": "Diegene krijgt één melding met het aantal taken. Afgeronde taken blijven zoals ze zijn."
   },
   "signInLink": {
     "action": "Inloglink",

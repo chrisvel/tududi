@@ -4,10 +4,17 @@ const sharesRepository = require('./repository');
 const groupsRepository = require('../groups/repository');
 const { execAction } = require('../../services/execAction');
 const groupSharing = require('../../services/groupSharing');
+const {
+    unassignAfterShareRevoke,
+} = require('../../services/assignmentCleanup');
 const { isAdmin } = require('../../services/rolesService');
-const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
+const {
+    getWorkspaceUserIds,
+    getVisibleMemberIds,
+} = require('../../services/workspaceMembers');
 const accountsService = require('../../services/accountsService');
 const { logError } = require('../../services/logService');
+const { resourcePhrase } = require('../../utils/resourcePhrases');
 const { Notification } = require('../../models');
 const {
     ValidationError,
@@ -62,10 +69,11 @@ class SharesService {
         return Boolean(accountId) && group.account_id === accountId;
     }
 
-    // The people the user can pick in the share modal: their workspace (see
-    // workspaceMembers), so the list never reveals other accounts.
+    // The people the user can pick in the share modal: the members they may
+    // see (see getVisibleMemberIds), so the list never reveals other accounts,
+    // nor a hosted account's roster to a member who is not its admin.
     async listCandidates(userId) {
-        const ids = await getWorkspaceUserIds(userId);
+        const ids = await getVisibleMemberIds(userId);
         const users = await sharesRepository.findCandidateUsers(ids);
         return users
             .map((user) => ({
@@ -92,7 +100,9 @@ class SharesService {
     }
 
     // Sharing is an invitation: the recipient sees nothing until they accept.
-    // The response is the same whether or not the email belongs to an account,
+    // The exception is a share from an admin of the recipient's own account
+    // on a hosted instance, which applies at once and only tells them. The
+    // response is the same whether or not the email belongs to an account,
     // so this endpoint cannot be used to check who has signed up. A share
     // targets one user by email, one workspace member by id, or a whole group
     // by uid.
@@ -168,6 +178,10 @@ class SharesService {
             );
         }
 
+        const accepted = await accountsService.isAdminOfAccountOf(
+            userId,
+            target.id
+        );
         const actionId = await execAction({
             verb: 'share_grant',
             actorUserId: userId,
@@ -175,7 +189,7 @@ class SharesService {
             resourceType: resource_type,
             resourceUid: resource_uid,
             accessLevel: access_level,
-            status: 'pending',
+            status: accepted ? 'accepted' : 'pending',
         });
 
         await this.notifyInvitee({
@@ -185,6 +199,7 @@ class SharesService {
             resourceType: resource_type,
             accessLevel: access_level,
             actionId,
+            accepted,
         });
 
         return null; // 204 No Content
@@ -197,6 +212,7 @@ class SharesService {
         resourceType,
         accessLevel,
         actionId,
+        accepted = false,
     }) {
         try {
             const actor = await sharesRepository.findUserById(actorUserId, [
@@ -214,13 +230,24 @@ class SharesService {
             const accessLabel =
                 accessLevel === 'rw' ? 'read & write' : 'read only';
 
+            // An accepted share carries no invitation id, so the bell shows
+            // it as a notice without Accept and Decline.
             await Notification.createNotification({
                 userId: target.id,
                 type: 'share_invitation',
-                title: `${inviterLabel} invited you to a ${resourceType}`,
-                message: `"${resourceLabel}" was shared with you (${accessLabel}). Accept to add it to your workspace.`,
+                title: accepted
+                    ? `${inviterLabel} shared ${resourcePhrase(resourceType)} with you`
+                    : `${inviterLabel} invited you to ${resourcePhrase(resourceType)}`,
+                message: accepted
+                    ? `"${resourceLabel}" was shared with you (${accessLabel}). It is in your workspace now.`
+                    : `"${resourceLabel}" was shared with you (${accessLabel}). Accept to add it to your workspace.`,
                 data: {
-                    invitationId: direct ? direct.id : null,
+                    invitationId: direct && !accepted ? direct.id : null,
+                    accepted,
+                    projectUid:
+                        accepted && resourceType === 'project'
+                            ? resource.uid
+                            : undefined,
                     actionId,
                     resourceType,
                     resourceUid: resource.uid,
@@ -289,8 +316,109 @@ class SharesService {
             resourceType: resource_type,
             resourceUid: resource_uid,
         });
+        await unassignAfterShareRevoke(
+            Number(target_user_id),
+            resource_type,
+            resource_uid
+        );
 
         return null; // 204 No Content
+    }
+
+    // The recipient gives up a share: their direct share and every group
+    // grant on the item are removed for them alone (they stay in the
+    // group), their open tasks there are unassigned like after any other
+    // access loss, and whoever shared it is told once.
+    async leaveShare(userId, data) {
+        const { resource_type, resource_uid } = data || {};
+        if (!resource_type || !resource_uid) {
+            throw new ValidationError('Missing parameters');
+        }
+        if (!SHAREABLE_TYPES.has(resource_type)) {
+            throw new ValidationError('Unsupported resource type');
+        }
+
+        const resource = await sharesRepository.findResourceSummary(
+            resource_type,
+            resource_uid
+        );
+        if (!resource) {
+            throw new NotFoundError('Resource not found');
+        }
+        if (resource.user_id === userId) {
+            throw new ValidationError('You own this item and cannot leave it.');
+        }
+
+        const { direct, groupRows } = await sharesRepository.findHeldShares(
+            userId,
+            resource_type,
+            resource_uid
+        );
+        if (!direct && groupRows.length === 0) {
+            throw new NotFoundError('This item is not shared with you');
+        }
+
+        const sharerIds = new Set();
+        if (direct) {
+            await execAction({
+                verb: 'share_revoke',
+                actorUserId: userId,
+                targetUserId: userId,
+                resourceType: resource_type,
+                resourceUid: resource_uid,
+            });
+            sharerIds.add(direct.granted_by_user_id);
+        }
+        if (groupRows.length > 0) {
+            await groupSharing.leaveGroupShares({
+                userId,
+                groupShareIds: groupRows.map((r) => r.group_share_id),
+            });
+            groupRows.forEach((r) =>
+                sharerIds.add(r.GroupShare.granted_by_user_id)
+            );
+        }
+
+        await unassignAfterShareRevoke(userId, resource_type, resource_uid);
+        await this.notifySharers({
+            leaverId: userId,
+            sharerIds,
+            resource,
+            resourceType: resource_type,
+        });
+        return null; // 204 No Content
+    }
+
+    async notifySharers({ leaverId, sharerIds, resource, resourceType }) {
+        try {
+            const leaver = await sharesRepository.findUserById(leaverId, [
+                'id',
+                'email',
+                'name',
+            ]);
+            const leaverLabel = leaver?.name || leaver?.email || 'Someone';
+            const resourceLabel = resource.name || resourceType;
+            for (const sharerId of sharerIds) {
+                if (!sharerId || sharerId === leaverId) continue;
+                await Notification.createNotification({
+                    userId: sharerId,
+                    type: 'system',
+                    title: `${leaverLabel} left ${resourcePhrase(resourceType)} you shared`,
+                    message: `${leaverLabel} left "${resourceLabel}" and no longer has access to it.`,
+                    data: {
+                        reason: 'share_left',
+                        resourceType,
+                        resourceUid: resource.uid,
+                        resourceName: resource.name,
+                        leftUserId: leaverId,
+                        leftUserName: leaver?.name || null,
+                    },
+                });
+            }
+        } catch (error) {
+            // The share is already gone; a failed notice must not undo it.
+            logError('Failed to notify about a share being left:', error);
+        }
     }
 
     async getShares(userId, resourceType, resourceUid) {

@@ -1,6 +1,13 @@
 'use strict';
 
-const { Person, Task, Project, User, OIDCIdentity } = require('../../models');
+const {
+    Person,
+    Task,
+    Project,
+    User,
+    OIDCIdentity,
+    Role,
+} = require('../../models');
 const permissionSources = require('../../services/permissionSources');
 const { Op } = require('sequelize');
 
@@ -62,6 +69,27 @@ class PeopleRepository {
             users,
             identityUserIds: new Set(identities.map((i) => i.user_id)),
         };
+    }
+
+    // Role rows for the given users, limited to one account when given, so
+    // the People list can tell the owner and admins from other members.
+    async findRoleRows(userIds, accountId = null) {
+        if (!userIds.length) return [];
+        let ids = userIds;
+        if (accountId) {
+            const inAccount = await User.findAll({
+                where: { id: userIds, account_id: accountId },
+                attributes: ['id'],
+                raw: true,
+            });
+            ids = inAccount.map((u) => u.id);
+            if (!ids.length) return [];
+        }
+        return Role.findAll({
+            where: { user_id: ids },
+            attributes: ['user_id', 'role', 'is_admin'],
+            raw: true,
+        });
     }
 
     async nameExists(userId, name, excludeUid = null) {

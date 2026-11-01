@@ -234,7 +234,8 @@
     "habit": "习惯",
     "assignedTo": "分配给",
     "subtasks": "子任务",
-    "openFullPage": "打开完整视图"
+    "openFullPage": "打开完整视图",
+    "openPanel": "在侧边栏中打开"
   },
   "timeline": {
     "activityTimeline": "活动时间线",
@@ -1315,6 +1316,8 @@
     "recurringSetup": "重复设置",
     "notRecurring": "此任务尚未重复。",
     "clickToEditTitle": "点击编辑标题",
+    "copyLink": "复制任务链接",
+    "linkCopied": "链接已复制",
     "clickToEditContent": "点击编辑内容",
     "clickToAddContent": "点击添加内容",
     "clickToEditSubtasks": "点击编辑子任务",
@@ -1486,7 +1489,16 @@
     "historyDuration_other": "用时 {{count}} 天",
     "reopen": "重新打开",
     "reopened": "“{{name}}”已恢复为进行中",
-    "loadError": "加载项目失败"
+    "loadError": "加载项目失败",
+    "unavailable": {
+      "noAccessTitle": "你没有访问此项目的权限",
+      "noAccessHint": "请让项目所有者与你共享。",
+      "notFoundTitle": "此项目不存在或已被删除",
+      "notFoundHint": "请检查链接，或在列表中查找该项目。",
+      "failedTitle": "无法加载项目详情。",
+      "failedHint": "请检查网络连接并重新加载页面。",
+      "backToProjects": "返回项目"
+    }
   },
   "projectItem": {
     "edit": "编辑",
@@ -2114,7 +2126,16 @@
     "groupAlreadyShared": "已共享",
     "groupHint": "每位成员都会收到邀请，之后加入群组的人也会被邀请。",
     "sharedWithGroups": "已与群组共享",
-    "groupCounts": "已接受 {{accepted}} 个，待处理 {{pending}} 个"
+    "groupCounts": "已接受 {{accepted}} 个，待处理 {{pending}} 个",
+    "leave": {
+      "action": "退出",
+      "projectTitle": "退出项目",
+      "areaTitle": "退出领域",
+      "projectMessage": "你将不再看到“{{name}}”及其任务，你在其中未完成的任务也将不再分配给你。分享者会收到通知。",
+      "areaMessage": "你将不再看到“{{name}}”及随之分享的项目，你在其中未完成的任务也将不再分配给你。分享者会收到通知。",
+      "left": "你已退出“{{name}}”",
+      "failed": "无法退出，请重试。"
+    }
   },
   "views": {
     "title": "智能视图",
@@ -2646,6 +2667,10 @@
     "perSeatNote": "（{{seats}} 个席位，含你自己）",
     "membersNeedTeam": "Pro 仅供一人使用。团队套餐可让你添加成员，3 个席位起。",
     "seatsFull": "你套餐中的 {{seats}} 个席位已全部占用。换成更大的团队套餐即可添加更多人。",
+    "seatsFullTitle": "席位已全部占用",
+    "seatsFullContact": "你套餐中的 {{seats}} 个席位已全部占用。请联系我们添加更多人。",
+    "seatsContactHint": "发送邮件至 {{email}}，我们会为你的套餐添加席位。",
+    "contactUs": "联系我们",
     "changePlan": "更改方案",
     "planChanged": "你的方案已更改。"
   },
@@ -2705,7 +2730,9 @@
     "upcoming": "本周",
     "noDate": "没有日期",
     "nothing": "现在没有任何内容",
-    "empty": "现在没有共享的内容。共享一个区域、项目或目标，或分配给某人一个任务，以便在这里查看。"
+    "empty": "现在没有共享的内容。共享一个区域、项目或目标，或分配给某人一个任务，以便在这里查看。",
+    "sortableColumn": "可排序的列",
+    "reorderFailed": "无法保存列的顺序。"
   },
   "people": {
     "addMember": "添加成员",
@@ -2714,6 +2741,8 @@
     "filterMembers": "成员",
     "filterContacts": "联系人",
     "member": "成员",
+    "owner": "所有者",
+    "admin": "管理员",
     "memberNoSignIn": "成员，暂时无法登录",
     "giveAccount": "授予账户",
     "memberAdded": "成员已添加",
@@ -2762,7 +2791,12 @@
     "removed": "成员已移除",
     "updated": "成员已更新",
     "invitationSent": "邀请已发送",
-    "failedToRemove": "移除成员失败"
+    "failedToRemove": "移除成员失败",
+    "openTasksCount": "分配给 {{name}} 的未完成任务：{{count}}",
+    "handTo": "将其任务交给",
+    "handToYou": "{{name}}（你）",
+    "leaveUnassigned": "无人，保持未分配",
+    "handToHint": "对方会收到一条包含任务数量的通知。已完成的任务保持不变。"
   },
   "signInLink": {
     "action": "登录链接",

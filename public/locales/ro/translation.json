@@ -234,7 +234,8 @@
     "habit": "Obicei",
     "assignedTo": "Atribuit lui",
     "subtasks": "Subtask-uri",
-    "openFullPage": "Deschide vizualizarea completă"
+    "openFullPage": "Deschide vizualizarea completă",
+    "openPanel": "Deschide în panoul lateral"
   },
   "timeline": {
     "activityTimeline": "Cronologia activităților",
@@ -1318,6 +1319,8 @@
     "recurringSetup": "Configurare recurentă",
     "notRecurring": "Această sarcină nu este încă recurentă.",
     "clickToEditTitle": "Fă clic pentru a edita titlul",
+    "copyLink": "Copiază linkul sarcinii",
+    "linkCopied": "Link copiat",
     "clickToEditContent": "Fă clic pentru a edita conținutul",
     "clickToAddContent": "Fă clic pentru a adăuga conținut",
     "clickToEditSubtasks": "Fă clic pentru a edita subtasks",
@@ -1492,7 +1495,16 @@
     "historyDuration_other": "a durat {{count}} de zile",
     "reopen": "Redeschide",
     "reopened": "„{{name}}” este din nou în desfășurare",
-    "loadError": "Nu s-au putut încărca proiectele"
+    "loadError": "Nu s-au putut încărca proiectele",
+    "unavailable": {
+      "noAccessTitle": "Nu ai acces la acest proiect",
+      "noAccessHint": "Roagă-l pe proprietarul proiectului să îl partajeze cu tine.",
+      "notFoundTitle": "Acest proiect nu există sau a fost șters",
+      "notFoundHint": "Verifică linkul sau caută proiectul în lista ta.",
+      "failedTitle": "Nu s-au putut încărca detaliile proiectului.",
+      "failedHint": "Verifică-ți conexiunea și reîncarcă pagina.",
+      "backToProjects": "Înapoi la proiecte"
+    }
   },
   "projectItem": {
     "edit": "Editează",
@@ -2121,7 +2133,16 @@
     "groupAlreadyShared": "deja partajat",
     "groupHint": "Fiecare membru primește o invitație, iar persoanele adăugate ulterior în grup sunt invitate și ele.",
     "sharedWithGroups": "Partajat cu grupuri",
-    "groupCounts": "{{accepted}} acceptate, {{pending}} în așteptare"
+    "groupCounts": "{{accepted}} acceptate, {{pending}} în așteptare",
+    "leave": {
+      "action": "Părăsește",
+      "projectTitle": "Părăsește proiectul",
+      "areaTitle": "Părăsește zona",
+      "projectMessage": "Nu vei mai vedea \"{{name}}\" sau sarcinile sale, iar sarcinile tale deschise de acolo nu îți vor mai fi atribuite. Persoana care l-a partajat va fi anunțată.",
+      "areaMessage": "Nu vei mai vedea \"{{name}}\" sau proiectele partajate cu ea, iar sarcinile tale deschise de acolo nu îți vor mai fi atribuite. Persoana care a partajat-o va fi anunțată.",
+      "left": "Ai părăsit \"{{name}}\"",
+      "failed": "Nu s-a putut părăsi. Încearcă din nou."
+    }
   },
   "views": {
     "title": "Vizualizări inteligente",
@@ -2654,6 +2675,10 @@
     "perSeatNote": "({{seats}} locuri, inclusiv tu)",
     "membersNeedTeam": "Pro este pentru o singură persoană. Un plan Echipă îți permite să adaugi membri, de la 3 locuri în sus.",
     "seatsFull": "Toate cele {{seats}} locuri din planul tău sunt ocupate. Treci la un plan Echipă mai mare ca să adaugi mai multe persoane.",
+    "seatsFullTitle": "Toate locurile sunt ocupate",
+    "seatsFullContact": "Toate cele {{seats}} locuri din planul tău sunt ocupate. Contactează-ne ca să adaugi mai multe persoane.",
+    "seatsContactHint": "Scrie-ne la {{email}} și adăugăm locuri în planul tău.",
+    "contactUs": "Contactează-ne",
     "changePlan": "Schimbă planul",
     "planChanged": "Planul tău a fost schimbat."
   },
@@ -2713,7 +2738,9 @@
     "upcoming": "Săptămâna aceasta",
     "noDate": "Nicio dată",
     "nothing": "Nimic în acest moment",
-    "empty": "Nimic împărtășit nu este activ acum. Împărtășește o zonă, un proiect sau un obiectiv, sau atribuie cuiva o sarcină, pentru a-l vedea aici."
+    "empty": "Nimic împărtășit nu este activ acum. Împărtășește o zonă, un proiect sau un obiectiv, sau atribuie cuiva o sarcină, pentru a-l vedea aici.",
+    "sortableColumn": "coloană sortabilă",
+    "reorderFailed": "Ordinea coloanelor nu a putut fi salvată."
   },
   "people": {
     "addMember": "Adaugă membru",
@@ -2722,6 +2749,8 @@
     "filterMembers": "Membri",
     "filterContacts": "Contacte",
     "member": "Membru",
+    "owner": "Proprietar",
+    "admin": "Administrator",
     "memberNoSignIn": "Membru, nu se poate autentifica încă",
     "giveAccount": "Dă un cont",
     "memberAdded": "Membru adăugat",
@@ -2770,7 +2799,12 @@
     "removed": "Membru eliminat",
     "updated": "Membru actualizat",
     "invitationSent": "Invitație trimisă",
-    "failedToRemove": "Membrul nu a putut fi eliminat"
+    "failedToRemove": "Membrul nu a putut fi eliminat",
+    "openTasksCount": "Sarcini deschise atribuite lui {{name}}: {{count}}",
+    "handTo": "Predă sarcinile către",
+    "handToYou": "{{name}} (tu)",
+    "leaveUnassigned": "Nimeni, lasă-le neatribuite",
+    "handToHint": "Va primi o singură notificare cu numărul de sarcini. Sarcinile finalizate rămân neschimbate."
   },
   "signInLink": {
     "action": "Link de autentificare",

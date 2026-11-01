@@ -4,6 +4,12 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import EveryoneDashboard from '../EveryoneDashboard';
+import { orderColumns } from '../PeopleBoard';
+
+jest.mock('../../Shared/MarkdownRenderer', () => ({
+    __esModule: true,
+    default: () => null,
+}));
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -35,6 +41,13 @@ const updateTask = jest.fn();
 jest.mock('../../../utils/tasksService', () => ({
     toggleTaskCompletion: (...a: any[]) => toggleTaskCompletion(...a),
     updateTask: (...a: any[]) => updateTask(...a),
+}));
+
+const fetchProfile = jest.fn();
+const updateUiSettings = jest.fn();
+jest.mock('../../../utils/profileService', () => ({
+    fetchProfile: (...a: any[]) => fetchProfile(...a),
+    updateUiSettings: (...a: any[]) => updateUiSettings(...a),
 }));
 
 jest.mock('../../Shared/ToastContext', () => ({
@@ -76,6 +89,41 @@ describe('EveryoneDashboard', () => {
     beforeEach(() => {
         fetchEveryone.mockReset();
         toggleTaskCompletion.mockReset();
+        fetchProfile.mockReset();
+        fetchProfile.mockResolvedValue({ ui_settings: {} });
+    });
+
+    it('shows columns in the saved order, new people last', async () => {
+        fetchProfile.mockResolvedValue({
+            ui_settings: { everyone: { column_order: ['p3', 'p1'] } },
+        });
+        const person = (uid: string, name: string) =>
+            column({ person: { ...column({}).person, uid, name } });
+        fetchEveryone.mockResolvedValue({
+            summary,
+            columns: [
+                person('p1', 'One'),
+                person('p2', 'Two'),
+                person('p3', 'Three'),
+            ],
+        });
+        renderPage();
+
+        await waitFor(() =>
+            expect(
+                screen
+                    .getAllByTestId(/^person-column-p\d$/)
+                    .map((el) => el.dataset.testid)
+            ).toEqual([
+                'person-column-p3',
+                'person-column-p1',
+                'person-column-p2',
+            ])
+        );
+        expect(screen.getByTestId('person-column-handle-p3')).toHaveAttribute(
+            'aria-roledescription',
+            'sortable column'
+        );
     });
 
     it('renders a column per person with their tasks', async () => {
@@ -201,5 +249,23 @@ describe('EveryoneDashboard', () => {
         expect(screen.getByText('2')).toBeInTheDocument();
         expect(screen.getByText('Overdue')).toBeInTheDocument();
         expect(screen.getByText('4')).toBeInTheDocument();
+    });
+});
+
+describe('orderColumns', () => {
+    const cols = ['a', 'b', 'c'].map((uid) => ({ person: { uid } }));
+    const uids = (list: { person: { uid: string } }[]) =>
+        list.map((c) => c.person.uid);
+
+    it('keeps the server order with no saved order', () => {
+        expect(uids(orderColumns(cols, []))).toEqual(['a', 'b', 'c']);
+    });
+
+    it('ignores saved people who are not on the board', () => {
+        expect(uids(orderColumns(cols, ['x', 'c', 'a']))).toEqual([
+            'c',
+            'a',
+            'b',
+        ]);
     });
 });

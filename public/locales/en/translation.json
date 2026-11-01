@@ -234,7 +234,8 @@
     "habit": "Habit",
     "assignedTo": "Assigned to",
     "subtasks": "Subtasks",
-    "openFullPage": "Open full view"
+    "openFullPage": "Open full view",
+    "openPanel": "Open in side panel"
   },
   "comments": {
     "count": "{{count}} comments",
@@ -1402,6 +1403,8 @@
     "instanceOf": "This is an instance of a recurring task",
     "parentTask": "Parent Task",
     "clickToEditTitle": "Click to edit title",
+    "copyLink": "Copy link to task",
+    "linkCopied": "Link copied",
     "clickToEditContent": "Click to edit content",
     "clickToAddContent": "Click to add content",
     "clickToEditSubtasks": "Click to edit subtasks",
@@ -1581,7 +1584,16 @@
     "historyDuration_other": "took {{count}} days",
     "reopen": "Reopen",
     "reopened": "\"{{name}}\" is back in progress",
-    "loadError": "Failed to load projects"
+    "loadError": "Failed to load projects",
+    "unavailable": {
+      "noAccessTitle": "You don't have access to this project",
+      "noAccessHint": "Ask the project's owner to share it with you.",
+      "notFoundTitle": "This project doesn't exist or was deleted",
+      "notFoundHint": "Check the link, or find the project in your list.",
+      "failedTitle": "Failed to load project details.",
+      "failedHint": "Check your connection and reload the page.",
+      "backToProjects": "Back to Projects"
+    }
   },
   "projectStatus": {
     "not_started": "Not Started",
@@ -2591,6 +2603,10 @@
     "perSeatNote": "({{seats}} seats, you included)",
     "membersNeedTeam": "Pro is for one person. A Team plan lets you add members, from 3 seats up.",
     "seatsFull": "All {{seats}} seats of your plan are in use. Move to a bigger Team plan to add more people.",
+    "seatsFullTitle": "Every seat is taken",
+    "seatsFullContact": "All {{seats}} seats of your plan are in use. Contact us to add more people.",
+    "seatsContactHint": "Email {{email}} and we will add seats to your plan.",
+    "contactUs": "Contact us",
     "changePlan": "Change plan",
     "planChanged": "Your plan was changed."
   },
@@ -2637,7 +2653,16 @@
     "groupAlreadyShared": "already shared",
     "groupHint": "Every member gets an invitation, and people added to the group later are invited too.",
     "sharedWithGroups": "Shared with groups",
-    "groupCounts": "{{accepted}} accepted, {{pending}} pending"
+    "groupCounts": "{{accepted}} accepted, {{pending}} pending",
+    "leave": {
+      "action": "Leave",
+      "projectTitle": "Leave project",
+      "areaTitle": "Leave area",
+      "projectMessage": "You will no longer see \"{{name}}\" or its tasks, and your open tasks there will be unassigned. The person who shared it will be told.",
+      "areaMessage": "You will no longer see \"{{name}}\" or the projects shared with it, and your open tasks there will be unassigned. The person who shared it will be told.",
+      "left": "You left \"{{name}}\"",
+      "failed": "Could not leave. Please try again."
+    }
   },
   "views": {
     "title": "Smart Views",
@@ -3034,7 +3059,9 @@
     "nothing": "Nothing right now",
     "empty": "Nothing shared is on right now. Share an area, project or goal, or assign someone a task, to see it here.",
     "dropHere": "Drop to assign",
-    "reassignFailed": "Could not assign this task."
+    "reassignFailed": "Could not assign this task.",
+    "sortableColumn": "sortable column",
+    "reorderFailed": "Could not save the column order."
   },
   "people": {
     "addMember": "Add member",
@@ -3043,6 +3070,8 @@
     "filterMembers": "Members",
     "filterContacts": "Contacts",
     "member": "Member",
+    "owner": "Owner",
+    "admin": "Admin",
     "memberNoSignIn": "Member, can't sign in yet",
     "giveAccount": "Give account",
     "memberAdded": "Member added",
@@ -3091,7 +3120,12 @@
     "removed": "Member removed",
     "updated": "Member updated",
     "invitationSent": "Invitation sent",
-    "failedToRemove": "Failed to remove member"
+    "failedToRemove": "Failed to remove member",
+    "openTasksCount": "Open tasks assigned to {{name}}: {{count}}",
+    "handTo": "Hand their tasks to",
+    "handToYou": "{{name}} (you)",
+    "leaveUnassigned": "Nobody, leave them unassigned",
+    "handToHint": "They get one notice with the number of tasks. Done tasks stay as they are."
   },
   "signInLink": {
     "action": "Sign-in link",

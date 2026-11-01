@@ -535,5 +535,10 @@
       }
     },
     "turn": "Viết một lần. Cho nó một chỗ. Để nó rời khỏi đầu bạn."
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "lede": "Không có gì ở địa chỉ này. Có thể trang đã được chuyển đi, hoặc liên kết bị gõ sai.",
+    "home": "Quay lại tududi"
   }
 }

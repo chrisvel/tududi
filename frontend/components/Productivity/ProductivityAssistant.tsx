@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
     AcademicCapIcon,
     ExclamationTriangleIcon,
@@ -13,6 +13,7 @@ import BlankSlate from '../Shared/BlankSlate';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { getVagueTasks } from '../../utils/taskIntelligenceService';
+import { openTaskPanel } from '../../store/taskPanelStore';
 
 interface ProductivityInsight {
     type:
@@ -40,7 +41,6 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
 }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const location = useLocation();
 
     const [insights, setInsights] = useState<ProductivityInsight[]>([]);
     const [expandedInsights, setExpandedInsights] = useState<Set<number>>(
@@ -280,9 +280,8 @@ const ProductivityAssistant: React.FC<ProductivityAssistantProps> = ({
         const isProject = 'task_status' in item || 'is_stalled' in item;
 
         if (!isProject) {
-            // Handle task click - navigate to task details page
             if (item.uid) {
-                navigate(`/task/${item.uid}`, { state: { from: location.pathname + location.search } });
+                openTaskPanel(item.uid);
             }
         } else {
             // Handle project click - navigate to project page

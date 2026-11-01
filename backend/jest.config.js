@@ -25,5 +25,10 @@ module.exports = {
     moduleNameMapper: {
         '^jose$': '<rootDir>/tests/mocks/jose.js',
         '^nanoid$': '<rootDir>/tests/mocks/nanoid.js',
+        // marked ships only an ES module, which Node 22 can require but Jest
+        // cannot; its UMD build is the same code.
+        '^marked$': require
+            .resolve('marked')
+            .replace(/marked\.esm\.js$/, 'marked.umd.js'),
     },
 };

@@ -211,11 +211,15 @@ const AttachmentsPanel: React.FC<AttachmentsPanelProps> = ({
                 </h4>
             )}
 
-            {/* Grid Layout for Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {/* Upload Card */}
+            {/* Columns fit the space the panel has, not the window, so it
+                also lays out inside the narrow task side panel */}
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] gap-4">
+                {/* Upload Card: the full row until there is something to show */}
                 <div
-                    className="bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+                    className={`bg-gray-50 dark:bg-gray-900 rounded-lg shadow-md relative flex flex-col cursor-pointer hover:shadow-lg transition-shadow ${
+                        attachments.length === 0 ? 'col-span-full' : ''
+                    }`}
+                    data-testid="attachments-upload"
                     style={{ minHeight: '250px', maxHeight: '250px' }}
                     onClick={() => !uploading && fileInputRef.current?.click()}
                 >

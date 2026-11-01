@@ -53,6 +53,10 @@ export interface Project {
     updated_at?: string;
     share_count?: number;
     is_shared?: boolean;
+    // the viewer owns the project or is an admin, so may manage its shares
+    can_share?: boolean;
+    // shared with the viewer on its own, so they may leave it
+    can_leave?: boolean;
     task_status?: ProjectTaskStatus;
     completion_percentage?: number;
     is_stalled?: boolean;

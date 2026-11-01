@@ -290,6 +290,10 @@ app.use(require('./services/visitService').track());
 const landingModule = require('./modules/landing');
 app.use(landingModule.hostSwitch(config.landing));
 
+// On the app host itself, once those marketing hosts are set: a plain
+// robots.txt and a noindex header on everything but sign-in and sign-up.
+app.use(landingModule.appHostRobots(config.landing));
+
 // The blog at the root of the hostnames in TUDUDI_BLOG_HOSTS. Also a no-op
 // unless set; it serves the app shell marked as the blog, so it sits before
 // the static handlers for the same reason.
@@ -391,6 +395,7 @@ const { logError } = require('./services/logService');
 // Rate limiting middleware
 const {
     apiLimiter,
+    signInPageLimiter,
     authenticatedApiLimiter,
     bearerFailureLimiter,
 } = require('./middleware/rateLimiter');
@@ -509,6 +514,7 @@ healthPaths.forEach(registerHealthCheck);
 const registerRateLimiting = (basePath) => {
     app.use(basePath, bearerFailureLimiter);
     app.use(basePath, apiLimiter);
+    app.use(basePath, signInPageLimiter);
     app.use(basePath, authenticatedApiLimiter);
 };
 

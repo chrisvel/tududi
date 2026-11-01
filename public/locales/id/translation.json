@@ -234,7 +234,8 @@
     "habit": "Kebiasaan",
     "assignedTo": "Ditetapkan untuk",
     "subtasks": "Subtugas",
-    "openFullPage": "Buka tampilan penuh"
+    "openFullPage": "Buka tampilan penuh",
+    "openPanel": "Buka di panel samping"
   },
   "timeline": {
     "activityTimeline": "Garis Waktu Aktivitas",
@@ -1354,6 +1355,8 @@
     "recurringSetup": "Pengaturan Berulang",
     "notRecurring": "Tugas ini belum berulang.",
     "clickToEditTitle": "Klik untuk mengedit judul",
+    "copyLink": "Salin tautan tugas",
+    "linkCopied": "Tautan disalin",
     "clickToEditContent": "Klik untuk mengedit konten",
     "clickToAddContent": "Klik untuk menambah konten",
     "clickToEditSubtasks": "Klik untuk mengedit subtugas",
@@ -1486,7 +1489,16 @@
     "historyDuration_other": "memakan waktu {{count}} hari",
     "reopen": "Buka kembali",
     "reopened": "\"{{name}}\" kembali berjalan",
-    "loadError": "Gagal memuat proyek"
+    "loadError": "Gagal memuat proyek",
+    "unavailable": {
+      "noAccessTitle": "Anda tidak memiliki akses ke proyek ini",
+      "noAccessHint": "Minta pemilik proyek untuk membagikannya kepada Anda.",
+      "notFoundTitle": "Proyek ini tidak ada atau telah dihapus",
+      "notFoundHint": "Periksa tautannya, atau cari proyek di daftar Anda.",
+      "failedTitle": "Gagal memuat detail proyek.",
+      "failedHint": "Periksa koneksi Anda dan muat ulang halaman.",
+      "backToProjects": "Kembali ke Proyek"
+    }
   },
   "projectItem": {
     "edit": "Sunting",
@@ -2114,7 +2126,16 @@
     "groupAlreadyShared": "sudah dibagikan",
     "groupHint": "Setiap anggota mendapat undangan, dan orang yang ditambahkan ke grup nanti juga diundang.",
     "sharedWithGroups": "Dibagikan dengan grup",
-    "groupCounts": "{{accepted}} diterima, {{pending}} tertunda"
+    "groupCounts": "{{accepted}} diterima, {{pending}} tertunda",
+    "leave": {
+      "action": "Keluar",
+      "projectTitle": "Keluar dari proyek",
+      "areaTitle": "Keluar dari area",
+      "projectMessage": "Anda tidak akan lagi melihat \"{{name}}\" atau tugasnya, dan tugas terbuka Anda di sana tidak lagi ditugaskan kepada Anda. Orang yang membagikannya akan diberi tahu.",
+      "areaMessage": "Anda tidak akan lagi melihat \"{{name}}\" atau proyek yang dibagikan bersamanya, dan tugas terbuka Anda di sana tidak lagi ditugaskan kepada Anda. Orang yang membagikannya akan diberi tahu.",
+      "left": "Anda keluar dari \"{{name}}\"",
+      "failed": "Gagal keluar. Silakan coba lagi."
+    }
   },
   "views": {
     "title": "Tampilan Cerdas",
@@ -2646,6 +2667,10 @@
     "perSeatNote": "({{seats}} kursi, termasuk Anda)",
     "membersNeedTeam": "Pro untuk satu orang. Paket Tim memungkinkan Anda menambah anggota, mulai dari 3 kursi.",
     "seatsFull": "Semua {{seats}} kursi di paket Anda sudah terpakai. Pindah ke paket Tim yang lebih besar untuk menambah orang.",
+    "seatsFullTitle": "Semua kursi sudah terpakai",
+    "seatsFullContact": "Semua {{seats}} kursi di paket Anda sudah terpakai. Hubungi kami untuk menambah orang.",
+    "seatsContactHint": "Kirim email ke {{email}} dan kami akan menambah kursi ke paket Anda.",
+    "contactUs": "Hubungi kami",
     "changePlan": "Ganti paket",
     "planChanged": "Paket Anda telah diganti."
   },
@@ -2705,7 +2730,9 @@
     "upcoming": "Minggu ini",
     "noDate": "Tidak ada tanggal",
     "nothing": "Tidak ada saat ini",
-    "empty": "Tidak ada yang dibagikan saat ini. Bagikan area, proyek, atau tujuan, atau tugaskan seseorang sebuah tugas, untuk melihatnya di sini."
+    "empty": "Tidak ada yang dibagikan saat ini. Bagikan area, proyek, atau tujuan, atau tugaskan seseorang sebuah tugas, untuk melihatnya di sini.",
+    "sortableColumn": "kolom yang dapat diurutkan",
+    "reorderFailed": "Tidak dapat menyimpan urutan kolom."
   },
   "people": {
     "addMember": "Tambah anggota",
@@ -2714,6 +2741,8 @@
     "filterMembers": "Anggota",
     "filterContacts": "Kontak",
     "member": "Anggota",
+    "owner": "Pemilik",
+    "admin": "Admin",
     "memberNoSignIn": "Anggota, belum dapat masuk",
     "giveAccount": "Beri akun",
     "memberAdded": "Anggota ditambahkan",
@@ -2762,7 +2791,12 @@
     "removed": "Anggota dihapus",
     "updated": "Anggota diperbarui",
     "invitationSent": "Undangan terkirim",
-    "failedToRemove": "Gagal menghapus anggota"
+    "failedToRemove": "Gagal menghapus anggota",
+    "openTasksCount": "Tugas terbuka yang ditugaskan ke {{name}}: {{count}}",
+    "handTo": "Serahkan tugasnya kepada",
+    "handToYou": "{{name}} (Anda)",
+    "leaveUnassigned": "Tidak ada, biarkan tanpa penanggung jawab",
+    "handToHint": "Mereka menerima satu pemberitahuan berisi jumlah tugas. Tugas yang selesai tetap seperti semula."
   },
   "signInLink": {
     "action": "Tautan masuk",

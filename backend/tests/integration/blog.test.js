@@ -35,7 +35,9 @@ describe('Blog', () => {
     });
 
     afterEach(async () => {
-        await Setting.destroy({ where: { key: 'blog_note_uid' } });
+        await Setting.destroy({
+            where: { key: ['blog_note_uid', 'blog_slug_history'] },
+        });
     });
 
     // A front page linking two posts, one of which links a third; plus a
@@ -301,6 +303,125 @@ describe('Blog', () => {
             expect(res.text).toMatch(
                 /og:image" content="http:\/\/blog\.tududi\.com\/api\/public\/notes\/[^/]+\/files\/people\.png"/
             );
+        });
+
+        it('renders the post itself for readers without scripts', async () => {
+            const { index } = await buildBlog();
+            await adminAgent.put('/api/admin/blog').send({ note: index.uid });
+
+            const res = await request(app)
+                .get('/how-to-organize-a-family')
+                .set('Host', 'blog.tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toMatch(/<html lang="en"/);
+            expect(res.text).toContain(
+                '<div id="root"><main><article><h1>How to organize a family</h1>'
+            );
+            expect(res.text).toContain('<p>A family is not a team.</p>');
+            expect(res.text).toContain(
+                '<a href="/weekly-review">Weekly review</a>'
+            );
+            expect(res.text).toContain('<a href="/why-cloud">Why Cloud</a>');
+
+            const ld = JSON.parse(
+                res.text.match(
+                    /<script type="application\/ld\+json">(.*?)<\/script>/
+                )[1]
+            );
+            expect(ld).toMatchObject({
+                '@type': 'Article',
+                headline: 'How to organize a family',
+                author: { '@type': 'Person', name: 'Chris Veleris' },
+            });
+            expect(ld.datePublished).toBeTruthy();
+            expect(ld.dateModified).toBeTruthy();
+            expect(ld.image[0]).toMatch(/\/files\/people\.png$/);
+        });
+
+        it('renders the front page with a heading and links to the posts', async () => {
+            const { index } = await buildBlog();
+            await adminAgent.put('/api/admin/blog').send({ note: index.uid });
+
+            const res = await request(app)
+                .get('/')
+                .set('Host', 'blog.tududi.com');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('<h1>Small things, sorted.</h1>');
+            expect(res.text).toContain(
+                '<a href="/how-to-organize-a-family">How to organize a family</a>'
+            );
+            expect(res.text).toContain('<a href="/why-cloud">Why Cloud</a>');
+            expect(res.text).toMatch(
+                /<meta name="description" content="Ideas and stories for running a busy home, or a busy team, with less in your head\.">/
+            );
+        });
+
+        it('answers an unknown post with 404 and noindex', async () => {
+            const { index } = await buildBlog();
+            await adminAgent.put('/api/admin/blog').send({ note: index.uid });
+
+            for (const path of ['/no-such-post', '/unlinked', '/a/b']) {
+                const res = await request(app)
+                    .get(path)
+                    .set('Host', 'blog.tududi.com');
+                expect(res.status).toBe(404);
+                expect(res.text).toContain(
+                    '<meta name="robots" content="noindex">'
+                );
+                expect(res.text).toContain('content="blog"');
+            }
+        });
+
+        it('moves an old address of a renamed post to the new one', async () => {
+            const { index, family } = await buildBlog();
+            await adminAgent.put('/api/admin/blog').send({ note: index.uid });
+            const blog = (path) =>
+                request(app).get(path).set('Host', 'blog.tududi.com');
+
+            expect((await blog('/how-to-organize-a-family')).status).toBe(200);
+
+            await family.update({ title: 'Running a family, week by week' });
+            await index.update({
+                content: index.content.replace(
+                    '[[How to organize a family]]',
+                    '[[Running a family, week by week]]'
+                ),
+            });
+
+            const moved = await blog('/how-to-organize-a-family');
+            expect(moved.status).toBe(301);
+            expect(moved.headers.location).toBe(
+                '/running-a-family-week-by-week'
+            );
+            expect((await blog('/running-a-family-week-by-week')).status).toBe(
+                200
+            );
+            // A slug the blog never served is still a plain 404.
+            expect((await blog('/how-to-organise-a-family')).status).toBe(404);
+        });
+
+        it('lets a new post take a slug a renamed post left behind', async () => {
+            const { index, pricing } = await buildBlog();
+            await adminAgent.put('/api/admin/blog').send({ note: index.uid });
+            const blog = (path) =>
+                request(app).get(path).set('Host', 'blog.tududi.com');
+
+            expect((await blog('/why-cloud')).status).toBe(200);
+            await pricing.update({ title: 'Why tududi Cloud' });
+            await Note.create(
+                share({
+                    title: 'Why Cloud',
+                    content: 'A newer take.',
+                    user_id: admin.id,
+                })
+            );
+            await index.update({
+                content: `${index.content.replace('[[Why Cloud]]', '[[Why tududi Cloud]]')}\n\n[[Why Cloud]]`,
+            });
+
+            const res = await blog('/why-cloud');
+            expect(res.status).toBe(200);
+            expect(res.text).toContain('<p>A newer take.</p>');
         });
 
         it('still marks the front page when the blog is not set up', async () => {

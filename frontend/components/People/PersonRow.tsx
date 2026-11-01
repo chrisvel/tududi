@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { UserIcon } from '@heroicons/react/24/outline';
 import { Person } from '../../entities/Person';
+import { memberRoleLabel } from './memberRoleLabel';
 
 const RELATIONSHIP_LABELS: Record<string, string> = {
     family: 'Family',
@@ -25,7 +26,7 @@ const PersonRow: React.FC<PersonRowProps> = ({ person }) => {
     const kindLabel = isMember
         ? person.account_status === 'no_sign_in'
             ? t('people.memberNoSignIn', "Member, can't sign in yet")
-            : t('people.member', 'Member')
+            : memberRoleLabel(person, t)
         : RELATIONSHIP_LABELS[person.relationship_type ?? 'other'];
 
     return (

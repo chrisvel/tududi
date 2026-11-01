@@ -112,6 +112,37 @@ class SharesRepository {
         });
     }
 
+    // The shares the user holds on this very item, whatever their status:
+    // their direct share row and the root row of each group grant.
+    async findHeldShares(userId, resourceType, resourceUid) {
+        const where = {
+            user_id: userId,
+            resource_type: resourceType,
+            resource_uid: resourceUid,
+            propagation: 'direct',
+        };
+        const [direct, groupRows] = await Promise.all([
+            Permission.findOne({
+                where,
+                attributes: ['id', 'granted_by_user_id'],
+                raw: true,
+            }),
+            GroupPermission.findAll({
+                where,
+                attributes: ['id', 'group_share_id'],
+                include: [
+                    {
+                        model: GroupShare,
+                        as: 'GroupShare',
+                        required: true,
+                        attributes: ['id', 'granted_by_user_id'],
+                    },
+                ],
+            }),
+        ]);
+        return { direct, groupRows };
+    }
+
     async findPendingInvitations(userId) {
         return Permission.findAll({
             where: {

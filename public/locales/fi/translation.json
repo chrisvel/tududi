@@ -234,7 +234,8 @@
     "habit": "Tapa",
     "assignedTo": "Osoitettu",
     "subtasks": "Ala-tehtävät",
-    "openFullPage": "Avaa koko näkymä"
+    "openFullPage": "Avaa koko näkymä",
+    "openPanel": "Avaa sivupaneelissa"
   },
   "timeline": {
     "activityTimeline": "Toiminta-aikajana",
@@ -1355,6 +1356,8 @@
     "recurringSetup": "Toistuva asetukset",
     "notRecurring": "Tämä tehtävä ei ole vielä toistuva.",
     "clickToEditTitle": "Napsauta muokataksesi otsikkoa",
+    "copyLink": "Kopioi linkki tehtävään",
+    "linkCopied": "Linkki kopioitu",
     "clickToEditContent": "Napsauta muokataksesi sisältöä",
     "clickToAddContent": "Napsauta lisätäksesi sisältöä",
     "clickToEditSubtasks": "Napsauta muokataksesi alitehtäviä",
@@ -1488,7 +1491,16 @@
     "historyDuration_other": "kesti {{count}} päivää",
     "reopen": "Avaa uudelleen",
     "reopened": "\"{{name}}\" on taas käynnissä",
-    "loadError": "Projektien lataus epäonnistui"
+    "loadError": "Projektien lataus epäonnistui",
+    "unavailable": {
+      "noAccessTitle": "Sinulla ei ole pääsyä tähän projektiin",
+      "noAccessHint": "Pyydä projektin omistajaa jakamaan se kanssasi.",
+      "notFoundTitle": "Tätä projektia ei ole olemassa tai se on poistettu",
+      "notFoundHint": "Tarkista linkki tai etsi projekti listastasi.",
+      "failedTitle": "Projektin tietojen lataus epäonnistui.",
+      "failedHint": "Tarkista yhteytesi ja lataa sivu uudelleen.",
+      "backToProjects": "Takaisin projekteihin"
+    }
   },
   "projectItem": {
     "edit": "Muokkaa",
@@ -2116,7 +2128,16 @@
     "groupAlreadyShared": "jo jaettu",
     "groupHint": "Jokainen jäsen saa kutsun, ja myöhemmin ryhmään lisättävät kutsutaan myös.",
     "sharedWithGroups": "Jaettu ryhmien kanssa",
-    "groupCounts": "{{accepted}} hyväksytty, {{pending}} odottaa"
+    "groupCounts": "{{accepted}} hyväksytty, {{pending}} odottaa",
+    "leave": {
+      "action": "Poistu",
+      "projectTitle": "Poistu projektista",
+      "areaTitle": "Poistu alueelta",
+      "projectMessage": "Et enää näe kohdetta \"{{name}}\" tai sen tehtäviä, ja avoimet tehtäväsi siellä eivät ole enää sinulle osoitettuja. Jakajalle ilmoitetaan.",
+      "areaMessage": "Et enää näe kohdetta \"{{name}}\" tai sen kanssa jaettuja projekteja, ja avoimet tehtäväsi siellä eivät ole enää sinulle osoitettuja. Jakajalle ilmoitetaan.",
+      "left": "Poistuit kohteesta \"{{name}}\"",
+      "failed": "Poistuminen epäonnistui. Yritä uudelleen."
+    }
   },
   "views": {
     "title": "Älykkäät näkymät",
@@ -2648,6 +2669,10 @@
     "perSeatNote": "({{seats}} paikkaa, sinä mukaan lukien)",
     "membersNeedTeam": "Pro on yhdelle henkilölle. Tiimi-tilauksella voit lisätä jäseniä, 3 paikasta alkaen.",
     "seatsFull": "Kaikki tilauksesi {{seats}} paikkaa ovat käytössä. Vaihda isompaan Tiimi-tilaukseen lisätäksesi ihmisiä.",
+    "seatsFullTitle": "Kaikki paikat ovat käytössä",
+    "seatsFullContact": "Kaikki tilauksesi {{seats}} paikkaa ovat käytössä. Ota meihin yhteyttä lisätäksesi ihmisiä.",
+    "seatsContactHint": "Lähetä viesti osoitteeseen {{email}}, niin lisäämme paikkoja tilaukseesi.",
+    "contactUs": "Ota yhteyttä",
     "changePlan": "Vaihda tilausta",
     "planChanged": "Tilauksesi on vaihdettu."
   },
@@ -2707,7 +2732,9 @@
     "upcoming": "Tällä viikolla",
     "noDate": "Ei päivämäärää",
     "nothing": "Ei mitään juuri nyt",
-    "empty": "Ei mitään jaettua ole nyt päällä. Jaa alue, projekti tai tavoite, tai määritä joku tehtävään, jotta näet sen täällä."
+    "empty": "Ei mitään jaettua ole nyt päällä. Jaa alue, projekti tai tavoite, tai määritä joku tehtävään, jotta näet sen täällä.",
+    "sortableColumn": "järjestettävä sarake",
+    "reorderFailed": "Sarakkeiden järjestystä ei voitu tallentaa."
   },
   "people": {
     "addMember": "Lisää jäsen",
@@ -2716,6 +2743,8 @@
     "filterMembers": "Jäsenet",
     "filterContacts": "Yhteyshenkilöt",
     "member": "Jäsen",
+    "owner": "Omistaja",
+    "admin": "Ylläpitäjä",
     "memberNoSignIn": "Jäsen, ei voi vielä kirjautua",
     "giveAccount": "Anna tili",
     "memberAdded": "Jäsen lisätty",
@@ -2764,7 +2793,12 @@
     "removed": "Jäsen poistettu",
     "updated": "Jäsen päivitetty",
     "invitationSent": "Kutsu lähetetty",
-    "failedToRemove": "Jäsenen poistaminen epäonnistui"
+    "failedToRemove": "Jäsenen poistaminen epäonnistui",
+    "openTasksCount": "Henkilölle {{name}} osoitetut avoimet tehtävät: {{count}}",
+    "handTo": "Siirrä tehtävät henkilölle",
+    "handToYou": "{{name}} (sinä)",
+    "leaveUnassigned": "Ei kenellekään, jätä osoittamatta",
+    "handToHint": "Hän saa yhden ilmoituksen tehtävien määrästä. Valmiit tehtävät pysyvät ennallaan."
   },
   "signInLink": {
     "action": "Kirjautumislinkki",

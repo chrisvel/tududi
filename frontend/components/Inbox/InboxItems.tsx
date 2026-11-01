@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Task } from '../../entities/Task';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
@@ -33,12 +33,11 @@ import {
 } from '../../utils/profileService';
 import { useStore } from '../../store/useStore';
 import { TASK_SHEET_CLASS } from '../Task/taskSheet';
+import { openTaskPanel } from '../../store/taskPanelStore';
 const InboxItems: React.FC = () => {
     const { t } = useTranslation();
     const { showSuccessToast, showErrorToast } = useToast();
     const [searchParams, setSearchParams] = useSearchParams();
-    const navigate = useNavigate();
-    const location = useLocation();
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -264,12 +263,15 @@ const InboxItems: React.FC = () => {
             const taskLink = (
                 <span>
                     {t('task.created', 'Task')}{' '}
-                    <a
-                        href={`/task/${createdTask.uid}`}
+                    <button
+                        type="button"
+                        onClick={() =>
+                            createdTask.uid && openTaskPanel(createdTask.uid)
+                        }
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {createdTask.name}
-                    </a>{' '}
+                    </button>{' '}
                     {t('task.createdSuccessfully', 'created successfully!')}
                 </span>
             );
@@ -290,7 +292,7 @@ const InboxItems: React.FC = () => {
             }
 
             if (options.navigateAfterCreate && createdTask.uid) {
-                navigate(`/task/${createdTask.uid}`, { state: { from: location.pathname + location.search } });
+                openTaskPanel(createdTask.uid);
             }
 
             return createdTask;

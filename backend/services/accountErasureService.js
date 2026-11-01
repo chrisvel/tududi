@@ -79,11 +79,145 @@ async function unlinkWithin(baseDir, relativeOrAbsolute) {
     await fs.unlink(resolved).catch(() => {});
 }
 
+// Tasks this user created in projects someone else owns belong to that
+// project, so they stay in it and pass to the project owner, together with
+// their subtasks and recurring instances, attachments and history. Links to
+// this user's own tags, areas and goals are dropped, since those go.
+async function handOverTasksInOthersProjects(userId, transaction) {
+    const tx = { transaction };
+    const ownerOf = new Map();
+
+    const inProjects = await Task.findAll({
+        where: { user_id: userId, project_id: { [Op.ne]: null } },
+        attributes: ['id', 'project_id'],
+        raw: true,
+        ...tx,
+    });
+    if (inProjects.length > 0) {
+        const projects = await Project.findAll({
+            where: {
+                id: [...new Set(inProjects.map((t) => t.project_id))],
+                user_id: { [Op.ne]: userId },
+            },
+            attributes: ['id', 'user_id'],
+            raw: true,
+            ...tx,
+        });
+        const projectOwner = new Map(projects.map((p) => [p.id, p.user_id]));
+        for (const t of inProjects) {
+            if (projectOwner.has(t.project_id)) {
+                ownerOf.set(t.id, projectOwner.get(t.project_id));
+            }
+        }
+    }
+
+    // Subtasks this user added under someone else's task stay with it too.
+    const subtasks = await Task.findAll({
+        where: { user_id: userId, parent_task_id: { [Op.ne]: null } },
+        attributes: ['id', 'parent_task_id'],
+        raw: true,
+        ...tx,
+    });
+    if (subtasks.length > 0) {
+        const parents = await Task.findAll({
+            where: {
+                id: [...new Set(subtasks.map((t) => t.parent_task_id))],
+                user_id: { [Op.ne]: userId },
+            },
+            attributes: ['id', 'user_id'],
+            raw: true,
+            ...tx,
+        });
+        const parentOwner = new Map(parents.map((p) => [p.id, p.user_id]));
+        for (const t of subtasks) {
+            if (!ownerOf.has(t.id) && parentOwner.has(t.parent_task_id)) {
+                ownerOf.set(t.id, parentOwner.get(t.parent_task_id));
+            }
+        }
+    }
+
+    // Subtasks and recurring instances of the moved tasks follow them.
+    let frontier = [...ownerOf.keys()];
+    while (frontier.length > 0) {
+        const children = await Task.findAll({
+            where: {
+                user_id: userId,
+                id: { [Op.notIn]: [...ownerOf.keys()] },
+                [Op.or]: [
+                    { parent_task_id: frontier },
+                    { recurring_parent_id: frontier },
+                ],
+            },
+            attributes: ['id', 'parent_task_id', 'recurring_parent_id'],
+            raw: true,
+            ...tx,
+        });
+        for (const c of children) {
+            const from = ownerOf.has(c.parent_task_id)
+                ? c.parent_task_id
+                : c.recurring_parent_id;
+            ownerOf.set(c.id, ownerOf.get(from));
+        }
+        frontier = children.map((c) => c.id);
+    }
+
+    if (ownerOf.size === 0) return 0;
+
+    const byOwner = new Map();
+    for (const [taskId, ownerId] of ownerOf) {
+        if (!byOwner.has(ownerId)) byOwner.set(ownerId, []);
+        byOwner.get(ownerId).push(taskId);
+    }
+    const movedIds = [...ownerOf.keys()];
+    const own = { where: { user_id: userId }, attributes: ['id'], raw: true };
+
+    const tagIds = (await Tag.findAll({ ...own, ...tx })).map((t) => t.id);
+    if (tagIds.length > 0) {
+        await sequelize.models.tasks_tags.destroy({
+            where: { task_id: movedIds, tag_id: tagIds },
+            ...tx,
+        });
+    }
+    const areaIds = (await Area.findAll({ ...own, ...tx })).map((a) => a.id);
+    if (areaIds.length > 0) {
+        await Task.update(
+            { area_id: null },
+            { where: { id: movedIds, area_id: areaIds }, ...tx }
+        );
+    }
+    const goalIds = (await Goal.findAll({ ...own, ...tx })).map((g) => g.id);
+    if (goalIds.length > 0) {
+        await Task.update(
+            { goal_id: null },
+            { where: { id: movedIds, goal_id: goalIds }, ...tx }
+        );
+    }
+
+    for (const [ownerId, taskIds] of byOwner) {
+        await Task.update(
+            { user_id: ownerId },
+            { where: { id: taskIds }, ...tx }
+        );
+        const mine = { task_id: taskIds, user_id: userId };
+        await TaskAttachment.update(
+            { user_id: ownerId },
+            { where: mine, ...tx }
+        );
+        await TaskEvent.update({ user_id: ownerId }, { where: mine, ...tx });
+    }
+
+    return movedIds.length;
+}
+
 // Removes every row that belongs to a user, and every file those rows
 // point at. Used for admin deletion and for self-service account deletion.
 // Rows go inside one transaction; files are removed only after it commits,
 // so a rollback never leaves rows pointing at missing files.
-async function eraseUserAccount(userId) {
+// Tasks they created in other people's projects are handed over first (see
+// above). `beforeErase(transaction)` runs next inside the same transaction,
+// so work that must happen before the rows go (such as handing tasks over)
+// is undone with everything else if the erasure fails.
+async function eraseUserAccount(userId, { beforeErase } = {}) {
     // Stop charging before removing the rows that point at Stripe
     const { billingService } = require('../modules/billing');
     await billingService.cancelForDeletedUser(userId);
@@ -108,6 +242,9 @@ async function eraseUserAccount(userId) {
                 'Cannot delete the last remaining admin'
             );
         }
+
+        await handOverTasksInOthersProjects(userId, transaction);
+        if (beforeErase) await beforeErase(transaction);
 
         const tx = { transaction };
         const byUser = { where: { user_id: userId }, ...tx };

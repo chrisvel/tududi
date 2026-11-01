@@ -29,6 +29,7 @@ import { getApiPath } from '../config/paths';
 import { getCsrfToken } from '../utils/csrfService';
 import { isQueuedOfflineResponse } from '../utils/authUtils';
 import { isTaskActive } from '../constants/taskStatus';
+import { openTaskPanel } from '../store/taskPanelStore';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -385,12 +386,15 @@ const Tasks: React.FC = () => {
             const taskLink = (
                 <span>
                     {t('task.created', 'Task')}{' '}
-                    <a
-                        href={`/task/${newTask.uid}`}
+                    <button
+                        type="button"
+                        onClick={() =>
+                            newTask.uid && openTaskPanel(newTask.uid)
+                        }
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
-                    </a>{' '}
+                    </button>{' '}
                     {t('task.createdSuccessfully', 'created successfully!')}
                 </span>
             );

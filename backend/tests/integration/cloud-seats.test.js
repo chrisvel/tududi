@@ -10,7 +10,8 @@ jest.mock('../../services/emailService', () => ({
 const app = require('../../app');
 const { getConfig } = require('../../config/config');
 const plans = require('../../config/plans');
-const { User, BillingAccount, sequelize } = require('../../models');
+const { User, BillingAccount, Role, sequelize } = require('../../models');
+const peopleService = require('../../modules/people/service');
 const entitlements = require('../../services/entitlementsService');
 const rolesService = require('../../services/rolesService');
 const { createTestUser } = require('../helpers/testUtils');
@@ -220,6 +221,8 @@ describe('Cloud seats', () => {
                 current: 2,
                 plan: 'team_3',
             });
+            // A paid plan can move to a bigger bucket, so no contact reason.
+            expect(res.body.details).not.toHaveProperty('reason');
             expect(await User.count({ where: { name: 'Mia' } })).toBe(0);
             expect(ls.patches).toHaveLength(0);
         });
@@ -258,6 +261,32 @@ describe('Cloud seats', () => {
 
             expect(res.status).toBe(201);
             expect(ls.patches).toHaveLength(0);
+        });
+
+        it('tells a full comped Team plan to contact us', async () => {
+            await BillingAccount.create({
+                user_id: owner.id,
+                status: 'none',
+                plan: 'free',
+                override_plan: 'team_3',
+            });
+            for (const name of ['Emma', 'Leo']) {
+                expect((await addMember(ownerAgent, { name })).status).toBe(
+                    201
+                );
+            }
+
+            const res = await addMember(ownerAgent, { name: 'Mia' });
+
+            expect(res.status).toBe(402);
+            expect(res.body.code).toBe('PLAN_LIMIT_REACHED');
+            expect(res.body.details).toMatchObject({
+                resource: 'member',
+                limit: 2,
+                current: 2,
+                plan: 'team_3',
+                reason: 'override',
+            });
         });
 
         it('is refused for a member', async () => {
@@ -340,6 +369,40 @@ describe('Cloud seats', () => {
             expect(ls.patches).toEqual([]);
             const billing = await ownerAgent.get('/api/billing');
             expect(billing.body.seats.used).toBe(1);
+        });
+    });
+
+    describe('roles on the People list', () => {
+        it('labels the owner, account admins and other members', async () => {
+            await subscribe(owner.id, { plan: 'team_5' });
+            const emma = await addMember(ownerAgent, { name: 'Emma' });
+            const leo = await addMember(ownerAgent, { name: 'Leo' });
+            await Role.update(
+                { role: 'account_admin' },
+                { where: { user_id: emma.body.id } }
+            );
+
+            // Someone in another account stays a plain member to this one.
+            const other = await createTestUser({
+                email: `other_${Date.now()}@example.com`,
+                name: 'Olga',
+            });
+
+            const res = await ownerAgent.get('/api/people');
+            expect(res.status).toBe(200);
+            const roleOf = (userId) =>
+                res.body.people.find(
+                    (p) => p.kind === 'member' && p.linked_user_id === userId
+                )?.account_role;
+
+            expect(roleOf(owner.id)).toBe('owner');
+            expect(roleOf(emma.body.id)).toBe('admin');
+            expect(roleOf(leo.body.id)).toBe('member');
+            expect(
+                (await peopleService.accountRoles(owner.id, [other.id])).get(
+                    other.id
+                )
+            ).toBeUndefined();
         });
     });
 

@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CheckIcon,
@@ -20,6 +19,7 @@ import {
     isTaskDone,
 } from '../../../constants/taskStatus';
 import { useToast } from '../../Shared/ToastContext';
+import { openTaskPanel } from '../../../store/taskPanelStore';
 
 interface TaskRelationsCardProps {
     taskUid: string;
@@ -188,16 +188,19 @@ const TaskRelationsCard: React.FC<TaskRelationsCardProps> = ({
                                     key={relation.uid}
                                     className="group flex items-center justify-between py-2 px-4 rounded-lg shadow-sm bg-white dark:bg-gray-900"
                                 >
-                                    <Link
-                                        to={`/task/${relation.task.uid}`}
-                                        className={`text-sm truncate hover:underline ${
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            openTaskPanel(relation.task.uid)
+                                        }
+                                        className={`text-sm text-left truncate hover:underline ${
                                             resolved
                                                 ? 'text-gray-400 dark:text-gray-500 line-through'
                                                 : 'text-gray-900 dark:text-gray-100'
                                         }`}
                                     >
                                         {relation.task.name}
-                                    </Link>
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={() =>

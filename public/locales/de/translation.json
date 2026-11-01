@@ -234,7 +234,8 @@
     "habit": "Gewohnheit",
     "assignedTo": "Zugewiesen an",
     "subtasks": "Unteraufgaben",
-    "openFullPage": "Vollansicht öffnen"
+    "openFullPage": "Vollansicht öffnen",
+    "openPanel": "Im Seitenbereich öffnen"
   },
   "timeline": {
     "activityTimeline": "Aktivitätsverlauf",
@@ -1309,6 +1310,8 @@
     "recurringSetup": "Wiederkehrende Einrichtung",
     "notRecurring": "Diese Aufgabe ist noch nicht wiederkehrend.",
     "clickToEditTitle": "Klicken Sie, um den Titel zu bearbeiten",
+    "copyLink": "Link zur Aufgabe kopieren",
+    "linkCopied": "Link kopiert",
     "clickToEditContent": "Klicken Sie, um den Inhalt zu bearbeiten",
     "clickToAddContent": "Klicken Sie, um Inhalt hinzuzufügen",
     "clickToEditSubtasks": "Klicken Sie, um Unteraufgaben zu bearbeiten",
@@ -1634,7 +1637,16 @@
     "historyDuration_other": "dauerte {{count}} Tage",
     "reopen": "Wieder öffnen",
     "reopened": "„{{name}}“ ist wieder in Bearbeitung",
-    "loadError": "Projekte konnten nicht geladen werden"
+    "loadError": "Projekte konnten nicht geladen werden",
+    "unavailable": {
+      "noAccessTitle": "Du hast keinen Zugriff auf dieses Projekt",
+      "noAccessHint": "Bitte den Eigentümer des Projekts, es mit dir zu teilen.",
+      "notFoundTitle": "Dieses Projekt existiert nicht oder wurde gelöscht",
+      "notFoundHint": "Prüfe den Link oder suche das Projekt in deiner Liste.",
+      "failedTitle": "Projektdetails konnten nicht geladen werden.",
+      "failedHint": "Prüfe deine Verbindung und lade die Seite neu.",
+      "backToProjects": "Zurück zu den Projekten"
+    }
   },
   "projectItem": {
     "edit": "Bearbeiten",
@@ -2125,7 +2137,16 @@
     "groupAlreadyShared": "bereits geteilt",
     "groupHint": "Jedes Mitglied erhält eine Einladung, und später zur Gruppe hinzugefügte Personen werden ebenfalls eingeladen.",
     "sharedWithGroups": "Mit Gruppen geteilt",
-    "groupCounts": "{{accepted}} angenommen, {{pending}} ausstehend"
+    "groupCounts": "{{accepted}} angenommen, {{pending}} ausstehend",
+    "leave": {
+      "action": "Verlassen",
+      "projectTitle": "Projekt verlassen",
+      "areaTitle": "Bereich verlassen",
+      "projectMessage": "Du siehst \"{{name}}\" und seine Aufgaben nicht mehr, und deine offenen Aufgaben dort werden nicht mehr dir zugewiesen. Die Person, die es geteilt hat, wird benachrichtigt.",
+      "areaMessage": "Du siehst \"{{name}}\" und die damit geteilten Projekte nicht mehr, und deine offenen Aufgaben dort werden nicht mehr dir zugewiesen. Die Person, die es geteilt hat, wird benachrichtigt.",
+      "left": "Du hast \"{{name}}\" verlassen",
+      "failed": "Verlassen fehlgeschlagen. Bitte versuche es erneut."
+    }
   },
   "views": {
     "title": "Intelligente Ansichten",
@@ -2657,6 +2678,10 @@
     "perSeatNote": "({{seats}} Plätze, du eingeschlossen)",
     "membersNeedTeam": "Pro ist für eine Person. Mit einem Team-Tarif kannst du Mitglieder hinzufügen, ab 3 Plätzen.",
     "seatsFull": "Alle {{seats}} Plätze deines Tarifs sind belegt. Wechsle zu einem größeren Team-Tarif, um weitere Personen hinzuzufügen.",
+    "seatsFullTitle": "Alle Plätze sind belegt",
+    "seatsFullContact": "Alle {{seats}} Plätze deines Tarifs sind belegt. Kontaktiere uns, um weitere Personen hinzuzufügen.",
+    "seatsContactHint": "Schreib an {{email}}, dann fügen wir deinem Tarif Plätze hinzu.",
+    "contactUs": "Kontakt",
     "changePlan": "Plan ändern",
     "planChanged": "Dein Plan wurde geändert."
   },
@@ -2716,7 +2741,9 @@
     "upcoming": "Diese Woche",
     "noDate": "Kein Datum",
     "nothing": "Gerade nichts",
-    "empty": "Gerade ist nichts geteilt. Teilen Sie einen Bereich, ein Projekt oder ein Ziel oder weisen Sie jemandem eine Aufgabe zu, um es hier zu sehen."
+    "empty": "Gerade ist nichts geteilt. Teilen Sie einen Bereich, ein Projekt oder ein Ziel oder weisen Sie jemandem eine Aufgabe zu, um es hier zu sehen.",
+    "sortableColumn": "sortierbare Spalte",
+    "reorderFailed": "Die Spaltenreihenfolge konnte nicht gespeichert werden."
   },
   "people": {
     "addMember": "Mitglied hinzufügen",
@@ -2725,6 +2752,8 @@
     "filterMembers": "Mitglieder",
     "filterContacts": "Kontakte",
     "member": "Mitglied",
+    "owner": "Inhaber",
+    "admin": "Admin",
     "memberNoSignIn": "Mitglied, kann sich noch nicht anmelden",
     "giveAccount": "Konto geben",
     "memberAdded": "Mitglied hinzugefügt",
@@ -2773,7 +2802,12 @@
     "removed": "Mitglied entfernt",
     "updated": "Mitglied aktualisiert",
     "invitationSent": "Einladung gesendet",
-    "failedToRemove": "Mitglied konnte nicht entfernt werden"
+    "failedToRemove": "Mitglied konnte nicht entfernt werden",
+    "openTasksCount": "Offene Aufgaben von {{name}}: {{count}}",
+    "handTo": "Aufgaben übergeben an",
+    "handToYou": "{{name}} (Sie)",
+    "leaveUnassigned": "Niemand, nicht zuweisen",
+    "handToHint": "Die Person erhält eine Benachrichtigung mit der Anzahl der Aufgaben. Erledigte Aufgaben bleiben unverändert."
   },
   "signInLink": {
     "action": "Anmeldelink",

@@ -535,5 +535,10 @@
       }
     },
     "turn": "Bir kez yazın. Ona bir yer verin. Kafanızdan çıkmasına izin verin."
+  },
+  "notFound": {
+    "title": "Sayfa bulunamadı",
+    "lede": "Bu adreste hiçbir şey yok. Taşınmış olabilir ya da bağlantıda bir yazım hatası olabilir.",
+    "home": "tududi'ye dön"
   }
 }

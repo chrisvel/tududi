@@ -26,6 +26,7 @@ import { avatarTint } from '../../utils/avatarTint';
 import { differenceInCalendarDays } from 'date-fns';
 import { listShares, ListSharesResponseRow } from '../../utils/sharesService';
 import {
+    canManageProjectShares,
     failedShareCache,
     projectShareCache,
 } from '../../utils/projectShareCache';
@@ -195,9 +196,12 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         }
     }, [project.uid, project.is_shared]);
 
+    const canManageShares = canManageProjectShares(project);
+
     useEffect(() => {
         if (
             !project.is_shared ||
+            !canManageShares ||
             !project.uid ||
             projectShareCache.has(project.uid) ||
             failedShareCache.has(project.uid)
@@ -226,7 +230,7 @@ const ProjectItem: React.FC<ProjectItemProps> = ({
         return () => {
             isMounted = false;
         };
-    }, [project.uid, project.is_shared]);
+    }, [project.uid, project.is_shared, canManageShares]);
 
     const dueInfo = useMemo(() => {
         if (!project.due_date_at) {

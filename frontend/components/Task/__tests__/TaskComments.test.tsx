@@ -141,12 +141,13 @@ describe('TaskComments', () => {
         expect(onCommentCountChange).toHaveBeenCalledWith(1);
     });
 
-    it('shows the empty state when there are no comments', async () => {
+    it('shows only the composer when there are no comments', async () => {
         (fetchComments as jest.Mock).mockResolvedValue([]);
 
         render(<TaskComments task={task} />);
 
-        expect(await screen.findByText('No comments yet')).toBeInTheDocument();
+        expect(await screen.findByText('Comment')).toBeInTheDocument();
+        expect(screen.queryByText('No comments yet')).toBeNull();
     });
 
     it('submits a new comment and appends it to the list', async () => {
@@ -159,7 +160,7 @@ describe('TaskComments', () => {
         (createComment as jest.Mock).mockResolvedValue(posted);
 
         const { container } = render(<TaskComments task={task} />);
-        await screen.findByText('No comments yet');
+        await screen.findByText('Comment');
 
         typeIntoComposer(container, 'Hello there');
         fireEvent.click(screen.getByText('Comment'));
@@ -177,7 +178,7 @@ describe('TaskComments', () => {
         (fetchComments as jest.Mock).mockResolvedValue([]);
 
         const { container } = render(<TaskComments task={task} />);
-        await screen.findByText('No comments yet');
+        await screen.findByText('Comment');
 
         const editor = typeIntoComposer(container, 'Hey @Bo');
 
@@ -466,7 +467,7 @@ describe('TaskComments', () => {
             });
 
             const { container } = render(<TaskComments task={task} />);
-            await screen.findByText('No comments yet');
+            await screen.findByText('Comment');
 
             const editor = typeIntoComposer(container, 'Look');
             pasteImage(editor);
@@ -503,7 +504,7 @@ describe('TaskComments', () => {
             );
 
             const { container } = render(<TaskComments task={task} />);
-            await screen.findByText('No comments yet');
+            await screen.findByText('Comment');
 
             pasteImage(
                 container.querySelector(
@@ -536,7 +537,7 @@ describe('TaskComments', () => {
                 .mockImplementation(() => {});
 
             const { container } = render(<TaskComments task={task} />);
-            await screen.findByText('No comments yet');
+            await screen.findByText('Comment');
 
             const editor = container.querySelector(
                 '[contenteditable="true"]'
@@ -558,7 +559,7 @@ describe('TaskComments', () => {
             (fetchComments as jest.Mock).mockResolvedValue([]);
 
             const { container } = render(<TaskComments task={task} />);
-            await screen.findByText('No comments yet');
+            await screen.findByText('Comment');
 
             const editor = typeIntoComposer(container, 'Hi ');
             fireEvent.paste(editor, {

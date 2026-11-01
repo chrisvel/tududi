@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 const { Task, Project } = require('../../models');
 const permissionsService = require('../../services/permissionsService');
 const permissionSources = require('../../services/permissionSources');
-const { getWorkspaceUserIds } = require('../../services/workspaceMembers');
+const { getVisibleMemberIds } = require('../../services/workspaceMembers');
 const peopleRepository = require('../people/repository');
 const { getTaskIncludeConfig } = require('../tasks/queries/query-builders');
 const { summarize, buildColumns } = require('./core/columns');
@@ -56,7 +56,7 @@ async function getProjectIds(userId) {
 
 // The open tasks on the Everyone board and the people they belong to.
 async function collectBoardTasks(userId) {
-    const collaboratorUserIds = await getWorkspaceUserIds(userId);
+    const collaboratorUserIds = await getVisibleMemberIds(userId);
     const allUserIds = [userId, ...collaboratorUserIds];
 
     // Canonical self-person per user (user_id === linked_user_id).

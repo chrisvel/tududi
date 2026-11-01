@@ -6,6 +6,7 @@ jest.mock('../../modules/landing/stats', () => {
 });
 
 const request = require('supertest');
+const { XMLValidator } = require('fast-xml-parser');
 const app = require('../../app');
 const { getConfig } = require('../../config/config');
 const { hostSwitch } = require('../../modules/landing/routes');
@@ -164,6 +165,90 @@ describe('Landing page', () => {
         expect(offsite.status).toBe(404);
     });
 
+    it('sends old shared links and app files to the app', async () => {
+        for (const p of [
+            '/task/abc',
+            '/project/abc-my-project',
+            '/public/notes/token123',
+            '/today/plan',
+            '/favicon.ico',
+            '/sw.js',
+            '/locales/en/translation.json',
+        ]) {
+            const res = await request(app).get(p).set('Host', 'tududi.com');
+            expect([p, res.status]).toEqual([p, 301]);
+            expect(res.headers.location).toBe(`https://app.tududi.com${p}`);
+        }
+    });
+
+    it('answers a path that is no page with a real 404', async () => {
+        for (const p of [
+            '/this-page-does-not-exist',
+            '/teams/x',
+            '/wp-login.php',
+        ]) {
+            const res = await request(app).get(p).set('Host', 'tududi.com');
+            expect([p, res.status]).toEqual([p, 404]);
+            expect(res.headers['x-robots-tag']).toBe('noindex');
+            expect(res.text).toContain(
+                '<meta name="robots" content="noindex">'
+            );
+            expect(res.text).toContain('data-testid="not-found"');
+            expect(res.text).not.toContain('<div id="root"');
+        }
+        const fr = await request(app)
+            .get('/nope')
+            .set('Host', 'tududi.com')
+            .set('Cookie', 'tududi_lang=fr');
+        expect(fr.status).toBe(404);
+        expect(fr.text).toContain('Page introuvable');
+    });
+
+    it('points /pricing and /features at their sections', async () => {
+        const pricing = await request(app)
+            .get('/pricing')
+            .set('Host', 'tududi.com');
+        expect(pricing.status).toBe(301);
+        expect(pricing.headers.location).toBe('/#pricing');
+        const features = await request(app)
+            .get('/features')
+            .set('Host', 'tududi.com');
+        expect(features.status).toBe(301);
+        expect(features.headers.location).toBe('/#features');
+    });
+
+    it('sends /blog to the blog host, keeping the post', async () => {
+        const blogUrl = config.landing.blogUrl;
+        config.landing.blogUrl = 'https://blog.tududi.com';
+        try {
+            const root = await request(app)
+                .get('/blog')
+                .set('Host', 'tududi.com');
+            expect(root.status).toBe(301);
+            expect(root.headers.location).toBe('https://blog.tududi.com/');
+            const post = await request(app)
+                .get('/blog/a-post?ref=x')
+                .set('Host', 'tududi.com');
+            expect(post.status).toBe(301);
+            expect(post.headers.location).toBe(
+                'https://blog.tududi.com/a-post?ref=x'
+            );
+        } finally {
+            config.landing.blogUrl = blogUrl;
+        }
+        // Without a blog host the app's own /blog answers.
+        config.landing.blogUrl = null;
+        try {
+            const res = await request(app)
+                .get('/blog')
+                .set('Host', 'tududi.com');
+            expect(res.status).toBe(301);
+            expect(res.headers.location).toBe('https://app.tududi.com/blog');
+        } finally {
+            config.landing.blogUrl = blogUrl;
+        }
+    });
+
     it('keeps the API reachable on a landing host', async () => {
         const res = await request(app)
             .get('/api/health')
@@ -192,6 +277,46 @@ describe('Landing page', () => {
         expect(res.status).toBe(200);
         expect(res.headers['content-type']).toMatch(/^text\/plain/);
         expect(res.text).toContain('User-agent: *');
+        expect(res.text).toContain('Sitemap: https://tududi.com/sitemap.xml');
+    });
+
+    it('serves a sitemap of every marketing page with hreflang alternates', async () => {
+        const res = await request(app)
+            .get('/sitemap.xml')
+            .set('Host', 'tududi.com');
+        expect(res.status).toBe(200);
+        expect(res.headers['content-type']).toMatch(/^application\/xml/);
+        expect(XMLValidator.validate(res.text)).toBe(true);
+
+        const locs = [...res.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+            (m) => m[1]
+        );
+        expect(locs).toEqual(
+            expect.arrayContaining([
+                'https://tududi.com/',
+                'https://tududi.com/de',
+                'https://tududi.com/cloud',
+                'https://tududi.com/de/cloud',
+                'https://tududi.com/contact',
+                'https://tududi.com/terms',
+                'https://tududi.com/privacy',
+                'https://tududi.com/refunds',
+            ])
+        );
+        // Home and cloud in every locale, plus contact and the legal pages.
+        expect(locs).toHaveLength(LOCALE_CODES.length * 2 + 4);
+        expect(new Set(locs).size).toBe(locs.length);
+        expect(res.text).toContain(
+            '<xhtml:link rel="alternate" hreflang="x-default" href="https://tududi.com/cloud"/>'
+        );
+
+        // Every listed page is one the landing host answers itself.
+        for (const loc of locs) {
+            const page = await request(app)
+                .get(new URL(loc).pathname)
+                .set('Host', 'tududi.com');
+            expect(page.status).toBe(200);
+        }
     });
 
     it('gives the landing and cloud pages a link preview card', async () => {
@@ -1066,5 +1191,73 @@ describe('Landing page', () => {
             expect(catalog.features.cards.planMyDay.title).toBeTruthy();
             expect(catalog.features.cards.dueDates).toBeUndefined();
         });
+    });
+});
+
+// The app host's robots answers only switch on with the marketing hosts, so
+// a self-hosted instance is never told to hide from search.
+describe('App host robots', () => {
+    const config = getConfig();
+    const original = { ...config.landing };
+
+    beforeAll(() => {
+        config.landing.hosts = ['tududi.com'];
+        config.landing.siteUrl = 'https://tududi.com';
+        config.landing.appUrl = 'https://app.tududi.com';
+    });
+
+    afterAll(() => {
+        Object.assign(config.landing, original);
+    });
+
+    it('serves a plain robots.txt that lets crawlers in to see noindex', async () => {
+        const res = await request(app)
+            .get('/robots.txt')
+            .set('Host', 'app.tududi.com');
+        expect(res.status).toBe(200);
+        expect(res.headers['content-type']).toMatch(/^text\/plain/);
+        expect(res.text).toBe('User-agent: *\nAllow: /\n');
+    });
+
+    it('marks app pages, public notes and the API noindex', async () => {
+        for (const path of [
+            '/',
+            '/today',
+            '/task/abc123',
+            '/public/notes/abc123',
+            '/api/v1/health',
+        ]) {
+            const res = await request(app)
+                .get(path)
+                .set('Host', 'app.tududi.com');
+            expect(res.headers['x-robots-tag']).toBe('noindex, nofollow');
+        }
+    });
+
+    it('leaves sign-in and sign-up indexable', async () => {
+        for (const path of ['/login', '/register', '/register/']) {
+            const res = await request(app)
+                .get(path)
+                .set('Host', 'app.tududi.com');
+            expect(res.headers['x-robots-tag']).toBeUndefined();
+        }
+    });
+
+    it('leaves the marketing host alone', async () => {
+        const res = await request(app).get('/').set('Host', 'tududi.com');
+        expect(res.status).toBe(200);
+        expect(res.headers['x-robots-tag']).toBeUndefined();
+    });
+
+    it('does nothing when no marketing host is configured', async () => {
+        config.landing.hosts = [];
+        try {
+            const res = await request(app)
+                .get('/today')
+                .set('Host', 'app.tududi.com');
+            expect(res.headers['x-robots-tag']).toBeUndefined();
+        } finally {
+            config.landing.hosts = ['tududi.com'];
+        }
     });
 });

@@ -13,7 +13,10 @@ const tagsController = {
      */
     async list(req, res, next) {
         try {
-            const tags = await tagsService.getAllForUser(req.currentUser.id);
+            const tags = await tagsService.getAllForUser(
+                req.currentUser.id,
+                req.query
+            );
             res.json(tags);
         } catch (error) {
             next(error);

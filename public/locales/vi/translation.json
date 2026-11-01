@@ -234,7 +234,8 @@
     "habit": "Thói quen",
     "assignedTo": "Giao cho",
     "subtasks": "Công việc con",
-    "openFullPage": "Mở chế độ xem đầy đủ"
+    "openFullPage": "Mở chế độ xem đầy đủ",
+    "openPanel": "Mở trong bảng bên"
   },
   "timeline": {
     "activityTimeline": "Dòng Thời Gian Hoạt Động",
@@ -1315,6 +1316,8 @@
     "recurringSetup": "Cài đặt lặp lại",
     "notRecurring": "Công việc này chưa lặp lại.",
     "clickToEditTitle": "Nhấp để chỉnh sửa tiêu đề",
+    "copyLink": "Sao chép liên kết công việc",
+    "linkCopied": "Đã sao chép liên kết",
     "clickToEditContent": "Nhấp để chỉnh sửa nội dung",
     "clickToAddContent": "Nhấp để thêm nội dung",
     "clickToEditSubtasks": "Nhấp để chỉnh sửa các công việc con",
@@ -1486,7 +1489,16 @@
     "historyDuration_other": "mất {{count}} ngày",
     "reopen": "Mở lại",
     "reopened": "\"{{name}}\" đã quay lại trạng thái đang thực hiện",
-    "loadError": "Không thể tải dự án"
+    "loadError": "Không thể tải dự án",
+    "unavailable": {
+      "noAccessTitle": "Bạn không có quyền truy cập dự án này",
+      "noAccessHint": "Hãy nhờ chủ sở hữu dự án chia sẻ với bạn.",
+      "notFoundTitle": "Dự án này không tồn tại hoặc đã bị xóa",
+      "notFoundHint": "Kiểm tra liên kết hoặc tìm dự án trong danh sách của bạn.",
+      "failedTitle": "Không thể tải chi tiết dự án.",
+      "failedHint": "Kiểm tra kết nối và tải lại trang.",
+      "backToProjects": "Quay lại Dự án"
+    }
   },
   "projectItem": {
     "edit": "Chỉnh sửa",
@@ -2114,7 +2126,16 @@
     "groupAlreadyShared": "đã được chia sẻ",
     "groupHint": "Mỗi thành viên nhận một lời mời, và những người được thêm vào nhóm sau này cũng được mời.",
     "sharedWithGroups": "Chia sẻ với các nhóm",
-    "groupCounts": "{{accepted}} đã chấp nhận, {{pending}} đang chờ"
+    "groupCounts": "{{accepted}} đã chấp nhận, {{pending}} đang chờ",
+    "leave": {
+      "action": "Rời khỏi",
+      "projectTitle": "Rời khỏi dự án",
+      "areaTitle": "Rời khỏi lĩnh vực",
+      "projectMessage": "Bạn sẽ không còn thấy \"{{name}}\" hay các công việc của nó, và các công việc đang mở của bạn ở đó sẽ không còn được giao cho bạn. Người đã chia sẻ sẽ được thông báo.",
+      "areaMessage": "Bạn sẽ không còn thấy \"{{name}}\" hay các dự án được chia sẻ cùng nó, và các công việc đang mở của bạn ở đó sẽ không còn được giao cho bạn. Người đã chia sẻ sẽ được thông báo.",
+      "left": "Bạn đã rời khỏi \"{{name}}\"",
+      "failed": "Không thể rời khỏi. Vui lòng thử lại."
+    }
   },
   "views": {
     "title": "Chế độ xem thông minh",
@@ -2646,6 +2667,10 @@
     "perSeatNote": "({{seats}} chỗ, tính cả bạn)",
     "membersNeedTeam": "Pro dành cho một người. Gói Nhóm cho phép bạn thêm thành viên, từ 3 chỗ trở lên.",
     "seatsFull": "Cả {{seats}} chỗ trong gói của bạn đều đang được dùng. Chuyển sang gói Nhóm lớn hơn để thêm người.",
+    "seatsFullTitle": "Mọi chỗ đều đã được dùng",
+    "seatsFullContact": "Cả {{seats}} chỗ trong gói của bạn đều đang được dùng. Hãy liên hệ với chúng tôi để thêm người.",
+    "seatsContactHint": "Gửi email tới {{email}} và chúng tôi sẽ thêm chỗ vào gói của bạn.",
+    "contactUs": "Liên hệ với chúng tôi",
     "changePlan": "Đổi gói",
     "planChanged": "Gói của bạn đã được đổi."
   },
@@ -2705,7 +2730,9 @@
     "upcoming": "Tuần này",
     "noDate": "Không có ngày",
     "nothing": "Hiện tại không có gì",
-    "empty": "Không có gì được chia sẻ hiện tại. Chia sẻ một khu vực, dự án hoặc mục tiêu, hoặc giao cho ai đó một công việc, để thấy nó ở đây."
+    "empty": "Không có gì được chia sẻ hiện tại. Chia sẻ một khu vực, dự án hoặc mục tiêu, hoặc giao cho ai đó một công việc, để thấy nó ở đây.",
+    "sortableColumn": "cột có thể sắp xếp",
+    "reorderFailed": "Không thể lưu thứ tự cột."
   },
   "people": {
     "addMember": "Thêm thành viên",
@@ -2714,6 +2741,8 @@
     "filterMembers": "Thành viên",
     "filterContacts": "Liên hệ",
     "member": "Thành viên",
+    "owner": "Chủ sở hữu",
+    "admin": "Quản trị viên",
     "memberNoSignIn": "Thành viên, chưa thể đăng nhập",
     "giveAccount": "Cấp tài khoản",
     "memberAdded": "Đã thêm thành viên",
@@ -2762,7 +2791,12 @@
     "removed": "Đã xóa thành viên",
     "updated": "Đã cập nhật thành viên",
     "invitationSent": "Đã gửi lời mời",
-    "failedToRemove": "Không xóa được thành viên"
+    "failedToRemove": "Không xóa được thành viên",
+    "openTasksCount": "Công việc đang mở được giao cho {{name}}: {{count}}",
+    "handTo": "Giao công việc của họ cho",
+    "handToYou": "{{name}} (bạn)",
+    "leaveUnassigned": "Không ai, để chưa giao",
+    "handToHint": "Người đó nhận một thông báo kèm số lượng công việc. Công việc đã xong giữ nguyên."
   },
   "signInLink": {
     "action": "Liên kết đăng nhập",

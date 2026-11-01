@@ -535,5 +535,10 @@
       }
     },
     "turn": "Skriv det én gang. Giv det en plads. Lad det forlade dit hoved."
+  },
+  "notFound": {
+    "title": "Siden blev ikke fundet",
+    "lede": "Der er intet på denne adresse. Den kan være flyttet, eller linket kan indeholde en stavefejl.",
+    "home": "Tilbage til tududi"
   }
 }
