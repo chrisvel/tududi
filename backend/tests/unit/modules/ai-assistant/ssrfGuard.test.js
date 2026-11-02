@@ -88,7 +88,7 @@ describe('AI Assistant - SSRF guard on user-configured base URL', () => {
         process.env.LLM_API_KEY = 'env-key';
         process.env.LLM_BASE_URL = 'http://localhost:11434/v1';
         mockCreate.mockResolvedValue({
-            choices: [{ message: { content: '{}' } }],
+            choices: [{ message: { content: '{"insight":"ok"}' } }],
             model: 'test-model',
             usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
         });

@@ -139,7 +139,9 @@ function sanitizeDraft({ proposed, pool, existing, events, now, hours }) {
 
     for (const entry of Array.isArray(proposed) ? proposed : []) {
         if (accepted.length >= MAX_DRAFT_ITEMS) break;
-        const uid = entry?.task_uid;
+        // The candidate list itself uses `uid`, so models without schema
+        // support often echo that name back.
+        const uid = entry?.task_uid ?? entry?.uid;
         const task = uid ? pool.get(uid) : null;
         if (!task || seen.has(uid)) continue;
         seen.add(uid);
@@ -314,6 +316,9 @@ async function draftDay(userId, { date, mode = 'fill' } = {}) {
         schema: DRAFT_SCHEMA,
         system: `You plan one person's day in Tududi. Pick a realistic set of tasks for the free time and place them.
 
+Return a JSON object with exactly this shape:
+{"summary": "...", "items": [{"task_uid": "...", "start_minute": 540, "duration_minutes": 30, "reason": "..."}], "skipped": [{"task_uid": "...", "reason": "..."}]}
+
 Rules:
 - Only use task_uid values from the candidate list.
 - start_minute is minutes after midnight on the 15-minute grid, inside a free gap and not before the current time; use null for a task that should be done today but has no good slot.
@@ -327,17 +332,26 @@ Rules:
         user: context,
     });
 
+    const proposed = Array.isArray(parsed.items) ? parsed.items : parsed.tasks;
+    if (!Array.isArray(proposed)) throw ai.unusableResponseError();
+
     const items = sanitizeDraft({
-        proposed: parsed.items,
+        proposed,
         pool,
         existing,
         events,
         now,
         hours,
     }).map((item) => ({ ...item, task: pool.get(item.task_uid) }));
+    // The model proposed tasks but none of them are ours: report that
+    // rather than telling the user there was nothing to plan.
+    if (proposed.length > 0 && items.length === 0) {
+        throw ai.unusableResponseError();
+    }
 
     const skipped = (Array.isArray(parsed.skipped) ? parsed.skipped : [])
-        .filter((s) => s && pool.has(s.task_uid))
+        .map((s) => ({ ...s, task_uid: s?.task_uid ?? s?.uid }))
+        .filter((s) => pool.has(s.task_uid))
         .slice(0, 5)
         .map((s) => ({
             task_uid: s.task_uid,

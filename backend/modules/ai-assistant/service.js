@@ -175,6 +175,16 @@ function extractMessageContent(message) {
     }
 }
 
+// Without json_schema support a model can answer valid JSON in a shape of
+// its own. Callers raise this instead of saving or showing an empty result.
+function unusableResponseError() {
+    return new AppError(
+        'The AI model did not answer in the expected format. Try again or use a different model.',
+        502,
+        'AI_INVALID_RESPONSE'
+    );
+}
+
 // strict: true is required by Anthropic's OpenAI-compatible endpoint (it
 // rejects strict: false with a 400) and is also OpenAI's recommended mode
 // for schema-following output. It does mean every schema below must be
@@ -231,8 +241,8 @@ function swapToMaxCompletionTokens(params) {
     return { ...rest, max_completion_tokens: value };
 }
 
-// A single request can hit both fallbacks (drop response_format and swap
-// max_tokens), so retry in a loop and apply each fallback at most once.
+// A single request can hit several fallbacks (step response_format down and
+// swap max_tokens), so retry in a loop and apply each fallback at most once.
 async function callWithFallback(client, userId, params) {
     let attempt = { ...params };
     let triedFormatFallback = false;
@@ -247,6 +257,19 @@ async function callWithFallback(client, userId, params) {
             if (!triedMaxTokensFallback && isMaxTokensRejection(err)) {
                 triedMaxTokensFallback = true;
                 attempt = swapToMaxCompletionTokens(attempt);
+                continue;
+            }
+            // Providers without json_schema support (e.g. DeepSeek) still
+            // accept plain JSON mode, so step down to json_object first and
+            // only drop response_format if that is rejected too.
+            if (
+                attempt.response_format?.type === 'json_schema' &&
+                isResponseFormatRejection(err)
+            ) {
+                attempt = {
+                    ...attempt,
+                    response_format: { type: 'json_object' },
+                };
                 continue;
             }
             if (!triedFormatFallback && isResponseFormatRejection(err)) {
@@ -800,6 +823,9 @@ Rules:
     } catch {
         parsed = {};
     }
+    if (typeof parsed.insight !== 'string' || !parsed.insight.trim()) {
+        throw unusableResponseError();
+    }
 
     const rawLinks = Array.isArray(parsed.links) ? parsed.links : [];
     const links = rawLinks
@@ -943,6 +969,9 @@ Rules:
     } catch {
         parsed = {};
     }
+    if (typeof parsed.insight !== 'string' || !parsed.insight.trim()) {
+        throw unusableResponseError();
+    }
 
     const result = {
         insight: parsed.insight || '',
@@ -977,6 +1006,7 @@ module.exports = {
     buildResponseFormat,
     extractMessageContent,
     extractJSON,
+    unusableResponseError,
     generateDailyBrief,
     getCachedBrief,
     generateTaskInsights,

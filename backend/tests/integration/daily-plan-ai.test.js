@@ -112,6 +112,67 @@ describe('Daily plan AI routes', () => {
         expect(await DailyPlan.count()).toBe(0);
     });
 
+    it('accepts the field names a model picks without json_schema', async () => {
+        const a = await dueToday('Pay invoice', { estimated_minutes: 15 });
+        mockCreate.mockResolvedValue(
+            reply({
+                summary: 'Light day',
+                tasks: [
+                    {
+                        uid: a.uid,
+                        start_minute: null,
+                        duration_minutes: 15,
+                        reason: 'Due today',
+                    },
+                ],
+                skipped: [],
+            })
+        );
+
+        const res = await agent
+            .post('/api/daily-plan/ai/draft')
+            .send({ mode: 'fill' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.items).toHaveLength(1);
+        expect(res.body.items[0]).toMatchObject({
+            task_uid: a.uid,
+            reason: 'Due today',
+        });
+        const system = mockCreate.mock.calls[0][0].messages[0].content;
+        expect(system).toContain('"items"');
+        expect(system).toContain('"task_uid"');
+    });
+
+    it.each([
+        ['has no list of items', { summary: 'Busy day', plan: [] }],
+        [
+            'proposes only unknown tasks',
+            {
+                summary: 'Busy day',
+                items: [
+                    {
+                        task_uid: 'made-up',
+                        start_minute: 600,
+                        duration_minutes: 30,
+                        reason: 'x',
+                    },
+                ],
+                skipped: [],
+            },
+        ],
+    ])('answers with an error when the reply %s', async (_label, content) => {
+        await dueToday('Pay invoice');
+        mockCreate.mockResolvedValue(reply(content));
+
+        const res = await agent
+            .post('/api/daily-plan/ai/draft')
+            .send({ mode: 'fill' });
+
+        expect(res.status).toBe(502);
+        expect(res.body.code).toBe('AI_INVALID_RESPONSE');
+    });
+
     describe('calendar events in the draft', () => {
         const busy = {
             date: '2026-09-24',
