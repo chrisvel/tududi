@@ -24,7 +24,6 @@ const {
 const path = require('path');
 const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
-const { withForeignKeyChecksDisabled } = require('../../utils/db-dialect');
 
 const config = getConfig();
 
@@ -254,22 +253,12 @@ class ProjectsRepository extends BaseRepository {
      */
     async deleteWithOrphaning(project, userId) {
         await sequelize.transaction(async (transaction) => {
-            await withForeignKeyChecksDisabled(
-                sequelize,
-                async () => {
-                    try {
-                        await this.deleteProjectContents(
-                            project,
-                            userId,
-                            transaction
-                        );
-                    } catch (error) {
-                        logError('Error deleting project:', error);
-                        throw error;
-                    }
-                },
-                { transaction }
-            );
+            try {
+                await this.deleteProjectContents(project, userId, transaction);
+            } catch (error) {
+                logError('Error deleting project:', error);
+                throw error;
+            }
         });
     }
 

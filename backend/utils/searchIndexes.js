@@ -1,12 +1,11 @@
 'use strict';
 
-// Search runs LOWER(column) LIKE '%term%'. On PostgreSQL a trigram GIN
-// index over the same expression turns that from a sequential scan into an
-// index lookup. SQLite has no equivalent, so this is a no-op there.
+// Search runs LOWER(column) LIKE '%term%'. A trigram GIN index over the
+// same expression turns that from a sequential scan into an index lookup.
 //
 // Called from the migration (existing databases) and from db-prepare
-// (fresh PostgreSQL databases, whose schema comes from sync() and never
-// replays the migrations).
+// (fresh databases, whose schema comes from sync() and never replays the
+// migrations).
 
 const SEARCH_INDEXES = [
     ['tasks', 'name', 'tasks_name_trgm'],
@@ -26,8 +25,6 @@ async function tableExists(sequelize, table) {
 }
 
 async function ensureSearchIndexes(sequelize) {
-    if (sequelize.getDialect() !== 'postgres') return [];
-
     const created = [];
     await sequelize.query('CREATE EXTENSION IF NOT EXISTS pg_trgm');
 
@@ -52,7 +49,6 @@ async function ensureSearchIndexes(sequelize) {
 }
 
 async function dropSearchIndexes(sequelize) {
-    if (sequelize.getDialect() !== 'postgres') return;
     for (const [, , name] of SEARCH_INDEXES) {
         await sequelize.query(`DROP INDEX IF EXISTS "${name}"`);
     }

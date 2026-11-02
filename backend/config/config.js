@@ -74,6 +74,7 @@ function parseJsonEnv(value) {
 }
 
 const { resolveDatabaseSettings } = require('./database-settings');
+const { guardAgainstLeftoverSqlite } = require('./legacySqlite');
 
 const emailConfig = {
     enabled: process.env.ENABLE_EMAIL === 'true',
@@ -133,9 +134,13 @@ const config = {
               'http://127.0.0.1:9292',
           ],
 
-    dbFile:
-        process.env.DB_FILE ||
+    // Where a 1.x install kept its SQLite file. Only read by the upgrade
+    // guard, which refuses to start while that file still holds data.
+    legacySqliteFiles: [
+        process.env.DB_FILE,
+        '/app/db/production.sqlite3',
         path.join(projectRootPath, 'db', `${environment}.sqlite3`),
+    ].filter(Boolean),
 
     disableScheduler: process.env.DISABLE_SCHEDULER === 'true',
 
@@ -526,27 +531,22 @@ const config = {
     },
 };
 
-config.db = resolveDatabaseSettings(process.env, config.dbFile);
-
-if (config.db.dialect === 'sqlite') {
-    console.log(`Using database file '${config.dbFile}'`);
-} else {
-    console.log(
-        `Using PostgreSQL database '${config.db.database}' at ${config.db.host}:${config.db.port}`
-    );
+try {
+    config.db = resolveDatabaseSettings(process.env);
+} catch (error) {
+    // A 1.x install upgraded without DATABASE_URL lands here: name the
+    // SQLite file and the move guide rather than only the missing variable.
+    guardAgainstLeftoverSqlite(config.legacySqliteFiles);
+    console.error(`❌ ${error.message}`);
+    process.exit(1);
 }
 
-function setConfig({ dbFile } = {}) {
-    if (dbFile != null) {
-        config.dbFile = dbFile;
-        if (config.db.dialect === 'sqlite') {
-            config.db.storage = dbFile;
-        }
-    }
-}
+console.log(
+    `Using PostgreSQL database '${config.db.database}' at ${config.db.host}:${config.db.port}`
+);
 
 function getConfig() {
     return config;
 }
 
-module.exports = { setConfig, getConfig };
+module.exports = { getConfig };

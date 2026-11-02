@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
 const { getConfig } = require('../config/config');
 const { sequelize } = require('../models');
 
@@ -13,13 +11,7 @@ const { sequelize } = require('../models');
 const config = getConfig();
 
 console.log('🔄 Starting database reset and seed...\n');
-console.log(
-    `📁 Database: ${
-        config.db.dialect === 'sqlite'
-            ? config.dbFile
-            : `${config.db.dialect} ${config.db.database}@${config.db.host}`
-    }`
-);
+console.log(`📁 Database: ${config.db.database}@${config.db.host}`);
 console.log(`🌍 Environment: ${config.environment}\n`);
 
 if (config.environment === 'production') {
@@ -33,17 +25,8 @@ async function main() {
     try {
         // Step 1: Delete existing database
         console.log('1️⃣  Removing existing database...');
-        if (config.db.dialect === 'sqlite') {
-            if (fs.existsSync(config.dbFile)) {
-                fs.unlinkSync(config.dbFile);
-                console.log('   ✅ Database removed\n');
-            } else {
-                console.log('   ℹ️  No existing database found\n');
-            }
-        } else {
-            await sequelize.drop({ cascade: true });
-            console.log('   ✅ All tables dropped\n');
-        }
+        await sequelize.drop({ cascade: true });
+        console.log('   ✅ All tables dropped\n');
 
         // Step 2: Reset database using sequelize.sync
         console.log('2️⃣  Creating fresh database...');

@@ -2,11 +2,11 @@
 
 const path = require('path');
 const { seedDatabase } = require('../seeders/dev-seeder');
-const { setConfig, getConfig } = require('../config/config');
+const { getConfig } = require('../config/config');
 const config = getConfig();
 
 console.log('🌱 Starting development data seeding...');
-console.log(`📁 Database: ${config.dbFile}`);
+console.log(`📁 Database: ${config.db.database}`);
 console.log(`🌍 Environment: ${config.environment}`);
 
 seedDatabase();

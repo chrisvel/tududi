@@ -429,8 +429,8 @@ async function consumeUsage(userId, metric, n = 1) {
         throw new PlanLimitError(metric, limit, row.count, ent.plan);
     }
 
-    // increment() mutates the instance on PostgreSQL but not on SQLite, so
-    // re-read rather than add locally.
+    // Re-read after increment() rather than add locally, so the count
+    // includes concurrent increments.
     await row.increment('count', { by: n });
     await row.reload();
     return row.count;

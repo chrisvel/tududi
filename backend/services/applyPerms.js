@@ -11,7 +11,7 @@ async function applyPerms(tx, changes) {
     const upserts = changes.upserts || [];
     const deletes = changes.deletes || [];
 
-    // Upserts: for SQLite we can emulate ON CONFLICT with find+create/update in tx
+    // Upserts: find+create/update inside the transaction
     for (const u of upserts) {
         const where = {
             user_id: u.userId,

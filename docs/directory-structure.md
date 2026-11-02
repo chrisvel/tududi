@@ -172,9 +172,8 @@ tududi/                      # Repository root
 │   ├── billing_account.js, billing_event.js, usage_counter.js, waitlist_subscriber.js  # Hosted mode
 │   └── rate_limit.js    # Rate limit store
 │
-├── migrations/           # Database migrations (130+ files)
-│   ├── 20250615000001-create-users.js
-│   └── ... (timestamped migration files)
+├── migrations/           # Database migrations added since 2.0 (timestamped files)
+│   └── archive/          # The 1.x migrations, kept for reference, never run
 │
 ├── seeders/             # Development seed data
 │   ├── dev-seeder.js
@@ -219,7 +218,7 @@ tududi/                      # Repository root
 │   ├── timezone-utils.js # Timezone conversions, date calculations
 │   ├── attachment-utils.js # File handling and validation
 │   ├── migration-utils.js  # Database migration helpers (dialect-aware)
-│   ├── db-dialect.js       # The only place app code branches on SQLite vs PostgreSQL
+│   ├── db-dialect.js       # ciLike() and truncateTables() helpers
 │   ├── request-utils.js    # Request utilities
 │   └── notificationPreferences.js
 │
@@ -235,16 +234,16 @@ tududi/                      # Repository root
 │       └── (swagger doc files)
 │
 ├── scripts/             # Utility scripts
-│   ├── db-prepare.js   # Runs on every start: connect, create schema on empty DB, baseline on PostgreSQL
+│   ├── db-prepare.js   # Runs on every start: connect, SQLite and 1.x checks, create schema + baseline on empty DB
 │   ├── db-migrate.js   # Umzug-based migration runner (npm run db:migrate)
 │   ├── db-status.js    # Connection and table statistics
-│   ├── db-init.js / db-reset.js / db-sync.js / reset-and-seed.js
+│   ├── db-init.js / db-reset.js / reset-and-seed.js
 │   ├── user-create.js  # Create or update a user (used by cmd/start.sh)
-│   └── migration-create.js # Scaffold a dialect-safe migration
+│   └── migration-create.js # Scaffold a migration
 │
 └── tests/               # Backend tests
     ├── helpers/
-    │   ├── setup.js        # Per-file database isolation (SQLite file or per-worker PostgreSQL DB)
+    │   ├── setup.js        # Per-file database isolation (per-worker PostgreSQL DB)
     │   ├── globalSetup.js  # Creates the per-worker PostgreSQL databases
     │   ├── test-db.js      # Test database naming
     │   └── testUtils.js    # createTestUser, authenticateUser
@@ -275,8 +274,6 @@ tududi/                      # Repository root
     │   ├── comments.test.js
     │   ├── mcp/        # MCP tool tests
     │   └── ...
-    ├── upgrade/        # Legacy database upgrade suite
-    └── fixtures/legacy # SQLite files produced by older releases
 ```
 
 ---

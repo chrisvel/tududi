@@ -11,6 +11,7 @@
 - **Node.js** v22+ (recommended - check package.json engines field)
 - **npm** (comes with Node.js)
 - **Git**
+- **PostgreSQL** 14+ (the dev compose file runs one in Docker, see below)
 
 ### Clone and Install
 
@@ -24,16 +25,28 @@ cd tududi
 npm install
 ```
 
+### Start PostgreSQL
+
+```bash
+# A local postgres:16-alpine on :5432 (user/password tududi, database tududi_dev)
+docker compose -f docker-compose.dev.yml up -d db
+```
+
+If something else already listens on 5432, start it with `DEV_DB_PORT=5433 docker compose -f docker-compose.dev.yml up -d db` and use that port below. Any PostgreSQL 14+ works. Point `backend/.env` at it:
+
+```bash
+DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_dev
+```
+
 ### Initialize Database
 
 ```bash
-# Create database and run all migrations
+# Create the schema in the database DATABASE_URL points at
 npm run db:init
 
 # This command:
-# 1. Creates backend/db/development.sqlite3 (or uses DATABASE_URL for PostgreSQL)
-# 2. Runs all migrations from /backend/migrations/
-# 3. Sets up tables and relationships
+# 1. Connects to DATABASE_URL (it must exist; it may be empty)
+# 2. Creates every table, index and relationship from the models
 ```
 
 ### Create Test User (Optional)
@@ -112,9 +125,8 @@ TUDUDI_USER_PASSWORD=your-secure-password
 
 # Optional - Server config
 NODE_ENV=development
-DB_FILE=db/development.sqlite3
-# Or develop against PostgreSQL instead of the SQLite file (see docs/16-postgresql.md):
-# DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_dev
+# Required: the database (see docs/16-postgresql.md)
+DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_dev
 FRONTEND_URL=http://localhost:8080
 BACKEND_URL=http://localhost:3002
 PORT=3002
@@ -411,7 +423,7 @@ git commit -m "Add estimated_time field to tasks
 
 ## Database Management
 
-All commands honour `DB_FILE` (SQLite) or `DATABASE_URL` (PostgreSQL) from `backend/.env`.
+All commands use `DATABASE_URL` from `backend/.env`.
 
 ```bash
 # Verify the connection and create the schema if the database is empty
@@ -577,18 +589,18 @@ kill -9 $(lsof -ti:3002)
 PORT=3003 npm run backend:dev
 ```
 
-### Database Locked (SQLite only)
+### Starting Over With an Empty Database
 
 ```bash
-# Stop all servers
-# Delete database file
-rm backend/db/development.sqlite3
-
-# Reinitialize
-npm run db:init
+# Stop all servers, then wipe and recreate the schema
+npm run db:reset
 ```
 
-PostgreSQL has no equivalent lock problem. To start over there, drop and recreate the database (`dropdb`/`createdb`) and run `npm run db:prepare`.
+Or drop and recreate the database (`dropdb`/`createdb`) and run `npm run db:prepare`.
+
+### Cannot Connect to the Database
+
+`ECONNREFUSED` on start means PostgreSQL is not running or `DATABASE_URL` points at the wrong host or port. Start it with `docker compose -f docker-compose.dev.yml up -d db`.
 
 ### Module Not Found
 

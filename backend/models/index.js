@@ -1,57 +1,9 @@
 const { Sequelize } = require('sequelize');
-const { getConfig } = require('../config/config');
 const { buildSequelizeOptions } = require('../config/db');
-const config = getConfig();
 
 const dbConfig = buildSequelizeOptions();
 
 const sequelize = new Sequelize(dbConfig);
-
-// SQLite performance optimizations for slow I/O systems (e.g., Synology NAS with HDDs)
-if (dbConfig.dialect === 'sqlite') {
-    // Per-connection PRAGMAs via afterConnect, which runs inside _connect() before
-    // the connection is returned to the pool. This guarantees busy_timeout is set
-    // on every connection before first use, preventing SQLITE_BUSY errors when
-    // startup scripts race against an async IIFE that might not yet have run.
-    sequelize.afterConnect(async (connection) => {
-        await new Promise((resolve, reject) => {
-            connection.exec(
-                [
-                    // Relaxed sync: faster writes with minimal durability risk for single-user app
-                    'PRAGMA synchronous=NORMAL;',
-                    // 5 second busy timeout: prevents "database is locked" errors under load
-                    'PRAGMA busy_timeout=5000;',
-                    // 64MB cache: keeps more data in memory, reduces disk reads
-                    'PRAGMA cache_size=-64000;',
-                    // Store temp tables in memory instead of disk
-                    'PRAGMA temp_store=MEMORY;',
-                    // Enable memory-mapped I/O (256MB): faster reads on large databases
-                    'PRAGMA mmap_size=268435456;',
-                    // Checkpoint WAL every 200 frames instead of the 1000-frame default.
-                    // Keeps the WAL file smaller so reads traverse fewer frames on slow disks.
-                    'PRAGMA wal_autocheckpoint=200;',
-                ].join('\n'),
-                (err) => {
-                    if (err) reject(err);
-                    else resolve();
-                }
-            );
-        });
-    });
-
-    // WAL mode persists in the DB file — set it once on startup.
-    // afterConnect ensures busy_timeout is already applied on the connection used here.
-    (async () => {
-        try {
-            await sequelize.query('PRAGMA journal_mode=WAL;');
-            if (config.environment === 'development') {
-                console.log('SQLite performance optimizations enabled');
-            }
-        } catch (err) {
-            console.error('Failed to set SQLite PRAGMAs:', err.message);
-        }
-    })();
-}
 
 const User = require('./user')(sequelize);
 const Area = require('./area')(sequelize);
@@ -545,7 +497,7 @@ Person.belongsTo(User, { foreignKey: 'linked_user_id', as: 'LinkedUser' });
 // Runs a non-fatal hook body inside a savepoint on the caller's transaction
 // (or a fresh transaction when there is none). A failure inside is logged and
 // swallowed without poisoning the outer transaction: PostgreSQL refuses every
-// later statement in a transaction that hit an error, unlike SQLite.
+// later statement in a transaction that hit an error.
 async function runNonFatalHook(parentTransaction, description, body) {
     try {
         await sequelize.transaction(
@@ -660,7 +612,7 @@ User.addHook('afterCreate', async (user, options) => {
     // Non-fatal: system tags can be seeded via migration if this fails.
     // The parent transaction is reused so Tag.findOrCreate doesn't open a
     // nested transaction while User.findOrCreate's transaction is still
-    // active, which causes SQLITE_BUSY on first-time database initialization.
+    // active.
     await runNonFatalHook(
         options.transaction,
         `Failed to seed system tags for user ${user.id}`,

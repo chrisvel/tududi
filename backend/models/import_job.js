@@ -1,8 +1,8 @@
 const { DataTypes } = require('sequelize');
 const { uid } = require('../utils/uid');
 
-// Parses a TEXT column holding JSON. Stored as TEXT rather than JSON so the
-// value reads back the same on SQLite and PostgreSQL.
+// Parses a TEXT column holding JSON. Stored as TEXT so the value reads back
+// exactly as written.
 function jsonText(field) {
     return {
         type: DataTypes.TEXT,

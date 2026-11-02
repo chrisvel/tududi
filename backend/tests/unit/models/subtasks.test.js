@@ -68,7 +68,6 @@ describe('Task Model - Subtasks', () => {
                 priority: Task.PRIORITY.MEDIUM,
             });
 
-            // SQLite leaves the unset column undefined, PostgreSQL returns null
             expect(task.parent_task_id ?? null).toBeNull();
         });
     });

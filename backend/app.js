@@ -14,7 +14,7 @@ const {
 } = require('./modules/telegram/telegramInitializer');
 const taskScheduler = require('./modules/tasks/taskScheduler');
 const { initializeEmailService } = require('./services/emailService');
-const { setConfig, getConfig } = require('./config/config');
+const { getConfig } = require('./config/config');
 const config = getConfig();
 const distIndexPath = path.join(__dirname, 'dist', 'index.html');
 const serveFromDist = config.production || fs.existsSync(distIndexPath);
@@ -683,9 +683,8 @@ async function startServer() {
             console.error('Server error:', err);
         });
 
-        // Close the database on docker stop / Ctrl-C. SQLite then folds its
-        // -wal file back into the main file, so the next start-up backup
-        // and any copy of the file hold every write.
+        // Close the database on docker stop / Ctrl-C so in-flight queries
+        // finish and connections are returned cleanly.
         let shuttingDown = false;
         const shutdown = (signal) => {
             if (shuttingDown) return;

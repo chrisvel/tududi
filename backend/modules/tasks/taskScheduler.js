@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const { User } = require('../../models');
 const TaskSummaryService = require('./taskSummaryService');
-const { setConfig, getConfig } = require('../../config/config');
+const { getConfig } = require('../../config/config');
 const config = getConfig();
 
 const createSchedulerState = () => ({

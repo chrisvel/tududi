@@ -1466,7 +1466,7 @@ Every MCP tool query includes `user_id` filtering:
                                             │
                                     ┌───────┴───────┐
                                     │   Tududi DB    │
-                                    │ (SQLite/PG)    │
+                                    │ (PostgreSQL)   │
                                     └───────────────┘
 ```
 

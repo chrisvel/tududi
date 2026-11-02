@@ -88,7 +88,7 @@ Access is re-checked first: anyone who still reaches the project through ownersh
 | `group_shares` | One grant of a resource to a group, unique on `(group_id, resource_type, resource_uid)` |
 | `group_permissions` | The per-member rows a grant produces, with the same meaning as `permissions` plus a non-null `group_share_id` |
 
-Group access is materialized per member into its own table rather than into `permissions`. On SQLite `permissions` is unique on `(user_id, resource_type, resource_uid)`, so a direct share and a group grant on the same item could not both exist there, and `applyPerms` deliberately merges sources into one row. Keeping them apart means revoking one source cannot remove the other.
+Group access is materialized per member into its own table rather than into `permissions`. On installs that came through the 1.x migrations `permissions` is unique on `(user_id, resource_type, resource_uid)`, so a direct share and a group grant on the same item could not both exist there, and `applyPerms` deliberately merges sources into one row. Keeping them apart means revoking one source cannot remove the other.
 
 A group grant on a project writes one `direct` row for the project and `inherited` rows for its tasks and notes. Area and goal grants also write `inherited` rows for the projects underneath.
 
