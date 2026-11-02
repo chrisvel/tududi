@@ -550,7 +550,6 @@ Rules:
     });
 
     const raw = extractMessageContent(response.choices[0]?.message);
-    console.log('[AI Assistant] raw response:', raw);
     let parsed;
     try {
         parsed = JSON.parse(extractJSON(raw));
@@ -562,7 +561,6 @@ Rules:
             watch_out: [],
         };
     }
-    console.log('[AI Assistant] parsed:', JSON.stringify(parsed));
 
     const { taskMap, projectMap } = buildEntityMaps(context);
     const rawActions = Array.isArray(parsed.priority_actions)
