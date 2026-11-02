@@ -135,6 +135,86 @@ describe.each(fixtures)('upgrade from $name', (fixture) => {
         }
     });
 
+    // SQLite gives a column an affinity from its declared type; only a type
+    // containing CHAR, CLOB or TEXT gets TEXT affinity, and only a column with
+    // TEXT affinity keeps a numeric-looking uid exactly as it was sent.
+    // https://sqlite.org/datatype3.html#affname
+    const hasTextAffinity = (declared) =>
+        /CHAR|CLOB|TEXT/i.test(declared || '');
+
+    it('gives every uid column text affinity', async () => {
+        const uidColumns = [];
+        for (const table of await inspect.tableNames(temp.file)) {
+            const columns = await inspect.query(
+                temp.file,
+                `PRAGMA table_info("${table}")`
+            );
+            const uid = columns.find((column) => column.name === 'uid');
+            if (uid) uidColumns.push({ table, declared: uid.type });
+        }
+
+        // The four tables 20250805000001 rebuilt are the reason this test
+        // exists; if they stop being declared STRING the repair stops being
+        // exercised and the assertion below would pass for the wrong reason.
+        expect(uidColumns.map((column) => column.table)).toEqual(
+            expect.arrayContaining(['areas', 'notes', 'projects', 'tasks'])
+        );
+
+        for (const { table, declared } of uidColumns) {
+            expect({ table, text: hasTextAffinity(declared) }).toEqual({
+                table,
+                text: true,
+            });
+        }
+    });
+
+    it('keeps uid unique and populated on every table it rebuilt', async () => {
+        for (const table of ['areas', 'notes', 'projects', 'tasks']) {
+            const [counts] = await inspect.query(
+                temp.file,
+                `SELECT COUNT(*) AS rows, COUNT(DISTINCT uid) AS distinct_uids,
+                        COALESCE(SUM(uid IS NULL), 0) AS null_uids
+                   FROM "${table}"`
+            );
+            expect({ table, ...counts }).toEqual({
+                table,
+                rows: counts.distinct_uids,
+                distinct_uids: counts.distinct_uids,
+                null_uids: 0,
+            });
+        }
+    });
+
+    it('keeps a unique constraint on uid after the rebuild', async () => {
+        // The rebuild recreates the table, so its indexes are dropped and
+        // only the ones it knows how to restore come back. Uniqueness of the
+        // uid column is therefore asked of SQLite directly: a UNIQUE column
+        // constraint appears in index_list as an auto index with origin 'c',
+        // and a unique index as origin 'u'.
+        for (const table of ['areas', 'notes', 'projects', 'tasks']) {
+            const indexList = await inspect.query(
+                temp.file,
+                `PRAGMA index_list("${table}")`
+            );
+
+            let uidIsUnique = false;
+            for (const index of indexList.filter((entry) => entry.unique)) {
+                const columns = await inspect.query(
+                    temp.file,
+                    `PRAGMA index_info("${index.name}")`
+                );
+                if (columns.length === 1 && columns[0].name === 'uid') {
+                    uidIsUnique = true;
+                }
+            }
+
+            expect({ table, uidIsUnique }).toEqual({
+                table,
+                uidIsUnique: true,
+            });
+        }
+    });
+
     it('is idempotent on a second boot', async () => {
         const afterFirst = await inspect.snapshot(temp.file);
         const second = await runBootstrap(temp.file);

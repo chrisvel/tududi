@@ -185,24 +185,42 @@ async function safeRemoveColumn(queryInterface, tableName, columnName) {
     }
 }
 
+// Sequelize hands its data types out as classes: DataTypes.STRING.key and
+// String(DataTypes.STRING) are both the bare name "STRING". A column declared
+// that way gets NUMERIC affinity in SQLite, which stores a numeric-looking
+// value as an integer - a CalDAV uid of 4240044138289854915 came back from the
+// driver as 4240044138289855000, past 2^53, and the task it belonged to could
+// not be opened, edited or completed. Instantiate the type so it renders as SQL
+// (VARCHAR(255), TEXT, INTEGER).
 function resolveDataType(definition) {
     if (!definition || !definition.type) {
         throw new Error('Column definition.type is required');
     }
 
-    if (typeof definition.type.toSql === 'function') {
-        return definition.type.toSql();
+    const { type } = definition;
+
+    if (typeof type === 'string') {
+        return type;
     }
 
-    if (typeof definition.type === 'string') {
-        return definition.type;
+    let dataType = type;
+    if (typeof type === 'function') {
+        try {
+            dataType = new type();
+        } catch (error) {
+            dataType = type;
+        }
     }
 
-    if (definition.type.key) {
-        return definition.type.key;
+    if (dataType && typeof dataType.toSql === 'function') {
+        return dataType.toSql();
     }
 
-    return definition.type.toString();
+    if (type.key) {
+        return type.key;
+    }
+
+    return String(dataType);
 }
 
 function buildDefinitionFromInfo(columnName, info, overrideDefinition = null) {
