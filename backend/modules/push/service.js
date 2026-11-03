@@ -16,17 +16,42 @@ const clip = (value, max) =>
         ? `${value.slice(0, max - 1)}…`
         : value;
 
+// Browsers only hand out endpoints on their vendor's push service. Anything
+// else would let a caller make the server POST to a host of their choosing,
+// such as an address on the internal network.
+const PUSH_SERVICE_HOSTS = [
+    'fcm.googleapis.com',
+    'android.googleapis.com',
+    'push.services.mozilla.com',
+    'push.apple.com',
+    'notify.windows.com',
+];
+
+function isPushServiceEndpoint(endpoint) {
+    let parsed;
+    try {
+        parsed = new URL(endpoint);
+    } catch {
+        return false;
+    }
+    if (parsed.protocol !== 'https:' || parsed.port !== '') return false;
+    if (parsed.username || parsed.password) return false;
+    const host = parsed.hostname.toLowerCase();
+    return PUSH_SERVICE_HOSTS.some(
+        (allowed) => host === allowed || host.endsWith(`.${allowed}`)
+    );
+}
+
 function parseSubscription(body) {
     const endpoint = body?.endpoint;
     const p256dh = body?.keys?.p256dh;
     const auth = body?.keys?.auth;
 
-    // Push services are always https; anything else would make the server
-    // send requests to an address of the caller's choosing.
     if (
         typeof endpoint !== 'string' ||
         endpoint.length > 2048 ||
-        !/^https:\/\/[^\s]+$/.test(endpoint)
+        !/^https:\/\/[^\s]+$/.test(endpoint) ||
+        !isPushServiceEndpoint(endpoint)
     ) {
         throw new ValidationError('Invalid push endpoint');
     }
@@ -134,7 +159,16 @@ class PushService {
     // number of devices the push service accepted.
     async sendToUser(userId, { title, body, url, tag }) {
         try {
-            const subscriptions = await repository.listForUser(userId);
+            const stored = await repository.listForUser(userId);
+            // Rows saved before endpoints were checked are dropped, not sent.
+            const subscriptions = [];
+            for (const sub of stored) {
+                if (isPushServiceEndpoint(sub.endpoint)) {
+                    subscriptions.push(sub);
+                } else {
+                    await repository.deleteById(sub.id);
+                }
+            }
             if (subscriptions.length === 0) return 0;
 
             const { publicKey, privateKey, subject } = await getVapidKeys();
@@ -206,3 +240,4 @@ class PushService {
 module.exports = new PushService();
 module.exports.urlForNotification = urlForNotification;
 module.exports.tagForNotification = tagForNotification;
+module.exports.isPushServiceEndpoint = isPushServiceEndpoint;
