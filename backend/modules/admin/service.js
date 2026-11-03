@@ -149,6 +149,13 @@ class AdminService {
         };
     }
 
+    // SQLite support ends with 2.0, so admins of a SQLite instance are told
+    // to move their data before they upgrade.
+    async database(requesterId) {
+        await this.verifyAdmin(requesterId);
+        return { dialect: getConfig().db.dialect };
+    }
+
     async listRoles(requesterId) {
         const scope = await this.accessScope(requesterId);
         return scope.superadmin

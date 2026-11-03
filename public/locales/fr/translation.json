@@ -2082,7 +2082,12 @@
     "mfaResetConfirm": "Désactiver l'authentification à deux facteurs pour {{email}} ? Ne le faites que si vous êtes sûr qu'il s'agit bien de cette personne. Elle sera déconnectée partout et recevra un e-mail à ce sujet.",
     "mfaResetAction": "Réinitialiser",
     "mfaResetDone": "L'authentification à deux facteurs a été réinitialisée. La personne peut se connecter avec son mot de passe.",
-    "mfaResetFailed": "Impossible de réinitialiser la 2FA"
+    "mfaResetFailed": "Impossible de réinitialiser la 2FA",
+    "sqliteNotice": {
+      "text": "Cette instance stocke ses données dans SQLite. tududi 2.0 fonctionne uniquement avec PostgreSQL : faites une sauvegarde avant la mise à jour, puis importez-la dans la 2.0.",
+      "backup": "Sauvegarder maintenant",
+      "guide": "Comment migrer"
+    }
   },
   "shares": {
     "shareProject": "Partager le projet",

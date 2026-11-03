@@ -15,6 +15,7 @@ router.use('/admin', requireSuperadminMfa);
 
 router.post('/admin/set-admin-role', adminController.setAdminRole);
 router.get('/admin/overview', adminController.overview);
+router.get('/admin/database', adminController.database);
 router.get('/admin/overview/users', adminController.userStatuses);
 router.get('/admin/users/:id/emails', adminController.userEmails);
 router.get(

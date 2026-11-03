@@ -2077,7 +2077,12 @@
     "mfaResetConfirm": "{{email}} の2段階認証をオフにしますか？本人であることが確かな場合にのみ行ってください。すべてのデバイスからサインアウトされ、メールで通知されます。",
     "mfaResetAction": "リセット",
     "mfaResetDone": "2段階認証をリセットしました。パスワードでサインインできます。",
-    "mfaResetFailed": "2FA をリセットできませんでした"
+    "mfaResetFailed": "2FA をリセットできませんでした",
+    "sqliteNotice": {
+      "text": "このインスタンスはデータを SQLite に保存しています。tududi 2.0 は PostgreSQL のみで動作するため、アップグレード前にバックアップを作成し、2.0 にインポートしてください。",
+      "backup": "今すぐバックアップ",
+      "guide": "移行方法"
+    }
   },
   "shares": {
     "shareProject": "プロジェクトを共有",

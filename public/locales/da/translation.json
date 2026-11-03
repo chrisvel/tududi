@@ -2079,7 +2079,12 @@
     "mfaResetConfirm": "Slå totrinsbekræftelse fra for {{email}}? Gør det kun, når du er sikker på, at det er dem. De bliver logget ud overalt og får en e-mail om det.",
     "mfaResetAction": "Nulstil",
     "mfaResetDone": "Totrinsbekræftelse er nulstillet. De kan logge ind med deres adgangskode.",
-    "mfaResetFailed": "Kunne ikke nulstille 2FA"
+    "mfaResetFailed": "Kunne ikke nulstille 2FA",
+    "sqliteNotice": {
+      "text": "Denne instans gemmer sine data i SQLite. tududi 2.0 kører kun på PostgreSQL, så tag en sikkerhedskopi før du opgraderer, og importér den i 2.0.",
+      "backup": "Tag sikkerhedskopi nu",
+      "guide": "Sådan flytter du"
+    }
   },
   "shares": {
     "shareProject": "Del projekt",

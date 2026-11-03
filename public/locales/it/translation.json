@@ -2082,7 +2082,12 @@
     "mfaResetConfirm": "Disattivare l'autenticazione a due fattori per {{email}}? Fallo solo se sei sicuro che sia davvero quella persona. Verrà disconnessa ovunque e riceverà un'email al riguardo.",
     "mfaResetAction": "Reimposta",
     "mfaResetDone": "L'autenticazione a due fattori è stata reimpostata. Ora può accedere con la sua password.",
-    "mfaResetFailed": "Impossibile reimpostare la 2FA"
+    "mfaResetFailed": "Impossibile reimpostare la 2FA",
+    "sqliteNotice": {
+      "text": "Questa istanza salva i dati in SQLite. tududi 2.0 funziona solo con PostgreSQL, quindi fai un backup prima di aggiornare e importalo nella 2.0.",
+      "backup": "Fai il backup ora",
+      "guide": "Come migrare"
+    }
   },
   "shares": {
     "shareProject": "Condividi progetto",

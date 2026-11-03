@@ -2077,7 +2077,12 @@
     "mfaResetConfirm": "{{email}}의 2단계 인증을 끌까요? 본인이 확실할 때만 진행하세요. 모든 기기에서 로그아웃되고 이에 대한 이메일을 받게 됩니다.",
     "mfaResetAction": "재설정",
     "mfaResetDone": "2단계 인증이 재설정되었습니다. 이제 비밀번호로 로그인할 수 있습니다.",
-    "mfaResetFailed": "2FA를 재설정할 수 없습니다"
+    "mfaResetFailed": "2FA를 재설정할 수 없습니다",
+    "sqliteNotice": {
+      "text": "이 인스턴스는 데이터를 SQLite에 저장합니다. tududi 2.0은 PostgreSQL에서만 동작하므로 업그레이드 전에 백업을 만들고 2.0에서 가져오세요.",
+      "backup": "지금 백업",
+      "guide": "이전 방법"
+    }
   },
   "shares": {
     "shareProject": "프로젝트 공유",

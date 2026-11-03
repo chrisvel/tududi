@@ -2529,7 +2529,12 @@
     "mfaResetConfirm": "Turn off two-factor sign-in for {{email}}? Only do this when you are sure it is them. They will be signed out everywhere and emailed about it.",
     "mfaResetAction": "Reset",
     "mfaResetDone": "Two-factor sign-in was reset. They can sign in with their password.",
-    "mfaResetFailed": "Could not reset 2FA"
+    "mfaResetFailed": "Could not reset 2FA",
+    "sqliteNotice": {
+      "text": "This instance keeps its data in SQLite. tududi 2.0 runs on PostgreSQL only, so take a backup before you upgrade and import it into 2.0.",
+      "backup": "Back up now",
+      "guide": "How to move"
+    }
   },
   "billing": {
     "title": "Plan & Billing",

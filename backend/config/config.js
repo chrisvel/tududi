@@ -530,6 +530,13 @@ config.db = resolveDatabaseSettings(process.env, config.dbFile);
 
 if (config.db.dialect === 'sqlite') {
     console.log(`Using database file '${config.dbFile}'`);
+    if (environment !== 'test') {
+        console.warn(
+            '⚠️  SQLite support ends with tududi 2.0, which runs on PostgreSQL only. ' +
+                'Before upgrading, export your data (Backup & Restore) and follow ' +
+                'https://github.com/chrisvel/tududi/blob/main/docs/30-moving-to-postgres.md'
+        );
+    }
 } else {
     console.log(
         `Using PostgreSQL database '${config.db.database}' at ${config.db.host}:${config.db.port}`

@@ -2077,7 +2077,12 @@
     "mfaResetConfirm": "要为 {{email}} 关闭两步验证吗？请在确定是本人时才这样做。对方将在所有设备上退出登录，并收到邮件通知。",
     "mfaResetAction": "重置",
     "mfaResetDone": "两步验证已重置。对方可以使用密码登录。",
-    "mfaResetFailed": "无法重置 2FA"
+    "mfaResetFailed": "无法重置 2FA",
+    "sqliteNotice": {
+      "text": "此实例的数据保存在 SQLite 中。tududi 2.0 仅支持 PostgreSQL，请在升级前创建备份，并在 2.0 中导入。",
+      "backup": "立即备份",
+      "guide": "迁移方法"
+    }
   },
   "shares": {
     "shareProject": "分享项目",

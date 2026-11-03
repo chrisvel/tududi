@@ -2085,7 +2085,12 @@
     "mfaResetConfirm": "Želite izklopiti dvostopenjsko preverjanje za {{email}}? To storite samo, če ste prepričani, da gre res za to osebo. Odjavljena bo povsod in o tem bo prejela e-pošto.",
     "mfaResetAction": "Ponastavi",
     "mfaResetDone": "Dvostopenjsko preverjanje je ponastavljeno. Oseba se lahko prijavi z geslom.",
-    "mfaResetFailed": "2FA ni bilo mogoče ponastaviti"
+    "mfaResetFailed": "2FA ni bilo mogoče ponastaviti",
+    "sqliteNotice": {
+      "text": "Ta namestitev hrani podatke v SQLite. tududi 2.0 deluje samo s PostgreSQL, zato pred nadgradnjo naredite varnostno kopijo in jo uvozite v 2.0.",
+      "backup": "Varnostno kopiraj zdaj",
+      "guide": "Kako se preseliti"
+    }
   },
   "shares": {
     "shareProject": "Deli projekt",

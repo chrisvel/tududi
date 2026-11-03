@@ -2079,7 +2079,12 @@
     "mfaResetConfirm": "{{email}} için iki adımlı doğrulama kapatılsın mı? Bunu yalnızca o kişi olduğundan eminseniz yapın. Her yerde oturumu kapatılacak ve bu konuda bir e-posta alacak.",
     "mfaResetAction": "Sıfırla",
     "mfaResetDone": "İki adımlı doğrulama sıfırlandı. Kişi şifresiyle giriş yapabilir.",
-    "mfaResetFailed": "2FA sıfırlanamadı"
+    "mfaResetFailed": "2FA sıfırlanamadı",
+    "sqliteNotice": {
+      "text": "Bu kurulum verilerini SQLite'ta tutuyor. tududi 2.0 yalnızca PostgreSQL ile çalışır; yükseltmeden önce yedek alın ve 2.0'a içe aktarın.",
+      "backup": "Şimdi yedekle",
+      "guide": "Nasıl taşınır"
+    }
   },
   "shares": {
     "shareProject": "Projeyi paylaş",

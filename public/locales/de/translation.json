@@ -2088,7 +2088,12 @@
     "mfaResetConfirm": "Zwei-Faktor-Anmeldung für {{email}} ausschalten? Tun Sie das nur, wenn Sie sicher sind, dass es wirklich diese Person ist. Sie wird überall abgemeldet und per E-Mail darüber informiert.",
     "mfaResetAction": "Zurücksetzen",
     "mfaResetDone": "Die Zwei-Faktor-Anmeldung wurde zurückgesetzt. Die Person kann sich mit ihrem Passwort anmelden.",
-    "mfaResetFailed": "2FA konnte nicht zurückgesetzt werden"
+    "mfaResetFailed": "2FA konnte nicht zurückgesetzt werden",
+    "sqliteNotice": {
+      "text": "Diese Instanz speichert ihre Daten in SQLite. tududi 2.0 läuft nur mit PostgreSQL. Erstellen Sie vor dem Upgrade ein Backup und importieren Sie es in 2.0.",
+      "backup": "Jetzt sichern",
+      "guide": "So ziehen Sie um"
+    }
   },
   "shares": {
     "shareProject": "Projekt teilen",
