@@ -53,6 +53,8 @@ const Tasks: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const tasksRef = useRef<Task[]>(tasks);
+    tasksRef.current = tasks;
     const latestFetchId = useRef(0);
     const projects = useStore((state: any) => state.projectsStore.projects);
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
@@ -350,10 +352,14 @@ const Tasks: React.FC = () => {
     useEffect(() => {
         const handleTaskCreated = (event: CustomEvent) => {
             const newTask = event.detail;
-            if (newTask) {
-                setTasks((prevTasks) => [newTask, ...prevTasks]);
-                setTotalCount((prevCount) => prevCount + 1);
+            if (
+                !newTask ||
+                tasksRef.current.some((task) => task.uid === newTask.uid)
+            ) {
+                return;
             }
+            setTasks((prevTasks) => [newTask, ...prevTasks]);
+            setTotalCount((prevCount) => prevCount + 1);
         };
 
         window.addEventListener(
