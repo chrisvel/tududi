@@ -3,6 +3,7 @@ const app = require('../../app');
 const { Role, Feedback, User } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 const accountErasure = require('../../services/accountErasureService');
+const emailService = require('../../services/emailService');
 
 const login = async (user) => {
     const agent = request.agent(app);
@@ -29,6 +30,46 @@ describe('Feedback', () => {
     });
 
     describe('POST /api/feedback', () => {
+        it('emails the admins with Reply-To set to the sender', async () => {
+            const send = jest
+                .spyOn(emailService, 'sendEmail')
+                .mockResolvedValue({ success: true });
+            try {
+                const res = await plainAgent.post('/api/feedback').send({
+                    message: 'The save button does nothing',
+                    page_url: '/today',
+                });
+
+                expect(res.status).toBe(201);
+                expect(send).toHaveBeenCalledTimes(1);
+                const mail = send.mock.calls[0][0];
+                expect(mail.to).toBe(admin.email);
+                expect(mail.replyTo).toContain(plain.email);
+                expect(mail.subject).toContain('[tududi feedback]');
+                expect(mail.text).toContain('The save button does nothing');
+                expect(mail.text).toContain('Page: /today');
+                expect(mail.text).toContain('/admin/feedback');
+            } finally {
+                send.mockRestore();
+            }
+        });
+
+        it('still stores the feedback when the email fails', async () => {
+            const send = jest
+                .spyOn(emailService, 'sendEmail')
+                .mockRejectedValue(new Error('smtp down'));
+            try {
+                const res = await plainAgent
+                    .post('/api/feedback')
+                    .send({ message: 'Still saved' });
+
+                expect(res.status).toBe(201);
+                expect(await Feedback.findByPk(res.body.id)).not.toBeNull();
+            } finally {
+                send.mockRestore();
+            }
+        });
+
         it('stores the message with the page, version and browser', async () => {
             const res = await plainAgent
                 .post('/api/feedback')
