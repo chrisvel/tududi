@@ -8,6 +8,7 @@ const {
     validateVisibility,
     prepareVisibilityChange,
     syncContainerShares,
+    resolveContainerId,
 } = require('../../projects/service');
 const permissionsService = require('../../../services/permissionsService');
 const rolesService = require('../../../services/rolesService');
@@ -343,7 +344,11 @@ function registerProjectTools(server, context, tools) {
                 description: params.description || '',
                 priority: params.priority !== undefined ? params.priority : 1,
                 status: params.status || 'not_started',
-                area_id: params.area_id || null,
+                area_id: await resolveContainerId(
+                    context.userId,
+                    'area',
+                    params.area_id || null
+                ),
                 due_date_at: params.due_date_at || null,
                 image_url: params.image_url || null,
                 goal_id: goalId || null,
@@ -506,7 +511,16 @@ function registerProjectTools(server, context, tools) {
             if (params.priority !== undefined)
                 updates.priority = params.priority;
             if (params.status !== undefined) updates.status = params.status;
-            if (params.area_id !== undefined) updates.area_id = params.area_id;
+            if (params.area_id !== undefined) {
+                updates.area_id =
+                    params.area_id == project.area_id
+                        ? project.area_id
+                        : await resolveContainerId(
+                              context.userId,
+                              'area',
+                              params.area_id
+                          );
+            }
             if (params.pinned !== undefined)
                 updates.pin_to_sidebar = params.pinned;
             if (params.image_url !== undefined)
