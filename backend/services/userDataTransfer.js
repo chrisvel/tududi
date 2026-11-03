@@ -363,6 +363,17 @@ const uidsOf = async (Model, ids) => {
 
 const PROJECT_SCOPE = /^project:(\d+)$/;
 
+// Raw queries skip the model's JSON parsing, and SQLite hands JSON columns
+// back as text.
+const jsonColumn = (value, fallback) => {
+    if (typeof value !== 'string') return value ?? fallback;
+    try {
+        return JSON.parse(value);
+    } catch (_) {
+        return fallback;
+    }
+};
+
 // Records that point at tasks, projects, areas and goals which can belong to
 // another account (a comment on a shared task, a plan item for a task shared
 // with this user). They reference those by uid and are restored once every
@@ -454,7 +465,7 @@ async function exportLinkedRecords(userId) {
                 task_uid: taskUid[c.task_id],
                 parent_comment_uid: commentUid[c.parent_comment_id] || null,
                 body: c.body,
-                mentioned_person_uids: c.mentioned_person_uids || [],
+                mentioned_person_uids: jsonColumn(c.mentioned_person_uids, []),
                 deleted_at: c.deleted_at,
                 created_at: c.created_at,
             })),
@@ -501,7 +512,7 @@ async function exportLinkedRecords(userId) {
             name: w.name,
             url: w.url,
             secret: w.secret,
-            events: w.events,
+            events: jsonColumn(w.events, []),
             summary_hour: w.summary_hour,
             enabled: w.enabled,
         })),
@@ -1552,6 +1563,7 @@ async function restoreSharing(userId, instance, ctx, renames, stats) {
 
 const LINKED_STAT_KEYS = [
     'comments',
+    'task_events',
     'task_relations',
     'daily_plans',
     'calendar_feeds',
@@ -1657,6 +1669,48 @@ async function restoreLinkedRecords(entries, renames, personUids, stats) {
                     { parent_comment_id: parentId },
                     { transaction, silent: true }
                 );
+            }
+        }
+
+        // Task history is exported as raw rows keyed by the old numeric task
+        // id, so map it back through the task uids of every account in the
+        // backup (an event can sit on another account's shared task).
+        const exportedTaskUid = {};
+        for (const { data } of entries) {
+            for (const t of data.tasks || []) {
+                if (t.id != null && t.uid) exportedTaskUid[t.id] = t.uid;
+            }
+        }
+        for (const { userId, data } of entries) {
+            for (const e of data.task_events || []) {
+                const task = await taskId(exportedTaskUid[e.task_id]);
+                if (!task || !e.event_type) {
+                    count('task_events', false);
+                    continue;
+                }
+                try {
+                    const [, created] = await TaskEvent.findOrCreate({
+                        where: {
+                            task_id: task,
+                            user_id: userId,
+                            event_type: e.event_type,
+                            field_name: e.field_name ?? null,
+                            created_at: e.created_at,
+                        },
+                        defaults: {
+                            old_value: e.old_value ?? null,
+                            new_value: e.new_value ?? null,
+                            metadata: e.metadata ?? null,
+                        },
+                        transaction,
+                    });
+                    count('task_events', created);
+                } catch (error) {
+                    // An event type this release no longer knows. Validation
+                    // runs before the insert, so the transaction is intact.
+                    if (error.name !== 'SequelizeValidationError') throw error;
+                    count('task_events', false);
+                }
             }
         }
 

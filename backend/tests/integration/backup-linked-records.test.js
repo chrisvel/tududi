@@ -18,6 +18,7 @@ const {
     UserAreaOrder,
     UserGoalOrder,
     UserProjectArea,
+    TaskEvent,
 } = require('../../models');
 const secretCipher = require('../../shared/crypto/secretCipher');
 const {
@@ -314,6 +315,49 @@ describe('Backup of comments, plans, feeds, webhooks and orders', () => {
         ]);
     });
 
+    it('imports task history with its dates and values', async () => {
+        await TaskEvent.create({
+            task_id: seeded.paint.id,
+            user_id: seeded.user.id,
+            event_type: 'status_changed',
+            field_name: 'status',
+            old_value: { status: 0 },
+            new_value: { status: 2 },
+            metadata: { source: 'web' },
+            created_at: new Date('2026-01-03T08:30:00Z'),
+        });
+        const backup = await exportUserData(seeded.user.id);
+        backup.data.task_events.push({
+            task_id: seeded.paint.id,
+            user_id: seeded.user.id,
+            event_type: 'retired_event_type',
+            created_at: '2026-01-04T08:30:00.000Z',
+        });
+
+        const stats = await importUserData(target.id, backup);
+        expect(stats.task_events).toEqual({ created: 1, skipped: 1 });
+
+        const paint = await Task.findOne({
+            where: { user_id: target.id, name: 'Paint walls' },
+        });
+        const event = await TaskEvent.findOne({
+            where: { task_id: paint.id, event_type: 'status_changed' },
+        });
+        expect(event.user_id).toBe(target.id);
+        expect(event.field_name).toBe('status');
+        expect(event.old_value).toEqual({ status: 0 });
+        expect(event.new_value).toEqual({ status: 2 });
+        expect(event.metadata).toEqual({ source: 'web' });
+        expect(new Date(event.created_at).toISOString()).toBe(
+            '2026-01-03T08:30:00.000Z'
+        );
+
+        const own = await exportUserData(target.id);
+        const again = await importUserData(target.id, own);
+        expect(again.task_events).toEqual({ created: 0, skipped: 1 });
+        expect(await TaskEvent.count({ where: { task_id: paint.id } })).toBe(1);
+    });
+
     it('restoring a backup onto its own account adds nothing', async () => {
         const backup = await exportUserData(seeded.user.id);
         const stats = await importUserData(seeded.user.id, backup);
@@ -440,6 +484,11 @@ describe('Instance backup of records across accounts', () => {
             daily_plan_id: plan.id,
             task_id: task.id,
         });
+        await TaskEvent.create({
+            task_id: task.id,
+            user_id: member.id,
+            event_type: 'comment_added',
+        });
 
         const backup = await exportUserData(admin.id);
         const freshAdmin = await createTestUser({
@@ -479,5 +528,10 @@ describe('Instance backup of records across accounts', () => {
         expect(restoredPlan.Items.map((i) => i.task_id)).toEqual([
             restoredTask.id,
         ]);
+        const event = await TaskEvent.findOne({
+            where: { user_id: restoredMember.id },
+        });
+        expect(event.task_id).toBe(restoredTask.id);
+        expect(event.event_type).toBe('comment_added');
     });
 });
