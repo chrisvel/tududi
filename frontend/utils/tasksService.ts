@@ -160,7 +160,9 @@ export const toggleTaskCompletion = async (
 };
 
 export type TaskOrderScope =
-    { scope: 'all' } | { scope: 'project'; project_uid: string };
+    | { scope: 'all' }
+    | { scope: 'kanban' }
+    | { scope: 'project'; project_uid: string };
 
 export const skipTaskOccurrence = async (taskUid: string): Promise<Task> => {
     const response = await fetch(

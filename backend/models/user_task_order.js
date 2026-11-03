@@ -1,7 +1,8 @@
 const { DataTypes } = require('sequelize');
 
 // Per-user manual position of a task in one list. `scope` names the list:
-// 'all' for the All Tasks page, 'project:<project id>' for a project's tasks.
+// 'all' for the All Tasks page, 'kanban' for the Kanban board,
+// 'project:<project id>' for a project's tasks.
 module.exports = (sequelize) => {
     const UserTaskOrder = sequelize.define(
         'UserTaskOrder',

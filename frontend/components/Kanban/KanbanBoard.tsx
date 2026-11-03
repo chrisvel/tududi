@@ -9,7 +9,10 @@ import { Tag } from '../../entities/Tag';
 import TaskItem from '../Task/TaskItem';
 import { getCsrfToken } from '../../utils/csrfService';
 import { isQueuedOfflineResponse } from '../../utils/authUtils';
-import { TASK_SHEET_CLASS } from '../Task/taskSheet';
+import { appendFocusParams, focusKey, useFocus } from '../../utils/focus';
+import { fetchTaskOrder, saveTaskOrder } from '../../utils/tasksService';
+
+const KANBAN_ORDER_SCOPE = { scope: 'kanban' } as const;
 
 const COLUMN_STATUS: Record<string, number> = {
     not_started: 0,
@@ -63,6 +66,33 @@ const getTaskColumn = (task: Task): ColKey | null => {
     if (s === 'done' || s === 2) return 'done';
     if (s === 'archived' || s === 3) return 'archived';
     return null;
+};
+
+// A column's cards in the saved board order. As on the server, tasks with
+// no saved position come first, newest first.
+const sortByOrder = (tasks: Task[], order: string[]): Task[] => {
+    const position = new Map(order.map((uid, index) => [uid, index]));
+    return [...tasks].sort((a, b) => {
+        const pa = a.uid ? position.get(a.uid) : undefined;
+        const pb = b.uid ? position.get(b.uid) : undefined;
+        if (pa === undefined && pb === undefined) {
+            return (b.created_at ?? '').localeCompare(a.created_at ?? '');
+        }
+        if (pa === undefined) return -1;
+        if (pb === undefined) return 1;
+        return pa - pb;
+    });
+};
+
+// The saved order after a column is rearranged, mirroring saveOrder on the
+// server: the column's cards take the slots they already hold, in their
+// new order, and every other task stays put.
+const mergeColumnOrder = (order: string[], columnUids: string[]): string[] => {
+    const placed = new Set(order);
+    const moved = new Set(columnUids);
+    const current = [...columnUids.filter((uid) => !placed.has(uid)), ...order];
+    let next = 0;
+    return current.map((uid) => (moved.has(uid) ? columnUids[next++] : uid));
 };
 
 const COL_CONFIG: Record<
@@ -130,38 +160,64 @@ const COL_CONFIG: Record<
 const KanbanBoard: React.FC = () => {
     const { t } = useTranslation();
     const projects: Project[] = useStore((state: any) => state.projectsStore.projects);
+    const focus = useFocus();
+    const focusId = focusKey(focus);
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [order, setOrder] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const [draggingTaskId, setDraggingTaskId] = useState<number | null>(null);
     const [dragOverCol, setDragOverCol] = useState<ColKey | null>(null);
+    // Where the dragged card would land: an index into the column's cards,
+    // counted with the dragged card still in place.
+    const [dropIndex, setDropIndex] = useState<number | null>(null);
     const dragEnterCounters = useRef<Record<string, number>>({});
+    const listRefs = useRef<Partial<Record<ColKey, HTMLDivElement | null>>>({});
 
     const [visibleCols, setVisibleCols] = useState<ColKey[]>(loadVisibleCols);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const settingsRef = useRef<HTMLDivElement>(null);
 
+    // Refetches whenever the Focus changes; a response for an older Focus
+    // that arrives late is ignored.
     useEffect(() => {
+        let cancelled = false;
         const fetchTasks = async () => {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(
-                    getApiPath('tasks?client_side_filtering=true&limit=10000&offset=0')
-                );
+                const params = new URLSearchParams({
+                    client_side_filtering: 'true',
+                    limit: '10000',
+                    offset: '0',
+                });
+                appendFocusParams(params, focus);
+                const [res, savedOrder] = await Promise.all([
+                    fetch(getApiPath(`tasks?${params.toString()}`)),
+                    // Without a saved order the board still shows, newest first.
+                    fetchTaskOrder(KANBAN_ORDER_SCOPE).catch(() => []),
+                ]);
                 if (!res.ok) throw new Error('Failed to fetch tasks');
                 const data = await res.json();
-                setTasks(data.tasks || []);
+                if (!cancelled) {
+                    setTasks(data.tasks || []);
+                    setOrder(savedOrder);
+                }
             } catch (e) {
-                setError((e as Error).message);
+                if (!cancelled) setError((e as Error).message);
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
         fetchTasks();
-    }, []);
+        return () => {
+            cancelled = true;
+        };
+        // focusId is the stable form of focus.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [focusId]);
 
     useEffect(() => {
         if (!settingsOpen) return;
@@ -197,8 +253,9 @@ const KanbanBoard: React.FC = () => {
             const col = getTaskColumn(task);
             if (col) result[col].push(task);
         }
+        for (const col of ALL_COLS) result[col] = sortByOrder(result[col], order);
         return result;
-    }, [tasks]);
+    }, [tasks, order]);
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         try {
@@ -265,6 +322,7 @@ const KanbanBoard: React.FC = () => {
     const onDragEnd = () => {
         setDraggingTaskId(null);
         setDragOverCol(null);
+        setDropIndex(null);
         dragEnterCounters.current = {};
     };
 
@@ -274,9 +332,21 @@ const KanbanBoard: React.FC = () => {
         setDragOverCol(col);
     };
 
-    const onColDragOver = (e: React.DragEvent) => {
+    // The card the pointer is above decides the slot: before the first card
+    // whose middle sits below the pointer, or at the end.
+    const onColDragOver = (e: React.DragEvent, col: ColKey) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
+        const cards = listRefs.current[col]?.querySelectorAll('[data-kanban-card]');
+        let index = cards?.length ?? 0;
+        for (let i = 0; i < (cards?.length ?? 0); i++) {
+            const rect = cards![i].getBoundingClientRect();
+            if (e.clientY < rect.top + rect.height / 2) {
+                index = i;
+                break;
+            }
+        }
+        setDropIndex((prev) => (prev === index ? prev : index));
     };
 
     const onColDragLeave = (e: React.DragEvent, col: ColKey) => {
@@ -290,17 +360,51 @@ const KanbanBoard: React.FC = () => {
     const onColDrop = async (e: React.DragEvent, col: ColKey) => {
         e.preventDefault();
         dragEnterCounters.current[col] = 0;
+        const index = dropIndex ?? columns[col].length;
         setDragOverCol(null);
+        setDropIndex(null);
 
         if (draggingTaskId === null) return;
         const task = tasks.find((t) => t.id === draggingTaskId);
-        if (!task) return;
-
-        if (getTaskColumn(task) === col) return;
-
-        await moveTaskToCol(task, col);
         setDraggingTaskId(null);
+        if (!task?.uid) return;
+
+        const colTasks = columns[col];
+        const others = colTasks.filter((t) => t.id !== task.id);
+        const insertAt = colTasks
+            .slice(0, index)
+            .filter((t) => t.id !== task.id).length;
+        const columnUids = [
+            ...others.slice(0, insertAt),
+            task,
+            ...others.slice(insertAt),
+        ].map((t) => t.uid as string);
+
+        const sameCol = getTaskColumn(task) === col;
+        const unchanged =
+            sameCol && columnUids.every((uid, i) => uid === colTasks[i].uid);
+        if (unchanged) return;
+
+        setOrder((prev) => mergeColumnOrder(prev, columnUids));
+        saveTaskOrder(KANBAN_ORDER_SCOPE, columnUids).catch((err) =>
+            console.error('Error saving board order:', err)
+        );
+        if (!sameCol) await moveTaskToCol(task, col);
     };
+
+    // A drop that would leave the card where it is shows no marker.
+    const showsDropMarker = (col: ColKey, index: number) => {
+        if (dragOverCol !== col || dropIndex !== index) return false;
+        const from = columns[col].findIndex((t) => t.id === draggingTaskId);
+        return from === -1 || (index !== from && index !== from + 1);
+    };
+
+    // Drawn over the gap above or below a card so it never shifts the list.
+    const dropMarker = (edge: 'top' | 'bottom') => (
+        <div
+            className={`absolute inset-x-0 h-0.5 rounded-full bg-blue-500 dark:bg-blue-400 pointer-events-none z-20 ${edge === 'top' ? '-top-[5px]' : '-bottom-[5px]'}`}
+        />
+    );
 
     const activeCols = ALL_COLS.filter((c) => visibleCols.includes(c));
 
@@ -370,7 +474,7 @@ const KanbanBoard: React.FC = () => {
                                 key={col}
                                 className={`relative flex flex-col flex-1 min-w-[200px] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden transition-colors duration-150 ${isDragOver ? cfg.dragOverBg : cfg.bg}`}
                                 onDragEnter={(e) => onColDragEnter(e, col)}
-                                onDragOver={onColDragOver}
+                                onDragOver={(e) => onColDragOver(e, col)}
                                 onDragLeave={(e) => onColDragLeave(e, col)}
                                 onDrop={(e) => onColDrop(e, col)}
                             >
@@ -387,7 +491,12 @@ const KanbanBoard: React.FC = () => {
                                     </span>
                                 </div>
 
-                                <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+                                <div
+                                    ref={(el) => {
+                                        listRefs.current[col] = el;
+                                    }}
+                                    className="flex-1 overflow-y-auto p-2 space-y-2"
+                                >
                                     {colTasks.length === 0 ? (
                                         <p className={`text-xs py-3 text-center ${isDraggingActive ? 'text-gray-400 dark:text-gray-500' : 'text-gray-300 dark:text-gray-600'}`}>
                                             {isDraggingActive
@@ -395,10 +504,10 @@ const KanbanBoard: React.FC = () => {
                                                 : '-'}
                                         </p>
                                     ) : (
-                                        <div className={TASK_SHEET_CLASS}>
-                                        {colTasks.map((task) => (
+                                        colTasks.map((task, index) => (
                                             <div
                                                 key={task.id}
+                                                data-kanban-card
                                                 draggable
                                                 onDragStart={(e) => onDragStart(e, task)}
                                                 onDragEnd={onDragEnd}
@@ -415,9 +524,13 @@ const KanbanBoard: React.FC = () => {
                                                     hideStatusControl={true}
                                                     isKanbanView={true}
                                                 />
+                                                {showsDropMarker(col, index) &&
+                                                    dropMarker('top')}
+                                                {index === colTasks.length - 1 &&
+                                                    showsDropMarker(col, colTasks.length) &&
+                                                    dropMarker('bottom')}
                                             </div>
-                                        ))}
-                                        </div>
+                                        ))
                                     )}
                                 </div>
                             </div>

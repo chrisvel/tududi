@@ -110,6 +110,24 @@ describe('Tasks manual order', () => {
         expect(allOrder.body.task_uids).toEqual([]);
     });
 
+    it('keeps Kanban order separate from All Tasks', async () => {
+        const [a, , c, d] = tasks.map((t) => t.uid);
+        await ownerAgent
+            .put('/api/tasks/order')
+            .send({ scope: 'kanban', task_uids: [d, c, a] });
+        // A column showing d and a, with d dragged below a.
+        await ownerAgent
+            .put('/api/tasks/order')
+            .send({ scope: 'kanban', task_uids: [a, d] });
+
+        const kanbanOrder = await ownerAgent.get(
+            '/api/tasks/order?scope=kanban'
+        );
+        expect(kanbanOrder.body.task_uids).toEqual([a, c, d]);
+        const allOrder = await ownerAgent.get('/api/tasks/order?scope=all');
+        expect(allOrder.body.task_uids).toEqual([]);
+    });
+
     it('keeps the order per user in a shared project', async () => {
         await ownerAgent.post('/api/shares').send({
             resource_type: 'project',

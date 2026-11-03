@@ -7,15 +7,20 @@ const { NotFoundError, ValidationError } = require('../../../shared/errors');
 
 const MAX_ORDER_TASKS = 5000;
 const ALL_SCOPE = 'all';
+const KANBAN_SCOPE = 'kanban';
 const BASE_ORDER_BY =
     /^(created_at|updated_at|name|priority|status|due_date|completed_at):(asc|desc)$/;
 
-// Resolves the list a request orders: the All Tasks page, or one project's
-// tasks (which needs read access to that project).
+// Resolves the list a request orders: the All Tasks page, the Kanban board
+// (its own order, so arranging cards leaves All Tasks alone), or one
+// project's tasks (which needs read access to that project).
 async function resolveScope(userId, { scope, project_uid: projectUid }) {
     if (scope === ALL_SCOPE) return { key: ALL_SCOPE, projectId: null };
+    if (scope === KANBAN_SCOPE) return { key: KANBAN_SCOPE, projectId: null };
     if (scope !== 'project') {
-        throw new ValidationError("scope must be 'all' or 'project'.");
+        throw new ValidationError(
+            "scope must be 'all', 'kanban' or 'project'."
+        );
     }
     if (typeof projectUid !== 'string' || !projectUid) {
         throw new ValidationError('project_uid is required.');
