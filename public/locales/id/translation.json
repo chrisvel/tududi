@@ -2077,7 +2077,12 @@
     "mfaResetConfirm": "Nonaktifkan verifikasi dua langkah untuk {{email}}? Lakukan ini hanya jika Anda yakin itu memang orangnya. Ia akan dikeluarkan dari semua perangkat dan menerima email tentang hal ini.",
     "mfaResetAction": "Atur ulang",
     "mfaResetDone": "Verifikasi dua langkah sudah diatur ulang. Ia bisa masuk dengan kata sandinya.",
-    "mfaResetFailed": "Tidak dapat mengatur ulang 2FA"
+    "mfaResetFailed": "Tidak dapat mengatur ulang 2FA",
+    "sqliteNotice": {
+      "text": "Instans ini menyimpan datanya di SQLite. tududi 2.0 hanya berjalan di PostgreSQL, jadi buat cadangan sebelum memperbarui lalu impor ke 2.0.",
+      "backup": "Cadangkan sekarang",
+      "guide": "Cara pindah"
+    }
   },
   "shares": {
     "shareProject": "Bagikan proyek",

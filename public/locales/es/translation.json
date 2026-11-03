@@ -2069,7 +2069,12 @@
     "mfaResetConfirm": "¿Desactivar la autenticación de dos factores para {{email}}? Hazlo solo si estás seguro de que es esa persona. Se cerrará su sesión en todas partes y recibirá un correo al respecto.",
     "mfaResetAction": "Restablecer",
     "mfaResetDone": "Se restableció la autenticación de dos factores. Ya puede iniciar sesión con su contraseña.",
-    "mfaResetFailed": "No se pudo restablecer la 2FA"
+    "mfaResetFailed": "No se pudo restablecer la 2FA",
+    "sqliteNotice": {
+      "text": "Esta instancia guarda sus datos en SQLite. tududi 2.0 solo funciona con PostgreSQL, así que haz una copia de seguridad antes de actualizar e impórtala en 2.0.",
+      "backup": "Hacer copia ahora",
+      "guide": "Cómo migrar"
+    }
   },
   "shares": {
     "shareProject": "Compartir proyecto",

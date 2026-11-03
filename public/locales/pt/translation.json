@@ -2082,7 +2082,12 @@
     "mfaResetConfirm": "Desativar a verificação em duas etapas de {{email}}? Faça isso só quando tiver certeza de que é a própria pessoa. Ela será desconectada de todos os dispositivos e receberá um e-mail sobre isso.",
     "mfaResetAction": "Redefinir",
     "mfaResetDone": "A verificação em duas etapas foi redefinida. A pessoa pode entrar com a senha.",
-    "mfaResetFailed": "Não foi possível redefinir a 2FA"
+    "mfaResetFailed": "Não foi possível redefinir a 2FA",
+    "sqliteNotice": {
+      "text": "Esta instância guarda os dados em SQLite. O tududi 2.0 funciona apenas com PostgreSQL, por isso faça uma cópia de segurança antes de atualizar e importe-a no 2.0.",
+      "backup": "Fazer cópia agora",
+      "guide": "Como migrar"
+    }
   },
   "shares": {
     "shareProject": "Compartilhar projeto",

@@ -2079,7 +2079,12 @@
     "mfaResetConfirm": "Tweestapsverificatie uitschakelen voor {{email}}? Doe dit alleen als je zeker weet dat het echt die persoon is. Diegene wordt overal uitgelogd en krijgt hierover een e-mail.",
     "mfaResetAction": "Resetten",
     "mfaResetDone": "Tweestapsverificatie is gereset. Diegene kan inloggen met het eigen wachtwoord.",
-    "mfaResetFailed": "Kon 2FA niet resetten"
+    "mfaResetFailed": "Kon 2FA niet resetten",
+    "sqliteNotice": {
+      "text": "Deze installatie bewaart haar gegevens in SQLite. tududi 2.0 werkt alleen met PostgreSQL, dus maak een back-up voordat je upgradet en importeer die in 2.0.",
+      "backup": "Nu back-up maken",
+      "guide": "Zo verhuis je"
+    }
   },
   "shares": {
     "shareProject": "Project delen",

@@ -2079,7 +2079,12 @@
     "mfaResetConfirm": "Stänga av tvåfaktorsautentisering för {{email}}? Gör det bara när du är säker på att det är personen själv. De loggas ut överallt och får ett mejl om det.",
     "mfaResetAction": "Återställ",
     "mfaResetDone": "Tvåfaktorsautentiseringen har återställts. De kan logga in med sitt lösenord.",
-    "mfaResetFailed": "Kunde inte återställa 2FA"
+    "mfaResetFailed": "Kunde inte återställa 2FA",
+    "sqliteNotice": {
+      "text": "Den här instansen sparar sina data i SQLite. tududi 2.0 kör bara på PostgreSQL, så ta en säkerhetskopia innan du uppgraderar och importera den i 2.0.",
+      "backup": "Säkerhetskopiera nu",
+      "guide": "Så flyttar du"
+    }
   },
   "shares": {
     "shareProject": "Dela projekt",

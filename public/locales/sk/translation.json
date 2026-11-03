@@ -2249,7 +2249,12 @@
         "mfaResetConfirm": "Vypnúť dvojfaktorové overenie pre {{email}}? Urobte to, iba ak ste si istí, že ide naozaj o túto osobu. Bude všade odhlásená a dostane o tom e-mail.",
         "mfaResetAction": "Obnoviť",
         "mfaResetDone": "Dvojfaktorové overenie bolo obnovené. Osoba sa môže prihlásiť heslom.",
-        "mfaResetFailed": "2FA sa nepodarilo obnoviť"
+        "mfaResetFailed": "2FA sa nepodarilo obnoviť",
+        "sqliteNotice": {
+            "text": "Táto inštancia ukladá dáta do SQLite. tududi 2.0 beží iba na PostgreSQL, preto si pred aktualizáciou urobte zálohu a importujte ju do 2.0.",
+            "backup": "Zálohovať teraz",
+            "guide": "Ako prejsť"
+        }
     },
     "billing": {
         "title": "Plán a fakturácia",

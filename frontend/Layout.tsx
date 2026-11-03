@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import UpgradeModal from './components/Billing/UpgradeModal';
 import TrialBanner from './components/Billing/TrialBanner';
+import SqliteNoticeBanner from './components/Admin/SqliteNoticeBanner';
 import { SidebarProvider } from './contexts/SidebarContext';
 import Navbar from './components/Navbar';
 import Breadcrumbs from './components/Shared/Breadcrumbs';
@@ -531,6 +532,9 @@ const Layout: React.FC<LayoutProps> = ({
                                 </div>
                             )}
                             <TrialBanner />
+                            <SqliteNoticeBanner
+                                isAdmin={currentUser?.is_admin === true}
+                            />
                             <Breadcrumbs />
                             <TaskRowExpansionProvider key={location.pathname}>
                                 {children}

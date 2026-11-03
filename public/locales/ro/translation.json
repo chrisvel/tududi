@@ -2084,7 +2084,12 @@
     "mfaResetConfirm": "Dezactivezi autentificarea în doi pași pentru {{email}}? Fă asta doar când ești sigur că este chiar persoana respectivă. Va fi deconectată peste tot și va primi un e-mail despre asta.",
     "mfaResetAction": "Resetează",
     "mfaResetDone": "Autentificarea în doi pași a fost resetată. Persoana se poate conecta cu parola.",
-    "mfaResetFailed": "2FA nu a putut fi resetată"
+    "mfaResetFailed": "2FA nu a putut fi resetată",
+    "sqliteNotice": {
+      "text": "Această instanță își păstrează datele în SQLite. tududi 2.0 rulează doar pe PostgreSQL, așa că fă o copie de rezervă înainte de actualizare și import-o în 2.0.",
+      "backup": "Fă copia acum",
+      "guide": "Cum muți datele"
+    }
   },
   "shares": {
     "shareProject": "Partajați proiectul",

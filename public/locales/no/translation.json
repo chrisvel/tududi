@@ -2080,7 +2080,12 @@
     "mfaResetConfirm": "Slå av tofaktorautentisering for {{email}}? Gjør dette bare når du er sikker på at det er dem. De blir logget ut overalt og får en e-post om det.",
     "mfaResetAction": "Tilbakestill",
     "mfaResetDone": "Tofaktorautentisering ble tilbakestilt. De kan logge inn med passordet sitt.",
-    "mfaResetFailed": "Kunne ikke tilbakestille 2FA"
+    "mfaResetFailed": "Kunne ikke tilbakestille 2FA",
+    "sqliteNotice": {
+      "text": "Denne instansen lagrer dataene sine i SQLite. tududi 2.0 kjører bare på PostgreSQL, så ta en sikkerhetskopi før du oppgraderer, og importer den i 2.0.",
+      "backup": "Ta sikkerhetskopi nå",
+      "guide": "Slik flytter du"
+    }
   },
   "shares": {
     "shareProject": "Del prosjekt",

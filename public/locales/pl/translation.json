@@ -2085,7 +2085,12 @@
     "mfaResetConfirm": "Wyłączyć weryfikację dwuetapową dla {{email}}? Rób to tylko wtedy, gdy masz pewność, że to ta osoba. Zostanie wylogowana wszędzie i dostanie o tym e-mail.",
     "mfaResetAction": "Zresetuj",
     "mfaResetDone": "Weryfikacja dwuetapowa została zresetowana. Ta osoba może zalogować się hasłem.",
-    "mfaResetFailed": "Nie udało się zresetować 2FA"
+    "mfaResetFailed": "Nie udało się zresetować 2FA",
+    "sqliteNotice": {
+      "text": "Ta instancja przechowuje dane w SQLite. tududi 2.0 działa tylko z PostgreSQL, więc przed aktualizacją zrób kopię zapasową i zaimportuj ją do 2.0.",
+      "backup": "Zrób kopię teraz",
+      "guide": "Jak przenieść dane"
+    }
   },
   "shares": {
     "shareProject": "Udostępnij projekt",

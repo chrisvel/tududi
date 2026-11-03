@@ -2079,7 +2079,12 @@
     "mfaResetConfirm": "Poistetaanko kaksivaiheinen tunnistautuminen käytöstä käyttäjältä {{email}}? Tee tämä vain, kun olet varma, että kyse on hänestä. Hänet kirjataan ulos kaikkialta, ja hän saa asiasta sähköpostin.",
     "mfaResetAction": "Nollaa",
     "mfaResetDone": "Kaksivaiheinen tunnistautuminen nollattiin. Käyttäjä voi kirjautua salasanallaan.",
-    "mfaResetFailed": "2FA:n nollaus epäonnistui"
+    "mfaResetFailed": "2FA:n nollaus epäonnistui",
+    "sqliteNotice": {
+      "text": "Tämä asennus tallentaa tietonsa SQLiteen. tududi 2.0 toimii vain PostgreSQL:llä, joten ota varmuuskopio ennen päivitystä ja tuo se 2.0:aan.",
+      "backup": "Varmuuskopioi nyt",
+      "guide": "Näin siirryt"
+    }
   },
   "shares": {
     "shareProject": "Jaa projekti",
