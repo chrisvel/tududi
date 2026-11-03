@@ -16,6 +16,7 @@ const EMAILS = {
     comeBack: require('./comeBack'),
     notification: require('./notification'),
     contactMessage: require('./contactMessage'),
+    feedbackReceived: require('./feedbackReceived'),
     securityNotice: require('./securityNotice'),
 };
 

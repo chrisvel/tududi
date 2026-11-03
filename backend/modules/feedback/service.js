@@ -1,7 +1,12 @@
 'use strict';
 
 const repository = require('./repository');
+const { Role, User } = require('../../models');
 const { isAdmin } = require('../../services/rolesService');
+const emailService = require('../../services/emailService');
+const { logError } = require('../../services/logService');
+const { getConfig } = require('../../config/config');
+const { renderEmail } = require('../../emails');
 const {
     ForbiddenError,
     NotFoundError,
@@ -48,6 +53,56 @@ const serialize = (row) => ({
         : null,
 });
 
+// Emails every admin of the instance about new feedback, with Reply-To set to
+// the sender so an answer goes straight back. Never fails the submit.
+async function notifyAdmins(userId, row) {
+    try {
+        const [sender, adminRoles] = await Promise.all([
+            User.findByPk(userId, {
+                attributes: ['email', 'name', 'surname'],
+            }),
+            Role.findAll({
+                where: { is_admin: true },
+                attributes: ['user_id'],
+            }),
+        ]);
+        const admins = await User.findAll({
+            where: { id: adminRoles.map((role) => role.user_id) },
+            attributes: ['email'],
+        });
+        const recipients = admins.map((a) => a.email).filter(Boolean);
+        if (!sender || recipients.length === 0) return;
+
+        // The name goes into a header, so no line breaks or quotes survive.
+        const name = [sender.name, sender.surname]
+            .filter(Boolean)
+            .join(' ')
+            .replace(/[\r\n"]+/g, ' ')
+            .trim();
+        const email = renderEmail('feedbackReceived', {
+            name,
+            email: sender.email,
+            pageUrl: row.page_url,
+            appVersion: row.app_version,
+            message: row.message,
+            url: `${getConfig().frontendUrl}/admin/feedback`,
+        });
+        const result = await emailService.sendEmail({
+            to: recipients.join(', '),
+            replyTo: name ? `"${name}" <${sender.email}>` : sender.email,
+            ...email,
+        });
+        if (!result.success && result.reason !== 'Email service is disabled') {
+            logError(
+                new Error(result.reason || 'send failed'),
+                'Feedback email to admins was not sent'
+            );
+        }
+    } catch (error) {
+        logError(error, 'Feedback email to admins was not sent');
+    }
+}
+
 class FeedbackService {
     async assertAdmin(requesterId) {
         if (!(await isAdmin(requesterId))) {
@@ -74,6 +129,7 @@ class FeedbackService {
             user_agent: clip(userAgent, 512),
             app_version: clip(body.app_version, 32),
         });
+        await notifyAdmins(userId, row);
         return { id: row.id };
     }
 

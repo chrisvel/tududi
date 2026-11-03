@@ -149,6 +149,19 @@ const SAMPLES = {
             },
         },
     ],
+    feedbackReceived: [
+        {
+            label: '',
+            vars: {
+                name: 'Sam',
+                email: 'sam@example.com',
+                pageUrl: '/today',
+                appVersion: 'v2.0.0',
+                message: 'The save button does nothing.',
+                url: url('/admin/feedback'),
+            },
+        },
+    ],
 };
 
 const page = (title, body) => `<!doctype html>

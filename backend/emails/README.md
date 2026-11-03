@@ -19,6 +19,7 @@ missing language or key.
 | Task and project notifications | `notification.js` | A notification fires for a user who turned email on for it; the text is the notification's own |
 | Security notice | `securityNotice.js` | Two-factor sign-in is turned on, turned off, or reset by an admin; a recovery code is used; new recovery codes are made |
 | Contact form | `contactMessage.js` | Someone writes from the landing site's contact page; goes to the operator, in English |
+| Feedback received | `feedbackReceived.js` | A user sends feedback from the bug icon in the app; goes to every admin of the instance, in English, with Reply-To set to the sender |
 
 ## Previewing
 
