@@ -633,6 +633,9 @@ export const useStore = create<StoreState>((set: any) => ({
                         tasks: [newTask, ...state.tasksStore.tasks],
                     },
                 }));
+                window.dispatchEvent(
+                    new CustomEvent('taskCreated', { detail: newTask })
+                );
                 return newTask;
             } catch (error) {
                 console.error('createTask: Failed to create task:', error);
