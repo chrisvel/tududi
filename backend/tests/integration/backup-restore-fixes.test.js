@@ -77,7 +77,7 @@ describe('saved backup errors', () => {
 });
 
 describe('backup import keeps', () => {
-    it('project templates, tag pins and keyboard shortcuts', async () => {
+    it('project templates, tag pins and colors, keyboard shortcuts', async () => {
         const source = await createTestUser({
             email: `ks_${Date.now()}@example.com`,
         });
@@ -90,7 +90,12 @@ describe('backup import keeps', () => {
             is_template: true,
             template_category: 'Work',
         });
-        await Tag.create({ name: 'focus', user_id: source.id, pinned: true });
+        await Tag.create({
+            name: 'focus',
+            user_id: source.id,
+            pinned: true,
+            color: '#ff8800',
+        });
         await source.update({ keyboard_shortcuts: { newTask: 'n' } });
 
         const backup = await exportUserData(source.id);
@@ -105,6 +110,7 @@ describe('backup import keeps', () => {
             where: { user_id: target.id, name: 'focus' },
         });
         expect(tag.pinned).toBe(true);
+        expect(tag.color).toBe('#ff8800');
         const reloaded = await User.findByPk(target.id);
         expect(reloaded.keyboard_shortcuts).toEqual({ newTask: 'n' });
     });
