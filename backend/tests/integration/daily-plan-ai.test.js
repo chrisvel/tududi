@@ -173,6 +173,42 @@ describe('Daily plan AI routes', () => {
         expect(res.body.code).toBe('AI_INVALID_RESPONSE');
     });
 
+    it('answers with an empty draft when the reply only repeats planned tasks', async () => {
+        const planned = await dueToday('Pay invoice');
+        await dueToday('Call bank');
+        await agent.put(`/api/daily-plan/${today}`).send({
+            items: [{ task_uid: planned.uid }],
+        });
+        const entry = {
+            task_uid: planned.uid,
+            start_minute: null,
+            duration_minutes: 30,
+            reason: 'Due today',
+        };
+        mockCreate.mockResolvedValue(
+            reply({ summary: 'Same as before', items: [entry, entry] })
+        );
+
+        const res = await agent
+            .post('/api/daily-plan/ai/draft')
+            .send({ mode: 'fill' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.items).toEqual([]);
+    });
+
+    it('answers with an error when the reply is not a JSON object', async () => {
+        await dueToday('Pay invoice');
+        mockCreate.mockResolvedValue(reply(null));
+
+        const res = await agent
+            .post('/api/daily-plan/ai/draft')
+            .send({ mode: 'fill' });
+
+        expect(res.status).toBe(502);
+        expect(res.body.code).toBe('AI_INVALID_RESPONSE');
+    });
+
     describe('calendar events in the draft', () => {
         const busy = {
             date: '2026-09-24',

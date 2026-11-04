@@ -261,7 +261,9 @@ async function callWithFallback(client, userId, params) {
             }
             // Providers without json_schema support (e.g. DeepSeek) still
             // accept plain JSON mode, so step down to json_object first and
-            // only drop response_format if that is rejected too.
+            // only drop response_format if that is rejected too. No flag is
+            // needed here: the step changes the type away from json_schema,
+            // so it can fire at most once.
             if (
                 attempt.response_format?.type === 'json_schema' &&
                 isResponseFormatRejection(err)
@@ -823,6 +825,7 @@ Rules:
     } catch {
         parsed = {};
     }
+    if (!parsed || typeof parsed !== 'object') parsed = {};
     if (typeof parsed.insight !== 'string' || !parsed.insight.trim()) {
         throw unusableResponseError();
     }
@@ -969,6 +972,7 @@ Rules:
     } catch {
         parsed = {};
     }
+    if (!parsed || typeof parsed !== 'object') parsed = {};
     if (typeof parsed.insight !== 'string' || !parsed.insight.trim()) {
         throw unusableResponseError();
     }

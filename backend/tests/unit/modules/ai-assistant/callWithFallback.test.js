@@ -264,6 +264,20 @@ describe('AI Assistant - insights in an unexpected shape', () => {
         });
     });
 
+    it('raises an error when the reply is JSON null', async () => {
+        mockCreate.mockResolvedValue({
+            ...OK_RESPONSE,
+            choices: [{ message: { content: 'null' } }],
+        });
+
+        await expect(
+            aiAssistantService.generateTaskInsights(
+                { taskName: 'Write the report' },
+                null
+            )
+        ).rejects.toMatchObject({ code: 'AI_INVALID_RESPONSE' });
+    });
+
     it('raises an error for project insights instead of returning them empty', async () => {
         await expect(
             aiAssistantService.generateProjectInsights(

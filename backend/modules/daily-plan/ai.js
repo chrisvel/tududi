@@ -89,12 +89,18 @@ async function askModel(userId, { name, system, user, schema, maxTokens }) {
         response_format: ai.buildResponseFormat(name, schema),
     });
     const raw = ai.extractMessageContent(response.choices[0]?.message);
+    let parsed;
     try {
-        return JSON.parse(ai.extractJSON(raw));
+        parsed = JSON.parse(ai.extractJSON(raw));
     } catch {
-        return {};
+        parsed = {};
     }
+    return parsed && typeof parsed === 'object' ? parsed : {};
 }
+
+// The candidate list itself uses `uid`, so models without schema support
+// often echo that name back.
+const entryUid = (entry) => entry?.task_uid || entry?.uid;
 
 function nowMinute(timezone, date) {
     const now = moment.tz(timezone);
@@ -139,9 +145,7 @@ function sanitizeDraft({ proposed, pool, existing, events, now, hours }) {
 
     for (const entry of Array.isArray(proposed) ? proposed : []) {
         if (accepted.length >= MAX_DRAFT_ITEMS) break;
-        // The candidate list itself uses `uid`, so models without schema
-        // support often echo that name back.
-        const uid = entry?.task_uid ?? entry?.uid;
+        const uid = entryUid(entry);
         const task = uid ? pool.get(uid) : null;
         if (!task || seen.has(uid)) continue;
         seen.add(uid);
@@ -343,14 +347,21 @@ Rules:
         now,
         hours,
     }).map((item) => ({ ...item, task: pool.get(item.task_uid) }));
-    // The model proposed tasks but none of them are ours: report that
-    // rather than telling the user there was nothing to plan.
-    if (proposed.length > 0 && items.length === 0) {
+    // The model proposed entries but none of them name one of our tasks:
+    // report that rather than telling the user there was nothing to plan.
+    // Entries dropped as already planned or repeated are a real "nothing
+    // to add", so they don't count.
+    const plannedUids = new Set(existing.map((item) => item.task_uid));
+    const recognised = proposed.some((entry) => {
+        const uid = entryUid(entry);
+        return Boolean(uid) && (pool.has(uid) || plannedUids.has(uid));
+    });
+    if (proposed.length > 0 && !recognised) {
         throw ai.unusableResponseError();
     }
 
     const skipped = (Array.isArray(parsed.skipped) ? parsed.skipped : [])
-        .map((s) => ({ ...s, task_uid: s?.task_uid ?? s?.uid }))
+        .map((s) => ({ ...s, task_uid: entryUid(s) }))
         .filter((s) => pool.has(s.task_uid))
         .slice(0, 5)
         .map((s) => ({
