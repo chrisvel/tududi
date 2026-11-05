@@ -317,6 +317,8 @@ async function exportOwnData(userId) {
             notification_preferences: user.notification_preferences,
             ai_profile: user.ai_profile,
             keyboard_shortcuts: user.keyboard_shortcuts,
+            onboarding_starter: user.onboarding_starter,
+            onboarded_at: user.onboarded_at,
             avatar_image_data: await readUploadedImage(
                 user.avatar_image,
                 'avatars'
@@ -490,6 +492,8 @@ async function exportLinkedRecords(userId) {
             plan_date: p.plan_date,
             started_at: p.started_at,
             ai_wrap_up: p.ai_wrap_up,
+            created_at: p.created_at,
+            updated_at: p.updated_at,
             items: (p.Items || [])
                 .filter((i) => taskUid[i.task_id])
                 .map((i) => ({
@@ -664,9 +668,19 @@ async function exportUserData(userId) {
     return backup;
 }
 
-// Resolves a reference either by uid (format 2) or, for old backups, by the
-// source's numeric id, but only among the importing user's own rows.
-function makeResolver(userId, transaction) {
+// The source row's own dates, so an imported row keeps when it was made and
+// last changed instead of taking the import time.
+const keptDates = (src) => ({
+    created_at: src.created_at || undefined,
+    updated_at: src.updated_at || undefined,
+});
+
+// Resolves a reference by uid. Only old backups (before format 2) carry no
+// uids, so only they fall back to the source's numeric id, and only among the
+// importing user's own rows. A format 2 backup with a null uid means the
+// reference is gone (say the parent task was deleted), and its numeric id
+// would point at an unrelated row here.
+function makeResolver(userId, transaction, allowLegacyIds) {
     return async (Model, uid, legacyId, uidMap) => {
         if (uid && uidMap[uid]) return uidMap[uid];
         if (uid) {
@@ -677,7 +691,7 @@ function makeResolver(userId, transaction) {
             });
             if (row) return row.id;
         }
-        if (legacyId && !uid) {
+        if (allowLegacyIds && legacyId && !uid) {
             const row = await Model.findOne({
                 where: { id: legacyId, user_id: userId },
                 attributes: ['id'],
@@ -780,7 +794,11 @@ async function importOwnData(
     };
     const writtenFiles = [];
     const transaction = await sequelize.transaction();
-    const resolve = makeResolver(userId, transaction);
+    const resolve = makeResolver(
+        userId,
+        transaction,
+        !(Number(backupData.format) >= 2)
+    );
 
     // uids are unique across the whole table, not per user. A row with the
     // backup's uid that belongs to this user is the same record (skip); one
@@ -801,13 +819,15 @@ async function importOwnData(
             count(key, 'skipped');
             return { row: null, created: false };
         }
+        const fields = await build();
         const row = await Model.create(
             {
-                ...(await build()),
+                ...fields,
                 uid: existing ? generateUid() : uid,
                 user_id: userId,
             },
-            { transaction }
+            // silent keeps the backup's updated_at instead of now
+            { transaction, silent: !!fields.updated_at }
         );
         count(key, 'created');
         uidMaps[key][uid] = row.id;
@@ -881,6 +901,12 @@ async function importOwnData(
                 notification_preferences: bu.notification_preferences,
                 ai_profile: bu.ai_profile,
                 keyboard_shortcuts: bu.keyboard_shortcuts,
+                // A restored account is one already in use, so it skips the welcome
+                // page. Backups made before these were exported carry neither.
+                onboarding_starter:
+                    bu.onboarding_starter || user.onboarding_starter || 'empty',
+                onboarded_at:
+                    bu.onboarded_at || user.onboarded_at || new Date(),
             };
             for (const key of Object.keys(profileUpdates)) {
                 if (profileUpdates[key] === undefined)
@@ -916,6 +942,7 @@ async function importOwnData(
                 continue;
             }
             await upsertByUid(Tag, 'tags', tag.uid, async () => ({
+                ...keptDates(tag),
                 name: tag.name,
                 tag_type: tag.tag_type || 'user',
                 pinned: !!tag.pinned,
@@ -925,6 +952,7 @@ async function importOwnData(
 
         for (const area of d.areas || []) {
             await upsertByUid(Area, 'areas', area.uid, async () => ({
+                ...keptDates(area),
                 name: area.name,
                 description: area.description,
                 color: area.color,
@@ -933,6 +961,7 @@ async function importOwnData(
 
         for (const goal of d.goals || []) {
             await upsertByUid(Goal, 'goals', goal.uid, async () => ({
+                ...keptDates(goal),
                 title: goal.title,
                 why: goal.why,
                 horizon: goal.horizon,
@@ -1029,6 +1058,7 @@ async function importOwnData(
                         }
                     }
                     return {
+                        ...keptDates(project),
                         name: project.name,
                         description: project.description,
                         pin_to_sidebar: project.pin_to_sidebar,
@@ -1041,6 +1071,9 @@ async function importOwnData(
                         task_show_completed: project.task_show_completed,
                         task_sort_order: project.task_sort_order,
                         status: project.status || project.state,
+                        // Without it the save hook stamps every finished
+                        // project as completed at import time.
+                        completed_at: project.completed_at ?? null,
                         is_maintenance: !!project.is_maintenance,
                         is_template: !!project.is_template,
                         template_category: project.template_category ?? null,
@@ -1083,8 +1116,10 @@ async function importOwnData(
                 'tasks',
                 task.uid,
                 async () => ({
+                    ...keptDates(task),
                     name: task.name,
                     due_date: task.due_date,
+                    due_has_time: !!task.due_has_time,
                     defer_until: task.defer_until,
                     start_date: task.start_date ?? null,
                     start_has_time: !!task.start_has_time,
@@ -1212,7 +1247,7 @@ async function importOwnData(
             );
             if (recurringId) updates.recurring_parent_id = recurringId;
             if (Object.keys(updates).length)
-                await row.update(updates, { transaction });
+                await row.update(updates, { transaction, silent: true });
         }
 
         for (const note of d.notes || []) {
@@ -1221,6 +1256,7 @@ async function importOwnData(
                 'notes',
                 note.uid,
                 async () => ({
+                    ...keptDates(note),
                     title: note.title,
                     content: note.content,
                     color: note.color,
@@ -1247,7 +1283,10 @@ async function importOwnData(
                     renamed
                 );
                 if (content !== row.content) {
-                    await row.update({ content }, { transaction });
+                    await row.update(
+                        { content },
+                        { transaction, silent: true }
+                    );
                 }
             }
             if (created && note.tag_uids?.length) {
@@ -1264,6 +1303,7 @@ async function importOwnData(
                 'inbox_items',
                 item.uid,
                 async () => ({
+                    ...keptDates(item),
                     content: item.content,
                     title: item.title,
                     status: item.status,
@@ -1282,6 +1322,7 @@ async function importOwnData(
 
         for (const view of d.views || []) {
             await upsertByUid(View, 'views', view.uid, async () => ({
+                ...keptDates(view),
                 name: view.name,
                 search_query: view.search_query,
                 filters: view.filters,
@@ -1769,8 +1810,9 @@ async function restoreLinkedRecords(entries, renames, personUids, stats) {
                             plan_date: p.plan_date,
                             started_at: p.started_at || null,
                             ai_wrap_up: p.ai_wrap_up ?? null,
+                            ...keptDates(p),
                         },
-                        { transaction }
+                        { transaction, silent: !!p.updated_at }
                     );
                     count('daily_plans', true);
                 }

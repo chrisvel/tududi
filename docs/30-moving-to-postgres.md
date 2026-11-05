@@ -88,6 +88,8 @@ When everything looks right you can delete the old `tududi_db` folder and drop `
 
 Every row gets a new numeric id; references between rows are kept through uids.
 
+Rows keep their original created and updated dates, finished projects keep their completion date, and tasks keep their due time. A subtask whose parent was deleted before the backup comes across as a top-level task.
+
 ## What You Set Up Again
 
 - **API tokens.** Create new ones and update your scripts, MCP clients and integrations.
