@@ -112,16 +112,17 @@ const AppriseCard: React.FC<AppriseCardProps> = ({ onStateChange }) => {
             </div>
 
             {!configured && config && (
-                <form
+                <div
                     className="mt-4 grid gap-3 sm:grid-cols-3"
-                    autoComplete="off"
-                    onSubmit={(e) => {
+                    onKeyDown={(e) => {
+                        if (e.key !== 'Enter') return;
                         e.preventDefault();
                         if (url && key && !busy) handleSave();
                     }}
                 >
                     <input
                         type="url"
+                        autoComplete="off"
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         placeholder="http://192.168.1.10:8000"
@@ -133,6 +134,7 @@ const AppriseCard: React.FC<AppriseCardProps> = ({ onStateChange }) => {
                     />
                     <input
                         type="password"
+                        autoComplete="new-password"
                         value={key}
                         onChange={(e) => setKey(e.target.value)}
                         placeholder={t(
@@ -167,7 +169,8 @@ const AppriseCard: React.FC<AppriseCardProps> = ({ onStateChange }) => {
                             )}
                         </p>
                         <button
-                            type="submit"
+                            type="button"
+                            onClick={handleSave}
                             disabled={!url || !key || busy}
                             className="px-3 py-1.5 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                         >
@@ -176,7 +179,7 @@ const AppriseCard: React.FC<AppriseCardProps> = ({ onStateChange }) => {
                                 : t('notifications.apprise.save', 'Save')}
                         </button>
                     </div>
-                </form>
+                </div>
             )}
 
             {message && (

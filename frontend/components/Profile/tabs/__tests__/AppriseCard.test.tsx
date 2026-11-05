@@ -71,6 +71,43 @@ describe('AppriseCard', () => {
         );
     });
 
+    it('saves without submitting the surrounding profile form', async () => {
+        mockGet.mockResolvedValue({ configured: false, host: null, tags: '' });
+        mockSave.mockResolvedValue({
+            configured: true,
+            host: '192.168.1.10:8000',
+            tags: '',
+        });
+        const onStateChange = jest.fn();
+        const onOuterSubmit = jest.fn((e: React.FormEvent) =>
+            e.preventDefault()
+        );
+
+        render(
+            <form onSubmit={onOuterSubmit}>
+                <AppriseCard onStateChange={onStateChange} />
+            </form>
+        );
+        await waitFor(() => expect(onStateChange).toHaveBeenCalledWith(false));
+
+        fireEvent.change(
+            screen.getByRole('textbox', { name: /apprise server address/i }),
+            { target: { value: 'http://192.168.1.10:8000' } }
+        );
+        fireEvent.change(screen.getByLabelText(/config key/i), {
+            target: { value: 'phone' },
+        });
+        expect(
+            screen.getByRole('button', { name: /save/i }).getAttribute('type')
+        ).toBe('button');
+        fireEvent.keyDown(screen.getByLabelText(/config key/i), {
+            key: 'Enter',
+        });
+        await waitFor(() => expect(mockSave).toHaveBeenCalledTimes(1));
+
+        expect(onOuterSubmit).not.toHaveBeenCalled();
+    });
+
     it('removes a saved server', async () => {
         mockGet.mockResolvedValue({
             configured: true,
