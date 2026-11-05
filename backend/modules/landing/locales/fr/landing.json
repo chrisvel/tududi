@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Changer de langue",
     "langSwitcherCurrent": "Langue : {{name}}",
-    "description": "Notez tout, planifiez la journée avec l’IA autour de votre agenda, et gardez domaines, objectifs, projets, notes et habitudes dans un seul système. Un serveur MCP exposant {{tools}} outils laisse les agents IA travailler sur votre liste. Un compte tududi Cloud se crée en une minute.",
-    "title": "tududi : gestionnaire de tâches et système de gestion de vie, avec MCP pour les agents IA"
+    "description": "tududi est un système de gestion de vie pour le travail, la maison et la famille. Planifiez, suivez vos habitudes, partagez. Essai gratuit de tududi Cloud.",
+    "title": "tududi : système de gestion de vie serein pour gens pressés"
   },
   "nav": {
     "demo": "Démo en direct",
@@ -419,7 +419,7 @@
       "Exportez tout, à tout moment"
     ],
     "lede": "Le même système dans les deux cas. La différence, c'est qui le maintient en marche, à jour et sauvegardé à trois heures du matin.",
-    "metaDescription": "tududi Cloud est le même système open source, hébergé sur nos serveurs, avec mises à jour, sauvegardes et e-mails gérés pour vous. Pro pour une personne ou un forfait Équipe pour un groupe, au mois ou à l'année, résiliable à tout moment.",
+    "metaDescription": "tududi Cloud fait tourner votre système de gestion de vie : mises à jour, sauvegardes, e-mails. Pro pour une personne ou forfait Équipe. Sans engagement.",
     "metaTitle": "tududi Cloud : tududi hébergé, géré pour vous",
     "note": "Même application sous licence MIT. Exportez tout, à tout moment.",
     "orAnnual": "ou",
@@ -452,7 +452,7 @@
         "title": "Mises à jour appliquées pour vous"
       }
     },
-    "title": "Pourquoi utiliser tududi Cloud ?",
+    "title": "Pourquoi tududi Cloud pour votre système de gestion de vie ?",
     "whyEyebrow": "Cloud",
     "whySub": "Pas des fonctionnalités. Chaque fonctionnalité est aussi dans la version auto-hébergée.",
     "whyTitle": "Ce que vous payez réellement",

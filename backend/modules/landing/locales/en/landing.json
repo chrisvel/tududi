@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "tududi: get everything out of your head, into one calm place",
-    "description": "Work, home, family, health. Put it all in one calm place, sorted by the parts of your life, and see only what matters today. Try tududi Cloud free, no card needed.",
+    "title": "tududi: a calm life management system for busy people",
+    "description": "tududi is a life management system for work, home and family. Plan your day, track habits and share with others. Try tududi Cloud free, no card needed.",
     "langSwitcherLabel": "Change language",
     "langSwitcherCurrent": "Language: {{name}}"
   },
@@ -428,8 +428,8 @@
   },
   "cloud": {
     "metaTitle": "tududi Cloud: the hosted tududi, run for you",
-    "metaDescription": "tududi Cloud is the same open source system, running on our servers with updates, backups and email handled for you. Pro for one person or a Team plan for a group, monthly or yearly, cancel any time.",
-    "title": "Why use tududi Cloud?",
+    "metaDescription": "tududi Cloud runs your life management system for you, with updates, backups and email handled. Pro for one person or a Team plan. Cancel any time.",
+    "title": "Why use tududi Cloud for your life management system?",
     "lede": "The same system either way. The difference is who keeps it running, patched and backed up at three in the morning.",
     "ctaPrimary": "Get started",
     "ctaPricing": "See the price",

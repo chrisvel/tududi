@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Zamenjaj jezik",
     "langSwitcherCurrent": "Jezik: {{name}}",
-    "description": "Zapišite vse, z UI načrtujte dan okoli koledarja in imejte področja, cilje, projekte, zapiske in navade v enem sistemu. Strežnik MCP z {{tools}} orodji omogoča agentom UI, da delajo z vašim seznamom. Račun tududi Cloud je pripravljen v minuti.",
-    "title": "tududi: upravljalnik nalog in sistem za upravljanje življenja, z MCP za agente AI"
+    "description": "tududi je sistem za upravljanje življenja za delo, dom in družino. Načrtuj dan, spremljaj navade in deli z drugimi. Preizkusi tududi Cloud brezplačno.",
+    "title": "tududi: miren sistem za upravljanje življenja za zaposlene"
   },
   "nav": {
     "demo": "Demo v živo",
@@ -419,7 +419,7 @@
       "Izvozite vse, kadarkoli"
     ],
     "lede": "Enak sistem v obeh primerih. Razlika je, kdo ga vzdržuje delujočega, popravljenega in varnostno kopiranega ob treh zjutraj.",
-    "metaDescription": "tududi Cloud je isti odprtokodni sistem, ki teče na naših strežnikih, posodobitve, varnostne kopije in e-pošto pa uredimo namesto vas. Pro za eno osebo ali paket Ekipa za skupino, mesečno ali letno, prekličete kadar koli.",
+    "metaDescription": "tududi Cloud poganja vaš sistem za upravljanje življenja, s posodobitvami, kopijami in e-pošto. Pro za enega ali paket Ekipa. Prekličete kadar koli.",
     "metaTitle": "tududi Cloud: gostovani tududi, upravljan za vas",
     "note": "Enaka aplikacija z licenco MIT. Izvozite vse, kadarkoli.",
     "orAnnual": "ali",
@@ -452,7 +452,7 @@
         "title": "Posodobitve izvedene za vas"
       }
     },
-    "title": "Zakaj uporabljati tududi Cloud?",
+    "title": "Zakaj tududi Cloud za vaš sistem za upravljanje življenja?",
     "whyEyebrow": "Cloud",
     "whySub": "Ne funkcije. Vsaka funkcija je tudi v samostojno gostovani različici.",
     "whyTitle": "Za kaj dejansko plačujete",

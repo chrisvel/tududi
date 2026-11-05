@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Dili değiştir",
     "langSwitcherCurrent": "Dil: {{name}}",
-    "description": "Her şeyi yakala, günü yapay zekâyla takviminin etrafında planla; alanlar, hedefler, projeler, notlar ve alışkanlıklar tek sistemde. {{tools}} araçlı bir MCP sunucusu yapay zekâ ajanlarının listen üzerinde çalışmasını sağlar. tududi Cloud hesabı bir dakikada hazır.",
-    "title": "tududi: görev yöneticisi ve yaşam yönetim sistemi, AI aracıları için MCP ile"
+    "description": "tududi; iş, ev ve aile için bir yaşam yönetim sistemidir. Gününü planla, alışkanlıklarını izle, paylaş. tududi Cloud'u kart gerekmeden ücretsiz dene.",
+    "title": "tududi: yoğun insanlar için sakin bir yaşam yönetim sistemi"
   },
   "nav": {
     "demo": "Canlı demo",
@@ -419,7 +419,7 @@
       "Her şeyi istediğiniz zaman dışa aktarın"
     ],
     "lede": "Her iki durumda da aynı sistem. Fark, onu gece üçte çalışır, güncel ve yedeklenmiş tutan kişidir.",
-    "metaDescription": "tududi Cloud, aynı açık kaynak sistemin sunucularımızda çalışan hâlidir; güncellemeler, yedeklemeler ve e-posta sizin yerinize halledilir. Tek kişi için Pro ya da bir grup için Ekip planı, aylık ya da yıllık, istediğiniz zaman iptal edin.",
+    "metaDescription": "tududi Cloud yaşam yönetim sisteminizi çalıştırır; güncellemeler, yedekler ve e-posta dahil. Tek kişiye Pro veya Ekip planı. İstediğiniz an iptal edin.",
     "metaTitle": "tududi Cloud: sizin için işletilen, barındırılan tududi",
     "note": "Aynı MIT lisanslı uygulama. Her şeyi istediğiniz zaman dışa aktarın.",
     "orAnnual": "veya",
@@ -452,7 +452,7 @@
         "title": "Sizin için uygulanan güncellemeler"
       }
     },
-    "title": "Neden tududi Cloud kullanmalı?",
+    "title": "Yaşam yönetim sisteminiz için neden tududi Cloud?",
     "whyEyebrow": "Cloud",
     "whySub": "Özellikler değil. Her özellik kendi barındırılan sürümde de var.",
     "whyTitle": "Gerçekte ne için ödüyorsunuz",

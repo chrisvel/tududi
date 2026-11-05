@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Cambia lingua",
     "langSwitcherCurrent": "Lingua: {{name}}",
-    "description": "Annota tutto, pianifica la giornata con l’IA attorno al calendario e tieni aree, obiettivi, progetti, note e abitudini in un unico sistema. Un server MCP con {{tools}} strumenti fa lavorare gli agenti IA sulla tua lista. Un account tududi Cloud si crea in un minuto.",
-    "title": "tududi: gestore di attività e sistema di gestione della vita, con MCP per agenti IA"
+    "description": "tududi è un sistema di gestione della vita per lavoro, casa e famiglia. Pianifica la giornata, segui abitudini, condividi. Prova tududi Cloud gratis.",
+    "title": "tududi: sistema di gestione della vita calmo per chi corre"
   },
   "nav": {
     "demo": "Demo dal vivo",
@@ -419,7 +419,7 @@
       "Esporta tutto, in qualsiasi momento"
     ],
     "lede": "Lo stesso sistema in entrambi i casi. La differenza è chi lo mantiene attivo, aggiornato e con backup alle tre di notte.",
-    "metaDescription": "tududi Cloud è lo stesso sistema open source, in esecuzione sui nostri server, con aggiornamenti, backup ed email gestiti per te. Pro per una persona o un piano Team per un gruppo, mensile o annuale, annulli quando vuoi.",
+    "metaDescription": "tududi Cloud gestisce il tuo sistema di gestione della vita: aggiornamenti, backup ed email inclusi. Pro per una persona o piano Team. Disdici quando vuoi.",
     "metaTitle": "tududi Cloud: il tududi ospitato, gestito per te",
     "note": "Stessa app con licenza MIT. Esporta tutto, in qualsiasi momento.",
     "orAnnual": "o",
@@ -452,7 +452,7 @@
         "title": "Aggiornamenti applicati per te"
       }
     },
-    "title": "Perché usare tududi Cloud?",
+    "title": "Perché tududi Cloud per il tuo sistema di gestione della vita?",
     "whyEyebrow": "Cloud",
     "whySub": "Non funzioni. Ogni funzione è anche nella versione self-hosted.",
     "whyTitle": "Quello che stai davvero pagando",

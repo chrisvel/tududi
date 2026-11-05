@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Zmień język",
     "langSwitcherCurrent": "Język: {{name}}",
-    "description": "Zapisuj wszystko, planuj dzień z AI wokół kalendarza i trzymaj obszary, cele, projekty, notatki i nawyki w jednym systemie. Serwer MCP z {{tools}} narzędziami pozwala agentom AI pracować na twojej liście. Konto tududi Cloud założysz w minutę.",
-    "title": "tududi: menedżer zadań i system zarządzania życiem, z MCP dla agentów AI"
+    "description": "tududi to system zarządzania życiem dla pracy, domu i rodziny. Planuj dzień, śledź nawyki i dziel się z innymi. Wypróbuj tududi Cloud za darmo, bez karty.",
+    "title": "tududi: spokojny system zarządzania życiem dla zabieganych"
   },
   "nav": {
     "demo": "Demo na żywo",
@@ -419,7 +419,7 @@
       "Eksportuj wszystko, w każdej chwili"
     ],
     "lede": "Ten sam system w obu przypadkach. Różnica polega na tym, kto trzyma go działającego, załatanego i zapisanego o trzeciej w nocy.",
-    "metaDescription": "tududi Cloud to ten sam system open source, działający na naszych serwerach, z aktualizacjami, kopiami zapasowymi i e-mailem obsługiwanymi za Ciebie. Pro dla jednej osoby lub plan Zespół dla grupy, miesięcznie lub rocznie, z możliwością rezygnacji w każdej chwili.",
+    "metaDescription": "tududi Cloud prowadzi Twój system zarządzania życiem: aktualizacje, kopie i e-mail. Pro dla jednej osoby lub plan Zespół. Rezygnujesz w każdej chwili.",
     "metaTitle": "tududi Cloud: hostowany tududi, prowadzony za Ciebie",
     "note": "Ta sama aplikacja na licencji MIT. Eksportuj wszystko, w każdej chwili.",
     "orAnnual": "lub",
@@ -452,7 +452,7 @@
         "title": "Aktualizacje wykonywane za Ciebie"
       }
     },
-    "title": "Dlaczego korzystać z tududi Cloud?",
+    "title": "Dlaczego tududi Cloud dla Twojego systemu zarządzania życiem?",
     "whyEyebrow": "Cloud",
     "whySub": "Nie funkcje. Każda funkcja jest też w wersji samodzielnie hostowanej.",
     "whyTitle": "Za co właściwie płacisz",

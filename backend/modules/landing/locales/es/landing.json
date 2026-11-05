@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Cambiar idioma",
     "langSwitcherCurrent": "Idioma: {{name}}",
-    "description": "Apúntalo todo, planifica el día con IA alrededor de tu calendario y reúne áreas, objetivos, proyectos, notas y hábitos en un solo sistema. Un servidor MCP con {{tools}} herramientas deja que los agentes de IA trabajen tu lista. Crea una cuenta de tududi Cloud en un minuto.",
-    "title": "tududi: gestor de tareas y sistema de gestión de vida, con MCP para agentes de IA"
+    "description": "tududi es un sistema de gestión de vida para trabajo, casa y familia. Planifica tu día, sigue hábitos y comparte. Prueba tududi Cloud gratis, sin tarjeta.",
+    "title": "tududi: sistema de gestión de vida para gente ocupada"
   },
   "nav": {
     "demo": "Demo en vivo",
@@ -419,7 +419,7 @@
       "Exporta todo, cuando quieras"
     ],
     "lede": "El mismo sistema en ambos casos. La diferencia es quién lo mantiene funcionando, parcheado y respaldado a las tres de la madrugada.",
-    "metaDescription": "tududi Cloud es el mismo sistema de código abierto, funcionando en nuestros servidores, con actualizaciones, copias de seguridad y correo resueltos por ti. Pro para una persona o un plan Equipo para un grupo, mensual o anual, cancela cuando quieras.",
+    "metaDescription": "tududi Cloud lleva tu sistema de gestión de vida, con actualizaciones, copias y correo. Pro para una persona o plan Equipo. Cancela cuando quieras.",
     "metaTitle": "tududi Cloud: el tududi alojado, gestionado por nosotros",
     "note": "La misma aplicación con licencia MIT. Exporta todo, cuando quieras.",
     "orAnnual": "o",
@@ -452,7 +452,7 @@
         "title": "Actualizaciones aplicadas por nosotros"
       }
     },
-    "title": "¿Por qué usar tududi Cloud?",
+    "title": "¿Por qué usar tududi Cloud para tu sistema de gestión de vida?",
     "whyEyebrow": "Cloud",
     "whySub": "No son funciones. Cada función también está en la versión autoalojada.",
     "whyTitle": "Lo que realmente estás pagando",

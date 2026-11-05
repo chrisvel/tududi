@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Ganti bahasa",
     "langSwitcherCurrent": "Bahasa: {{name}}",
-    "description": "Catat apa saja, rencanakan hari dengan AI di sekitar kalender, dan simpan area, tujuan, proyek, catatan, dan kebiasaan dalam satu sistem. Server MCP dengan {{tools}} alat memungkinkan agen AI mengerjakan daftar Anda. Akun tududi Cloud siap dalam semenit.",
-    "title": "tududi: manajer tugas dan sistem manajemen hidup, dengan MCP untuk agen AI"
+    "description": "tududi adalah sistem manajemen hidup untuk kerja, rumah, dan keluarga. Rencanakan hari, pantau kebiasaan, berbagi. Coba tududi Cloud gratis tanpa kartu.",
+    "title": "tududi: sistem manajemen hidup yang tenang untuk orang sibuk"
   },
   "nav": {
     "demo": "Demo langsung",
@@ -419,7 +419,7 @@
       "Ekspor semuanya, kapan saja"
     ],
     "lede": "Sistem yang sama pada kedua kasus. Bedanya adalah siapa yang menjaganya tetap berjalan, ditambal, dan dicadangkan pada pukul tiga pagi.",
-    "metaDescription": "tududi Cloud adalah sistem open source yang sama, berjalan di server kami dengan pembaruan, cadangan, dan email yang kami urus untuk Anda. Pro untuk satu orang atau paket Tim untuk kelompok, bulanan atau tahunan, batalkan kapan saja.",
+    "metaDescription": "tududi Cloud menjalankan sistem manajemen hidup Anda, termasuk pembaruan, cadangan, dan email. Pro untuk satu orang atau paket Tim. Batalkan kapan saja.",
     "metaTitle": "tududi Cloud: tududi yang dihosting, dijalankan untuk Anda",
     "note": "Aplikasi berlisensi MIT yang sama. Ekspor semuanya, kapan saja.",
     "orAnnual": "atau",
@@ -452,7 +452,7 @@
         "title": "Pembaruan diterapkan untuk Anda"
       }
     },
-    "title": "Mengapa menggunakan tududi Cloud?",
+    "title": "Mengapa tududi Cloud untuk sistem manajemen hidup Anda?",
     "whyEyebrow": "Cloud",
     "whySub": "Bukan fitur. Setiap fitur juga ada di build hosting sendiri.",
     "whyTitle": "Yang sebenarnya Anda bayar",
