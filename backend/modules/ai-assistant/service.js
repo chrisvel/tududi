@@ -842,7 +842,7 @@ Rules:
         .slice(0, 3);
 
     const result = {
-        insight: parsed.insight || '',
+        insight: parsed.insight,
         next_step: parsed.next_step || '',
         breakdown: Array.isArray(parsed.breakdown) ? parsed.breakdown : [],
         links,
@@ -978,7 +978,7 @@ Rules:
     }
 
     const result = {
-        insight: parsed.insight || '',
+        insight: parsed.insight,
         next_action: parsed.next_action || '',
         health: parsed.health || '',
         watch_out: parsed.watch_out || null,

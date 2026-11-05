@@ -288,6 +288,8 @@ describe('Daily plan AI routes', () => {
         ]);
         expect(second.body.estimates).toEqual(first.body.estimates);
         expect(mockCreate).toHaveBeenCalledTimes(1);
+        const system = mockCreate.mock.calls[0][0].messages[0].content;
+        expect(system).toContain('{"estimates": [{"task_uid"');
     });
 
     it('stores the wrap-up with the plan and carries tasks to tomorrow', async () => {
@@ -314,6 +316,8 @@ describe('Daily plan AI routes', () => {
         expect(res.body.wrap_up.carry_over.map((c) => c.task_uid)).toEqual([
             open.uid,
         ]);
+        const system = mockCreate.mock.calls[0][0].messages[0].content;
+        expect(system).toContain('"carry_over": [{"task_uid"');
         const plan = await agent.get('/api/daily-plan');
         expect(plan.body.plan.ai_wrap_up.summary).toBe('Half done');
 

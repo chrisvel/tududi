@@ -448,7 +448,8 @@ async function estimateTasks(userId, taskUids) {
                 required: ['estimates'],
                 additionalProperties: false,
             },
-            system: `Estimate how long each task takes one focused person, in minutes. Use 15, 30, 45, 60, 90, 120, 180 or 240. Be realistic, not optimistic: errands and calls are short, research and writing take longer. Return only the JSON object with one entry per task_uid given.`,
+            system: `Estimate how long each task takes one focused person, in minutes. Use 15, 30, 45, 60, 90, 120, 180 or 240. Be realistic, not optimistic: errands and calls are short, research and writing take longer. Return only the JSON object with one entry per task_uid given, in exactly this shape:
+{"estimates": [{"task_uid": "...", "minutes": 30}]}`,
             user: missing
                 .map((task) =>
                     JSON.stringify({
@@ -557,7 +558,8 @@ async function wrapUpDay(userId, date) {
 - wins: 0 to 3 short items (at most 8 words each) naming what got done.
 - carry_over: unfinished tasks worth doing tomorrow, using task_uid values from the list, each with a reason of at most 8 words. Leave out tasks that look optional.
 - pattern: at most 20 words on one useful pattern (e.g. morning blocks slipped, overplanned by 2h), or an empty string.
-Plain text, no markdown. Return only the JSON object.${languageInstruction(user.language)}`,
+Plain text, no markdown. Return only the JSON object, in exactly this shape:
+{"summary": "...", "wins": ["..."], "carry_over": [{"task_uid": "...", "reason": "..."}], "pattern": "..."}${languageInstruction(user.language)}`,
         user: [
             `Date: ${planDate}.`,
             user.ai_profile ? `About the user: ${user.ai_profile}` : '',
