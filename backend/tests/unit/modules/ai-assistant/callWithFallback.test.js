@@ -12,7 +12,7 @@ function makeError(props) {
 }
 
 const OK_RESPONSE = {
-    choices: [{ message: { content: '{}' } }],
+    choices: [{ message: { content: '{"insight":"ok"}' } }],
     model: 'test-model',
     usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
 };
@@ -124,7 +124,7 @@ describe('AI Assistant - callWithFallback max_completion_tokens retry', () => {
         expect(mockCreate).toHaveBeenCalledTimes(2);
     });
 
-    it('composes the max_tokens swap with the response_format drop', async () => {
+    it('composes the max_tokens swap with the json_object fallback', async () => {
         mockCreate
             .mockRejectedValueOnce(
                 makeError({
@@ -151,6 +151,142 @@ describe('AI Assistant - callWithFallback max_completion_tokens retry', () => {
         const finalCall = mockCreate.mock.calls[2][0];
         expect(finalCall.max_tokens).toBeUndefined();
         expect(finalCall.max_completion_tokens).toBe(600);
-        expect(finalCall.response_format).toBeUndefined();
+        expect(finalCall.response_format).toEqual({ type: 'json_object' });
+    });
+});
+
+describe('AI Assistant - callWithFallback response_format retry', () => {
+    const savedApiKey = process.env.LLM_API_KEY;
+    const formatRejection = () =>
+        makeError({
+            status: 400,
+            message:
+                'This response_format type is unavailable now (json_schema)',
+        });
+
+    beforeEach(() => {
+        process.env.LLM_API_KEY = 'test-key';
+        mockCreate.mockReset();
+        OpenAI.mockImplementation(() => ({
+            chat: { completions: { create: (...args) => mockCreate(...args) } },
+        }));
+    });
+
+    afterEach(() => {
+        if (savedApiKey === undefined) {
+            delete process.env.LLM_API_KEY;
+        } else {
+            process.env.LLM_API_KEY = savedApiKey;
+        }
+    });
+
+    it('retries with json_object when the provider rejects json_schema', async () => {
+        mockCreate
+            .mockRejectedValueOnce(formatRejection())
+            .mockResolvedValueOnce(OK_RESPONSE);
+
+        await aiAssistantService.generateProjectInsights(
+            { projectName: 'Website redesign' },
+            null
+        );
+
+        expect(mockCreate).toHaveBeenCalledTimes(2);
+        expect(mockCreate.mock.calls[0][0].response_format.type).toBe(
+            'json_schema'
+        );
+        expect(mockCreate.mock.calls[1][0].response_format).toEqual({
+            type: 'json_object',
+        });
+    });
+
+    it('drops response_format only after json_object is rejected too', async () => {
+        mockCreate
+            .mockRejectedValueOnce(formatRejection())
+            .mockRejectedValueOnce(formatRejection())
+            .mockResolvedValueOnce(OK_RESPONSE);
+
+        await aiAssistantService.generateProjectInsights(
+            { projectName: 'Website redesign' },
+            null
+        );
+
+        expect(mockCreate).toHaveBeenCalledTimes(3);
+        expect(mockCreate.mock.calls[2][0].response_format).toBeUndefined();
+    });
+
+    it('gives up after dropping response_format did not help', async () => {
+        mockCreate.mockRejectedValue(formatRejection());
+
+        await expect(
+            aiAssistantService.generateProjectInsights(
+                { projectName: 'Website redesign' },
+                null
+            )
+        ).rejects.toThrow('response_format');
+        expect(mockCreate).toHaveBeenCalledTimes(3);
+    });
+});
+
+describe('AI Assistant - insights in an unexpected shape', () => {
+    const savedApiKey = process.env.LLM_API_KEY;
+
+    beforeEach(() => {
+        process.env.LLM_API_KEY = 'test-key';
+        mockCreate.mockReset();
+        OpenAI.mockImplementation(() => ({
+            chat: { completions: { create: (...args) => mockCreate(...args) } },
+        }));
+        mockCreate.mockResolvedValue({
+            ...OK_RESPONSE,
+            choices: [
+                { message: { content: '{"analysis":"wrong field names"}' } },
+            ],
+        });
+    });
+
+    afterEach(() => {
+        if (savedApiKey === undefined) {
+            delete process.env.LLM_API_KEY;
+        } else {
+            process.env.LLM_API_KEY = savedApiKey;
+        }
+    });
+
+    it('raises an error for task insights instead of returning them empty', async () => {
+        await expect(
+            aiAssistantService.generateTaskInsights(
+                { taskName: 'Write the report' },
+                null
+            )
+        ).rejects.toMatchObject({
+            statusCode: 502,
+            code: 'AI_INVALID_RESPONSE',
+        });
+    });
+
+    it('raises an error when the reply is JSON null', async () => {
+        mockCreate.mockResolvedValue({
+            ...OK_RESPONSE,
+            choices: [{ message: { content: 'null' } }],
+        });
+
+        await expect(
+            aiAssistantService.generateTaskInsights(
+                { taskName: 'Write the report' },
+                null
+            )
+        ).rejects.toMatchObject({ code: 'AI_INVALID_RESPONSE' });
+    });
+
+    it('raises an error for project insights instead of returning them empty', async () => {
+        await expect(
+            aiAssistantService.generateProjectInsights(
+                { projectName: 'Website redesign' },
+                null
+            )
+        ).rejects.toMatchObject({
+            statusCode: 502,
+            code: 'AI_INVALID_RESPONSE',
+        });
     });
 });

@@ -10,7 +10,7 @@ const plans = require('../../../../config/plans');
 const { getConfig } = require('../../../../config/config');
 
 const OK_RESPONSE = {
-    choices: [{ message: { content: '{}' } }],
+    choices: [{ message: { content: '{"insight":"ok"}' } }],
     model: 'test-model',
     usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
 };

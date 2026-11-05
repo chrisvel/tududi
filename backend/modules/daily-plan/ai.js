@@ -89,12 +89,18 @@ async function askModel(userId, { name, system, user, schema, maxTokens }) {
         response_format: ai.buildResponseFormat(name, schema),
     });
     const raw = ai.extractMessageContent(response.choices[0]?.message);
+    let parsed;
     try {
-        return JSON.parse(ai.extractJSON(raw));
+        parsed = JSON.parse(ai.extractJSON(raw));
     } catch {
-        return {};
+        parsed = {};
     }
+    return parsed && typeof parsed === 'object' ? parsed : {};
 }
+
+// The candidate list itself uses `uid`, so models without schema support
+// often echo that name back.
+const entryUid = (entry) => entry?.task_uid || entry?.uid;
 
 function nowMinute(timezone, date) {
     const now = moment.tz(timezone);
@@ -139,7 +145,7 @@ function sanitizeDraft({ proposed, pool, existing, events, now, hours }) {
 
     for (const entry of Array.isArray(proposed) ? proposed : []) {
         if (accepted.length >= MAX_DRAFT_ITEMS) break;
-        const uid = entry?.task_uid;
+        const uid = entryUid(entry);
         const task = uid ? pool.get(uid) : null;
         if (!task || seen.has(uid)) continue;
         seen.add(uid);
@@ -314,6 +320,9 @@ async function draftDay(userId, { date, mode = 'fill' } = {}) {
         schema: DRAFT_SCHEMA,
         system: `You plan one person's day in Tududi. Pick a realistic set of tasks for the free time and place them.
 
+Return a JSON object with exactly this shape:
+{"summary": "...", "items": [{"task_uid": "...", "start_minute": 540, "duration_minutes": 30, "reason": "..."}], "skipped": [{"task_uid": "...", "reason": "..."}]}
+
 Rules:
 - Only use task_uid values from the candidate list.
 - start_minute is minutes after midnight on the 15-minute grid, inside a free gap and not before the current time; use null for a task that should be done today but has no good slot.
@@ -327,17 +336,33 @@ Rules:
         user: context,
     });
 
+    const proposed = Array.isArray(parsed.items) ? parsed.items : parsed.tasks;
+    if (!Array.isArray(proposed)) throw ai.unusableResponseError();
+
     const items = sanitizeDraft({
-        proposed: parsed.items,
+        proposed,
         pool,
         existing,
         events,
         now,
         hours,
     }).map((item) => ({ ...item, task: pool.get(item.task_uid) }));
+    // The model proposed entries but none of them name one of our tasks:
+    // report that rather than telling the user there was nothing to plan.
+    // Entries dropped as already planned or repeated are a real "nothing
+    // to add", so they don't count.
+    const plannedUids = new Set(existing.map((item) => item.task_uid));
+    const recognised = proposed.some((entry) => {
+        const uid = entryUid(entry);
+        return Boolean(uid) && (pool.has(uid) || plannedUids.has(uid));
+    });
+    if (proposed.length > 0 && !recognised) {
+        throw ai.unusableResponseError();
+    }
 
     const skipped = (Array.isArray(parsed.skipped) ? parsed.skipped : [])
-        .filter((s) => s && pool.has(s.task_uid))
+        .map((s) => ({ ...s, task_uid: entryUid(s) }))
+        .filter((s) => pool.has(s.task_uid))
         .slice(0, 5)
         .map((s) => ({
             task_uid: s.task_uid,
@@ -423,7 +448,8 @@ async function estimateTasks(userId, taskUids) {
                 required: ['estimates'],
                 additionalProperties: false,
             },
-            system: `Estimate how long each task takes one focused person, in minutes. Use 15, 30, 45, 60, 90, 120, 180 or 240. Be realistic, not optimistic: errands and calls are short, research and writing take longer. Return only the JSON object with one entry per task_uid given.`,
+            system: `Estimate how long each task takes one focused person, in minutes. Use 15, 30, 45, 60, 90, 120, 180 or 240. Be realistic, not optimistic: errands and calls are short, research and writing take longer. Return only the JSON object with one entry per task_uid given, in exactly this shape:
+{"estimates": [{"task_uid": "...", "minutes": 30}]}`,
             user: missing
                 .map((task) =>
                     JSON.stringify({
@@ -532,7 +558,8 @@ async function wrapUpDay(userId, date) {
 - wins: 0 to 3 short items (at most 8 words each) naming what got done.
 - carry_over: unfinished tasks worth doing tomorrow, using task_uid values from the list, each with a reason of at most 8 words. Leave out tasks that look optional.
 - pattern: at most 20 words on one useful pattern (e.g. morning blocks slipped, overplanned by 2h), or an empty string.
-Plain text, no markdown. Return only the JSON object.${languageInstruction(user.language)}`,
+Plain text, no markdown. Return only the JSON object, in exactly this shape:
+{"summary": "...", "wins": ["..."], "carry_over": [{"task_uid": "...", "reason": "..."}], "pattern": "..."}${languageInstruction(user.language)}`,
         user: [
             `Date: ${planDate}.`,
             user.ai_profile ? `About the user: ${user.ai_profile}` : '',
