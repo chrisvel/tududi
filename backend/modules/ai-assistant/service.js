@@ -290,7 +290,7 @@ async function callWithFallback(client, userId, params) {
 
 async function fetchUserContext(userId) {
     const user = await User.findByPk(userId, {
-        attributes: ['id', 'timezone', 'email', 'ai_profile'],
+        attributes: ['id', 'timezone', 'email', 'ai_profile', 'language'],
     });
     if (!user) throw new Error('User not found');
 
@@ -503,6 +503,16 @@ function buildEntityMaps({ metrics, projects }) {
     return { taskMap, projectMap };
 }
 
+// The app's language codes are not all standard (jp, ua).
+function languageName(language) {
+    const code = { jp: 'ja', ua: 'uk' }[language] || language || 'en';
+    try {
+        return new Intl.DisplayNames(['en'], { type: 'language' }).of(code);
+    } catch {
+        return code;
+    }
+}
+
 async function generateDailyBrief(userId) {
     const client = await getOpenAIClient(userId);
 
@@ -516,6 +526,8 @@ async function generateDailyBrief(userId) {
     await entitlements.consumeMonthlyUsage(userId, 'ai_credits');
 
     const systemPrompt = `You are a productivity assistant in Tududi. Return a daily brief as JSON. Keep every field very short — no full sentences, no filler words.
+
+LANGUAGE RULE: Write every text field of your JSON response in ${languageName(context.user.language)}, except task and project names, which stay exactly as given. Never mix languages.
 
 Return a JSON object with exactly this shape:
 {
@@ -924,6 +936,8 @@ async function generateProjectInsights(projectContext, userId) {
     if (overdueTaskCount > 0) lines.push(`Overdue tasks: ${overdueTaskCount}`);
 
     const systemPrompt = `You are a productivity assistant in Tududi. A user is viewing a project and needs specific, actionable guidance — not generic advice. Use the project name, description, status, and task data to infer what this project is actually about, then give insights that only apply to THIS specific project.
+
+LANGUAGE RULE: Detect the language of the project name and description and write every text field of your JSON response in that same language. If the project name is in Greek, respond in Greek. If in Spanish, respond in Spanish. If in English, respond in English. Never mix languages.
 
 CRITICAL RULE: Never just echo back the project name or status. Give real domain-level analysis.
 
