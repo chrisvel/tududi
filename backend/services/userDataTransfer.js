@@ -919,6 +919,7 @@ async function importOwnData(
                 name: tag.name,
                 tag_type: tag.tag_type || 'user',
                 pinned: !!tag.pinned,
+                color: tag.color || null,
             }));
         }
 

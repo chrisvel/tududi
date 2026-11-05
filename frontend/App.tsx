@@ -624,6 +624,17 @@ const App: React.FC = () => {
                                             // settings, so reload them (#1776)
                                             invalidateProfileCache();
                                             fetchCurrentUser();
+                                            // The sidebar and Tags page load
+                                            // these once, so they would keep
+                                            // showing the pre-import lists
+                                            // (#2058)
+                                            const state = useStore.getState();
+                                            state.tagsStore.loadTags(true);
+                                            state.areasStore.loadAreas(true);
+                                            state.goalsStore.loadGoals(true);
+                                            state.peopleStore.loadPeople(true);
+                                            state.projectsStore.loadProjects();
+                                            state.notesStore.loadNotes();
                                         }}
                                     />
                                 }
