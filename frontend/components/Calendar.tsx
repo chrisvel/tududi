@@ -38,6 +38,7 @@ import CalendarDayView from './Calendar/CalendarDayView';
 import { getApiPath } from '../config/paths';
 import { Link } from 'react-router-dom';
 import { parseDateString } from '../utils/dateUtils';
+import { getStatusString, TaskStatusString } from '../constants/taskStatus';
 import { openTaskPanel } from '../store/taskPanelStore';
 
 const getLocale = (language: string) => {
@@ -196,7 +197,7 @@ const Calendar: React.FC = () => {
     const loadTasks = async () => {
         setIsLoadingTasks(true);
         try {
-            const response = await fetch(getApiPath('tasks?type=calendar'), {
+            const response = await fetch(getApiPath('tasks?type=calendar&status=active'), {
                 credentials: 'include',
             });
             if (response.ok) {
@@ -635,6 +636,19 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({ isOpen, task, onClose, 
         low: { label: t('calendar.low', 'Low'), className: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' },
     };
 
+    const blueBadge = 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+    const grayBadge = 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400';
+    const statusBadges: Record<TaskStatusString, { label: string; className: string }> = {
+        not_started: { label: t('task.status.notStarted', 'Not started'), className: blueBadge },
+        planned: { label: t('task.status.planned', 'Planned'), className: blueBadge },
+        in_progress: { label: t('task.status.inProgress', 'In progress'), className: blueBadge },
+        waiting: { label: t('task.status.waiting', 'Waiting'), className: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' },
+        done: { label: t('task.status.done', 'Done'), className: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
+        cancelled: { label: t('task.status.cancelled', 'Cancelled'), className: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
+        archived: { label: t('task.status.archived', 'Archived'), className: grayBadge },
+    };
+    const statusBadge = statusBadges[getStatusString(task.status)] || statusBadges.not_started;
+
     return (
         <div
             className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4"
@@ -667,12 +681,8 @@ const TaskEventModal: React.FC<TaskEventModalProps> = ({ isOpen, task, onClose, 
                 <div className="min-h-0 overflow-y-auto">
                     {/* Pills row */}
                     <div className="flex items-center gap-2 px-5 pb-4 flex-wrap">
-                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                            task.completed_at
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                        }`}>
-                            {task.completed_at ? t('calendar.completed', 'Completed') : t('calendar.pending', 'Pending')}
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${statusBadge.className}`}>
+                            {statusBadge.label}
                         </span>
                         {task.priority && task.priority in priorityConfig && (
                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${priorityConfig[task.priority as keyof typeof priorityConfig].className}`}>

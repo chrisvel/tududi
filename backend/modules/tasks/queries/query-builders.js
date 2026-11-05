@@ -286,15 +286,20 @@ async function filterTasksByParams(
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE] };
             }
             break;
-        default:
+        default: {
             if (!params.include_instances) {
                 whereClause.recurring_parent_id = null;
             }
-            if (params.status === 'done' || params.status === 'completed') {
+            // The calendar is an active view: cancelled and archived tasks
+            // drop out unless a status is asked for.
+            const status =
+                params.status ||
+                (params.type === 'calendar' ? 'active' : undefined);
+            if (status === 'done' || status === 'completed') {
                 whereClause.status = {
                     [Op.in]: [Task.STATUS.DONE, Task.STATUS.ARCHIVED],
                 };
-            } else if (params.status === 'active') {
+            } else if (status === 'active') {
                 whereClause.status = {
                     [Op.notIn]: [
                         Task.STATUS.DONE,
@@ -302,11 +307,12 @@ async function filterTasksByParams(
                         Task.STATUS.CANCELLED,
                     ],
                 };
-            } else if (params.status === 'all') {
+            } else if (status === 'all') {
                 // No status filter - return tasks of all statuses
             } else if (!params.client_side_filtering) {
                 whereClause.status = { [Op.notIn]: [Task.STATUS.DONE] };
             }
+        }
     }
 
     let tagFilteredTaskIds = null;
