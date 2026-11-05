@@ -308,13 +308,9 @@ Located in `/backend/modules/`, each follows consistent architecture:
 - `parent_task_id`: Links subtasks to parent (self-referential)
 - `recurring_parent_id`: Links recurring instances to original pattern
 
-**Performance Optimizations:**
-- WAL (Write-Ahead Logging) mode
-- PRAGMA synchronous=NORMAL
-- 64MB cache size
-- 256MB memory-mapped I/O
-- Memory-based temp storage
-- 11 indexes on Tasks table for slow I/O systems
+**Performance:**
+- Indexes on the Tasks table for the common filters (user, status, due date, project)
+- Connection pooling through Sequelize (see [16-postgresql.md](16-postgresql.md) for pool sizing and tuning)
 
 ---
 

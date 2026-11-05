@@ -217,7 +217,7 @@ tududi/                      # Repository root
 │   ├── slug-utils.js   # URL slug handling, UID extraction
 │   ├── timezone-utils.js # Timezone conversions, date calculations
 │   ├── attachment-utils.js # File handling and validation
-│   ├── migration-utils.js  # Database migration helpers (dialect-aware)
+│   ├── migration-utils.js  # Database migration helpers
 │   ├── db-dialect.js       # ciLike() and truncateTables() helpers
 │   ├── request-utils.js    # Request utilities
 │   └── notificationPreferences.js
