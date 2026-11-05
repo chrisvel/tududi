@@ -167,10 +167,8 @@ const controller = {
     },
 
     async getDailyBrief(req, res, next) {
-        console.log('[AI Assistant] getDailyBrief called');
         try {
             const userId = getAuthenticatedUserId(req);
-            console.log('[AI Assistant] userId:', userId);
             if (!userId) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
