@@ -2,14 +2,14 @@ const { generateETag } = require('../utils/etag-generator');
 const entitlements = require('../../../services/entitlementsService');
 const { matchesETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
-const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const vtodoParser = require('../icalendar/vtodo-parser');
 const { resolveProjectIdForPut } = require('./projects');
 const { deleteTaskFromRemotes } = require('../services/task-deletion-service');
 const { canReadTask, canWriteTask } = require('../access');
 const { STATUS_TUDUDI_TO_ICAL } = require('../icalendar/field-mappings');
-const { buildHref } = require('./utils');
+const { buildHref, resourceNameOf } = require('./utils');
+const { resourceNameFromParam, findTaskResource } = require('./task-resource');
 
 // RFC 4791 5.3.2.1: a UID may be used by one resource in a calendar only.
 function uidConflictResponse(res, username, task) {
@@ -19,7 +19,7 @@ function uidConflictResponse(res, username, task) {
         .send(
             '<?xml version="1.0" encoding="UTF-8"?>' +
                 '<D:error xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">' +
-                `<C:no-uid-conflict><D:href>${buildHref(username, task.uid)}</D:href></C:no-uid-conflict>` +
+                `<C:no-uid-conflict><D:href>${buildHref(username, resourceNameOf(task))}</D:href></C:no-uid-conflict>` +
                 '</D:error>'
         );
 }
@@ -32,12 +32,10 @@ async function handleGetTask(req, res) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        const taskUid = uid.replace('.ics', '');
-        const task = await taskRepository.findByUid(taskUid, {
-            include: CALDAV_TASK_INCLUDES,
-        });
+        const userId = req.currentUser.id;
+        const task = await findTaskResource(resourceNameFromParam(uid), userId);
 
-        if (!(await canReadTask(task, req.currentUser.id))) {
+        if (!(await canReadTask(task, userId))) {
             return res.status(404).send('Not Found');
         }
 
@@ -79,7 +77,7 @@ async function handlePutTask(req, res) {
         }
 
         const userId = req.currentUser.id;
-        const taskUid = uid.replace('.ics', '');
+        const resourceName = resourceNameFromParam(uid);
         const vtodoData = req.rawBody;
 
         console.log('[PUT] rawBody:', !!vtodoData, vtodoData?.length);
@@ -89,9 +87,7 @@ async function handlePutTask(req, res) {
             return res.status(400).send('Bad Request: No data provided');
         }
 
-        const existingTask = await taskRepository.findByUid(taskUid, {
-            include: CALDAV_TASK_INCLUDES,
-        });
+        const existingTask = await findTaskResource(resourceName, userId);
 
         if (existingTask && !(await canWriteTask(existingTask, userId))) {
             return res.status(403).json({ error: 'Forbidden' });
@@ -117,18 +113,44 @@ async function handlePutTask(req, res) {
             return res.status(400).send('Bad Request: Invalid VTODO data');
         }
 
-        // The resource is addressed by its filename. A client that uploads a
-        // VTODO under a new filename while its UID already belongs to another
-        // task would get a second row for the same task, so refuse it the way
-        // the spec says to, pointing the client at the existing resource.
-        if (!existingTask && taskData.uid && taskData.uid !== taskUid) {
-            const uidOwner = await taskRepository.findByUid(taskData.uid);
-            if (uidOwner && (await canReadTask(uidOwner, userId))) {
-                return uidConflictResponse(res, username, uidOwner);
+        // RFC 4791 5.3.2: the UID the client sent is the identity, the name it
+        // uploaded under is only the URL, and both are kept (#1371).
+        const clientUid = taskData.uid ? String(taskData.uid).trim() : null;
+
+        if (clientUid) {
+            // A UID belongs to one resource in a collection: refuse a second.
+            const uidOwner = await taskRepository.findByUid(clientUid);
+
+            if (
+                uidOwner &&
+                (!existingTask || uidOwner.id !== existingTask.id)
+            ) {
+                if (await canReadTask(uidOwner, userId)) {
+                    return uidConflictResponse(res, username, uidOwner);
+                }
+                // Refuse unnamed: that href is not the caller's to see.
+                return res
+                    .status(409)
+                    .json({ error: 'This UID is already in use' });
             }
+
+            // Changing an existing resource's uid is refused too.
+            if (existingTask && existingTask.uid !== clientUid) {
+                return uidConflictResponse(res, username, existingTask);
+            }
+
+            taskData.uid = clientUid;
+            if (resourceName !== clientUid) {
+                taskData.caldav_resource_name = resourceName;
+            }
+        } else if (existingTask) {
+            // No UID in the object: keep the uid the row already has (#1371).
+            delete taskData.uid;
+        } else {
+            // No UID and no row yet: the URL is the only identity there is.
+            taskData.uid = resourceName;
         }
 
-        taskData.uid = taskUid;
         // An edit by a collaborator keeps the task with its owner.
         taskData.user_id = existingTask ? existingTask.user_id : userId;
         // Only the sync engine uses LAST-MODIFIED.
@@ -198,16 +220,14 @@ async function handleDeleteTask(req, res) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        const taskUid = uid.replace('.ics', '');
-        const task = await taskRepository.findByUid(taskUid, {
-            include: CALDAV_TASK_INCLUDES,
-        });
+        const userId = req.currentUser.id;
+        const task = await findTaskResource(resourceNameFromParam(uid), userId);
 
         if (!task) {
             return res.status(404).send('Not Found');
         }
 
-        if (!(await canWriteTask(task, req.currentUser.id))) {
+        if (!(await canWriteTask(task, userId))) {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
