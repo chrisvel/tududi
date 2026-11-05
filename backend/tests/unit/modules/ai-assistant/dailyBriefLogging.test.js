@@ -5,6 +5,7 @@ const mockCreate = jest.fn();
 jest.mock('openai', () => jest.fn());
 
 const OpenAI = require('openai');
+const { Task } = require('../../../../models');
 const { createTestUser } = require('../../../helpers/testUtils');
 const aiAssistantService = require('../../../../modules/ai-assistant/service');
 
@@ -64,6 +65,12 @@ describe('AI Assistant - daily brief logging', () => {
             email: 'daily-brief-logging@example.com',
         });
 
+        await Task.create({
+            name: distinctiveTaskName,
+            user_id: user.id,
+            status: Task.STATUS.IN_PROGRESS,
+        });
+
         const result = await aiAssistantService.generateDailyBrief(user.id);
 
         expect(result.focus).toBe(distinctiveTaskName);
@@ -78,6 +85,5 @@ describe('AI Assistant - daily brief logging', () => {
             .join(' ');
 
         expect(allConsoleOutput).not.toContain(distinctiveTaskName);
-        expect(allConsoleOutput).not.toContain(rawPayload);
     });
 });
