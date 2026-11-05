@@ -88,6 +88,20 @@ describe('inboxProcessingService', () => {
 
             expect(result.parsed_projects).toEqual(['a\\b c']);
         });
+
+        it('should not swallow the title after a quote that never closes', () => {
+            // The backslash escapes the last quote, so the name never closes
+            const result = processInboxItem('+"C:\\" call bob');
+
+            expect(result.cleaned_content).toBe('call bob');
+        });
+
+        it('should read an escaped backslash before the closing quote', () => {
+            const result = processInboxItem('+"C:\\\\" call bob');
+
+            expect(result.parsed_projects).toEqual(['C:\\']);
+            expect(result.cleaned_content).toBe('call bob');
+        });
     });
 
     describe('containsUrl', () => {

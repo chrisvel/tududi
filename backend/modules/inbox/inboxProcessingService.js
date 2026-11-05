@@ -4,6 +4,7 @@
  */
 
 const nlp = require('compromise');
+const { quotedNameLength, readTokenName } = require('./quotedName');
 const { dueDateTimeToUTC } = require('../../utils/timezone-utils');
 const {
     parseDueDate,
@@ -79,46 +80,35 @@ const isActionVerb = (word) => {
  */
 const tokenizeText = (text) => {
     const MAX_TEXT_LENGTH = 10000;
+    const source = text.slice(0, MAX_TEXT_LENGTH);
     const tokens = [];
     let currentToken = '';
-    let inQuotes = false;
     let i = 0;
 
-    const textLength = Math.min(text.length, MAX_TEXT_LENGTH);
-
-    while (i < textLength) {
-        const char = text[i];
-
-        if (
+    while (i < source.length) {
+        const char = source[i];
+        const quoted =
             char === '"' &&
-            (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')
-        ) {
-            // Start of a quoted string after + or @
-            inQuotes = true;
-            currentToken += char;
-        } else if (
-            char === '\\' &&
-            inQuotes &&
-            (text[i + 1] === '"' || text[i + 1] === '\\')
-        ) {
-            // An escaped quote or backslash inside a quoted string
-            currentToken += char + text[i + 1];
-            i++;
-        } else if (char === '"' && inQuotes) {
-            // End of quoted string
-            inQuotes = false;
-            currentToken += char;
-        } else if (char === ' ' && !inQuotes) {
+            (i === 0 || source[i - 1] === '+' || source[i - 1] === '@')
+                ? quotedNameLength(source, i)
+                : 0;
+
+        if (quoted) {
+            // A quoted string after + or @ stays one token, spaces and all
+            currentToken += source.slice(i, i + quoted);
+            i += quoted;
+        } else if (char === ' ') {
             // Space outside quotes - end current token
             if (currentToken) {
                 tokens.push(currentToken);
                 currentToken = '';
             }
+            i++;
         } else {
-            // Regular character
+            // Regular character, or a quote that never closes
             currentToken += char;
+            i++;
         }
-        i++;
     }
 
     // Add final token
@@ -211,17 +201,8 @@ const parseProjectRefs = (text) => {
             // Process all project references in this group
             for (let j = i; j < groupEnd; j++) {
                 if (tokens[j].startsWith('+')) {
-                    let projectName = tokens[j].substring(1);
-
-                    // Handle quoted project names
-                    if (
-                        projectName.startsWith('"') &&
-                        projectName.endsWith('"')
-                    ) {
-                        projectName = projectName
-                            .slice(1, -1)
-                            .replace(/\\(["\\])/g, '$1');
-                    }
+                    // A quoted name loses its quotes and escapes
+                    const projectName = readTokenName(tokens[j].substring(1));
 
                     if (projectName && !matches.includes(projectName)) {
                         matches.push(projectName);
