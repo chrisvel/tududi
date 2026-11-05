@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { DailyPlanItem } from '../../utils/dailyPlanService';
@@ -12,6 +11,7 @@ import {
     freeGaps,
 } from './planUtils';
 import CalendarBadge from './CalendarBadge';
+import { openTaskPanel } from '../../store/taskPanelStore';
 
 export const PX_PER_HOUR = 64;
 export const PX_PER_MINUTE = PX_PER_HOUR / 60;
@@ -44,7 +44,6 @@ const TimelineBlock: React.FC<BlockProps> = ({
     aiReason,
 }) => {
     const { t } = useTranslation();
-    const location = useLocation();
     const { attributes, listeners, setNodeRef, transform, isDragging } =
         useDraggable({
             id: `item:${item.task_uid}`,
@@ -127,14 +126,14 @@ const TimelineBlock: React.FC<BlockProps> = ({
                                 )}
                             />
                         )}
-                        <Link
-                            to={`/task/${item.task_uid}`}
-                            state={{ from: location.pathname }}
+                        <button
+                            type="button"
+                            onClick={() => openTaskPanel(item.task_uid)}
                             draggable={false}
-                            className="truncate underline-offset-2 hover:underline"
+                            className="text-left truncate underline-offset-2 hover:underline"
                         >
                             {item.task.name}
-                        </Link>
+                        </button>
                     </span>
                     <span className="shrink-0 text-xs text-blue-900 dark:text-blue-200">
                         {formatMinute(item.start_minute as number)} ·{' '}

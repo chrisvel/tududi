@@ -1,11 +1,23 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+    render,
+    screen,
+    fireEvent,
+    waitFor,
+    act,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TaskRow from '../TaskRow';
 import { TaskRowExpansionProvider } from '../TaskRow/TaskRowExpansionContext';
 import { Task } from '../../../entities/Task';
 import * as tasksService from '../../../utils/tasksService';
 import * as inboxService from '../../../utils/inboxService';
+import {
+    useTaskPanel,
+    TASK_PANEL_SAVED_EVENT,
+} from '../../../store/taskPanelStore';
+
+import { useStore } from '../../../store/useStore';
 
 const navigateMock = jest.fn();
 
@@ -169,7 +181,10 @@ const renderRow = (task: Task, props: any = {}) =>
     );
 
 describe('TaskRow', () => {
-    beforeEach(() => navigateMock.mockClear());
+    beforeEach(() => {
+        navigateMock.mockClear();
+        useTaskPanel.getState().close();
+    });
 
     it('renders the task title collapsed', () => {
         renderRow(baseTask());
@@ -177,6 +192,38 @@ describe('TaskRow', () => {
         expect(
             screen.queryByPlaceholderText('Task name')
         ).not.toBeInTheDocument();
+    });
+
+    describe('area chip', () => {
+        const state = (useStore as any).getState();
+        const projectTask = () =>
+            baseTask({
+                project_id: 10,
+                Project: { id: 10, uid: 'p1', name: 'Gym' } as any,
+            });
+
+        beforeEach(() => {
+            state.projectsStore.projects = [
+                { id: 10, uid: 'p1', name: 'Gym', area_id: 1 },
+            ];
+            state.areasStore.areas = [{ id: 1, uid: 'a1', name: 'Health' }];
+        });
+        afterEach(() => {
+            state.projectsStore.projects = [];
+            state.areasStore.areas = [];
+        });
+
+        it('shows the area a task takes from its project', () => {
+            renderRow(projectTask());
+            expect(screen.getByTestId('task-row-area')).toHaveTextContent(
+                'Health'
+            );
+        });
+
+        it('hides the area on the area page', () => {
+            renderRow(projectTask(), { hideAreaName: true });
+            expect(screen.queryByTestId('task-row-area')).toBeNull();
+        });
     });
 
     it('shows the blocked badge when a linked task starts blocking it (#1810)', async () => {
@@ -379,11 +426,7 @@ describe('TaskRow', () => {
             renderOccurrences();
             fireEvent.click(screen.getByText('Weekly review 1'));
 
-            const fullViewLink = document.querySelector(
-                'a[href="/task/weekly-1"]'
-            ) as HTMLElement;
-            expect(fullViewLink).not.toBeNull();
-            fireEvent.mouseDown(fullViewLink);
+            fireEvent.mouseDown(screen.getByTestId('task-row-open-panel'));
 
             expect(
                 screen.getByDisplayValue('Weekly review 1')
@@ -392,14 +435,12 @@ describe('TaskRow', () => {
     });
 
     describe('actions menu', () => {
-        it('opens the full page from Edit without expanding the row', () => {
+        it('opens the side panel from Edit without expanding the row', () => {
             renderRow(baseTask());
             fireEvent.click(screen.getByTestId('task-actions-menu-button'));
             fireEvent.click(screen.getByRole('menuitem', { name: 'Edit' }));
-            expect(navigateMock).toHaveBeenCalledWith(
-                '/task/task-1',
-                expect.objectContaining({ state: expect.any(Object) })
-            );
+            expect(useTaskPanel.getState().uid).toBe('task-1');
+            expect(navigateMock).not.toHaveBeenCalled();
             expect(
                 screen.queryByDisplayValue('Buy tickets')
             ).not.toBeInTheDocument();
@@ -424,13 +465,53 @@ describe('TaskRow', () => {
         });
     });
 
-    it('navigates to the full page when expansion is disabled', () => {
+    it('copies the task link from the title icon without opening the row', async () => {
+        const writeText = jest.fn().mockResolvedValue(undefined);
+        Object.assign(navigator, { clipboard: { writeText } });
+        renderRow(baseTask(), { disableExpand: true });
+
+        fireEvent.click(screen.getByTestId('task-copy-link'));
+
+        await waitFor(() =>
+            expect(writeText).toHaveBeenCalledWith(
+                `${window.location.origin}/task/task-1`
+            )
+        );
+        expect(navigateMock).not.toHaveBeenCalled();
+    });
+
+    it('links habit rows to the habit page', () => {
+        renderRow(baseTask({ habit_mode: true }));
+        expect(screen.getByTestId('task-copy-link')).toHaveAttribute(
+            'href',
+            `${window.location.origin}/habit/task-1`
+        );
+    });
+
+    it('opens the side panel when expansion is disabled', () => {
         renderRow(baseTask(), { disableExpand: true });
         fireEvent.click(screen.getByText('Buy tickets'));
-        expect(navigateMock).toHaveBeenCalledWith(
-            '/task/task-1',
-            expect.objectContaining({ state: expect.any(Object) })
-        );
+        expect(useTaskPanel.getState().uid).toBe('task-1');
+        expect(navigateMock).not.toHaveBeenCalled();
+    });
+
+    it('opens the side panel from the expanded row toolbar', () => {
+        renderRow(baseTask());
+        fireEvent.click(screen.getByText('Buy tickets'));
+        fireEvent.click(screen.getByTestId('task-row-open-panel'));
+        expect(useTaskPanel.getState().uid).toBe('task-1');
+    });
+
+    it('shows a save from the side panel without a list reload', async () => {
+        renderRow(baseTask());
+        act(() => {
+            window.dispatchEvent(
+                new CustomEvent(TASK_PANEL_SAVED_EVENT, {
+                    detail: { task: baseTask({ name: 'Buy train tickets' }) },
+                })
+            );
+        });
+        expect(screen.getByText('Buy train tickets')).toBeInTheDocument();
     });
 
     it('routes habit tasks to the habit page', () => {

@@ -508,6 +508,26 @@ describe('Sharing a resource with a group', () => {
             ).toBe(200);
         });
 
+        it('names the shared type with the right article', async () => {
+            const area = await Area.create({ name: 'Home', user_id: owner.id });
+            await shareToGroup(ownerAgent);
+            await shareToGroup(ownerAgent, {
+                resource_type: 'area',
+                resource_uid: area.uid,
+            });
+
+            const titles = (
+                await Notification.findAll({
+                    where: { user_id: alice.id, type: 'share_invitation' },
+                    order: [['id', 'ASC']],
+                })
+            ).map((n) => n.title);
+            expect(titles).toEqual([
+                'owner shared a project with Family',
+                'owner shared an area with Family',
+            ]);
+        });
+
         it('shares a single note', async () => {
             const res = await shareToGroup(ownerAgent, {
                 resource_type: 'note',

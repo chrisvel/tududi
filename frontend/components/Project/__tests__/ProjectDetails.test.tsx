@@ -60,7 +60,9 @@ jest.mock('../../Note/NoteModal', () => ({
 
 jest.mock('../ProjectModal', () => ({
     __esModule: true,
-    default: () => null,
+    default: ({ project }: { project?: { name: string } }) => (
+        <div data-testid="project-edit-panel">{project?.name}</div>
+    ),
 }));
 
 const mockStoreState = {
@@ -179,5 +181,87 @@ describe('ProjectDetails delete confirmation (#1826)', () => {
         expect(
             screen.queryByText(/\{\{projectName\}\}/)
         ).not.toBeInTheDocument();
+    });
+});
+
+describe('ProjectDetails edit menu item', () => {
+    it('opens the project side panel from the three dot menu', async () => {
+        (fetchProjectBySlug as jest.Mock).mockResolvedValue({
+            id: 100,
+            uid: 'proj-100',
+            name: 'Schedule with WBS',
+            description: '',
+            status: 'in_progress',
+            tasks: [],
+            notes: [],
+        });
+
+        render(<ProjectDetails />);
+
+        await waitFor(() => {
+            expect(screen.getByText('Schedule with WBS')).toBeInTheDocument();
+        });
+        expect(
+            screen.queryByTestId('project-edit-panel')
+        ).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByLabelText('More options'));
+        fireEvent.click(screen.getByTestId('project-edit'));
+
+        expect(screen.getByTestId('project-edit-panel')).toHaveTextContent(
+            'Schedule with WBS'
+        );
+    });
+});
+
+describe('ProjectDetails when the project cannot be loaded (#2022)', () => {
+    const failWith = (status: number) => {
+        const error = new Error('Request failed');
+        (error as any).status = status;
+        (fetchProjectBySlug as jest.Mock).mockReset();
+        (fetchProjectBySlug as jest.Mock).mockRejectedValue(error);
+    };
+
+    it('says you have no access on a 403, and asks once', async () => {
+        failWith(403);
+
+        render(<ProjectDetails />);
+
+        expect(
+            await screen.findByText("You don't have access to this project")
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText("Ask the project's owner to share it with you.")
+        ).toBeInTheDocument();
+        expect(screen.getByText('Back to Projects')).toBeInTheDocument();
+        expect(
+            screen.queryByText('Failed to load project details.')
+        ).not.toBeInTheDocument();
+        expect(fetchProjectBySlug).toHaveBeenCalledTimes(1);
+    });
+
+    it('says the project is gone on a 404', async () => {
+        failWith(404);
+
+        render(<ProjectDetails />);
+
+        expect(
+            await screen.findByText("This project doesn't exist or was deleted")
+        ).toBeInTheDocument();
+        expect(fetchProjectBySlug).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the load failure message for other errors', async () => {
+        failWith(500);
+
+        render(<ProjectDetails />);
+
+        expect(
+            await screen.findByText('Failed to load project details.')
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByText("You don't have access to this project")
+        ).not.toBeInTheDocument();
+        expect(fetchProjectBySlug).toHaveBeenCalledTimes(1);
     });
 });

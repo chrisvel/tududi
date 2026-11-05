@@ -8,6 +8,9 @@ import {
     subscriptionPathFor,
 } from '../../utils/planLimits';
 
+// Where a comped account asks for more seats.
+const CONTACT_EMAIL = 'info@tududi.com';
+
 // Listens for 402 responses surfaced by the API wrappers and explains which
 // plan limit was hit. Mounted once in the layout; invisible until needed.
 const UpgradeModal: React.FC = () => {
@@ -32,6 +35,12 @@ const UpgradeModal: React.FC = () => {
     if (!detail) return null;
 
     const { code, details } = detail;
+    // A comped (override) plan isn't sold through checkout, so seats are
+    // added by asking us rather than from the plans page.
+    const contactForSeats =
+        code === 'PLAN_LIMIT_REACHED' &&
+        details?.resource === 'member' &&
+        details?.reason === 'override';
     const resourceLabel = (resource?: string) => {
         switch (resource) {
             case 'task':
@@ -44,6 +53,8 @@ const UpgradeModal: React.FC = () => {
                 return t('billing.resource.storage', 'attachment storage');
             case 'ai_requests':
                 return t('billing.resource.ai', 'AI requests this month');
+            case 'member':
+                return t('billing.resource.member', 'members');
             default:
                 return resource || '';
         }
@@ -71,28 +82,49 @@ const UpgradeModal: React.FC = () => {
         }
     };
 
-    const message =
-        code === 'FEATURE_NOT_IN_PLAN'
-            ? t('billing.featureNotInPlan', {
+    // Members are seats: the plan holds the owner plus `limit` others.
+    const memberMessage = () =>
+        contactForSeats
+            ? t('billing.seatsFullContact', {
                   defaultValue:
-                      'Your {{plan}} plan does not include {{feature}}.',
-                  plan: details?.plan,
-                  feature: featureLabel(details?.feature),
+                      'All {{seats}} seats of your plan are in use. Contact us to add more people.',
+                  seats: (details?.limit || 0) + 1,
               })
-            : t('billing.limitReached', {
+            : details?.limit === 0
+            ? t(
+                  'billing.membersNeedTeam',
+                  'Pro is for one person. A Team plan lets you add members, from 3 seats up.'
+              )
+            : t('billing.seatsFull', {
                   defaultValue:
-                      'Your {{plan}} plan allows {{limit}} {{resource}}. You are at {{current}}.',
-                  plan: details?.plan,
-                  limit:
-                      details?.resource === 'storage'
-                          ? `${Math.round((details.limit || 0) / (1024 * 1024))} MB`
-                          : details?.limit,
-                  resource: resourceLabel(details?.resource),
-                  current:
-                      details?.resource === 'storage'
-                          ? `${Math.round((details.current || 0) / (1024 * 1024))} MB`
-                          : details?.current,
+                      'All {{seats}} seats of your plan are in use. Move to a bigger Team plan to add more people.',
+                  seats: (details?.limit || 0) + 1,
               });
+
+    const message =
+        code === 'PLAN_LIMIT_REACHED' && details?.resource === 'member'
+            ? memberMessage()
+            : code === 'FEATURE_NOT_IN_PLAN'
+              ? t('billing.featureNotInPlan', {
+                    defaultValue:
+                        'Your {{plan}} plan does not include {{feature}}.',
+                    plan: details?.plan,
+                    feature: featureLabel(details?.feature),
+                })
+              : t('billing.limitReached', {
+                    defaultValue:
+                        'Your {{plan}} plan allows {{limit}} {{resource}}. You are at {{current}}.',
+                    plan: details?.plan,
+                    limit:
+                        details?.resource === 'storage'
+                            ? `${Math.round((details.limit || 0) / (1024 * 1024))} MB`
+                            : details?.limit,
+                    resource: resourceLabel(details?.resource),
+                    current:
+                        details?.resource === 'storage'
+                            ? `${Math.round((details.current || 0) / (1024 * 1024))} MB`
+                            : details?.current,
+                });
 
     return (
         <div
@@ -107,17 +139,29 @@ const UpgradeModal: React.FC = () => {
                 <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700 flex items-center">
                     <SparklesIcon className="w-6 h-6 mr-3 text-blue-500" />
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {t('billing.upgradeTitle', 'Upgrade to keep going')}
+                        {contactForSeats
+                            ? t('billing.seatsFullTitle', 'Every seat is taken')
+                            : t('billing.upgradeTitle', 'Upgrade to keep going')}
                     </h3>
                 </div>
                 <div className="px-6 py-4 space-y-3 text-sm text-gray-700 dark:text-gray-300">
                     <p>{message}</p>
-                    <p>
-                        {t(
-                            'billing.upgradeHint',
-                            'Everything you already have stays exactly as it is. Upgrading lifts the limit right away.'
-                        )}
-                    </p>
+                    {contactForSeats ? (
+                        <p data-testid="upgrade-modal-contact">
+                            {t('billing.seatsContactHint', {
+                                defaultValue:
+                                    'Email {{email}} and we will add seats to your plan.',
+                                email: CONTACT_EMAIL,
+                            })}
+                        </p>
+                    ) : (
+                        <p>
+                            {t(
+                                'billing.upgradeHint',
+                                'Everything you already have stays exactly as it is. Upgrading lifts the limit right away.'
+                            )}
+                        </p>
+                    )}
                 </div>
                 <div className="px-6 py-4 flex justify-end space-x-2">
                     <button
@@ -127,17 +171,28 @@ const UpgradeModal: React.FC = () => {
                     >
                         {t('common.close', 'Close')}
                     </button>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setDetail(null);
-                            navigate('/profile?section=billing');
-                        }}
-                        className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-                        data-testid="upgrade-modal-cta"
-                    >
-                        {t('billing.seePlans', 'See plans')}
-                    </button>
+                    {contactForSeats ? (
+                        <a
+                            href={`mailto:${CONTACT_EMAIL}`}
+                            onClick={() => setDetail(null)}
+                            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                            data-testid="upgrade-modal-contact-cta"
+                        >
+                            {t('billing.contactUs', 'Contact us')}
+                        </a>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setDetail(null);
+                                navigate('/profile?section=billing');
+                            }}
+                            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                            data-testid="upgrade-modal-cta"
+                        >
+                            {t('billing.seePlans', 'See plans')}
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

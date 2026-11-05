@@ -96,5 +96,29 @@
         "tip": "Jeśli lista zrobiła się za długa, zacznij od małego kroku: otwórz Plan, wybierz trzy rzeczy na dziś, a resztę zostaw na później.",
         "button": "Zaplanuj dzień",
         "outro": "Nie wyślemy kolejnego takiego e-maila, dopóki nie wrócisz."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Weryfikacja dwuetapowa jest włączona",
+            "body": "Na Twoim koncie Tududi włączono weryfikację dwuetapową. Logowanie wymaga teraz kodu z aplikacji uwierzytelniającej, a wszystkie inne urządzenia zostały wylogowane."
+        },
+        "mfaDisabled": {
+            "subject": "Weryfikacja dwuetapowa jest wyłączona",
+            "body": "Na Twoim koncie Tududi wyłączono weryfikację dwuetapową. Logowanie wymaga teraz tylko hasła."
+        },
+        "mfaReset": {
+            "subject": "Twoja weryfikacja dwuetapowa została zresetowana",
+            "body": "Administrator zresetował weryfikację dwuetapową na Twoim koncie Tududi, a wszystkie urządzenia zostały wylogowane. Możesz zalogować się hasłem i włączyć ją ponownie."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Użyto kodu odzyskiwania",
+            "body": "Ktoś zalogował się na Twoje konto Tududi jednym z Twoich kodów odzyskiwania. Każdy kod działa raz."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Utworzono nowe kody odzyskiwania",
+            "body": "Dla Twojego konta Tududi utworzono nowe kody odzyskiwania. Stare już nie działają."
+        },
+        "button": "Otwórz ustawienia bezpieczeństwa",
+        "notYou": "Jeśli to nie Ty, zmień teraz hasło i powiadom administratora."
     }
 }

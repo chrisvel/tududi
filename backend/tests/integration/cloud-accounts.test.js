@@ -21,7 +21,7 @@ const {
 } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
 const accountsService = require('../../services/accountsService');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 // Accounts on tududi Cloud: whoever signs up owns an account and is an admin
 // of it; admins manage the members, roles and groups of their own account and
@@ -29,24 +29,10 @@ const { createTestUser } = require('../helpers/testUtils');
 
 const config = getConfig();
 
+// Members take seats of the owner's Team plan; nothing here should reach
+// the payment provider.
 const realFetch = global.fetch;
-const mockFetch = async (url, init = {}) => {
-    const match = String(url).match(/\/subscription-items\/([^/]+)$/);
-    if (match && init.method === 'PATCH') {
-        const { quantity } = JSON.parse(init.body).data.attributes;
-        return new Response(
-            JSON.stringify({
-                data: {
-                    type: 'subscription-items',
-                    id: match[1],
-                    attributes: { quantity },
-                },
-            }),
-            { status: 200 }
-        );
-    }
-    return new Response('not found', { status: 404 });
-};
+const mockFetch = async () => new Response('not found', { status: 404 });
 
 const login = async (email, password = 'password123') => {
     const agent = request.agent(app);
@@ -60,9 +46,8 @@ const subscribe = (userId) =>
         provider: 'lemonsqueezy',
         provider_subscription_id: `sub_${userId}`,
         provider_subscription_item_id: `item_${userId}`,
-        seat_quantity: 1,
         status: 'active',
-        plan: 'pro',
+        plan: 'team_5',
     });
 
 const enableHosted = () => {
@@ -136,6 +121,7 @@ describe('Cloud accounts', () => {
         await subscribe(owner.id);
         await subscribe(otherOwner.id);
         superAgent = await login(superadmin.email);
+        await enrollMfa(superadmin);
         ownerAgent = await login(owner.email);
         otherAgent = await login(otherOwner.email);
     });
@@ -215,14 +201,16 @@ describe('Cloud accounts', () => {
                 role: 'guest',
             });
 
-            // The kid sits on the owner's subscription, not the partner's.
+            // The kid sits on the owner's plan, not the partner's.
             expect((await User.findByPk(kid.id)).account_id).toBe(
                 (await User.findByPk(owner.id)).account_id
             );
-            const billing = await BillingAccount.findOne({
-                where: { user_id: owner.id },
+            const billing = await ownerAgent.get('/api/billing');
+            expect(billing.body.seats).toEqual({
+                members: 2,
+                used: 3,
+                seats: 5,
             });
-            expect(billing.seat_quantity).toBe(3);
 
             const list = await partnerAgent.get('/api/admin/users');
             expect(list.status).toBe(200);
@@ -291,10 +279,8 @@ describe('Cloud accounts', () => {
             );
             expect(removed.status).toBe(204);
             expect(await User.findByPk(kid.id)).toBeNull();
-            const billing = await BillingAccount.findOne({
-                where: { user_id: owner.id },
-            });
-            expect(billing.seat_quantity).toBe(1);
+            const billing = await ownerAgent.get('/api/billing');
+            expect(billing.body.seats.used).toBe(1);
         });
 
         it('is refused to a member who is not an admin', async () => {
@@ -514,6 +500,7 @@ describe('Cloud accounts', () => {
                 { where: { user_id: user.id } }
             );
             const agent = await login(user.email);
+            await enrollMfa(user);
             const roles = await agent.get('/api/admin/roles');
             expect(roles.body.roles.map((r) => r.id)).toEqual([
                 'admin',

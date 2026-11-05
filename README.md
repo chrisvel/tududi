@@ -88,33 +88,35 @@ Get up and running quickly with our comprehensive documentation:
 
 ### Quick Start
 
-```bash
-docker pull chrisvel/tududi:latest
+tududi stores its data in PostgreSQL. The repo's `docker-compose.yml` runs tududi together with a `postgres:16-alpine` database, so that is the quickest way in. It reads its configuration from a `.env` file:
 
+```bash
+cp .env.example .env
+# set DB_PASSWORD, TUDUDI_USER_EMAIL, TUDUDI_USER_PASSWORD and TUDUDI_SESSION_SECRET, then:
+docker compose up -d
+```
+
+Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials. The database starts empty and tududi creates the schema on first start.
+
+If people reach tududi at another address (for example `http://zima.local:3002` or `https://tududi.example.com`), set `BASE_URL=<that address>` so links in emails (account verification, password reset) point there instead of `localhost`.
+
+### Using docker run
+
+If you already have a PostgreSQL server (14 or newer), point tududi at it with `DATABASE_URL`:
+
+```bash
 docker run \
+  -e DATABASE_URL=postgres://tududi:secret@your-db-host:5432/tududi \
   -e TUDUDI_USER_EMAIL=admin@example.com \
   -e TUDUDI_USER_PASSWORD=your-secure-password \
   -e TUDUDI_SESSION_SECRET=$(openssl rand -hex 64) \
-  -v ~/tududi_db:/app/db \
   -v ~/tududi_uploads:/app/uploads \
   -v ~/tududi_backups:/app/backups \
   -p 3002:3002 \
   -d chrisvel/tududi:latest
 ```
 
-Navigate to [http://localhost:3002](http://localhost:3002) and login with your credentials.
-
-If people reach tududi at another address (for example `http://zima.local:3002` or `https://tududi.example.com`), add `-e BASE_URL=<that address>` so links in emails (account verification, password reset) point there instead of `localhost`.
-
-### Using docker-compose
-
-The repo also includes a `docker-compose.yml`. It reads its configuration from a `.env` file, so copy the example first:
-
-```bash
-cp .env.example .env
-# edit .env with your values, then:
-docker-compose up -d
-```
+tududi refuses to start without `DATABASE_URL` (or the discrete `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` variables).
 
 ### Reverse Proxy Setup
 
@@ -215,46 +217,21 @@ Connect Tududi to external CalDAV servers like Nextcloud, Baikal, or other CalDA
 
 **Documentation:** See [docs/11-caldav-sync.md](docs/11-caldav-sync.md) for client setup guides, server configuration, and troubleshooting.
 
-### Database: SQLite or PostgreSQL
+### Database
 
-Tududi stores everything in a single SQLite file by default, which is all a personal instance needs. For larger or multi-user deployments you can point it at PostgreSQL instead by setting `DATABASE_URL` (for example `postgres://tududi:secret@db:5432/tududi`). The database may be empty; the schema is created on first start. A complete compose setup with a bundled PostgreSQL service is in [docs/examples/docker-compose.postgres.yml](docs/examples/docker-compose.postgres.yml) (copy it next to your `.env` as `docker-compose.yml`), and the deployment guide is [docs/16-postgresql.md](docs/16-postgresql.md).
+tududi runs on PostgreSQL only. Set `DATABASE_URL` (for example `postgres://tududi:secret@db:5432/tududi`); the database may be empty, the schema is created on first start. Connection options, TLS, tuning and backups are in [docs/16-postgresql.md](docs/16-postgresql.md), and [docs/backups.md](docs/backups.md) covers the optional nightly `pg_dump` service in `docker-compose.yml`.
 
 ### Upgrading
 
-Every start backs up the SQLite file next to it (`db-backup-<timestamp>.sqlite3`), then runs pending migrations; the container refuses to start if a migration fails, so the backup is always the state before the upgrade.
+Pending migrations run on every start, and the container refuses to start if one fails. Take a database backup (`pg_dump`, see [docs/backups.md](docs/backups.md)) before you bump the image tag.
 
-#### Upgrading to a release with PostgreSQL support
+#### Upgrading to 2.0 from SQLite
 
-SQLite stays the default and existing databases are used as they are. Make sure your `.env` does **not** contain a `DATABASE_URL` or `DB_DIALECT` left over from another application: either one switches tududi to PostgreSQL. As a safety net, the container refuses to start when PostgreSQL is selected but a populated SQLite database is present at `DB_FILE`; unset the variable to keep your data, or set `TUDUDI_ALLOW_DIALECT_SWITCH=true` if you really want an empty PostgreSQL database.
+2.0 no longer supports SQLite. If your 1.x install used the SQLite file in `/app/db`, export your data on 1.x first, then import it into a 2.0 install on PostgreSQL. The steps are in [docs/30-moving-to-postgres.md](docs/30-moving-to-postgres.md). As a safety net, 2.0 refuses to start while the old SQLite file is still on the volume and holds data; set `TUDUDI_ALLOW_DIALECT_SWITCH=true` once your data has been imported.
 
-#### v1.1.x to v1.2.x: Volume path change
+#### Upgrading to 2.0 on PostgreSQL
 
-The Docker volume mount path changed in v1.2.0 from `/app/backend/db` to `/app/db`. If you are upgrading from v1.1.x and your `docker-compose.yml` still uses the old path, **new data will be lost on container recreation** because writes go to an anonymous Docker volume that is discarded when the container is recreated.
-
-**How to check:** Look at your `docker-compose.yml` volumes section:
-
-```yaml
-# OLD (v1.1.x) - update this
-volumes:
-  - ./tududi_db:/app/backend/db
-  - ./uploads:/app/backend/uploads
-
-# NEW (v1.2.x+) - use these paths
-volumes:
-  - ./tududi_db:/app/db
-  - ./uploads:/app/uploads
-  - ./backups:/app/backups
-```
-
-**Migration steps:**
-
-1. Stop the container: `docker-compose down`
-2. Update `docker-compose.yml` to use the new volume paths (see above)
-3. Start the container: `docker-compose up -d`
-
-Your existing data directory (`./tududi_db`) stays the same - only the mount point inside the container changes. No data copying is needed when using bind mounts.
-
-> **Note:** While you still use the old path, Tududi will print a warning at startup and continue using the old location to prevent data loss. Once you update the volume mount, the warning disappears and writes go to the correct persistent location.
+Upgrade to the final 1.x release first and let it start once, so every 1.x migration has run. 2.0 stops with a "last used by an older tududi 1.x release" message on an older database.
 
 ### 📚 Documentation
 
@@ -281,6 +258,10 @@ Quick overview:
 git clone https://github.com/chrisvel/tududi.git
 cd tududi
 npm install
+
+# Start a local PostgreSQL and point backend/.env at it
+docker compose -f docker-compose.dev.yml up -d db
+# DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_dev
 
 # Start development servers
 npm run backend:dev   # Terminal 1 - Backend on :3001

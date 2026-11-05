@@ -12,6 +12,19 @@ const createTestUser = async (userData = {}) => {
     return await User.create(defaultUser);
 };
 
+// Marks two-factor sign-in as on for a user, without going through setup.
+// A hosted superadmin needs it to reach the admin panel; call it after the
+// user's agent has signed in, since a password sign-in would otherwise stop
+// at the code prompt.
+const enrollMfa = async (user) => {
+    const { UserMfa } = require('../../models');
+    await UserMfa.create({
+        user_id: user.id,
+        secret_encrypted: 'enc:v1:test',
+        enabled_at: new Date(),
+    });
+};
+
 const authenticateUser = async (request, user) => {
     const response = await request.post('/api/login').send({
         email: user.email,
@@ -34,6 +47,7 @@ const acceptAllInvitations = async (agent) => {
 
 module.exports = {
     createTestUser,
+    enrollMfa,
     authenticateUser,
     acceptAllInvitations,
 };

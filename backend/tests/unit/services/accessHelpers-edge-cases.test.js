@@ -192,10 +192,11 @@ describe('applyPerms', () => {
             ],
         });
 
+        // A direct share stays direct when a container grant reaches it
         expect(update).toHaveBeenCalledWith(
             expect.objectContaining({
                 status: 'pending',
-                propagation: 'inherited',
+                propagation: 'direct',
                 source_action_id: 7,
             }),
             { transaction: tx }

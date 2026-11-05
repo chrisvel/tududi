@@ -4,6 +4,7 @@ import { useStore } from '../../store/useStore';
 import TagInput from '../Tag/TagInput';
 import FilterDropdown from '../Shared/FilterDropdown';
 import { applyFocus, Focus } from '../../utils/focus';
+import { fetchTags } from '../../utils/tagsService';
 import type { Area } from '../../entities/Area';
 import type { Project } from '../../entities/Project';
 import type { Tag } from '../../entities/Tag';
@@ -30,13 +31,34 @@ const FocusPopover: React.FC<FocusPopoverProps> = ({ focus, onClose }) => {
     const projects = useStore(
         (state) => state.projectsStore?.projects ?? NO_PROJECTS
     );
-    const availableTags = useStore((state) => state.tagsStore?.tags ?? NO_TAGS);
+    const allTags = useStore((state) => state.tagsStore?.tags ?? NO_TAGS);
 
     const [areaUid, setAreaUid] = useState(focus?.area_uid ?? '');
     const [projectUid, setProjectUid] = useState(focus?.project_uid ?? '');
     const [tags, setTags] = useState<string[]>(focus?.tags ?? []);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // With an area or project picked, only the tags used inside it are
+    // offered, the same way the project list follows the area.
+    const [scopedTags, setScopedTags] = useState<Tag[] | null>(null);
+    useEffect(() => {
+        if (!areaUid && !projectUid) {
+            setScopedTags(null);
+            return;
+        }
+        let cancelled = false;
+        fetchTags({
+            area_uid: areaUid || undefined,
+            project_uid: projectUid || undefined,
+        }).then((result) => {
+            if (!cancelled) setScopedTags(result);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, [areaUid, projectUid]);
+    const availableTags = scopedTags ?? allTags;
 
     useEffect(() => {
         const onKey = (event: KeyboardEvent) => {

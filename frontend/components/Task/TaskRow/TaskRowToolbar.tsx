@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     FlagIcon,
+    PlayIcon,
     CalendarIcon,
     ClockIcon,
     FolderIcon,
@@ -48,7 +48,7 @@ interface TaskRowToolbarProps {
     openSection: TaskRowSection | null;
     onToggleSection: (section: TaskRowSection) => void;
     onDelete: (e: React.MouseEvent) => void;
-    fullPagePath: string;
+    onOpenPanel: () => void;
     commentCount?: number;
     relationCount?: number;
 }
@@ -59,7 +59,7 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
     openSection,
     onToggleSection,
     onDelete,
-    fullPagePath,
+    onOpenPanel,
     commentCount = 0,
     relationCount = 0,
 }) => {
@@ -120,6 +120,25 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
                         />
                     )
                 }
+            />
+
+            {/* Start */}
+            <DateTimePicker
+                value={fromDueParts(task.start_date, task.start_time)}
+                onChange={(iso) => {
+                    const parts = toDueParts(iso);
+                    void setters.setStart(parts.date, parts.time);
+                }}
+                renderTrigger={({ onClick, isOpen, displayValue }) => (
+                    <ToolbarButton
+                        onClick={onClick}
+                        open={isOpen}
+                        active={!!task.start_date}
+                        label={t('forms.startDate', 'Start')}
+                        badge={displayValue}
+                        icon={<PlayIcon className="h-4 w-4" />}
+                    />
+                )}
             />
 
             {/* Due date */}
@@ -276,16 +295,20 @@ const TaskRowToolbar: React.FC<TaskRowToolbarProps> = ({
 
             <div className="flex-1" />
 
-            {/* Open full page */}
-            <Link
-                to={fullPagePath}
-                onClick={(e) => e.stopPropagation()}
-                title={t('tasks.openFullPage', 'Open full view')}
-                aria-label={t('tasks.openFullPage', 'Open full view')}
+            {/* Open in the side panel */}
+            <button
+                type="button"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenPanel();
+                }}
+                title={t('tasks.openPanel', 'Open in side panel')}
+                aria-label={t('tasks.openPanel', 'Open in side panel')}
+                data-testid="task-row-open-panel"
                 className="inline-flex items-center h-8 px-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
                 <ArrowTopRightOnSquareIcon className="h-4 w-4" />
-            </Link>
+            </button>
 
             {/* Delete */}
             <ToolbarButton

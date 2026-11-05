@@ -26,6 +26,7 @@ import {
     CreditCardIcon,
     ViewColumnsIcon,
     QueueListIcon,
+    TableCellsIcon,
 } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/24/solid';
 import TelegramIcon from '../Shared/Icons/TelegramIcon';
@@ -67,6 +68,7 @@ import CalendarFeedsTab from './tabs/CalendarFeedsTab';
 import AIAssistantTab from './tabs/AIAssistantTab';
 import BillingTab from './tabs/BillingTab';
 import PlanningTab from './tabs/PlanningTab';
+import ImportExportTab from './tabs/ImportExportTab';
 import { getDefaultConfig } from '../../utils/keyboardShortcutsService';
 import { PASSWORD_MIN_LENGTH } from '../../utils/passwordPolicy';
 import { getFeatureFlags, type FeatureFlags } from '../../utils/featureFlags';
@@ -76,6 +78,7 @@ import type {
     TelegramBotInfo,
     ProfileFormData,
 } from './types';
+import { useReverify } from '../Auth/useReverify';
 
 const formatFrequency = (frequency: string): string => {
     if (frequency.endsWith('h')) {
@@ -98,6 +101,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     setAppearance,
 }) => {
     const { t, i18n } = useTranslation();
+    const { runWithReverify, reverifyModal } = useReverify();
     const { showSuccessToast, showErrorToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
@@ -124,6 +128,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             'features',
             'billing',
             'sidebar',
+            'import-export',
         ];
         return section && validTabs.includes(section) ? section : 'general';
     }, [location.search]);
@@ -411,7 +416,9 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
                 payload.expires_at = parsed.toISOString();
             }
 
-            const response = await createApiKey(payload);
+            // A new token needs the password or a code typed again.
+            const response = await runWithReverify(() => createApiKey(payload));
+            if (!response) return;
             setGeneratedApiToken(response.token);
             setApiKeys((prev) => [response.apiKey, ...prev]);
             setNewApiKeyName('');
@@ -1472,6 +1479,11 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             icon: <Squares2X2Icon className="w-5 h-5" />,
         },
         {
+            id: 'import-export',
+            name: t('spreadsheet.tab.title', 'Import & export'),
+            icon: <TableCellsIcon className="w-5 h-5" />,
+        },
+        {
             id: 'sidebar',
             name: t('profile.tabs.sidebar', 'Sidebar'),
             icon: <ViewColumnsIcon className="w-5 h-5" />,
@@ -1488,6 +1500,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
     return (
         <>
+            {reverifyModal}
             <div
                 className="w-full p-4 sm:p-6"
                 key={`profile-settings-${updateKey}`}
@@ -1893,6 +1906,10 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
 
                                 <BillingTab
                                     isActive={activeTab === 'billing'}
+                                />
+
+                                <ImportExportTab
+                                    isActive={activeTab === 'import-export'}
                                 />
 
                                 <div className="flex justify-end dark:border-gray-700">

@@ -96,5 +96,29 @@
         "tip": "Ak je zoznam priveľmi dlhý, začnite zľahka: otvorte Plán, vyberte tri veci na dnes a zvyšok si nechajte na neskôr.",
         "button": "Naplánovať deň",
         "outro": "Ďalší takýto e-mail vám nepošleme, kým sa nevrátite."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Dvojfaktorové overenie je zapnuté",
+            "body": "Pre váš účet Tududi bolo zapnuté dvojfaktorové overenie. Na prihlásenie teraz potrebujete kód z overovacej aplikácie a všetky ostatné zariadenia boli odhlásené."
+        },
+        "mfaDisabled": {
+            "subject": "Dvojfaktorové overenie je vypnuté",
+            "body": "Pre váš účet Tududi bolo vypnuté dvojfaktorové overenie. Na prihlásenie teraz stačí iba heslo."
+        },
+        "mfaReset": {
+            "subject": "Vaše dvojfaktorové overenie bolo obnovené",
+            "body": "Správca obnovil dvojfaktorové overenie pre váš účet Tududi a všetky zariadenia boli odhlásené. Môžete sa prihlásiť heslom a znova ho zapnúť."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Bol použitý kód na obnovenie",
+            "body": "Niekto sa prihlásil do vášho účtu Tududi jedným z vašich kódov na obnovenie. Každý kód funguje iba raz."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Boli vytvorené nové kódy na obnovenie",
+            "body": "Pre váš účet Tududi boli vytvorené nové kódy na obnovenie. Staré už nefungujú."
+        },
+        "button": "Otvoriť nastavenia zabezpečenia",
+        "notYou": "Ak ste to neboli vy, ihneď si zmeňte heslo a informujte správcu."
     }
 }

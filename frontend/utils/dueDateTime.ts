@@ -24,3 +24,17 @@ export const fromDueParts = (
     const [hh, mm] = (time || '00:00').split(':').map(Number);
     return new Date(y, m - 1, d, hh, mm).toISOString();
 };
+
+// True when a start (date + optional time) falls after the due date. A
+// whole-day due date lasts until the end of that day.
+export const isStartAfterDue = (
+    startDate: string | null | undefined,
+    startTime: string | null | undefined,
+    dueDate: string | null | undefined,
+    dueTime: string | null | undefined
+): boolean => {
+    if (!startDate || !dueDate) return false;
+    const start = `${startDate.split('T')[0]} ${startTime || '00:00'}`;
+    const due = `${dueDate.split('T')[0]} ${dueTime || '23:59'}`;
+    return start > due;
+};

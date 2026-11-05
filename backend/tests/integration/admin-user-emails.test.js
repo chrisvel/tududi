@@ -11,7 +11,7 @@ const { getConfig } = require('../../config/config');
 const entitlements = require('../../services/entitlementsService');
 const emailService = require('../../services/emailService');
 const lifecycle = require('../../services/trialLifecycleService');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 jest.mock('../../services/emailService', () => ({
     ...jest.requireActual('../../services/emailService'),
@@ -46,6 +46,7 @@ describe('Admin user emails', () => {
         admin = await createTestUser({ email: uniqueEmail('adm') });
         await Role.update({ is_admin: true }, { where: { user_id: admin.id } });
         adminAgent = await login(admin);
+        await enrollMfa(admin);
     });
 
     afterEach(() => {

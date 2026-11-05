@@ -89,5 +89,29 @@
         "tip": "Si la lista se ha hecho demasiado larga, empieza por poco: abre Planificar, elige tres cosas para hoy y deja el resto para después.",
         "button": "Planificar hoy",
         "outro": "No te enviaremos otro correo como este hasta que vuelvas."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "La autenticación de dos factores está activada",
+            "body": "Se activó la autenticación de dos factores en tu cuenta de Tududi. Ahora, para iniciar sesión necesitas un código de tu app de autenticación, y se cerró la sesión en todos los demás dispositivos."
+        },
+        "mfaDisabled": {
+            "subject": "La autenticación de dos factores está desactivada",
+            "body": "Se desactivó la autenticación de dos factores en tu cuenta de Tududi. Ahora, para iniciar sesión solo necesitas tu contraseña."
+        },
+        "mfaReset": {
+            "subject": "Se restableció tu autenticación de dos factores",
+            "body": "Un administrador restableció la autenticación de dos factores de tu cuenta de Tududi y se cerró la sesión en todos los dispositivos. Puedes iniciar sesión con tu contraseña y volver a activarla."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Se usó un código de recuperación",
+            "body": "Alguien inició sesión en tu cuenta de Tududi con uno de tus códigos de recuperación. Cada código funciona una sola vez."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Se crearon nuevos códigos de recuperación",
+            "body": "Se crearon nuevos códigos de recuperación para tu cuenta de Tududi. Los anteriores ya no funcionan."
+        },
+        "button": "Abrir la configuración de seguridad",
+        "notYou": "Si no fuiste tú, cambia tu contraseña ahora y avisa a tu administrador."
     }
 }

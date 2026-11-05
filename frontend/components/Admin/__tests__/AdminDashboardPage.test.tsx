@@ -43,13 +43,21 @@ const overview = (hosted: boolean, trendsOverride: object = {}) => ({
     content: { tasks: 10, projects: 2, notes: 1 },
     waitlist: { total: 0, last7d: 0 },
     funnel: funnel(hosted),
+    insights: [
+        {
+            key: 'signups_up',
+            tone: 'good',
+            params: { pct: 100, now: 14, before: 7 },
+        },
+        { key: 'not_known_yet', tone: 'info', params: {} },
+    ],
     trends: {
         days: Array.from({ length: 14 }, (_, i) => ({
             date: `2026-10-${String(i + 1).padStart(2, '0')}`,
             signups: i >= 7 ? 2 : 1,
             waitlist: 0,
         })),
-        signups: { last7d: 14, prev7d: 7 },
+        signups: { today: 2, last7d: 14, prev7d: 7 },
         waitlist: { last7d: 0, prev7d: 0 },
         activation: { new_users: 14, activated: 7 },
         active_users_7d: 5,
@@ -59,12 +67,12 @@ const overview = (hosted: boolean, trendsOverride: object = {}) => ({
         },
         visits: {
             landing: {
-                views: { last7d: 40, prev7d: 20 },
-                visitors: { last7d: 20, prev7d: 10 },
+                views: { today: 6, last7d: 40, prev7d: 20 },
+                visitors: { today: 3, last7d: 20, prev7d: 10 },
             },
             blog: {
-                views: { last7d: 10, prev7d: 10 },
-                visitors: { last7d: 5, prev7d: 5 },
+                views: { today: 2, last7d: 10, prev7d: 10 },
+                visitors: { today: 1, last7d: 5, prev7d: 5 },
             },
             app: {
                 views: { last7d: 9, prev7d: 3 },
@@ -151,7 +159,7 @@ describe('Admin dashboard billing/AI usage links', () => {
         );
 
         await waitFor(() =>
-            expect(screen.getByText('self-hosted')).toBeInTheDocument()
+            expect(screen.getByTestId('admin-stat-users')).toBeInTheDocument()
         );
         expect(screen.queryByText('Billing')).toBeNull();
         expect(screen.queryByText('AI Usage')).toBeNull();
@@ -169,7 +177,7 @@ describe('Admin dashboard waitlist', () => {
         );
 
         await waitFor(() =>
-            expect(screen.getByText('self-hosted')).toBeInTheDocument()
+            expect(screen.getByTestId('admin-stat-users')).toBeInTheDocument()
         );
         expect(screen.queryByText('Latest waitlist signups')).toBeNull();
         expect(
@@ -191,19 +199,22 @@ describe('Admin dashboard waitlist', () => {
         await waitFor(() =>
             expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
         );
-        expect(screen.getByText('+7 vs last week')).toBeInTheDocument();
+        // today, this week, last week, change
+        expect(screen.getByTestId('admin-trends-signups')).toHaveTextContent(
+            '2147+7'
+        );
         expect(screen.getByTestId('admin-trends-activation')).toHaveTextContent(
-            '50%'
+            '7 / 14 · 50%'
         );
-        expect(screen.getByTestId('admin-trends-churn')).toHaveTextContent(
-            '1 · 0'
+        expect(screen.getByTestId('admin-trends-canceled')).toHaveTextContent(
+            '1'
         );
-        expect(screen.getByTestId('admin-trends-bars').children).toHaveLength(
-            7
+        expect(screen.getByTestId('admin-trends-failed')).toHaveTextContent(
+            '0'
         );
     });
 
-    it('leaves trial and churn tiles off a self-hosted instance', async () => {
+    it('leaves trial and churn rows off a self-hosted instance', async () => {
         mockFetch(false);
 
         render(
@@ -215,7 +226,58 @@ describe('Admin dashboard waitlist', () => {
         await waitFor(() =>
             expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
         );
-        expect(screen.queryByTestId('admin-trends-churn')).toBeNull();
+        expect(screen.queryByTestId('admin-trends-canceled')).toBeNull();
+    });
+});
+
+describe('Admin dashboard key numbers and insights', () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('shows the key numbers with their change', async () => {
+        mockFetch(true);
+
+        render(
+            <MemoryRouter>
+                <AdminDashboardPage />
+            </MemoryRouter>
+        );
+
+        await waitFor(() =>
+            expect(
+                screen.getByTestId('admin-stat-visitors')
+            ).toBeInTheDocument()
+        );
+        // 20 landing + 5 blog visitors, up from 15
+        expect(screen.getByTestId('admin-stat-visitors')).toHaveTextContent(
+            '25+10'
+        );
+        expect(screen.getByTestId('admin-stat-activation')).toHaveTextContent(
+            '50%10 of 20 signups'
+        );
+        expect(screen.getByTestId('admin-stat-weekly')).toHaveTextContent(
+            '6+3'
+        );
+        expect(screen.getByTestId('admin-stat-paying')).toBeInTheDocument();
+    });
+
+    it('words the insights it knows and skips the rest', async () => {
+        mockFetch(false);
+
+        render(
+            <MemoryRouter>
+                <AdminDashboardPage />
+            </MemoryRouter>
+        );
+
+        await waitFor(() =>
+            expect(screen.getByTestId('admin-insights')).toBeInTheDocument()
+        );
+        expect(
+            screen.getByText('Signups are up 100% this week (14, was 7).')
+        ).toBeInTheDocument();
+        expect(screen.queryByTestId('admin-insight-not_known_yet')).toBeNull();
     });
 });
 
@@ -234,16 +296,19 @@ describe('Admin dashboard visits', () => {
         );
 
         await waitFor(() =>
-            expect(screen.getByTestId('admin-visits')).toBeInTheDocument()
+            expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
         );
-        // 20 landing + 5 blog visitors
-        expect(screen.getByTestId('admin-visits')).toHaveTextContent('25');
-        expect(screen.getByTestId('admin-visits-app-users')).toHaveTextContent(
-            '4 today'
+        // 3 landing + 1 blog today
+        expect(screen.getByTestId('admin-trends-visitors')).toHaveTextContent(
+            '42515+10'
         );
-        expect(screen.getByTestId('admin-visits-bars').children).toHaveLength(
-            7
+        expect(screen.getByTestId('admin-trends-app-users')).toHaveTextContent(
+            '11 in 30 days463+3'
         );
+        // no today figure sent for completed tasks, so the cell stays empty
+        expect(
+            screen.getByTestId('admin-trends-tasks-completed')
+        ).toHaveTextContent(/^Tasks completed129\+3$/);
         expect(screen.getByTestId('admin-visits-pages')).toHaveTextContent(
             '/cloud'
         );
@@ -255,7 +320,7 @@ describe('Admin dashboard visits', () => {
         ).toHaveTextContent('12');
     });
 
-    it('leaves the section out when tracking is off', async () => {
+    it('leaves the visit rows out when tracking is off', async () => {
         mockFetch(false, { visits: null });
 
         render(
@@ -267,7 +332,9 @@ describe('Admin dashboard visits', () => {
         await waitFor(() =>
             expect(screen.getByTestId('admin-trends')).toBeInTheDocument()
         );
-        expect(screen.queryByTestId('admin-visits')).toBeNull();
+        expect(screen.queryByTestId('admin-trends-visitors')).toBeNull();
+        expect(screen.queryByTestId('admin-visits-pages')).toBeNull();
+        expect(screen.queryByTestId('admin-stat-visitors')).toBeNull();
     });
 });
 
@@ -302,13 +369,38 @@ describe('Admin dashboard funnel', () => {
             '20%'
         );
         // 6 of 15 activated the month before: 40% to 50%
-        expect(screen.getByTestId('admin-funnel-activated')).toHaveTextContent(
-            '+10 pts'
-        );
+        expect(screen.getByText('+10 pts')).toBeInTheDocument();
         expect(screen.getByText('End to end: 0.5%')).toBeInTheDocument();
         expect(
             screen.getByText(/1 more paid without activating/)
         ).toBeInTheDocument();
+    });
+
+    it('gives no visitor rate when signups outnumber counted visitors', async () => {
+        mockFetch(true);
+        const base = (global.fetch as jest.Mock).getMockImplementation()!;
+        global.fetch = jest.fn(async (url: string) => {
+            const res = await base(url);
+            if (!String(url).includes('admin/overview')) return res;
+            const body = await res.json();
+            body.funnel.current.visitors = 3;
+            return { ...res, json: async () => body };
+        }) as any;
+
+        render(
+            <MemoryRouter>
+                <AdminDashboardPage />
+            </MemoryRouter>
+        );
+
+        await waitFor(() =>
+            expect(screen.getByTestId('admin-funnel')).toBeInTheDocument()
+        );
+        expect(
+            screen.getByTestId('admin-funnel-signups-rate')
+        ).toHaveTextContent('?');
+        // end to end starts at signups instead: 2 of 20
+        expect(screen.getByText('End to end: 10%')).toBeInTheDocument();
     });
 
     it('stops at activation on a self-hosted instance', async () => {

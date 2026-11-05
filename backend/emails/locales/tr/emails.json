@@ -82,5 +82,29 @@
         "tip": "Liste çok uzadıysa küçük başlayın: Plan'ı açın, bugün için üç şey seçin ve gerisini sonraya bırakın.",
         "button": "Bugünü planla",
         "outro": "Siz geri dönene kadar bu türden başka bir e-posta göndermeyeceğiz."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "İki adımlı doğrulama açık",
+            "body": "Tududi hesabınız için iki adımlı doğrulama açıldı. Giriş yapmak için artık doğrulama uygulamanızdan bir kod gerekiyor ve diğer tüm cihazlarda oturum kapatıldı."
+        },
+        "mfaDisabled": {
+            "subject": "İki adımlı doğrulama kapalı",
+            "body": "Tududi hesabınız için iki adımlı doğrulama kapatıldı. Giriş yapmak için artık yalnızca şifreniz yeterli."
+        },
+        "mfaReset": {
+            "subject": "İki adımlı doğrulamanız sıfırlandı",
+            "body": "Bir yönetici Tududi hesabınızın iki adımlı doğrulamasını sıfırladı ve tüm cihazlarda oturum kapatıldı. Şifrenizle giriş yapıp yeniden açabilirsiniz."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Bir kurtarma kodu kullanıldı",
+            "body": "Biri kurtarma kodlarınızdan biriyle Tududi hesabınıza giriş yaptı. Her kod bir kez çalışır."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Yeni kurtarma kodları oluşturuldu",
+            "body": "Tududi hesabınız için yeni kurtarma kodları oluşturuldu. Eskileri artık çalışmıyor."
+        },
+        "button": "Güvenlik ayarlarını aç",
+        "notYou": "Bu siz değilseniz, şifrenizi hemen değiştirin ve yöneticinize haber verin."
     }
 }

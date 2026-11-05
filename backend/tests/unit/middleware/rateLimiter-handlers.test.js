@@ -81,5 +81,8 @@ describe('rate limiter answers once the limit is reached', () => {
         expect(limited.status).toBe(429);
         expect(limited.body.error).toBe(error);
         expect(typeof limited.body.retryAfter).toBe('number');
+        // Seconds to wait, not an epoch timestamp
+        expect(limited.body.retryAfter).toBeGreaterThan(0);
+        expect(limited.body.retryAfter).toBeLessThanOrEqual(60);
     });
 });

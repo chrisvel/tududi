@@ -91,6 +91,18 @@ router.patch(
     projectsController.update
 );
 
+// Mark a project done, optionally with its open tasks (requires write access)
+router.post(
+    '/project/:uid/complete',
+    hasAccess(
+        'rw',
+        'project',
+        (req) => projectsController.getProjectUidForAuth(req),
+        { notFoundMessage: 'Project not found.' }
+    ),
+    projectsController.complete
+);
+
 // Delete a project (requires write access)
 router.delete(
     '/project/:uid',

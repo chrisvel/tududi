@@ -95,6 +95,72 @@ END:VCALENDAR`;
         expect(task.due_date.toISOString()).toBe('2026-05-01T12:00:00.000Z');
     });
 
+    // A timed DUE sets due_has_time, so the web UI shows the time (#1928).
+    describe('due_has_time', () => {
+        const withDue = (due) => `BEGIN:VCALENDAR\r
+VERSION:2.0\r
+BEGIN:VTODO\r
+UID:due-time\r
+SUMMARY:Due time\r
+DTSTAMP:20261018T095140Z\r
+${due}\r
+END:VTODO\r
+END:VCALENDAR`;
+
+        it('is set for a floating DATE-TIME DUE, read in the user timezone', async () => {
+            const task = await parseVTODOToTask(
+                withDue('DUE:20261020T090000'),
+                'Europe/Berlin'
+            );
+            expect(task.due_date.toISOString()).toBe(
+                '2026-10-20T07:00:00.000Z'
+            );
+            expect(task.due_has_time).toBe(true);
+        });
+
+        it('is set for a UTC DATE-TIME DUE', async () => {
+            const task = await parseVTODOToTask(
+                withDue('DUE:20261020T070000Z'),
+                'Europe/Berlin'
+            );
+            expect(task.due_date.toISOString()).toBe(
+                '2026-10-20T07:00:00.000Z'
+            );
+            expect(task.due_has_time).toBe(true);
+        });
+
+        it('is set for a DUE with TZID', async () => {
+            const task = await parseVTODOToTask(
+                withDue('DUE;TZID=Europe/Berlin:20261020T090000'),
+                'UTC'
+            );
+            expect(task.due_date.toISOString()).toBe(
+                '2026-10-20T07:00:00.000Z'
+            );
+            expect(task.due_has_time).toBe(true);
+        });
+
+        it('stays false for a VALUE=DATE DUE', async () => {
+            const task = await parseVTODOToTask(
+                withDue('DUE;VALUE=DATE:20261020'),
+                'Europe/Berlin'
+            );
+            expect(task.due_date.toISOString()).toBe(
+                '2026-10-20T21:59:59.999Z'
+            );
+            expect(task.due_has_time).toBe(false);
+        });
+
+        it('stays false without a DUE', async () => {
+            const task = await parseVTODOToTask(
+                withDue('DESCRIPTION:no due'),
+                'Europe/Berlin'
+            );
+            expect(task.due_date).toBeNull();
+            expect(task.due_has_time).toBe(false);
+        });
+    });
+
     it('should parse DTSTART as defer_until', async () => {
         const vtodo = basicVTODO.replace(
             'DUE:20260501T120000Z',

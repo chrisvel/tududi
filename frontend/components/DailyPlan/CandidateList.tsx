@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Task } from '../../entities/Task';
@@ -11,6 +10,7 @@ import {
 } from '../../utils/dailyPlanService';
 import DurationChips from './DurationChips';
 import { DEFAULT_DURATION, formatDuration } from './planUtils';
+import { openTaskPanel } from '../../store/taskPanelStore';
 
 export type CandidateFilter =
     | 'all'
@@ -88,7 +88,6 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
     onDrop,
 }) => {
     const { t } = useTranslation();
-    const location = useLocation();
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: `candidate:${task.uid}`,
         data: { type: 'candidate', task, duration },
@@ -137,15 +136,15 @@ const CandidateCard: React.FC<CandidateCardProps> = ({
                         { name: task.name }
                     )}
                 >
-                    <Link
-                        to={`/task/${task.uid}`}
-                        state={{ from: location.pathname }}
+                    <button
+                        type="button"
+                        onClick={() => openTaskPanel(task.uid)}
                         draggable={false}
-                        className="self-start max-w-full truncate text-sm text-gray-900 hover:underline underline-offset-2 dark:text-gray-100"
+                        className="text-left self-start max-w-full truncate text-sm text-gray-900 hover:underline underline-offset-2 dark:text-gray-100"
                         data-testid={`candidate-open-${task.uid}`}
                     >
                         {task.name}
-                    </Link>
+                    </button>
                     <span className="flex items-center gap-1.5 truncate text-xs text-gray-500 dark:text-gray-400">
                         {group === 'overdue' && (
                             <span

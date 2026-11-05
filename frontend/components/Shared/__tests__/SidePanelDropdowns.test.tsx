@@ -24,6 +24,22 @@ describe('dropdowns inside the entity side panel', () => {
         expect(menu).toHaveClass('z-[10050]');
     });
 
+    it('AreaDropdown shows the area a task takes from its project', () => {
+        render(
+            <AreaDropdown
+                value={null}
+                onChange={jest.fn()}
+                areas={[{ id: 1, uid: 'a1', name: 'Health' } as never]}
+                inheritedArea={{ id: 1, uid: 'a1', name: 'Health' }}
+            />
+        );
+
+        expect(screen.getByTestId('area-dropdown-inherited')).toHaveTextContent(
+            'Health'
+        );
+        expect(screen.queryByText('No Area')).toBeNull();
+    });
+
     it('GoalDropdown menu opens above the side panel layer', () => {
         render(
             <GoalDropdown

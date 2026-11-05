@@ -17,7 +17,7 @@ const {
 } = require('../../models');
 const { getConfig } = require('../../config/config');
 const entitlements = require('../../services/entitlementsService');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 const login = async (user) => {
     const agent = request.agent(app);
@@ -36,6 +36,7 @@ describe('Admin dashboard', () => {
         });
         await Role.update({ is_admin: true }, { where: { user_id: admin.id } });
         adminAgent = await login(admin);
+        await enrollMfa(admin);
 
         plain = await createTestUser({
             email: `usr_${Date.now()}@example.com`,
@@ -121,6 +122,9 @@ describe('Admin dashboard', () => {
         expect(trends.signups.last7d).toBe(
             trends.days.slice(7).reduce((n, d) => n + d.signups, 0)
         );
+        expect(trends.signups.today).toBe(trends.days[13].signups);
+        expect(trends.tasks.created.today).toBeGreaterThanOrEqual(1);
+        expect(trends.active_users_today).toBeGreaterThanOrEqual(1);
         expect(trends.activation.new_users).toBeGreaterThanOrEqual(2);
         expect(trends.activation.activated).toBeGreaterThanOrEqual(1);
         expect(trends.activation.activated).toBeLessThan(
@@ -128,6 +132,7 @@ describe('Admin dashboard', () => {
         );
         expect(trends.active_users_7d).toBeGreaterThanOrEqual(1);
         expect(trends.billing).toBeNull();
+        expect(res.body.insights.length).toBeGreaterThan(0);
     });
 
     it('adds trial and churn signals on a hosted instance', async () => {
@@ -154,6 +159,7 @@ describe('Admin dashboard', () => {
 
             const res = await adminAgent.get('/api/admin/overview');
             expect(res.body.trends.billing).toEqual({
+                trials_started_today: 0,
                 trials_started_7d: 1,
                 trials_started_prev7d: 0,
                 trials_ending_7d: 1,

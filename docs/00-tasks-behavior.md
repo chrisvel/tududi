@@ -33,6 +33,14 @@ This document explains how tasks work in tududi from a user behavior perspective
    - Telegram bot
    - API
 
+### Opening a Task
+
+- Clicking a task anywhere in the app (lists, Today and the plan, search, notifications, the calendar, the Everyone board, parent links) opens it in the side panel over the current page. Habits still open their own page.
+- A task link, `/task/:uid`, opens all tasks with that task in the side panel. The link icon next to a task's title copies it.
+- The panel form saves name, description, status, priority, project, area, start, due, tags, assignee, defer until and recurrence together on Update. Subtasks, attachments and comments save as soon as they change. Relations stay on the full task page, which is at `/task/:uid/details`.
+- The description is Markdown, with Edit and Preview buttons; a written note opens in preview.
+- With a dropdown open, Escape or a click outside closes the dropdown; the panel stays open.
+
 ---
 
 ## **Task Fields & Properties**
@@ -46,7 +54,7 @@ This document explains how tasks work in tududi from a user behavior perspective
 
 6. **Task note is for detailed information**
    - Optional text field for longer descriptions
-   - Supports plain text (no markdown formatting)
+   - Supports Markdown, with Edit and Preview buttons
    - Useful for context, instructions, or reference materials
 
 ### Status Lifecycle
@@ -94,6 +102,14 @@ This document explains how tasks work in tududi from a user behavior perspective
     - Overdue tasks appear in "Overdue" section on Today page
     - Due today tasks appear in "Suggested" section (if not in Planned status)
     - No automatic status changes when due date passes
+
+### Start Date
+
+- **Start date is optional:** when work on the task begins. Pick a day, and optionally a time.
+- **Whole-day starts** are stored as the start of that day in the user's timezone; a time is stored as that moment.
+- **API:** `start_date` (YYYY-MM-DD) and `start_time` (HH:mm), both in the user's timezone. Changing `start_date` alone drops the time; sending `start_time` alone keeps the day. `start_date: null` clears it.
+- **Start cannot be after the due date** in the web UI (a whole-day due date lasts until the end of its day). The API does not enforce this.
+- **Different from Defer Until:** the start does not hide the task. It places the task on timelines.
 
 ### Defer Until
 

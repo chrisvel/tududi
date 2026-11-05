@@ -13,3 +13,4 @@ export { default as TaskAreaCard } from './TaskAreaCard';
 export { default as TaskAssignedToCard } from './TaskAssignedToCard';
 export { default as TaskGoalCard } from './TaskGoalCard';
 export { default as TaskEstimateCard } from './TaskEstimateCard';
+export { default as TaskStartDateCard } from './TaskStartDateCard';

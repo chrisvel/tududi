@@ -55,7 +55,7 @@ export interface BlogStatus {
 // The server repeats the tagline and full name in modules/blog/hostSwitch.js.
 export const BLOG_TITLE = 'Small things, sorted.';
 export const BLOG_TAGLINE =
-    'Ideas and stories for running a busy home with less in your head.';
+    'Ideas and stories for running a busy home, or a busy team, with less in your head.';
 export const BLOG_NAME = 'Small things, sorted.';
 
 // null means there is nothing to show: no front page note is picked, it is

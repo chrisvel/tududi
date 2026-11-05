@@ -82,5 +82,29 @@
         "tip": "If the list got too long, start small: open Plan, pick three things for today, and leave the rest for later.",
         "button": "Plan today",
         "outro": "We will not send another one of these until you have been back."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Two-factor sign-in is on",
+            "body": "Two-factor sign-in was turned on for your Tududi account. Signing in now takes a code from your authenticator app, and every other device was signed out."
+        },
+        "mfaDisabled": {
+            "subject": "Two-factor sign-in is off",
+            "body": "Two-factor sign-in was turned off for your Tududi account. Signing in now takes only your password."
+        },
+        "mfaReset": {
+            "subject": "Your two-factor sign-in was reset",
+            "body": "An administrator reset two-factor sign-in for your Tududi account, and every device was signed out. You can sign in with your password and turn it on again."
+        },
+        "recoveryCodeUsed": {
+            "subject": "A recovery code was used",
+            "body": "Someone signed in to your Tududi account with one of your recovery codes. Each code works once."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "New recovery codes were made",
+            "body": "New recovery codes were made for your Tududi account. The old ones no longer work."
+        },
+        "button": "Open security settings",
+        "notYou": "If this was not you, change your password now and tell your administrator."
     }
 }

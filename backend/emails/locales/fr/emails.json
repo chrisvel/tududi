@@ -89,5 +89,29 @@
         "tip": "Si la liste est devenue trop longue, commencez petit : ouvrez Planifier, choisissez trois choses pour aujourd'hui et gardez le reste pour plus tard.",
         "button": "Planifier aujourd'hui",
         "outro": "Nous ne vous enverrons pas d'autre e-mail de ce genre avant votre retour."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "L'authentification à deux facteurs est activée",
+            "body": "L'authentification à deux facteurs a été activée pour votre compte Tududi. Pour vous connecter, il faut désormais un code de votre application d'authentification, et tous les autres appareils ont été déconnectés."
+        },
+        "mfaDisabled": {
+            "subject": "L'authentification à deux facteurs est désactivée",
+            "body": "L'authentification à deux facteurs a été désactivée pour votre compte Tududi. Pour vous connecter, votre mot de passe suffit désormais."
+        },
+        "mfaReset": {
+            "subject": "Votre authentification à deux facteurs a été réinitialisée",
+            "body": "Un administrateur a réinitialisé l'authentification à deux facteurs de votre compte Tududi, et tous les appareils ont été déconnectés. Vous pouvez vous connecter avec votre mot de passe et la réactiver."
+        },
+        "recoveryCodeUsed": {
+            "subject": "Un code de récupération a été utilisé",
+            "body": "Quelqu'un s'est connecté à votre compte Tududi avec l'un de vos codes de récupération. Chaque code ne fonctionne qu'une fois."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "De nouveaux codes de récupération ont été créés",
+            "body": "De nouveaux codes de récupération ont été créés pour votre compte Tududi. Les anciens ne fonctionnent plus."
+        },
+        "button": "Ouvrir les paramètres de sécurité",
+        "notYou": "Si ce n'était pas vous, changez votre mot de passe dès maintenant et prévenez votre administrateur."
     }
 }

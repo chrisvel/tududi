@@ -10,8 +10,6 @@ RUN apk add --no-cache \
     python3 \
     make \
     g++ \
-    sqlite-dev \
-    sqlite \
     bash
 
 # Update npm to latest version
@@ -56,7 +54,6 @@ ENV APP_GID=1001
 # Install minimal runtime dependencies
 RUN apk add --no-cache \
     bash \
-    sqlite \
     dumb-init \
     su-exec && \
     rm -rf /tmp/* /var/cache/apk/*
@@ -108,7 +105,7 @@ RUN npm install --omit=dev --no-audit --no-fund && \
     -name ".github" \
     \) -exec rm -rf {} + 2>/dev/null || true; } && \
     cd /app/backend && \
-    node -e "require('sequelize'); require('sqlite3'); require('express')"
+    node -e "require('sequelize'); require('pg'); require('express')"
 
 # Copy frontend
 RUN rm -rf /app/backend/dist
@@ -118,17 +115,15 @@ COPY --from=builder --chown=app:app /app/public/manifest.json ./backend/dist/
 COPY --from=builder --chown=app:app /app/public/locales ./backend/dist/locales
 
 # Create necessary directories
-RUN mkdir -p /app/db /app/backend/certs /app/uploads /app/backups && \
-    chown -R app:app /app/db /app/backend/certs /app/uploads /app/backups
+RUN mkdir -p /app/backend/certs /app/uploads /app/backups && \
+    chown -R app:app /app/backend/certs /app/uploads /app/backups
 
-VOLUME ["/app/db"]
 VOLUME ["/app/uploads"]
 VOLUME ["/app/backups"]
 
 EXPOSE 3002
 
 ENV NODE_ENV=production \
-    DB_FILE="/app/db/production.sqlite3" \
     PORT=3002 \
     TUDUDI_ALLOWED_ORIGINS="http://localhost:8080,http://localhost:3002,http://127.0.0.1:8080,http://127.0.0.1:3002" \
     TUDUDI_SESSION_SECRET="" \

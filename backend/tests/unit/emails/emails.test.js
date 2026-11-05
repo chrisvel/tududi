@@ -56,11 +56,23 @@ const SAMPLES = {
     },
     comeBack: { url: 'https://example.com/today/plan' },
     notification: { title: 'Due', message: 'A task is due' },
+    securityNotice: {
+        event: 'mfaEnabled',
+        url: 'https://example.com/profile?section=security',
+    },
     contactMessage: {
         name: 'Sam',
         email: 'sam@example.com',
         ip: '127.0.0.1',
         message: 'Hi',
+    },
+    feedbackReceived: {
+        name: 'Sam',
+        email: 'sam@example.com',
+        pageUrl: '/today',
+        appVersion: 'v2.0.0',
+        message: 'The save button does nothing',
+        url: 'https://example.com/admin/feedback',
     },
 };
 

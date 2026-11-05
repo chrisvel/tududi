@@ -266,11 +266,16 @@ async function computeTaskMetrics(
     scopeWhere = null
 ) {
     const visibleTasksWhere = withScope(
-        await permissionsService.ownershipOrPermissionWhere(
-            'task',
-            userId,
-            permissionCache
-        ),
+        {
+            [Op.and]: [
+                await permissionsService.ownershipOrPermissionWhere(
+                    'task',
+                    userId,
+                    permissionCache
+                ),
+                await permissionsService.myWorkWhere(userId),
+            ],
+        },
         scopeWhere
     );
 

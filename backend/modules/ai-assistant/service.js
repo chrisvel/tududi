@@ -175,6 +175,16 @@ function extractMessageContent(message) {
     }
 }
 
+// Without json_schema support a model can answer valid JSON in a shape of
+// its own. Callers raise this instead of saving or showing an empty result.
+function unusableResponseError() {
+    return new AppError(
+        'The AI model did not answer in the expected format. Try again or use a different model.',
+        502,
+        'AI_INVALID_RESPONSE'
+    );
+}
+
 // strict: true is required by Anthropic's OpenAI-compatible endpoint (it
 // rejects strict: false with a 400) and is also OpenAI's recommended mode
 // for schema-following output. It does mean every schema below must be
@@ -231,8 +241,8 @@ function swapToMaxCompletionTokens(params) {
     return { ...rest, max_completion_tokens: value };
 }
 
-// A single request can hit both fallbacks (drop response_format and swap
-// max_tokens), so retry in a loop and apply each fallback at most once.
+// A single request can hit several fallbacks (step response_format down and
+// swap max_tokens), so retry in a loop and apply each fallback at most once.
 async function callWithFallback(client, userId, params) {
     let attempt = { ...params };
     let triedFormatFallback = false;
@@ -247,6 +257,21 @@ async function callWithFallback(client, userId, params) {
             if (!triedMaxTokensFallback && isMaxTokensRejection(err)) {
                 triedMaxTokensFallback = true;
                 attempt = swapToMaxCompletionTokens(attempt);
+                continue;
+            }
+            // Providers without json_schema support (e.g. DeepSeek) still
+            // accept plain JSON mode, so step down to json_object first and
+            // only drop response_format if that is rejected too. No flag is
+            // needed here: the step changes the type away from json_schema,
+            // so it can fire at most once.
+            if (
+                attempt.response_format?.type === 'json_schema' &&
+                isResponseFormatRejection(err)
+            ) {
+                attempt = {
+                    ...attempt,
+                    response_format: { type: 'json_object' },
+                };
                 continue;
             }
             if (!triedFormatFallback && isResponseFormatRejection(err)) {
@@ -265,7 +290,7 @@ async function callWithFallback(client, userId, params) {
 
 async function fetchUserContext(userId) {
     const user = await User.findByPk(userId, {
-        attributes: ['id', 'timezone', 'email', 'ai_profile'],
+        attributes: ['id', 'timezone', 'email', 'ai_profile', 'language'],
     });
     if (!user) throw new Error('User not found');
 
@@ -478,6 +503,16 @@ function buildEntityMaps({ metrics, projects }) {
     return { taskMap, projectMap };
 }
 
+// The app's language codes are not all standard (jp, ua).
+function languageName(language) {
+    const code = { jp: 'ja', ua: 'uk' }[language] || language || 'en';
+    try {
+        return new Intl.DisplayNames(['en'], { type: 'language' }).of(code);
+    } catch {
+        return code;
+    }
+}
+
 async function generateDailyBrief(userId) {
     const client = await getOpenAIClient(userId);
 
@@ -491,6 +526,8 @@ async function generateDailyBrief(userId) {
     await entitlements.consumeMonthlyUsage(userId, 'ai_credits');
 
     const systemPrompt = `You are a productivity assistant in Tududi. Return a daily brief as JSON. Keep every field very short — no full sentences, no filler words.
+
+LANGUAGE RULE: Write every text field of your JSON response in ${languageName(context.user.language)}, except task and project names, which stay exactly as given. Never mix languages.
 
 Return a JSON object with exactly this shape:
 {
@@ -550,7 +587,6 @@ Rules:
     });
 
     const raw = extractMessageContent(response.choices[0]?.message);
-    console.log('[AI Assistant] raw response:', raw);
     let parsed;
     try {
         parsed = JSON.parse(extractJSON(raw));
@@ -562,7 +598,6 @@ Rules:
             watch_out: [],
         };
     }
-    console.log('[AI Assistant] parsed:', JSON.stringify(parsed));
 
     const { taskMap, projectMap } = buildEntityMaps(context);
     const rawActions = Array.isArray(parsed.priority_actions)
@@ -800,6 +835,10 @@ Rules:
     } catch {
         parsed = {};
     }
+    if (!parsed || typeof parsed !== 'object') parsed = {};
+    if (typeof parsed.insight !== 'string' || !parsed.insight.trim()) {
+        throw unusableResponseError();
+    }
 
     const rawLinks = Array.isArray(parsed.links) ? parsed.links : [];
     const links = rawLinks
@@ -813,7 +852,7 @@ Rules:
         .slice(0, 3);
 
     const result = {
-        insight: parsed.insight || '',
+        insight: parsed.insight,
         next_step: parsed.next_step || '',
         breakdown: Array.isArray(parsed.breakdown) ? parsed.breakdown : [],
         links,
@@ -898,6 +937,8 @@ async function generateProjectInsights(projectContext, userId) {
 
     const systemPrompt = `You are a productivity assistant in Tududi. A user is viewing a project and needs specific, actionable guidance — not generic advice. Use the project name, description, status, and task data to infer what this project is actually about, then give insights that only apply to THIS specific project.
 
+LANGUAGE RULE: Detect the language of the project name and description and write every text field of your JSON response in that same language. If the project name is in Greek, respond in Greek. If in Spanish, respond in Spanish. If in English, respond in English. Never mix languages.
+
 CRITICAL RULE: Never just echo back the project name or status. Give real domain-level analysis.
 
 Return a JSON object with exactly this shape:
@@ -943,9 +984,13 @@ Rules:
     } catch {
         parsed = {};
     }
+    if (!parsed || typeof parsed !== 'object') parsed = {};
+    if (typeof parsed.insight !== 'string' || !parsed.insight.trim()) {
+        throw unusableResponseError();
+    }
 
     const result = {
-        insight: parsed.insight || '',
+        insight: parsed.insight,
         next_action: parsed.next_action || '',
         health: parsed.health || '',
         watch_out: parsed.watch_out || null,
@@ -977,6 +1022,7 @@ module.exports = {
     buildResponseFormat,
     extractMessageContent,
     extractJSON,
+    unusableResponseError,
     generateDailyBrief,
     getCachedBrief,
     generateTaskInsights,

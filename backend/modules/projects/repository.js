@@ -24,7 +24,6 @@ const {
 const path = require('path');
 const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
-const { withForeignKeyChecksDisabled } = require('../../utils/db-dialect');
 
 const config = getConfig();
 
@@ -254,22 +253,24 @@ class ProjectsRepository extends BaseRepository {
      */
     async deleteWithOrphaning(project, userId) {
         await sequelize.transaction(async (transaction) => {
-            await withForeignKeyChecksDisabled(
-                sequelize,
-                async () => {
-                    try {
-                        await this.deleteProjectContents(
-                            project,
-                            userId,
-                            transaction
-                        );
-                    } catch (error) {
-                        logError('Error deleting project:', error);
-                        throw error;
-                    }
-                },
-                { transaction }
-            );
+            try {
+                await this.deleteProjectContents(project, userId, transaction);
+            } catch (error) {
+                logError('Error deleting project:', error);
+                throw error;
+            }
+        });
+    }
+
+    // Tasks still open in a project. Recurring patterns are left out: they
+    // keep their own schedule and are not one-off work to finish.
+    async findOpenTasks(projectId) {
+        return Task.findAll({
+            where: {
+                project_id: projectId,
+                status: { [Op.notIn]: [2, 3, 5] },
+                recurrence_type: 'none',
+            },
         });
     }
 

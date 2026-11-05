@@ -9,7 +9,6 @@ const { SYSTEM_TAGS } = require('../../../modules/tags/systemTags');
 const {
     createUnverifiedUser,
 } = require('../../../modules/auth/registrationService');
-const { isSqlite } = require('../../../utils/db-dialect');
 
 async function selfPersonsOf(user) {
     return Person.findAll({
@@ -142,30 +141,4 @@ describe('User creation hooks', () => {
         expect(user.name).toBe('Renamed');
         expect(user.surname).toBe('Person');
     });
-
-    // Reproduces the scenario the old code comment warned about: another
-    // connection holds the write lock while the hook opens its own
-    // transaction. Costs a full busy_timeout, so it only runs on demand.
-    const busyProbe =
-        isSqlite() && process.env.SQLITE_BUSY_PROBE === '1' ? it : it.skip;
-    busyProbe(
-        'still seeds when a concurrent writer briefly holds the lock',
-        async () => {
-            const blocker = await sequelize.transaction();
-            await Setting.upsert(
-                { key: 'busy_probe', value: 'x' },
-                { transaction: blocker }
-            );
-            const release = setTimeout(() => blocker.commit(), 1500);
-
-            const user = await User.create({
-                email: 'hooks-busy@example.com',
-                password: 'password123',
-            });
-            clearTimeout(release);
-            if (!blocker.finished) await blocker.commit();
-            await expectSeeded(user);
-        },
-        30000
-    );
 });

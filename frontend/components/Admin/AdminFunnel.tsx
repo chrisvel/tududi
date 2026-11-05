@@ -32,12 +32,11 @@ interface Step {
 const rate = (part: number, whole: number): number | null =>
     whole ? (part / whole) * 100 : null;
 
-// "+4 pts vs the 30 days before", coloured only when it moved.
+// "+4 pts" against the period before, coloured only when it moved.
 const PointsDelta: React.FC<{
     now: number | null;
     before: number | null;
-    days: number;
-}> = ({ now, before, days }) => {
+}> = ({ now, before }) => {
     const { t } = useTranslation();
     if (now === null || before === null) return null;
     const diff = Math.round(now - before);
@@ -46,17 +45,12 @@ const PointsDelta: React.FC<{
             ? 'text-emerald-600 dark:text-emerald-400'
             : diff < 0
               ? 'text-rose-600 dark:text-rose-400'
-              : 'text-gray-500 dark:text-gray-400';
+              : 'text-gray-400 dark:text-gray-500';
     return (
-        <span className={`text-xs ${tone}`}>
-            {t(
-                'admin.funnel.vsBefore',
-                '{{diff}} pts vs the {{days}} days before',
-                {
-                    diff: diff > 0 ? `+${diff}` : String(diff),
-                    days,
-                }
-            )}
+        <span className={`text-xs whitespace-nowrap ${tone}`}>
+            {t('admin.funnel.pts', '{{diff}} pts', {
+                diff: diff > 0 ? `+${diff}` : String(diff),
+            })}
         </span>
     );
 };
@@ -117,7 +111,15 @@ const AdminFunnel: React.FC<{ funnel: Funnel }> = ({ funnel }) => {
         });
     }
 
-    const top = Math.max(1, steps[0].now);
+    // A visitor count below the signups it should contain means tracking
+    // missed people, so no rate is worked out from it.
+    const rateOf = (now: number, prev: number) =>
+        now > prev ? null : percentOf(now, prev);
+    const first = steps.find((s) => s.key !== 'visitors') ?? steps[0];
+    const usable =
+        steps[0].key === 'visitors' && rateOf(steps[1].now, steps[0].now)
+            ? steps[0]
+            : first;
     const last = steps[steps.length - 1];
     const unactivatedPaid =
         current.paid_any !== null && current.paid !== null
@@ -126,10 +128,10 @@ const AdminFunnel: React.FC<{ funnel: Funnel }> = ({ funnel }) => {
 
     return (
         <section
-            className="bg-white dark:bg-gray-900 rounded-lg p-5 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-lg p-5 mb-6"
             data-testid="admin-funnel"
         >
-            <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
                 <h2 className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {funnel.trials
                         ? t(
@@ -145,59 +147,69 @@ const AdminFunnel: React.FC<{ funnel: Funnel }> = ({ funnel }) => {
                               { days }
                           )}
                 </h2>
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {t('admin.funnel.overall', 'End to end: {{pct}}', {
-                        pct: percentOf(last.now, steps[0].now),
-                    })}
-                </span>
+                {last !== usable && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {t('admin.funnel.overall', 'End to end: {{pct}}', {
+                            pct: percentOf(last.now, usable.now),
+                        })}
+                    </span>
+                )}
             </div>
 
-            <ol className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+            <ol className="flex flex-col sm:flex-row sm:items-stretch gap-2">
                 {steps.map((step, i) => {
                     const prev = steps[i - 1];
+                    const stepRate = prev ? rateOf(step.now, prev.now) : null;
                     return (
-                        <li
-                            key={step.key}
-                            className="rounded-lg p-4 bg-gray-50 dark:bg-gray-800"
-                            data-testid={`admin-funnel-${step.key}`}
-                        >
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {step.label}
-                            </p>
-                            <div className="flex items-baseline gap-2 mt-0.5">
-                                <span className="text-xl font-semibold text-gray-900 dark:text-gray-100 tabular-nums">
-                                    {step.now}
-                                </span>
-                                {prev && (
-                                    <span
-                                        className="text-sm font-medium text-blue-600 dark:text-blue-400 tabular-nums"
-                                        data-testid={`admin-funnel-${step.key}-rate`}
-                                    >
-                                        {percentOf(step.now, prev.now)}
-                                    </span>
-                                )}
-                            </div>
-                            <div className="h-1.5 mt-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                                <div
-                                    className="h-full rounded-full bg-blue-500 dark:bg-blue-400"
-                                    style={{
-                                        width: `${Math.round((step.now / top) * 100)}%`,
-                                    }}
-                                />
-                            </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                {step.hint}
-                            </p>
+                        <React.Fragment key={step.key}>
                             {prev && (
-                                <div className="mt-1">
-                                    <PointsDelta
-                                        now={rate(step.now, prev.now)}
-                                        before={rate(step.before, prev.before)}
-                                        days={days}
-                                    />
-                                </div>
+                                <li className="flex sm:flex-col items-center justify-center gap-x-2 px-1 text-center">
+                                    <span
+                                        className="text-sm font-semibold text-blue-600 dark:text-blue-400 tabular-nums"
+                                        data-testid={`admin-funnel-${step.key}-rate`}
+                                        title={
+                                            stepRate === null
+                                                ? t(
+                                                      'admin.funnel.noRate',
+                                                      'Fewer counted visitors than signups'
+                                                  )
+                                                : undefined
+                                        }
+                                    >
+                                        {stepRate ?? '?'}
+                                    </span>
+                                    {stepRate !== null && (
+                                        <PointsDelta
+                                            now={rate(step.now, prev.now)}
+                                            before={rate(
+                                                step.before,
+                                                prev.before
+                                            )}
+                                        />
+                                    )}
+                                </li>
                             )}
-                        </li>
+                            <li
+                                className="flex-1 rounded-lg px-4 py-3 bg-gray-50 dark:bg-gray-800"
+                                data-testid={`admin-funnel-${step.key}`}
+                                title={step.hint}
+                            >
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {step.label}
+                                </p>
+                                <p className="text-xl font-semibold text-gray-900 dark:text-gray-100 tabular-nums">
+                                    {step.now}
+                                    <span className="ml-2 text-xs font-normal text-gray-400 dark:text-gray-500">
+                                        {t('admin.funnel.before', 'was {{n}}', {
+                                            n: step.before,
+                                        })}
+                                    </span>
+                                </p>
+                                <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                                    {step.hint}
+                                </p>
+                            </li>
+                        </React.Fragment>
                     );
                 })}
             </ol>

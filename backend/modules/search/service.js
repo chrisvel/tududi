@@ -5,6 +5,7 @@ const moment = require('moment-timezone');
 const { Task, Tag, Project, sequelize } = require('../../models');
 const searchRepository = require('./repository');
 const scopeService = require('../../services/scopeService');
+const permissionsService = require('../../services/permissionsService');
 const { parseSearchParams, priorityToInt } = require('./validation');
 const { serializeTasks } = require('../tasks/core/serializers');
 const { UnauthorizedError } = require('../../shared/errors');
@@ -57,7 +58,7 @@ class SearchService {
      * Build task search conditions.
      */
     buildTaskConditions(
-        userId,
+        visibleWhere,
         params,
         dueDateCondition,
         deferDateCondition,
@@ -74,8 +75,10 @@ class SearchService {
             taskStatus,
         } = params;
 
-        const conditions = { user_id: userId };
-        const extraConditions = [];
+        const conditions = {};
+        // Everything the user can open: own tasks, tasks in shared projects
+        // and areas, and tasks assigned to them.
+        const extraConditions = [visibleWhere];
         if (scopeWhere) {
             extraConditions.push(scopeWhere);
         }
@@ -156,6 +159,16 @@ class SearchService {
             });
         }
 
+        if (extras.has('not_recurring')) {
+            extraConditions.push({
+                [Op.or]: [
+                    { recurrence_type: 'none' },
+                    { recurrence_type: null },
+                ],
+            });
+            extraConditions.push({ recurring_parent_id: null });
+        }
+
         if (extras.has('overdue')) {
             extraConditions.push({ due_date: { [Op.lt]: nowDate } });
             extraConditions.push({ completed_at: null });
@@ -187,17 +200,43 @@ class SearchService {
             );
         }
 
+        if (extras.has('no_content')) {
+            extraConditions.push({
+                [Op.or]: [
+                    { note: null },
+                    sequelize.where(
+                        sequelize.fn(
+                            'LENGTH',
+                            sequelize.fn('TRIM', sequelize.col('Task.note'))
+                        ),
+                        0
+                    ),
+                ],
+            });
+        }
+
         if (extras.has('deferred')) {
             extraConditions.push({ defer_until: { [Op.gt]: nowDate } });
+        }
+
+        if (extras.has('not_deferred')) {
+            extraConditions.push({
+                [Op.or]: [
+                    { defer_until: null },
+                    { defer_until: { [Op.lte]: nowDate } },
+                ],
+            });
         }
 
         if (extras.has('assigned_to_project')) {
             extraConditions.push({ project_id: { [Op.ne]: null } });
         }
 
-        if (extraConditions.length > 0) {
-            conditions[Op.and] = extraConditions;
+        if (extras.has('no_project')) {
+            extraConditions.push({ project_id: null });
         }
+
+        conditions[Op.and] = extraConditions;
 
         return conditions;
     }
@@ -259,7 +298,7 @@ class SearchService {
         }
 
         const conditions = this.buildTaskConditions(
-            userId,
+            await permissionsService.ownershipOrPermissionWhere('task', userId),
             params,
             dueDateCondition,
             deferDateCondition,
@@ -325,13 +364,20 @@ class SearchService {
             }
         }
 
-        const conditions = { user_id: userId };
+        const conditions = {
+            [Op.and]: [
+                await permissionsService.ownershipOrPermissionWhere(
+                    'project',
+                    userId
+                ),
+            ],
+        };
         if (matchingIds) {
             conditions.id = { [Op.in]: matchingIds };
         }
         const scopeWhere = await scopeService.projectScopeWhere(scope);
         if (scopeWhere) {
-            conditions[Op.and] = [scopeWhere];
+            conditions[Op.and].push(scopeWhere);
         }
 
         if (searchQuery) {
@@ -377,12 +423,7 @@ class SearchService {
         if (extras.has('no_due_date')) {
             projectExtraConditions.push({ due_date_at: null });
         }
-        if (projectExtraConditions.length > 0) {
-            conditions[Op.and] = [
-                ...(conditions[Op.and] || []),
-                ...projectExtraConditions,
-            ];
-        }
+        conditions[Op.and].push(...projectExtraConditions);
 
         const requireTags = tagIds.length > 0 || extras.has('has_tags');
         const include = [];
@@ -432,10 +473,17 @@ class SearchService {
     async searchAreas(userId, params, scope = null) {
         const { searchQuery, hasPagination, limit, offset } = params;
 
-        const conditions = { user_id: userId };
         if (scope && scope.matchesNothing) {
             return { count: 0, results: [] };
         }
+        const conditions = {
+            [Op.and]: [
+                await permissionsService.ownershipOrPermissionWhere(
+                    'area',
+                    userId
+                ),
+            ],
+        };
         if (scope && scope.areaId !== null) {
             conditions.id = scope.areaId;
         }
@@ -495,13 +543,20 @@ class SearchService {
             }
         }
 
-        const conditions = { user_id: userId };
+        const conditions = {
+            [Op.and]: [
+                await permissionsService.ownershipOrPermissionWhere(
+                    'note',
+                    userId
+                ),
+            ],
+        };
         if (matchingIds) {
             conditions.id = { [Op.in]: matchingIds };
         }
         const scopeWhere = await scopeService.noteScopeWhere(scope);
         if (scopeWhere) {
-            conditions[Op.and] = [scopeWhere];
+            conditions[Op.and].push(scopeWhere);
         }
 
         if (searchQuery) {

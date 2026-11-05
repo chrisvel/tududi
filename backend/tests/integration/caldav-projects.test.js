@@ -352,6 +352,49 @@ describe('CalDAV Per-Project Calendars', () => {
                     'DTSTART;VALUE=DATE:20261016'
                 );
             });
+
+            // #1928: a due time survives the round trip in both directions.
+            test('a timed DUE sets due_has_time and is served back with its time', async () => {
+                await testUser.update({ timezone: 'Europe/Berlin' });
+                const vtodo = [
+                    'BEGIN:VCALENDAR',
+                    'VERSION:2.0',
+                    'PRODID:-//Test//EN',
+                    'BEGIN:VTODO',
+                    'UID:timed-due-task',
+                    'SUMMARY:Timed Task',
+                    'STATUS:NEEDS-ACTION',
+                    'DUE:20261020T090000',
+                    'END:VTODO',
+                    'END:VCALENDAR',
+                ].join('\r\n');
+
+                await request(app)
+                    .put(
+                        `/caldav/${ENC(testUser.email)}/projects/${ENC(testProject.uid)}/timed-due-task.ics`
+                    )
+                    .set('Authorization', authHeader)
+                    .set('Content-Type', 'text/calendar')
+                    .send(vtodo)
+                    .expect(201);
+
+                const created = await Task.findOne({
+                    where: { uid: 'timed-due-task' },
+                });
+                expect(created.due_has_time).toBe(true);
+                expect(created.due_date.toISOString()).toBe(
+                    '2026-10-20T07:00:00.000Z'
+                );
+
+                const response = await report(app, projectUrl())
+                    .set('Authorization', authHeader)
+                    .set('Content-Type', 'application/xml')
+                    .send(berlinReportXml)
+                    .expect(207);
+
+                expect(response.text).toContain('DUE:20261020T070000Z');
+                expect(response.text).not.toContain('DUE;VALUE=DATE:20261020');
+            });
         });
 
         describe('PUT into project calendar', () => {

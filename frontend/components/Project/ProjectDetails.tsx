@@ -34,27 +34,40 @@ import {
     deleteTask,
     fetchTaskOrder,
     saveTaskOrder,
+    updateTask,
 } from '../../utils/tasksService';
 import { mergeVisibleOrder } from '../Shared/sortableList';
 import IconSortDropdown from '../Shared/IconSortDropdown';
 import LoadingSpinner from '../Shared/LoadingSpinner';
 import { getApiPath } from '../../config/paths';
 import ProjectHero from './ProjectHero';
+import ImportWizard from '../Spreadsheet/ImportWizard';
+import { exportTasks } from '../../utils/spreadsheetService';
+import { spreadsheetErrorText } from '../Spreadsheet/errorText';
 import NewItemButton from '../Shared/NewItemButton';
 import { onCaptureSaved, openCapture } from '../../utils/captureUi';
 import { formatProjectTokenName } from '../../utils/inboxTokens';
 import BannerEditModal from './BannerEditModal';
 import ProjectShareModal from './ProjectShareModal';
+import ProjectModal from './ProjectModal';
 import ProjectTasksSection from './ProjectTasksSection';
+import ProjectTimeline from './Timeline/ProjectTimeline';
 import ProjectOverviewRail from './ProjectOverviewRail';
 import ProjectAttachmentsWidget from './ProjectAttachmentsWidget';
 import { ownerAttachmentsApi } from '../../utils/attachmentsService';
+import { leaveShare } from '../../utils/sharesService';
 import { useProjectMetrics } from './useProjectMetrics';
+import useCompleteProject from './useCompleteProject';
+import ProjectUnavailable, {
+    ProjectLoadError,
+    projectLoadErrorFrom,
+} from './ProjectUnavailable';
 import {
     matchesTaskStatusFilter,
     TaskStatusFilter,
 } from '../../constants/taskStatus';
 import { saveProjectAsTemplate } from '../../utils/templatesService';
+import TaskModal from '../Task/TaskModal';
 
 const ProjectDetails: React.FC = () => {
     const { uidSlug } = useParams<{ uidSlug: string }>();
@@ -67,13 +80,32 @@ const ProjectDetails: React.FC = () => {
     const [allProjects, setAllProjects] = useState<Project[]>([]);
     const [project, setProject] = useState<Project | null>(null);
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [panelTask, setPanelTask] = useState<Task | null>(null);
     const [notes, setNotes] = useState<Note[]>([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const [error, setError] = useState<ProjectLoadError | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [isTemplateConfirmOpen, setIsTemplateConfirmOpen] = useState(false);
+    const [isLeaveConfirmOpen, setIsLeaveConfirmOpen] = useState(false);
     const [previewNote, setPreviewNote] = useState<Note | null>(null);
+    const [view, setView] = useState<'tasks' | 'timeline'>(() => {
+        try {
+            return localStorage.getItem('project_view') === 'timeline'
+                ? 'timeline'
+                : 'tasks';
+        } catch {
+            return 'tasks';
+        }
+    });
+    const changeView = (next: 'tasks' | 'timeline') => {
+        setView(next);
+        try {
+            localStorage.setItem('project_view', next);
+        } catch {
+            // The chosen view is only a convenience
+        }
+    };
     const [isBannerEditModalOpen, setIsBannerEditModalOpen] = useState(false);
     const attachmentsApi = useMemo(
         () =>
@@ -95,6 +127,7 @@ const ProjectDetails: React.FC = () => {
     const [aiInsightsActive, setAiInsightsActive] = useState(false);
     const aiInsightsRef = useRef<ProjectAIInsightsHandle>(null);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isEditPanelOpen, setIsEditPanelOpen] = useState(false);
     const sortOptions = useMemo(
         () => [
             {
@@ -139,6 +172,8 @@ const ProjectDetails: React.FC = () => {
 
     // Bumped after something is captured, so new tasks and notes show up
     const [reloadKey, setReloadKey] = useState(0);
+    const [isImportOpen, setIsImportOpen] = useState(false);
+    const { requestComplete, completeDialog } = useCompleteProject();
     useEffect(
         () =>
             onCaptureSaved(() => {
@@ -152,7 +187,7 @@ const ProjectDetails: React.FC = () => {
         const loadProjectData = async () => {
             try {
                 if (!project) setLoading(true);
-                setError(false);
+                setError(null);
                 const projectData = await fetchProjectBySlug(uidSlug);
                 setProject(projectData);
                 setTasks(projectData.tasks || projectData.Tasks || []);
@@ -177,13 +212,48 @@ const ProjectDetails: React.FC = () => {
                     })
                 );
                 setLoading(false);
-            } catch {
-                setError(true);
+            } catch (err) {
+                setError(projectLoadErrorFrom(err));
                 setLoading(false);
             }
         };
         loadProjectData();
     }, [uidSlug, reloadKey]);
+
+    // Moving a bar on the timeline. Times of day are kept: sending a date
+    // alone would turn a timed start or due into a whole-day one.
+    const handleTaskDatesChange = async (
+        task: Task,
+        dates: { start_date?: string; due_date?: string }
+    ) => {
+        if (!task.uid) return;
+        const payload: Partial<Task> = { ...dates };
+        if (dates.start_date && task.start_time)
+            payload.start_time = task.start_time;
+        if (dates.due_date && task.due_has_time && task.due_time)
+            payload.due_time = task.due_time;
+        try {
+            const saved = await updateTask(task.uid, payload);
+            setTasks((prev) =>
+                prev.map((item) =>
+                    item.uid === task.uid
+                        ? {
+                              ...item,
+                              start_date: saved.start_date ?? null,
+                              start_time: saved.start_time ?? null,
+                              due_date: saved.due_date,
+                              due_time: saved.due_time ?? null,
+                              due_has_time: saved.due_has_time,
+                          }
+                        : item
+                )
+            );
+        } catch {
+            showErrorToast(
+                t('projectTimeline.saveError', 'Could not move the task')
+            );
+        }
+    };
 
     const handleTaskUpdate = async (updatedTask: Task) => {
         if (!updatedTask.id) return;
@@ -287,6 +357,16 @@ const ProjectDetails: React.FC = () => {
         }
     };
 
+    // After a completion the tasks may have changed too, so reload the page
+    const handleProjectCompleted = (savedProject: Project) => {
+        projectsStore.setProjects(
+            projectsStore.projects.map((p) =>
+                p.uid === savedProject.uid ? { ...p, ...savedProject } : p
+            )
+        );
+        setReloadKey((key) => key + 1);
+    };
+
     const handleEditBannerClick = () => {
         setIsBannerEditModalOpen(true);
     };
@@ -375,6 +455,29 @@ const ProjectDetails: React.FC = () => {
             (p) => p.uid !== project.uid
         );
         projectsStore.setProjects(updatedProjects);
+        navigate('/projects');
+    };
+
+    // The viewer gives up a project shared with them, then it leaves their lists
+    const handleLeaveProject = async () => {
+        setIsLeaveConfirmOpen(false);
+        if (!project?.uid) return;
+        try {
+            await leaveShare('project', project.uid);
+        } catch {
+            showErrorToast(
+                t('shares.leave.failed', 'Could not leave. Please try again.')
+            );
+            return;
+        }
+        projectsStore.setProjects(
+            projectsStore.projects.filter((p) => p.uid !== project.uid)
+        );
+        showSuccessToast(
+            t('shares.leave.left', 'You left "{{name}}"', {
+                name: project.name,
+            })
+        );
         navigate('/projects');
     };
 
@@ -550,20 +653,8 @@ const ProjectDetails: React.FC = () => {
     );
 
     if (loading) return <LoadingSpinner message="Loading project details..." />;
-    if (error)
-        return (
-            <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-red-500 text-lg">
-                    Failed to load project details.
-                </div>
-            </div>
-        );
-    if (!project)
-        return (
-            <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-red-500 text-lg">Project not found.</div>
-            </div>
-        );
+    if (error) return <ProjectUnavailable reason={error} />;
+    if (!project) return <ProjectUnavailable reason="notFound" />;
 
     const renderStatusFilter = () => (
         <div className="space-y-3">
@@ -653,26 +744,67 @@ const ProjectDetails: React.FC = () => {
                 doneCount={taskStats.completed}
                 totalCount={taskStats.total}
                 onUpdate={handleUpdateProject}
+                onComplete={() =>
+                    requestComplete(
+                        project,
+                        taskStats.total - taskStats.completed,
+                        handleProjectCompleted
+                    )
+                }
                 onDeleteClick={() => {
                     setNoteToDelete(null);
                     setIsConfirmDialogOpen(true);
                 }}
                 onShareClick={() => setIsShareModalOpen(true)}
+                onLeaveClick={() => setIsLeaveConfirmOpen(true)}
                 onSaveAsTemplate={
                     templatesEnabled ? handleSaveAsTemplate : undefined
                 }
                 onEditBannerClick={handleEditBannerClick}
+                onEditClick={() => setIsEditPanelOpen(true)}
                 onTogglePin={handleTogglePin}
+                onImportClick={() => setIsImportOpen(true)}
+                onExport={(format) =>
+                    exportTasks(format, { project_uid: project.uid }).catch(
+                        (e: Error) => showErrorToast(spreadsheetErrorText(t, e))
+                    )
+                }
             />
+
+            {isImportOpen && project.uid && (
+                <ImportWizard
+                    projectUid={project.uid}
+                    onClose={() => setIsImportOpen(false)}
+                    onImported={() => setReloadKey((key) => key + 1)}
+                />
+            )}
 
             <div className="w-full">
                 <div className="w-full">
                     <div className="mb-4">
                         <div className="flex items-center justify-between min-h-[2.5rem]">
                             <div className="flex items-center gap-4 sm:gap-6 self-stretch pl-2 sm:pl-3">
-                                <span className="relative flex items-center self-stretch py-2.5 text-sm font-medium text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100">
-                                    {t('tasks.title', 'Tasks')}
-                                </span>
+                                {(['tasks', 'timeline'] as const).map((tab) => (
+                                    <button
+                                        key={tab}
+                                        type="button"
+                                        aria-pressed={view === tab}
+                                        data-testid={`project-view-${tab}`}
+                                        onClick={() => changeView(tab)}
+                                        className={`relative flex items-center self-stretch py-2.5 text-sm font-medium ${
+                                            view === tab
+                                                ? 'text-gray-900 dark:text-gray-100 after:absolute after:bottom-0 after:left-px after:right-px after:h-0.5 after:rounded-full after:bg-gray-900 dark:after:bg-gray-100'
+                                                : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
+                                        }`}
+                                    >
+                                        {tab === 'tasks'
+                                            ? t('tasks.title', 'Tasks')
+                                            : t(
+                                                  'projectTimeline.title',
+                                                  'Timeline'
+                                              )}
+                                    </button>
+                                ))}
                             </div>
 
                             {
@@ -785,51 +917,79 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-start">
-                                <div className="min-w-0 space-y-4">
-                                    <ProjectTasksSection
-                                        displayTasks={displayTasks}
-                                        onTaskUpdate={handleTaskUpdate}
-                                        onTaskCompletionToggle={
-                                            handleTaskCompletionToggle
-                                        }
-                                        onTaskDelete={handleTaskDelete}
-                                        onToggleToday={undefined}
-                                        allProjects={allProjects}
-                                        showCompleted={
-                                            taskStatusFilter !== 'active'
-                                        }
-                                        taskSearchQuery={taskSearchQuery}
-                                        onTaskReorder={handleTaskReorder}
-                                        t={t}
-                                    />
-                                </div>
-
-                                <div className="space-y-4">
-                                    <ProjectOverviewRail
-                                        project={project}
-                                        areas={areas}
-                                        notes={notes}
-                                        t={t}
-                                        onUpdate={handleUpdateProject}
-                                        onShareClick={() =>
-                                            setIsShareModalOpen(true)
-                                        }
-                                        onCreateNote={() =>
-                                            openCaptureForProject('note')
-                                        }
-                                        onOpenNote={setPreviewNote}
-                                    />
-                                    {attachmentsApi && (
-                                        <ProjectAttachmentsWidget
-                                            api={attachmentsApi}
+                            {view === 'timeline' ? (
+                                <ProjectTimeline
+                                    project={project}
+                                    tasks={displayTasks}
+                                    links={project.task_links || []}
+                                    onDatesChange={handleTaskDatesChange}
+                                    onOpenTask={setPanelTask}
+                                    t={t}
+                                />
+                            ) : (
+                                <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] gap-6 items-start">
+                                    <div className="min-w-0 space-y-4">
+                                        <ProjectTasksSection
+                                            displayTasks={displayTasks}
+                                            onTaskUpdate={handleTaskUpdate}
+                                            onTaskCompletionToggle={
+                                                handleTaskCompletionToggle
+                                            }
+                                            onTaskDelete={handleTaskDelete}
+                                            onToggleToday={undefined}
+                                            allProjects={allProjects}
+                                            showCompleted={
+                                                taskStatusFilter !== 'active'
+                                            }
+                                            taskSearchQuery={taskSearchQuery}
+                                            onTaskReorder={handleTaskReorder}
                                             t={t}
                                         />
-                                    )}
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <ProjectOverviewRail
+                                            project={project}
+                                            areas={areas}
+                                            notes={notes}
+                                            t={t}
+                                            onUpdate={handleUpdateProject}
+                                            onShareClick={() =>
+                                                setIsShareModalOpen(true)
+                                            }
+                                            onCreateNote={() =>
+                                                openCaptureForProject('note')
+                                            }
+                                            onOpenNote={setPreviewNote}
+                                        />
+                                        {attachmentsApi && (
+                                            <ProjectAttachmentsWidget
+                                                api={attachmentsApi}
+                                                t={t}
+                                            />
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </>
                     }
+
+                    {panelTask && (
+                        <TaskModal
+                            isOpen
+                            onClose={() => setPanelTask(null)}
+                            task={panelTask}
+                            onSaved={(fresh) =>
+                                setTasks((prev) =>
+                                    prev.map((item) =>
+                                        item.uid === fresh.uid
+                                            ? { ...item, ...fresh }
+                                            : item
+                                    )
+                                )
+                            }
+                        />
+                    )}
 
                     {previewNote && (
                         <NoteSidePanel
@@ -874,6 +1034,17 @@ const ProjectDetails: React.FC = () => {
                         onSave={handleSaveBanner}
                         currentImageUrl={project.image_url}
                     />
+
+                    {isEditPanelOpen && (
+                        <ProjectModal
+                            isOpen={isEditPanelOpen}
+                            onClose={() => setIsEditPanelOpen(false)}
+                            onSave={handleUpdateProject}
+                            onDelete={handleDeleteProject}
+                            project={project}
+                            areas={areas}
+                        />
+                    )}
 
                     {isShareModalOpen && (
                         <ProjectShareModal
@@ -932,6 +1103,26 @@ const ProjectDetails: React.FC = () => {
                             confirmButtonText={t('common.save', 'Save')}
                         />
                     )}
+                    {isLeaveConfirmOpen && (
+                        <ConfirmDialog
+                            title={t(
+                                'shares.leave.projectTitle',
+                                'Leave project'
+                            )}
+                            message={t(
+                                'shares.leave.projectMessage',
+                                'You will no longer see "{{name}}" or its tasks, and your open tasks there will be unassigned. The person who shared it will be told.',
+                                { name: project?.name }
+                            )}
+                            onConfirm={handleLeaveProject}
+                            onCancel={() => setIsLeaveConfirmOpen(false)}
+                            confirmButtonText={t(
+                                'shares.leave.action',
+                                'Leave'
+                            )}
+                        />
+                    )}
+                    {completeDialog}
                 </div>
             </div>
         </div>

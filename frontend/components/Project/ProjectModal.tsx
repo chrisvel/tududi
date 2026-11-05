@@ -8,6 +8,12 @@ import TagInput from '../Tag/TagInput';
 import PriorityDropdown from '../Shared/PriorityDropdown';
 import AreaDropdown from '../Shared/AreaDropdown';
 import DatePicker from '../Shared/DatePicker';
+import DateTimePicker from '../Shared/DateTimePicker';
+import {
+    fromDueParts,
+    toDueParts,
+    isStartAfterDue,
+} from '../../utils/dueDateTime';
 import ProjectStateDropdown from '../Shared/ProjectStateDropdown';
 import { PriorityType } from '../../entities/Task';
 import { useStore } from '../../store/useStore';
@@ -43,6 +49,8 @@ const emptyProject = (): Project => ({
     tags: [],
     priority: null,
     due_date_at: null,
+    start_date: null,
+    start_time: null,
 });
 
 // Dates from the API can carry a time part; the date input wants YYYY-MM-DD
@@ -133,11 +141,36 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
         }));
     };
 
+    const handleStartChange = (iso: string) => {
+        const parts = toDueParts(iso);
+        setFormData((prev) => ({
+            ...prev,
+            start_date: parts.date,
+            start_time: parts.date ? parts.time : null,
+        }));
+    };
+
     const handleSubmit = async () => {
         const trimmedName = formData.name.trim();
         if (!trimmedName) {
             setError(
                 t('errors.projectNameRequired', 'Project name is required')
+            );
+            return;
+        }
+        if (
+            isStartAfterDue(
+                formData.start_date,
+                formData.start_time,
+                formData.due_date_at,
+                null
+            )
+        ) {
+            setError(
+                t(
+                    'task.startAfterDueError',
+                    'Start cannot be after the due date'
+                )
             );
             return;
         }
@@ -205,6 +238,7 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                 tags.length > 0 ||
                 formData.priority !== null ||
                 formData.due_date_at !== null ||
+                !!formData.start_date ||
                 !!formData.color
             );
         }
@@ -216,6 +250,8 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
             formData.status !== project.status ||
             formData.priority !== project.priority ||
             formData.due_date_at !== project.due_date_at ||
+            (formData.start_date ?? null) !== (project.start_date ?? null) ||
+            (formData.start_time ?? null) !== (project.start_time ?? null) ||
             formData.color !== project.color ||
             formData.goal_id !== project.goal_id ||
             formData.is_maintenance !== project.is_maintenance;
@@ -352,6 +388,20 @@ const ProjectModal: React.FC<ProjectModalProps> = ({
                                 priority: value,
                             }))
                         }
+                    />
+                </SidePanelSection>
+
+                <SidePanelSection title={t('forms.startDate', 'Start')}>
+                    <DateTimePicker
+                        value={fromDueParts(
+                            formData.start_date,
+                            formData.start_time
+                        )}
+                        onChange={handleStartChange}
+                        placeholder={t(
+                            'forms.task.startDatePlaceholder',
+                            'Select start date'
+                        )}
                     />
                 </SidePanelSection>
 

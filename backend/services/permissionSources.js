@@ -92,10 +92,28 @@ async function findSharedResourceUids(resourceType, resourceUids) {
     return new Set(rows.map((r) => r.resource_uid));
 }
 
+// Uids of the given resources shared with the user on their own (a direct
+// share or a group grant on that very item, not access reaching it through
+// an area or project), which the user can leave.
+async function findLeavableUids(userId, resourceType, resourceUids) {
+    if (resourceUids.length === 0) return new Set();
+    const rows = await findAccepted(
+        {
+            user_id: userId,
+            resource_type: resourceType,
+            resource_uid: resourceUids,
+            propagation: 'direct',
+        },
+        ['resource_uid']
+    );
+    return new Set(rows.map((r) => r.resource_uid));
+}
+
 module.exports = {
     findAccepted,
     countAccepted,
     findAcceptedAccessLevel,
     countDistinctUsersByResource,
     findSharedResourceUids,
+    findLeavableUids,
 };

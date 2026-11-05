@@ -75,6 +75,28 @@ async function getBlockedCountMap(taskIds) {
     return counts;
 }
 
+// "blocks" links where both tasks are in the given set, as uid pairs. The
+// project timeline draws these as arrows.
+async function getBlockLinks(tasks) {
+    const uidById = new Map((tasks || []).map((task) => [task.id, task.uid]));
+    if (uidById.size === 0) return [];
+
+    const ids = [...uidById.keys()];
+    const rows = await TaskRelation.findAll({
+        where: {
+            relation_type: 'blocks',
+            source_task_id: { [Op.in]: ids },
+            target_task_id: { [Op.in]: ids },
+        },
+        attributes: ['source_task_id', 'target_task_id'],
+        raw: true,
+    });
+    return rows.map((row) => ({
+        from_uid: uidById.get(row.source_task_id),
+        to_uid: uidById.get(row.target_task_id),
+    }));
+}
+
 function toView(relation, taskId, otherTask) {
     const isSource = relation.source_task_id === taskId;
     return {
@@ -341,6 +363,7 @@ async function deleteRelation({ task, relationUid, userId }) {
 }
 
 module.exports = {
+    getBlockLinks,
     RelationError,
     RESOLVED_STATUSES,
     INPUT_TYPES,

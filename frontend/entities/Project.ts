@@ -39,15 +39,24 @@ export interface Project {
     notes?: Note[];
     Notes?: Note[]; // Sequelize association naming (capitalized)
     due_date_at?: string | null;
+    start_date?: string | null;
+    start_time?: string | null;
+    // "blocks" links between this project's tasks, for the timeline
+    task_links?: { from_uid: string; to_uid: string }[];
     image_url?: string;
     color?: string;
     task_show_completed?: boolean;
     task_sort_order?: string;
     status?: ProjectStatus;
+    completed_at?: string | null;
     created_at?: string;
     updated_at?: string;
     share_count?: number;
     is_shared?: boolean;
+    // the viewer owns the project or is an admin, so may manage its shares
+    can_share?: boolean;
+    // shared with the viewer on its own, so they may leave it
+    can_leave?: boolean;
     task_status?: ProjectTaskStatus;
     completion_percentage?: number;
     is_stalled?: boolean;

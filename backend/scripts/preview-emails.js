@@ -104,6 +104,40 @@ const SAMPLES = {
             },
         },
     ],
+    securityNotice: [
+        {
+            label: 'mfaEnabled',
+            vars: {
+                event: 'mfaEnabled',
+                url: url('/profile?section=security'),
+            },
+        },
+        {
+            label: 'mfaDisabled',
+            vars: {
+                event: 'mfaDisabled',
+                url: url('/profile?section=security'),
+            },
+        },
+        {
+            label: 'mfaReset',
+            vars: { event: 'mfaReset', url: url('/profile?section=security') },
+        },
+        {
+            label: 'recoveryCodeUsed',
+            vars: {
+                event: 'recoveryCodeUsed',
+                url: url('/profile?section=security'),
+            },
+        },
+        {
+            label: 'recoveryCodesRegenerated',
+            vars: {
+                event: 'recoveryCodesRegenerated',
+                url: url('/profile?section=security'),
+            },
+        },
+    ],
     contactMessage: [
         {
             label: '',
@@ -112,6 +146,19 @@ const SAMPLES = {
                 email: 'sam@example.com',
                 ip: '203.0.113.7',
                 message: 'Hello!',
+            },
+        },
+    ],
+    feedbackReceived: [
+        {
+            label: '',
+            vars: {
+                name: 'Sam',
+                email: 'sam@example.com',
+                pageUrl: '/today',
+                appVersion: 'v2.0.0',
+                message: 'The save button does nothing.',
+                url: url('/admin/feedback'),
             },
         },
     ],

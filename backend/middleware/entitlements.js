@@ -55,9 +55,13 @@ const OPEN_WITHOUT_SUBSCRIPTION = [
     /^\/billing(\/|$)/,
     /^\/profile$/,
     /^\/profile\/change-password$/,
+    // Securing the account is never behind the paywall.
+    /^\/profile\/mfa(\/|$)/,
+    /^\/auth\/reverify$/,
     /^\/backup\/export$/,
     /^\/backup\/list$/,
     /^\/backup\/[^/]+\/download$/,
+    /^\/export\/tasks$/,
     // Someone stuck at the paywall can still tell us something is wrong.
     /^\/feedback$/,
 ];

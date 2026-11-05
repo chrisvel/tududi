@@ -2,7 +2,7 @@
 
 // Runs a command while holding a PostgreSQL advisory lock, so two app
 // containers starting at the same time cannot both create the schema or run
-// migrations. On SQLite (one process by definition) the command just runs.
+// migrations.
 //
 // Usage: node scripts/with-db-lock.js <command> [args...]
 
@@ -14,7 +14,7 @@ const { spawn } = require('child_process');
 const { Sequelize } = require('sequelize');
 const { buildSequelizeOptions } = require('../config/db');
 const { getConfig } = require('../config/config');
-const { guardAgainstAccidentalDialectSwitch } = require('./lib/dialectGuard');
+const { guardAgainstLeftoverSqlite } = require('../config/legacySqlite');
 
 // Any fixed key works; it only has to be the same in every process.
 const SCHEMA_LOCK_KEY = 7263001;
@@ -37,15 +37,10 @@ async function main() {
         process.exit(2);
     }
 
-    const config = getConfig();
-    if (config.db.dialect !== 'postgres') {
-        process.exit(await runCommand(argv));
-    }
-
     // Must run before the advisory-lock connection below: otherwise an
-    // unreachable/misconfigured PostgreSQL URL fails with a bare connection
-    // error before the operator ever sees why PostgreSQL was selected at all.
-    guardAgainstAccidentalDialectSwitch(config.db.dialect);
+    // unreachable PostgreSQL fails with a bare connection error before the
+    // operator ever sees that their 1.x data has not been moved.
+    guardAgainstLeftoverSqlite(getConfig().legacySqliteFiles);
 
     const sequelize = new Sequelize(buildSequelizeOptions({ logging: false }));
     let exitCode = 1;

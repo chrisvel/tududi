@@ -156,6 +156,33 @@ export function revokeGroupShare(
     return sendRevoke({ resource_type, resource_uid, target_group_uid });
 }
 
+// The recipient gives up their own access, direct and through any group.
+export async function leaveShare(
+    resource_type: ShareGrantRequest['resource_type'],
+    resource_uid: string
+): Promise<void> {
+    const res = await fetch(getApiPath('shares/leave'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'x-csrf-token': await getCsrfToken(),
+        },
+        body: JSON.stringify({ resource_type, resource_uid }),
+    });
+    if (!res.ok) {
+        let message = 'Failed to leave';
+        try {
+            const body = await res.json();
+            if (body?.error) message = body.error;
+        } catch {
+            // ignore non-JSON error bodies
+        }
+        throw new Error(message);
+    }
+}
+
 // A number for a direct share, "g<id>" for one that arrived through a group.
 export type InvitationId = number | string;
 

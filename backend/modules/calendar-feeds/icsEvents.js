@@ -83,6 +83,15 @@ function isBusy(event) {
     );
 }
 
+// Minutes on the user's clock, not elapsed time: on a DST change day 16:00
+// is 15 or 17 hours after midnight, but must still sit at 16:00.
+function wallMinute(at, dayStart, dayEnd) {
+    if (!at.isAfter(dayStart)) return 0;
+    if (!at.isBefore(dayEnd)) return 24 * 60;
+    const local = at.clone().tz(dayStart.tz());
+    return local.hours() * 60 + local.minutes();
+}
+
 function buildOccurrence(event, start, end, date, userTimezone, tzid) {
     if (isCancelled(event)) return null;
 
@@ -125,8 +134,8 @@ function buildOccurrence(event, start, end, date, userTimezone, tzid) {
         busy: isBusy(event),
         start: startAt.toISOString(),
         end: endAt.toISOString(),
-        start_minute: clippedStart.diff(dayStart, 'minutes'),
-        end_minute: clippedEnd.diff(dayStart, 'minutes'),
+        start_minute: wallMinute(clippedStart, dayStart, dayEnd),
+        end_minute: wallMinute(clippedEnd, dayStart, dayEnd),
     };
 }
 

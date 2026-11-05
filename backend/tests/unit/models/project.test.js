@@ -182,4 +182,62 @@ describe('Project Model', () => {
             expect(projectWithArea.Area.id).toBe(area.id);
         });
     });
+
+    describe('completed_at', () => {
+        it('is empty for a project that is not done', async () => {
+            const project = await Project.create({
+                name: 'Open',
+                user_id: user.id,
+            });
+            expect(project.completed_at).toBeNull();
+        });
+
+        it('is set when a project is created as done', async () => {
+            const project = await Project.create({
+                name: 'Already finished',
+                status: 'done',
+                user_id: user.id,
+            });
+            expect(project.completed_at).toBeInstanceOf(Date);
+        });
+
+        it('is set when the status changes to done and kept on later edits', async () => {
+            const project = await Project.create({
+                name: 'Ship it',
+                status: 'in_progress',
+                user_id: user.id,
+            });
+
+            await project.update({ status: 'done' });
+            const completedAt = project.completed_at;
+            expect(completedAt).toBeInstanceOf(Date);
+
+            await project.update({ name: 'Shipped' });
+            await project.reload();
+            expect(project.completed_at.getTime()).toBe(completedAt.getTime());
+        });
+
+        it('is cleared when the project is reopened', async () => {
+            const project = await Project.create({
+                name: 'Reopen me',
+                status: 'done',
+                user_id: user.id,
+            });
+
+            await project.update({ status: 'in_progress' });
+            await project.reload();
+            expect(project.completed_at).toBeNull();
+        });
+
+        it('is not set for cancelled projects', async () => {
+            const project = await Project.create({
+                name: 'Dropped',
+                status: 'in_progress',
+                user_id: user.id,
+            });
+
+            await project.update({ status: 'cancelled' });
+            expect(project.completed_at).toBeNull();
+        });
+    });
 });

@@ -2,7 +2,9 @@
 
 const adminRepository = require('./repository');
 const { accountStatusOf } = require('./accountStatus');
+const { buildInsights } = require('./insights');
 const membersService = require('../members/service');
+const mfaService = require('../mfa/service');
 const {
     validateRoleChange,
     validateUserId,
@@ -21,7 +23,6 @@ const {
     ConflictError,
 } = require('../../shared/errors');
 const rolesService = require('../../services/rolesService');
-const seatsService = require('../../services/seatsService');
 const accountsService = require('../../services/accountsService');
 const { isAdmin } = rolesService;
 const { sequelize } = require('../../models');
@@ -167,6 +168,7 @@ class AdminService {
         const userIdToRole = new Map(roles.map((r) => [r.user_id, r]));
         const identityUserIds =
             await adminRepository.findIdentityUserIds(userIds);
+        const mfaUserIds = await adminRepository.findMfaUserIds(userIds);
         const hosted = accountsService.isHosted();
         const ownerIds = hosted
             ? await adminRepository.findAccountOwnerIds(
@@ -182,9 +184,41 @@ class AdminService {
             created_at: u.created_at,
             email_verified: !!u.email_verified,
             account_status: accountStatusOf(u, identityUserIds.has(u.id)),
+            mfa_enabled: mfaUserIds.has(u.id),
             ...this.describeRole(userIdToRole.get(u.id)),
             ...(hosted ? { is_account_owner: ownerIds.has(u.id) } : {}),
         }));
+    }
+
+    // Clears two-factor sign-in for someone who lost their phone and their
+    // recovery codes. The instance admin may do it for anyone; an account
+    // admin only for the members of their own account, and not for another
+    // admin, whose reset stays with the instance admin.
+    async resetUserMfa(requesterId, userId, req) {
+        const scope = await this.accessScope(requesterId);
+        const id = validateUserId(userId);
+        const user = await adminRepository.findUserById(id);
+        if (!user) throw new NotFoundError('User not found');
+        // Turning your own off takes a fresh code, in Profile > Security.
+        if (user.id === requesterId) {
+            throw new ForbiddenError(
+                'Turn off your own two-factor sign-in from your profile'
+            );
+        }
+        if (!scope.superadmin) {
+            if (!scope.userIds.includes(user.id)) {
+                throw new NotFoundError('User not found');
+            }
+            const targetRole = rolesService.effectiveRole(
+                await adminRepository.findRoleByUserId(user.id)
+            );
+            if (targetRole === 'admin' || targetRole === 'account_admin') {
+                throw new ForbiddenError(
+                    'Only the instance admin can reset two-factor sign-in for an admin'
+                );
+            }
+        }
+        return mfaService.reset(user.id, requesterId, req);
     }
 
     /**
@@ -359,10 +393,6 @@ class AdminService {
             return null;
         }
 
-        const target = await adminRepository.findUserById(id);
-        const payerId = target
-            ? await accountsService.getOwnerId(target.id)
-            : null;
         const result = await adminRepository.deleteUserWithData(id);
 
         if (!result.success) {
@@ -370,11 +400,6 @@ class AdminService {
                 throw new NotFoundError(result.error);
             }
             throw new ValidationError(result.error);
-        }
-
-        // Deleting a member frees its seat on the owner's subscription.
-        if (payerId != null && payerId !== id) {
-            await seatsService.reconcile(payerId);
         }
 
         return null;
@@ -595,9 +620,13 @@ class AdminService {
             new Date(start.getTime() + i * DAY_MS).toISOString().slice(0, 10)
         );
 
-        // This week's count and the week before's for one date column.
+        // Today's count, this week's and the week before's for one date
+        // column.
         const countByWeek = async (Model, field, where) => {
-            const [last7d, prev7d] = await Promise.all([
+            const [day, last7d, prev7d] = await Promise.all([
+                Model.count({
+                    where: { ...where, [field]: { [Op.gte]: today } },
+                }),
                 Model.count({
                     where: { ...where, [field]: { [Op.gte]: weekStart } },
                 }),
@@ -608,13 +637,14 @@ class AdminService {
                     },
                 }),
             ]);
-            return { last7d, prev7d };
+            return { today: day, last7d, prev7d };
         };
 
         const [
             signups,
             joins,
             active,
+            activeToday,
             trialsStarted,
             trialsEnding,
             canceled,
@@ -634,9 +664,10 @@ class AdminService {
                 raw: true,
             }),
             adminRepository.findCreatorIdsSince(weekStart),
+            adminRepository.findCreatorIdsSince(today),
             hosted
                 ? countByWeek(BillingAccount, 'trial_started_at', {})
-                : { last7d: 0, prev7d: 0 },
+                : { today: 0, last7d: 0, prev7d: 0 },
             hosted
                 ? BillingAccount.count({
                       where: {
@@ -695,10 +726,12 @@ class AdminService {
         return {
             days,
             signups: {
+                today: days[DAYS - 1].signups,
                 last7d: sum(thisWeek, 'signups'),
                 prev7d: sum(lastWeek, 'signups'),
             },
             waitlist: {
+                today: days[DAYS - 1].waitlist,
                 last7d: sum(thisWeek, 'waitlist'),
                 prev7d: sum(lastWeek, 'waitlist'),
             },
@@ -709,10 +742,12 @@ class AdminService {
             },
             onboarding,
             active_users_7d: active.size,
+            active_users_today: activeToday.size,
             tasks: { created: tasksCreated, completed: tasksCompleted },
             visits,
             billing: hosted
                 ? {
+                      trials_started_today: trialsStarted.today,
                       trials_started_7d: trialsStarted.last7d,
                       trials_started_prev7d: trialsStarted.prev7d,
                       trials_ending_7d: trialsEnding,
@@ -941,7 +976,7 @@ class AdminService {
             return !entry || Object.keys(entry.counts).length === 0;
         }).length;
 
-        return {
+        const summary = {
             users: {
                 total: users,
                 admins,
@@ -960,6 +995,11 @@ class AdminService {
                 subscription_required: entitlements.isSubscriptionRequired(),
                 provider: config.hosted?.billing?.provider || null,
             },
+        };
+
+        return {
+            ...summary,
+            insights: buildInsights(summary),
             instance: {
                 registration_enabled: registrationSetting
                     ? registrationSetting.value === 'true'

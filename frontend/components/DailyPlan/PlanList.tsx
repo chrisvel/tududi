@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
 import { useDroppable } from '@dnd-kit/core';
 import {
     SortableContext,
@@ -16,6 +15,7 @@ import {
 import { DailyPlanItem } from '../../utils/dailyPlanService';
 import DurationChips from './DurationChips';
 import { formatMinute } from './planUtils';
+import { openTaskPanel } from '../../store/taskPanelStore';
 
 interface PlanListProps {
     items: DailyPlanItem[];
@@ -41,7 +41,6 @@ const PlanRow: React.FC<{
     aiReason?: string;
 }> = ({ item, index, onDurationChange, onTimeChange, onRemove, aiReason }) => {
     const { t } = useTranslation();
-    const location = useLocation();
     const {
         attributes,
         listeners,
@@ -94,13 +93,13 @@ const PlanRow: React.FC<{
                             )}
                         />
                     )}
-                    <Link
-                        to={`/task/${item.task_uid}`}
-                        state={{ from: location.pathname }}
-                        className="truncate underline-offset-2 hover:underline"
+                    <button
+                        type="button"
+                        onClick={() => openTaskPanel(item.task_uid)}
+                        className="text-left truncate underline-offset-2 hover:underline"
                     >
                         {item.task.name}
-                    </Link>
+                    </button>
                 </span>
             </div>
             <div className="flex flex-wrap items-center gap-2 pl-11 sm:pl-0">

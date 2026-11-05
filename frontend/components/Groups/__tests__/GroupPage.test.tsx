@@ -16,19 +16,18 @@ jest.mock('../../../utils/groupsService', () => ({
     fetchGroupPage: (...a: any[]) => fetchGroupPage(...a),
 }));
 
-jest.mock('../../../utils/projectsService', () => ({
-    fetchProjects: () => Promise.resolve([]),
+jest.mock('../../../i18n', () => ({
+    __esModule: true,
+    default: { t: (key: string) => key, language: 'en' },
 }));
 
-jest.mock('../../Task/TaskList', () => ({
-    __esModule: true,
-    default: ({ tasks }: any) => (
-        <ul>
-            {tasks.map((task: any) => (
-                <li key={task.uid}>{task.name}</li>
-            ))}
-        </ul>
-    ),
+jest.mock('../../../utils/tasksService', () => ({
+    toggleTaskCompletion: jest.fn(),
+    updateTask: jest.fn(),
+}));
+
+jest.mock('../../Shared/ToastContext', () => ({
+    useToast: () => ({ showErrorToast: jest.fn() }),
 }));
 
 const empty = {

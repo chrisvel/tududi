@@ -6,6 +6,7 @@ import { useStore } from '../../store/useStore';
 import {
     CreatedMember,
     createMember,
+    PlanLimitShownError,
     MemberInput,
 } from '../../utils/membersService';
 import { generatePassword } from '../../utils/passwordPolicy';
@@ -108,6 +109,10 @@ const MemberModal: React.FC<MemberModalProps> = ({
             onCreated(await createMember(input));
             onClose();
         } catch (err) {
+            if (err instanceof PlanLimitShownError) {
+                onClose();
+                return;
+            }
             setError(
                 err instanceof Error
                     ? err.message
@@ -269,7 +274,7 @@ const MemberModal: React.FC<MemberModalProps> = ({
                 >
                     {t(
                         'members.seatNote',
-                        'Each member is one more seat on your subscription. The change is prorated on your next invoice, and removing a member gives the seat back.'
+                        'Each member takes a seat of your plan. Removing a member frees the seat for someone else.'
                     )}
                 </p>
             )}

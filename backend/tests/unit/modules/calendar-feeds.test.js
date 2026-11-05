@@ -92,6 +92,26 @@ describe('eventsForDate', () => {
         expect(call.end_minute).toBe(12 * 60 + 30);
     });
 
+    it('places events by wall clock on a DST change day', () => {
+        const dentist = parseCalendar(
+            [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//test//EN',
+                'BEGIN:VEVENT',
+                'UID:dentist',
+                'DTSTART;TZID=Europe/Athens:20261025T160000',
+                'DTEND;TZID=Europe/Athens:20261025T170000',
+                'SUMMARY:Dentist',
+                'END:VEVENT',
+                'END:VCALENDAR',
+            ].join('\r\n')
+        );
+        const [event] = eventsForDate(dentist, '2026-10-25', 'Europe/Athens');
+        expect(event.start_minute).toBe(16 * 60);
+        expect(event.end_minute).toBe(17 * 60);
+    });
+
     it('lists all-day events first without minutes', () => {
         const [first] = eventsForDate(events, '2026-09-24', 'Europe/Athens');
         expect(first).toMatchObject({
@@ -159,6 +179,52 @@ describe('eventsForRange', () => {
     it('lists an event that crosses midnight on both days', () => {
         expect(titlesOn('2026-09-24')).toContain('Late show');
         expect(titlesOn('2026-09-25')).toContain('Late show');
+    });
+});
+
+describe('DST change days', () => {
+    const dstEvents = parseCalendar(
+        [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//test//EN',
+            'BEGIN:VEVENT',
+            'UID:autumn@test',
+            'DTSTART;TZID=Europe/Athens:20261025T160000',
+            'DTEND;TZID=Europe/Athens:20261025T170000',
+            'SUMMARY:Dentist',
+            'END:VEVENT',
+            'BEGIN:VEVENT',
+            'UID:spring@test',
+            'DTSTART;TZID=Europe/Athens:20270328T160000',
+            'DTEND;TZID=Europe/Athens:20270328T170000',
+            'SUMMARY:Dentist',
+            'END:VEVENT',
+            'BEGIN:VEVENT',
+            'UID:late@test',
+            'DTSTART;TZID=Europe/Athens:20261025T230000',
+            'DTEND;TZID=Europe/Athens:20261026T010000',
+            'SUMMARY:Late show',
+            'END:VEVENT',
+            'END:VCALENDAR',
+        ].join('\r\n')
+    );
+
+    it('keeps the clock time on the 25-hour day when clocks go back', () => {
+        const day = eventsForDate(dstEvents, '2026-10-25', 'Europe/Athens');
+        const dentist = day.find((e) => e.uid === 'autumn@test');
+        expect([dentist.start_minute, dentist.end_minute]).toEqual([960, 1020]);
+        const late = day.find((e) => e.uid === 'late@test');
+        expect([late.start_minute, late.end_minute]).toEqual([1380, 1440]);
+    });
+
+    it('keeps the clock time on the 23-hour day when clocks go forward', () => {
+        const dentist = eventsForDate(
+            dstEvents,
+            '2027-03-28',
+            'Europe/Athens'
+        ).find((e) => e.uid === 'spring@test');
+        expect([dentist.start_minute, dentist.end_minute]).toEqual([960, 1020]);
     });
 });
 

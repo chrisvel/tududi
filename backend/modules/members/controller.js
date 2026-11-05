@@ -43,8 +43,21 @@ const membersController = {
         try {
             const actorId = requireUserId(req);
             const memberId = validateUserId(req.params.id);
-            await membersService.removeMember(actorId, memberId);
+            const reassignTo = req.body?.reassign_to ?? req.query.reassign_to;
+            await membersService.removeMember(actorId, memberId, {
+                reassignTo,
+            });
             res.status(204).end();
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async handoff(req, res, next) {
+        try {
+            const actorId = requireUserId(req);
+            const memberId = validateUserId(req.params.id);
+            res.json(await membersService.getHandoff(actorId, memberId));
         } catch (err) {
             next(err);
         }

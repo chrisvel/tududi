@@ -15,6 +15,9 @@ import { useStore } from '../../store/useStore';
 
 const WIKILINK_PREFIX = '/__wikilink__/';
 
+// Image syntax that points at a video file renders a player instead.
+const VIDEO_SRC = /\.(mp4|webm)(?:[?#]|$)/i;
+
 function preprocessWikilinks(content: string): string {
     return content.replace(/\[\[([^\][\n]+?)\]\]/g, (_match, title: string) => {
         const t = title.trim();
@@ -608,6 +611,21 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
                             {...props}
                         />
                     ),
+
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    img: ({ node, src, alt, ...props }) =>
+                        src && VIDEO_SRC.test(src) ? (
+                            <video
+                                src={src}
+                                controls
+                                playsInline
+                                preload="metadata"
+                                aria-label={alt || undefined}
+                                className="w-full rounded-lg bg-black"
+                            />
+                        ) : (
+                            <img src={src} alt={alt} {...props} />
+                        ),
 
                     // Customize strong/bold text
                     strong: ({ ...props }) => (

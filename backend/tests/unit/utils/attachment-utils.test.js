@@ -23,6 +23,13 @@ describe('Attachment Utils', () => {
             expect(getExtensionFromMimeType('application/pdf')).toBe('.pdf');
         });
 
+        it('should keep video files as video, played inline', () => {
+            expect(getExtensionFromMimeType('video/mp4')).toBe('.mp4');
+            expect(getExtensionFromMimeType('video/webm')).toBe('.webm');
+            expect(INLINE_SAFE_EXTENSIONS.has('.mp4')).toBe(true);
+            expect(INLINE_SAFE_EXTENSIONS.has('.webm')).toBe(true);
+        });
+
         it('should return .png for PNG MIME type', () => {
             expect(getExtensionFromMimeType('image/png')).toBe('.png');
         });

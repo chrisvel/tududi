@@ -162,6 +162,26 @@ async function managesUser(actorId, targetId) {
     return (await managedUserIds(actorId)).has(targetId);
 }
 
+// Whether the actor is an admin (the owner, or a member made admin) of the
+// account the target belongs to. A share from such an admin applies at once
+// instead of waiting for the target to accept it. Always false on a
+// self-hosted instance and across accounts.
+async function isAdminOfAccountOf(actorId, targetId) {
+    if (!isHosted() || !actorId || !targetId || actorId === targetId) {
+        return false;
+    }
+    const targetAccountId = await ensureAccountId(targetId);
+    if (!targetAccountId) return false;
+    const actorAccountId = await ensureAccountId(actorId);
+    if (actorAccountId !== targetAccountId) return false;
+
+    const account = await models().Account.findByPk(targetAccountId, {
+        attributes: ['owner_user_id'],
+    });
+    if (account && account.owner_user_id === actorId) return true;
+    return roles().isAccountAdmin(actorId);
+}
+
 // When an owner's account is erased its account goes too. Its members stay
 // and are put into accounts of their own the next time they are looked at.
 async function releaseOwnedAccount(userId, { transaction } = {}) {
@@ -238,6 +258,7 @@ module.exports = {
     countMembers,
     managedUserIds,
     managesUser,
+    isAdminOfAccountOf,
     releaseOwnedAccount,
     backfill,
 };

@@ -426,6 +426,11 @@ async function filterTasksByParams(
     const finalWhereClause = {
         [Op.and]: [ownedOrShared, whereClause],
     };
+    if (params.type === 'today' || params.type === 'upcoming') {
+        finalWhereClause[Op.and].push(
+            await permissionsService.myWorkWhere(userId)
+        );
+    }
 
     // CAST keeps the count numeric on PostgreSQL, where COUNT(*) is a bigint
     // that the driver would otherwise return as a string (matches the

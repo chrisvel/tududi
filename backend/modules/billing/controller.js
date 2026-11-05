@@ -32,12 +32,27 @@ const billingController = {
     async checkout(req, res, next) {
         try {
             const interval = req.body?.interval === 'year' ? 'year' : 'month';
+            const plan =
+                typeof req.body?.plan === 'string' ? req.body.plan : 'pro';
             res.json(
                 await billingService.createCheckoutSession(
                     requireUserId(req),
-                    interval
+                    interval,
+                    plan
                 )
             );
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    async changePlan(req, res, next) {
+        try {
+            const plan = req.body?.plan;
+            if (typeof plan !== 'string') {
+                throw new ValidationError('plan must be a string');
+            }
+            res.json(await billingService.changePlan(requireUserId(req), plan));
         } catch (error) {
             next(error);
         }
@@ -71,8 +86,8 @@ const billingController = {
 
     // Raw body, no session, no CSRF: the provider signs the payload instead.
     async webhook(req, res) {
-        const provider = providers.getProvider();
-        if (!req.headers[provider.signatureHeader]) {
+        // Each provider signs with its own header, which also says who sent it.
+        if (!providers.providerForWebhook(req.headers)) {
             return res.status(400).json({ error: 'Missing webhook signature' });
         }
         try {

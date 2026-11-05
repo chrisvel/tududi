@@ -3,8 +3,10 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import FocusChip from '../FocusChip';
 import { useStore } from '../../../store/useStore';
 import { updateUiSettings } from '../../../utils/profileService';
+import { fetchTags } from '../../../utils/tagsService';
 import type { Area } from '../../../entities/Area';
 import type { Project } from '../../../entities/Project';
+import type { Tag } from '../../../entities/Tag';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -23,17 +25,24 @@ jest.mock('../../../utils/profileService', () => ({
     updateUiSettings: jest.fn(),
 }));
 
+jest.mock('../../../utils/tagsService', () => ({
+    fetchTags: jest.fn(),
+}));
+
 jest.mock('../../Tag/TagInput', () => ({
     __esModule: true,
     default: ({
         initialTags,
         onTagsChange,
+        availableTags,
     }: {
         initialTags: string[];
         onTagsChange: (tags: string[]) => void;
+        availableTags: Tag[];
     }) => (
         <input
             data-testid="focus-tags"
+            data-available={availableTags.map((tag) => tag.name).join(',')}
             value={initialTags.join(',')}
             onChange={(event) =>
                 onTagsChange(event.target.value.split(',').filter(Boolean))
@@ -47,7 +56,14 @@ describe('FocusChip', () => {
         (updateUiSettings as jest.Mock)
             .mockReset()
             .mockResolvedValue({ success: true });
+        (fetchTags as jest.Mock)
+            .mockReset()
+            .mockResolvedValue([{ id: 2, name: 'launch-only' }]);
         const state = useStore.getState();
+        state.tagsStore.setTags([
+            { id: 1, name: 'everywhere' },
+            { id: 2, name: 'launch-only' },
+        ] as Tag[]);
         state.areasStore.setAreas([
             { id: 1, uid: 'work', name: 'Work' },
             { id: 2, uid: 'home', name: 'Home' },
@@ -140,6 +156,31 @@ describe('FocusChip', () => {
             tags: ['urgent'],
         });
         expect(screen.queryByTestId('focus-popover')).toBeNull();
+    });
+
+    it('offers only the tags used in the picked project', async () => {
+        render(<FocusChip />);
+        fireEvent.click(screen.getByTestId('focus-chip'));
+        expect(screen.getByTestId('focus-tags')).toHaveAttribute(
+            'data-available',
+            'everywhere,launch-only'
+        );
+        const projectField = within(screen.getByTestId('focus-project'));
+        fireEvent.click(projectField.getAllByRole('button')[0]);
+        await act(async () => {
+            fireEvent.click(
+                projectField.getByRole('button', { name: 'Launch' })
+            );
+        });
+
+        expect(fetchTags).toHaveBeenCalledWith({
+            area_uid: undefined,
+            project_uid: 'launch',
+        });
+        expect(screen.getByTestId('focus-tags')).toHaveAttribute(
+            'data-available',
+            'launch-only'
+        );
     });
 
     it('clears the focus from the chip', async () => {

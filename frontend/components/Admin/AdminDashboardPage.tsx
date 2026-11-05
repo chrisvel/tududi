@@ -14,9 +14,9 @@ import { getApiPath } from '../../config/paths';
 import { handleAuthResponse } from '../../utils/authUtils';
 import AdminBlogSettings from './AdminBlogSettings';
 import AdminUserStatusTable from './AdminUserStatusTable';
-import AdminTrends, { Trends, percentOf } from './AdminTrends';
-import AdminVisits from './AdminVisits';
+import AdminTrends, { Delta, Trends, percentOf } from './AdminTrends';
 import AdminFunnel, { Funnel } from './AdminFunnel';
+import AdminInsights, { Insight } from './AdminInsights';
 
 interface Overview {
     users: {
@@ -31,6 +31,7 @@ interface Overview {
     feedback: { open: number };
     trends?: Trends;
     funnel?: Funnel;
+    insights?: Insight[];
     billing: {
         paying: number;
         hosted: boolean;
@@ -47,23 +48,23 @@ interface Overview {
 const Stat: React.FC<{
     label: string;
     value: React.ReactNode;
-    hint?: string;
-}> = ({ label, value, hint }) => (
-    <div className="bg-white dark:bg-gray-900 rounded-lg p-5">
-        <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mt-1">
+    hint?: React.ReactNode;
+    testId?: string;
+}> = ({ label, value, hint, testId }) => (
+    <div className="px-4 py-3" data-testid={testId}>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
+        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100 tabular-nums">
             {value}
         </p>
         {hint && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {hint}
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{hint}</p>
         )}
     </div>
 );
 
-// What an operator wants on opening the admin area: who is here, whether
-// the instance is selling anything, and who is waiting for it to open.
+// What an operator wants on opening the admin area: the few numbers that
+// say how the instance is doing, what stands out this week in plain words,
+// and the weekly figures behind both.
 const AdminDashboardPage: React.FC = () => {
     const { t } = useTranslation();
     const [data, setData] = useState<Overview | null>(null);
@@ -103,99 +104,148 @@ const AdminDashboardPage: React.FC = () => {
         );
     }
 
+    const { trends, funnel } = data;
+    const visits = trends?.visits;
+    const visitors = visits
+        ? {
+              now: visits.landing.visitors.last7d + visits.blog.visitors.last7d,
+              before:
+                  visits.landing.visitors.prev7d + visits.blog.visitors.prev7d,
+          }
+        : null;
+    // People who opened the app this week when visits are tracked, else
+    // people who created something.
+    const weekly = visits?.app_users
+        ? { now: visits.app_users.wau, before: visits.app_users.prev_wau }
+        : trends
+          ? { now: trends.active_users_7d, before: null }
+          : null;
+
     return (
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
                 {t('admin.dashboard.title', 'Admin')}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                {t('admin.dashboard.subtitle', 'tududi {{version}} · {{env}}', {
-                    version: data.instance.version,
-                    env: data.instance.environment,
-                })}
+                {t(
+                    'admin.dashboard.subtitleTotals',
+                    '{{users}} users · {{tasks}} tasks · {{waitlist}} on the waitlist · tududi {{version}} · {{env}}',
+                    {
+                        users: data.users.total,
+                        tasks: data.content.tasks,
+                        waitlist: data.waitlist.total,
+                        version: data.instance.version,
+                        env: data.instance.environment,
+                    }
+                )}
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-                <Stat
-                    label={t('admin.dashboard.users', 'Users')}
-                    value={data.users.total}
-                    hint={t(
-                        'admin.dashboard.usersHint',
-                        '{{verified}} verified · {{admins}} admin · {{new}} today',
-                        {
-                            verified: percentOf(
-                                data.users.verified,
-                                data.users.total
-                            ),
-                            admins: data.users.admins,
-                            new: data.users.last24h,
+            <div className="grid grid-cols-2 lg:grid-cols-5 bg-white dark:bg-gray-900 rounded-lg py-2 mb-6">
+                {visitors && (
+                    <Stat
+                        label={t(
+                            'admin.dashboard.visitors',
+                            'Visitors, 7 days'
+                        )}
+                        value={visitors.now}
+                        hint={
+                            <Delta
+                                now={visitors.now}
+                                before={visitors.before}
+                            />
                         }
-                    )}
-                />
-                <Stat
-                    label={t(
-                        'admin.dashboard.emptyAccounts',
-                        'Nothing created'
-                    )}
-                    value={data.users.empty}
-                    hint={t(
-                        'admin.dashboard.emptyAccountsHint',
-                        '{{pct}} of users never created anything',
-                        { pct: percentOf(data.users.empty, data.users.total) }
-                    )}
-                />
-                <Stat
-                    label={t('admin.dashboard.paying', 'Paying')}
-                    value={data.billing.paying}
-                    hint={
-                        data.billing.hosted
-                            ? [
-                                  t(
-                                      'admin.dashboard.payingShare',
-                                      '{{pct}} of users',
-                                      {
-                                          pct: percentOf(
-                                              data.billing.paying,
-                                              data.users.total
-                                          ),
-                                      }
-                                  ),
-                                  data.billing.provider,
-                                  data.billing.subscription_required
-                                      ? t('admin.dashboard.gated', 'gated')
-                                      : null,
-                              ]
-                                  .filter(Boolean)
-                                  .join(' · ')
-                            : t('admin.dashboard.selfHosted', 'self-hosted')
-                    }
-                />
-                <Stat
-                    label={t('admin.dashboard.waitlist', 'Waitlist')}
-                    value={data.waitlist.total}
-                    hint={t('admin.dashboard.waitlistHint', '{{n}} in 7 days', {
-                        n: data.waitlist.last7d,
-                    })}
-                />
-                <Stat
-                    label={t('admin.dashboard.tasks', 'Tasks')}
-                    value={data.content.tasks}
-                    hint={t(
-                        'admin.dashboard.contentHint',
-                        '{{projects}} projects · {{notes}} notes',
-                        {
-                            projects: data.content.projects,
-                            notes: data.content.notes,
+                        testId="admin-stat-visitors"
+                    />
+                )}
+                {trends && (
+                    <Stat
+                        label={t('admin.dashboard.signups', 'Signups, 7 days')}
+                        value={trends.signups.last7d}
+                        hint={
+                            <Delta
+                                now={trends.signups.last7d}
+                                before={trends.signups.prev7d}
+                            />
                         }
-                    )}
-                />
+                        testId="admin-stat-signups"
+                    />
+                )}
+                {funnel && (
+                    <Stat
+                        label={t(
+                            'admin.dashboard.activation',
+                            'Activation, {{days}} days',
+                            { days: funnel.days }
+                        )}
+                        value={percentOf(
+                            funnel.current.activated,
+                            funnel.current.signups
+                        )}
+                        hint={t(
+                            'admin.dashboard.activationHint',
+                            '{{n}} of {{total}} signups',
+                            {
+                                n: funnel.current.activated,
+                                total: funnel.current.signups,
+                            }
+                        )}
+                        testId="admin-stat-activation"
+                    />
+                )}
+                {weekly && (
+                    <Stat
+                        label={t('admin.dashboard.weeklyUsers', 'Weekly users')}
+                        value={weekly.now}
+                        hint={
+                            weekly.before !== null ? (
+                                <Delta
+                                    now={weekly.now}
+                                    before={weekly.before}
+                                />
+                            ) : (
+                                t(
+                                    'admin.dashboard.weeklyUsersHint',
+                                    'created something'
+                                )
+                            )
+                        }
+                        testId="admin-stat-weekly"
+                    />
+                )}
+                {data.billing.hosted ? (
+                    <Stat
+                        label={t('admin.dashboard.paying', 'Paying')}
+                        value={data.billing.paying}
+                        hint={[
+                            percentOf(data.billing.paying, data.users.total),
+                            data.billing.provider,
+                            data.billing.subscription_required
+                                ? t('admin.dashboard.gated', 'gated')
+                                : null,
+                        ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        testId="admin-stat-paying"
+                    />
+                ) : (
+                    <Stat
+                        label={t('admin.dashboard.users', 'Users')}
+                        value={data.users.total}
+                        hint={t(
+                            'admin.dashboard.selfHostedUsers',
+                            'self-hosted · {{n}} new today',
+                            { n: data.users.last24h }
+                        )}
+                        testId="admin-stat-users"
+                    />
+                )}
             </div>
 
-            {data.funnel && <AdminFunnel funnel={data.funnel} />}
-            {data.trends && <AdminTrends trends={data.trends} />}
-            {data.trends?.visits && <AdminVisits visits={data.trends.visits} />}
+            {data.insights && <AdminInsights insights={data.insights} />}
+            {funnel && <AdminFunnel funnel={funnel} />}
+            {trends && <AdminTrends trends={trends} />}
 
-            <div className="flex flex-wrap gap-3 mb-8">
+            <div className="flex flex-wrap gap-3 mb-6">
                 <Link
                     to="/admin/users"
                     className="inline-flex items-center px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"

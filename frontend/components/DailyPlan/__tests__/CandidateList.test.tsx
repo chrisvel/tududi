@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 import { MemoryRouter } from 'react-router-dom';
 import CandidateList from '../CandidateList';
 import { PlanCandidates } from '../../../utils/dailyPlanService';
+import { useTaskPanel } from '../../../store/taskPanelStore';
 
 jest.mock('react-i18next', () => {
     const t = (
@@ -159,10 +160,11 @@ describe('CandidateList', () => {
         expect(more).toHaveTextContent('Loading...');
     });
 
-    it('opens the task when its name is clicked', () => {
+    it('opens the task in the side panel when its name is clicked', () => {
         renderList();
-        expect(
-            screen.getByRole('link', { name: 'Renew insurance' })
-        ).toHaveAttribute('href', '/task/t-late');
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Renew insurance' })
+        );
+        expect(useTaskPanel.getState().uid).toBe('t-late');
     });
 });

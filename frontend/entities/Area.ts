@@ -9,4 +9,6 @@ export interface Area {
     goals_count?: number;
     tasks_count?: number;
     sort_position?: number | null;
+    // shared with the viewer on its own, so they may leave it
+    can_leave?: boolean;
 }

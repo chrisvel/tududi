@@ -15,10 +15,15 @@ import {
     PencilIcon,
     TrashIcon,
 } from '@heroicons/react/24/outline';
-import { FolderIcon, FireIcon } from '@heroicons/react/24/solid';
+import {
+    FolderIcon,
+    FireIcon,
+    Squares2X2Icon,
+} from '@heroicons/react/24/solid';
 import { Task } from '../../../entities/Task';
 import { Project } from '../../../entities/Project';
 import { isTaskCompleted } from '../../../constants/taskStatus';
+import { resolveTaskArea } from '../../../utils/taskArea';
 import {
     parseDateString,
     getTodayDateString,
@@ -26,6 +31,7 @@ import {
     getYesterdayDateString,
 } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
+import CopyTaskLinkButton from '../CopyTaskLinkButton';
 import QuickCaptureInput, {
     QuickCaptureInputHandle,
 } from '../../Inbox/QuickCaptureInput';
@@ -34,11 +40,13 @@ import PriorityBadge, {
     PriorityLevel,
     toPriorityLevel,
 } from '../../Shared/PriorityBadge';
+import { openTaskPanel } from '../../../store/taskPanelStore';
 
 interface TaskRowCollapsedProps {
     task: Task;
     project?: Project | null;
     hideProjectName?: boolean;
+    hideAreaName?: boolean;
     hideStatusControl?: boolean;
     condenseStatusControl?: boolean;
     compact?: boolean;
@@ -97,6 +105,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     task,
     project,
     hideProjectName = false,
+    hideAreaName = false,
     hideStatusControl = false,
     condenseStatusControl = false,
     compact = false,
@@ -120,6 +129,7 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
     const titleInputRef = useRef<QuickCaptureInputHandle>(null);
     const pressingInsideTitleRef = useRef(false);
     const projects = useStore((state: any) => state.projectsStore?.projects);
+    const areas = useStore((state: any) => state.areasStore?.areas);
     const [draftName, setDraftName] = useState(currentName);
     const actionsMenuRef = useRef<HTMLDivElement>(null);
     const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
@@ -218,10 +228,23 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
 
     const deferText = task.defer_until ? formatDefer(task.defer_until) : null;
     const showProject = project && project.name && !hideProjectName;
+    // Where the project is hidden (its own page, subtasks) its area would
+    // only repeat on every row, so the area goes with it.
+    const { area } =
+        hideAreaName || hideProjectName
+            ? { area: null }
+            : resolveTaskArea(
+                  task,
+                  task.project_id ?? project?.id,
+                  projects || [],
+                  areas || []
+              );
+    const showArea = !!area?.name;
     const hasMeta =
         !compact &&
         (!!toPriorityLevel(task.priority) ||
             showProject ||
+            showArea ||
             (task.tags && task.tags.length > 0) ||
             !!task.due_date ||
             (isTaskCompleted(task.status) && !!task.completed_at) ||
@@ -323,6 +346,13 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                             {currentName}
                         </span>
                     )}
+                    {!editable && task.uid && !task.is_virtual_occurrence && (
+                        <CopyTaskLinkButton
+                            path={`/${task.habit_mode ? 'habit' : 'task'}/${encodeURIComponent(task.uid)}`}
+                            className="hidden [@media(hover:hover)]:block opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+                            iconClassName="h-3.5 w-3.5"
+                        />
+                    )}
                     {task.is_blocked && !isTaskCompleted(task.status) && (
                         <span
                             className="ml-1 flex items-center gap-0.5 h-5 px-1.5 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex-shrink-0"
@@ -387,13 +417,16 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                         {task.parent_task && (
                             <span className="flex items-center">
                                 <ArrowUpIcon className="h-3 w-3 mr-1 flex-shrink-0" />
-                                <Link
-                                    to={`/task/${task.parent_task.uid}`}
-                                    onClick={stop}
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        stop(e);
+                                        openTaskPanel(task.parent_task!.uid!);
+                                    }}
                                     className="hover:underline max-w-[12rem] truncate"
                                 >
                                     {task.parent_task.name}
-                                </Link>
+                                </button>
                             </span>
                         )}
                         {showProject && (
@@ -406,6 +439,27 @@ const TaskRowCollapsed: React.FC<TaskRowCollapsedProps> = ({
                                 >
                                     {project!.name}
                                 </Link>
+                            </span>
+                        )}
+                        {showArea && (
+                            <span
+                                className="flex items-center"
+                                data-testid="task-row-area"
+                            >
+                                <Squares2X2Icon className="h-3 w-3 mr-1" />
+                                {area!.uid ? (
+                                    <Link
+                                        to={`/area/${area!.uid}-${slug(area!.name)}`}
+                                        onClick={stop}
+                                        className="hover:underline max-w-[12rem] truncate"
+                                    >
+                                        {area!.name}
+                                    </Link>
+                                ) : (
+                                    <span className="max-w-[12rem] truncate">
+                                        {area!.name}
+                                    </span>
+                                )}
                             </span>
                         )}
                         {task.tags && task.tags.length > 0 && (

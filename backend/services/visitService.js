@@ -207,10 +207,12 @@ async function summary(days, now = new Date()) {
         const list = bySurface[surface];
         result[surface] = {
             views: {
+                today: list[list.length - 1].views,
                 last7d: total(list.slice(7), 'views'),
                 prev7d: total(list.slice(0, 7), 'views'),
             },
             visitors: {
+                today: list[list.length - 1].visitors,
                 last7d: total(list.slice(7), 'visitors'),
                 prev7d: total(list.slice(0, 7), 'visitors'),
             },

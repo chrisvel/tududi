@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import AreaDetails from '../AreaDetails';
@@ -16,13 +16,33 @@ jest.mock('react-i18next', () => ({
     }),
 }));
 
-const area = {
+const area: Record<string, unknown> = {
     id: 1,
     uid: 'areauid1',
     name: 'Work',
     description: '',
     color: null,
 };
+
+const mockLeaveShare = jest.fn<Promise<void>, unknown[]>(() =>
+    Promise.resolve()
+);
+const mockSetAreas = jest.fn();
+const mockNavigate = jest.fn();
+
+jest.mock('../../../utils/sharesService', () => ({
+    leaveShare: (...args: unknown[]) => mockLeaveShare(...args),
+}));
+
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => mockNavigate,
+}));
+
+jest.mock('../../Shared/ShareModal', () => ({
+    __esModule: true,
+    default: () => null,
+}));
 
 const goals = [
     { uid: 'goal-1', title: 'Goal one', area_id: 1, status: 'active' },
@@ -37,6 +57,12 @@ const tasks = [
 
 const projects = [
     { uid: 'project-1', name: 'Project one', area: { uid: 'areauid1' } },
+    {
+        uid: 'project-2',
+        name: 'Shipped project',
+        status: 'done',
+        area: { uid: 'areauid1' },
+    },
 ];
 
 jest.mock('../../../utils/tasksService', () => ({
@@ -60,6 +86,7 @@ jest.mock('../../../store/useStore', () => ({
                 areas: [area],
                 isLoading: false,
                 loadAreas: jest.fn(),
+                setAreas: mockSetAreas,
             },
             projectsStore: {
                 projects,
@@ -106,10 +133,51 @@ describe('AreaDetails header stats', () => {
     it('links the projects stat to the projects list filtered by this area', async () => {
         renderPage();
 
-        const projectsLink = await screen.findByText('1 projects');
+        const projectsLink = await screen.findByText('2 projects');
         expect(projectsLink.closest('a')).toHaveAttribute(
             'href',
             '/projects?area=areauid1'
         );
+    });
+});
+
+describe('AreaDetails finished projects', () => {
+    it('folds done projects away until the Finished toggle is opened', async () => {
+        renderPage();
+
+        expect(await screen.findByText('Project one')).toBeInTheDocument();
+        expect(screen.queryByText('Shipped project')).not.toBeInTheDocument();
+
+        fireEvent.click(screen.getByTestId('area-finished-projects-toggle'));
+
+        expect(screen.getByText('Shipped project')).toBeInTheDocument();
+    });
+});
+
+describe('AreaDetails leaving a shared area', () => {
+    afterEach(() => {
+        delete area.can_leave;
+        mockLeaveShare.mockClear();
+        mockNavigate.mockClear();
+    });
+
+    it('offers Leave only when the area is shared with the viewer', async () => {
+        renderPage();
+        await screen.findByText('Project one');
+        expect(screen.queryByTestId('area-leave')).not.toBeInTheDocument();
+    });
+
+    it('leaves after confirming and goes back to the areas list', async () => {
+        area.can_leave = true;
+        renderPage();
+
+        fireEvent.click(await screen.findByTestId('area-leave'));
+        expect(screen.getByText('Leave area')).toBeInTheDocument();
+        fireEvent.click(screen.getByTestId('confirm-dialog-confirm'));
+
+        await waitFor(() =>
+            expect(mockLeaveShare).toHaveBeenCalledWith('area', 'areauid1')
+        );
+        await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/areas'));
     });
 });

@@ -4,26 +4,149 @@ const entitlements = require('../../services/entitlementsService');
 const { Op } = require('sequelize');
 const projectsRepository = require('./repository');
 const { validateUid, validateName, formatDate } = require('./validation');
-const { NotFoundError, ValidationError } = require('../../shared/errors');
+const {
+    NotFoundError,
+    ValidationError,
+    ForbiddenError,
+} = require('../../shared/errors');
 const { validateTagName } = require('../tags/tagsService');
 const permissionsService = require('../../services/permissionsService');
+const permissionSources = require('../../services/permissionSources');
+const { isAdmin } = require('../../services/rolesService');
 const scopeService = require('../../services/scopeService');
 const { sortTags } = require('../tasks/core/serializers');
-const { getBlockedCountMap } = require('../tasks/relations/service');
+const {
+    getBlockedCountMap,
+    getBlockLinks,
+} = require('../tasks/relations/service');
 const {
     getSafeTimezone,
     processDueDateForResponse,
+    startDateTimeToUTC,
+    startForResponse,
+    utcToUserDateString,
+    utcToUserTimeString,
 } = require('../../utils/timezone-utils');
 const { uid: generateUid } = require('../../utils/uid');
 const { extractUidFromSlug } = require('../../utils/slug-utils');
 const { logError } = require('../../services/logService');
 const {
     syncProjectSharesFromContainer,
+    dropProjectSharesFromContainer,
 } = require('../../services/containerShareSync');
-const { Project } = require('../../models');
+const { Project, Area, Goal } = require('../../models');
+
+const PRIORITY_VALUES = { low: 0, medium: 1, high: 2 };
+
+// The UI sends priority names while the column is an integer; Postgres
+// rejects the names outright, so map them before saving.
+function toPriorityValue(priority) {
+    if (priority === '' || priority === null || priority === undefined) {
+        return null;
+    }
+    if (typeof priority === 'string' && priority in PRIORITY_VALUES) {
+        return PRIORITY_VALUES[priority];
+    }
+    return priority;
+}
 
 const PROJECT_STATUSES = Project.rawAttributes.status.values;
 const MAX_REORDER_PROJECTS = 5000;
+const VISIBILITIES = ['area', 'restricted'];
+
+function validateVisibility(visibility) {
+    if (!VISIBILITIES.includes(visibility)) {
+        throw new ValidationError(
+            `Invalid visibility. Must be one of: ${VISIBILITIES.join(', ')}.`
+        );
+    }
+    return visibility;
+}
+
+// Whether the user may restrict the project or open it back up to its area:
+// its owner, or the owner of the area it is kept in.
+async function mayChangeVisibility(project, userId) {
+    if (project.user_id === userId) return true;
+    if (!project.area_id) return false;
+    const area = await Area.findByPk(project.area_id, {
+        attributes: ['user_id'],
+    });
+    return !!area && area.user_id === userId;
+}
+
+// Checks a requested visibility change and, when restricting, takes the area
+// and goal shares back before the project is saved, so a project is never
+// marked restricted while those people still have it. Returns the new
+// visibility, or undefined when it does not change.
+async function prepareVisibilityChange(project, userId, visibility) {
+    if (visibility === undefined) return undefined;
+    if (validateVisibility(visibility) === project.visibility) return undefined;
+    if (!(await mayChangeVisibility(project, userId))) {
+        throw new ForbiddenError(
+            'Only the project owner or the area owner can change who sees this project.'
+        );
+    }
+    if (visibility === 'restricted') {
+        await dropProjectSharesFromContainer(project.id);
+    }
+    return visibility;
+}
+
+// A project can only be filed under an area or goal the caller owns or can
+// edit, the same rule as tasks and goals. Anything else, including a missing
+// row, gets the same error so ids cannot be probed. Returns undefined when
+// nothing was passed and null to unlink.
+async function resolveContainerId(userId, type, value) {
+    if (value === undefined) return undefined;
+    if (value === null || value === '') return null;
+    const raw = String(value).trim();
+    const where = /^\d+$/.test(raw) ? { id: raw } : { uid: raw };
+    const Model = type === 'area' ? Area : Goal;
+    const container = await Model.findOne({ where, attributes: ['id', 'uid'] });
+    const access = container
+        ? await permissionsService.getAccess(userId, type, container.uid)
+        : 'none';
+    if (access !== 'rw' && access !== 'admin') {
+        throw new ValidationError(
+            type === 'area' ? 'Invalid area.' : 'Invalid goal.'
+        );
+    }
+    return container.id;
+}
+
+// After a project is saved: leaving an area or goal takes back what that
+// container's grant gave, and moving into one (or opening a restricted project
+// back up) mirrors the container's collaborators onto it. `before` holds the
+// project's area_id, goal_id and visibility from before the save.
+async function syncContainerShares(projectId, before, changes) {
+    const left = {
+        area_id:
+            changes.area_id !== undefined && changes.area_id != before.area_id
+                ? before.area_id
+                : null,
+        goal_id:
+            changes.goal_id !== undefined && changes.goal_id != before.goal_id
+                ? before.goal_id
+                : null,
+    };
+    if (left.area_id || left.goal_id) {
+        try {
+            await dropProjectSharesFromContainer(projectId, left);
+        } catch (error) {
+            logError(
+                error,
+                `Failed to drop container shares (project ${projectId})`
+            );
+        }
+    }
+    if (
+        changes.area_id !== undefined ||
+        changes.goal_id !== undefined ||
+        (changes.visibility === 'area' && before.visibility !== 'area')
+    ) {
+        await syncProjectSharesFromContainer(projectId);
+    }
+}
 
 /**
  * Update project tags.
@@ -85,11 +208,43 @@ function calculateTaskStatus(tasks) {
     };
 }
 
+// The project's start as the user's local day and HH:mm (or null).
+function startFields(project, timezone) {
+    const start = startForResponse(
+        project.start_date_at,
+        project.start_has_time,
+        getSafeTimezone(timezone)
+    );
+    return { start_date: start.date, start_time: start.time };
+}
+
+// Reads start_date (YYYY-MM-DD) and start_time (HH:mm) into the stored
+// start_date_at. Changing start_date alone drops the time.
+function applyStart(target, data, timezone, storedStart = null) {
+    if (data.start_date === undefined && data.start_time === undefined) return;
+    const tz = getSafeTimezone(timezone);
+    const dateString =
+        data.start_date !== undefined
+            ? data.start_date || null
+            : storedStart && utcToUserDateString(storedStart, tz);
+    try {
+        const { value, hasTime } = startDateTimeToUTC(
+            dateString,
+            data.start_time,
+            tz
+        );
+        target.start_date_at = value;
+        target.start_has_time = hasTime;
+    } catch (error) {
+        throw new ValidationError(error.message);
+    }
+}
+
 class ProjectsService {
     /**
      * Get all projects for a user with filters.
      */
-    async getAll(userId, query) {
+    async getAll(userId, query, userTimezone) {
         const {
             status,
             state,
@@ -187,6 +342,9 @@ class ProjectsService {
             await projectsRepository.getUserProjectAreaOverrides(userId);
         const positions =
             await projectsRepository.getUserProjectPositions(userId);
+        // Who may list and change a project's shares: its owner or an
+        // instance admin, the same rule the shares API enforces.
+        const viewerIsAdmin = await isAdmin(userId);
 
         const enhancedProjects = projects
             .map((project) => {
@@ -214,6 +372,7 @@ class ProjectsService {
                     ...projectJson,
                     tags: sortTags(projectJson.Tags),
                     due_date_at: formatDate(project.due_date_at),
+                    ...startFields(project, userTimezone),
                     task_status: taskStatus,
                     completion_percentage:
                         taskStatus.total > 0
@@ -224,6 +383,7 @@ class ProjectsService {
                     user_uid: projectJson.User?.uid,
                     share_count: shareCount,
                     is_shared: sharedUids.has(project.uid),
+                    can_share: isOwner || viewerIsAdmin,
                     is_stalled: isStalled,
                     sort_position: positions[project.id] ?? null,
                 };
@@ -289,7 +449,7 @@ class ProjectsService {
     /**
      * Get project by UID.
      */
-    async getByUid(uid, userTimezone) {
+    async getByUid(uid, userTimezone, viewerId = null) {
         const validatedUid = validateUid(uid);
         const project =
             await projectsRepository.findByUidWithIncludes(validatedUid);
@@ -324,6 +484,16 @@ class ProjectsService {
                           safeTimezone
                       ),
                   };
+                  const start = startForResponse(
+                      task.start_date,
+                      task.start_has_time,
+                      safeTimezone
+                  );
+                  normalizedTask.start_date = start.date;
+                  normalizedTask.start_time = start.time;
+                  normalizedTask.due_time = task.due_has_time
+                      ? utcToUserTimeString(task.due_date, safeTimezone)
+                      : null;
                   delete normalizedTask.Tags;
                   delete normalizedTask.Subtasks;
                   return normalizedTask;
@@ -351,9 +521,25 @@ class ProjectsService {
             Tasks: normalizedTasks,
             Notes: normalizedNotes,
             due_date_at: formatDate(project.due_date_at),
+            ...startFields(project, userTimezone),
+            task_links: await getBlockLinks(projectJson.Tasks || []),
             user_id: project.user_id,
             share_count: shareCount,
             is_shared: sharedUids.has(project.uid),
+            can_share: viewerId
+                ? project.user_id === viewerId || (await isAdmin(viewerId))
+                : false,
+            // shared with the viewer on its own, so they may leave it
+            can_leave:
+                viewerId && project.user_id !== viewerId
+                    ? (
+                          await permissionSources.findLeavableUids(
+                              viewerId,
+                              'project',
+                              [project.uid]
+                          )
+                      ).has(project.uid)
+                    : false,
         };
     }
 
@@ -369,7 +555,7 @@ class ProjectsService {
     /**
      * Create a new project.
      */
-    async create(userId, data) {
+    async create(userId, data, userTimezone) {
         await entitlements.assertCanCreate(userId, 'project');
         const {
             name,
@@ -383,6 +569,7 @@ class ProjectsService {
             color,
             status,
             state,
+            visibility,
             tags,
             Tags,
         } = data;
@@ -390,22 +577,37 @@ class ProjectsService {
         const validatedName = validateName(name);
         const tagsData = tags || Tags;
         const projectUid = generateUid();
+        const areaId = await resolveContainerId(
+            userId,
+            'area',
+            area_id || null
+        );
+        const goalId = await resolveContainerId(
+            userId,
+            'goal',
+            goal_id || null
+        );
 
         const projectData = {
             uid: projectUid,
             name: validatedName,
             description: description || '',
-            area_id: area_id || null,
-            goal_id: goal_id || null,
+            area_id: areaId,
+            goal_id: goalId,
             is_maintenance: is_maintenance || false,
             pin_to_sidebar: false,
-            priority: priority || null,
+            priority: toPriorityValue(priority),
             due_date_at: due_date_at || null,
             image_url: image_url || null,
             color: color || null,
             status: status || state || 'not_started',
+            visibility:
+                visibility === undefined
+                    ? 'area'
+                    : validateVisibility(visibility),
             user_id: userId,
         };
+        applyStart(projectData, data, userTimezone);
 
         const project = await projectsRepository.create(projectData);
 
@@ -427,13 +629,14 @@ class ProjectsService {
             uid: projectUid,
             tags: [],
             due_date_at: formatDate(project.due_date_at),
+            ...startFields(project, userTimezone),
         };
     }
 
     /**
      * Update a project.
      */
-    async update(userId, uid, data) {
+    async update(userId, uid, data, userTimezone) {
         const validatedUid = validateUid(uid);
         const project = await projectsRepository.findOne({ uid: validatedUid });
 
@@ -456,26 +659,44 @@ class ProjectsService {
             color,
             status,
             state,
+            visibility,
             tags,
             Tags,
         } = data;
 
         const tagsData = tags || Tags;
         const updateData = {};
+        const before = {
+            area_id: project.area_id,
+            goal_id: project.goal_id,
+            visibility: project.visibility,
+        };
+        const nextVisibility = await prepareVisibilityChange(
+            project,
+            userId,
+            visibility
+        );
+        if (nextVisibility !== undefined)
+            updateData.visibility = nextVisibility;
 
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
+        // Keeping the current area or goal is always allowed, so a project
+        // whose container is no longer shared with the caller stays editable.
         if (goal_id !== undefined)
             updateData.goal_id =
-                goal_id === '' || goal_id === null ? null : goal_id;
+                goal_id == project.goal_id
+                    ? project.goal_id
+                    : await resolveContainerId(userId, 'goal', goal_id);
         if (is_maintenance !== undefined)
             updateData.is_maintenance = is_maintenance;
         if (pin_to_sidebar !== undefined)
             updateData.pin_to_sidebar = pin_to_sidebar;
         if (priority !== undefined)
-            updateData.priority = priority === '' ? null : priority;
+            updateData.priority = toPriorityValue(priority);
         if (due_date_at !== undefined)
             updateData.due_date_at = due_date_at === '' ? null : due_date_at;
+        applyStart(updateData, data, userTimezone, project.start_date_at);
         if (image_url !== undefined)
             updateData.image_url = image_url === '' ? null : image_url;
         if (color !== undefined) updateData.color = color === '' ? null : color;
@@ -483,7 +704,10 @@ class ProjectsService {
         else if (state !== undefined) updateData.status = state;
 
         if (area_id !== undefined) {
-            const resolvedAreaId = area_id === '' ? null : area_id;
+            const resolvedAreaId =
+                isOwner && area_id == project.area_id
+                    ? project.area_id
+                    : await resolveContainerId(userId, 'area', area_id);
             if (isOwner) {
                 // Owner controls the canonical area for all users
                 updateData.area_id = resolvedAreaId;
@@ -500,15 +724,13 @@ class ProjectsService {
         await projectsRepository.update(project, updateData);
         await updateProjectTags(project, tagsData, userId);
 
-        // Moving the project into a (possibly shared) area or goal mirrors that
-        // container's collaborators onto the project.
-        if (
-            isOwner &&
-            (updateData.area_id !== undefined ||
-                updateData.goal_id !== undefined)
-        ) {
-            await syncProjectSharesFromContainer(project.id);
-        }
+        // Only the owner moves the project itself; other people's area
+        // choice is their own placement and changes nobody's access.
+        await syncContainerShares(project.id, before, {
+            area_id: isOwner ? updateData.area_id : undefined,
+            goal_id: isOwner ? updateData.goal_id : undefined,
+            visibility: updateData.visibility,
+        });
 
         const projectWithAssociations =
             await projectsRepository.findByUidWithTagsAndArea(validatedUid);
@@ -518,7 +740,35 @@ class ProjectsService {
             ...projectJson,
             tags: sortTags(projectJson.Tags),
             due_date_at: formatDate(projectWithAssociations.due_date_at),
+            ...startFields(projectWithAssociations, userTimezone),
         };
+    }
+
+    // Marks a project done, optionally finishing its open tasks too.
+    async complete(userId, uid, { completeOpenTasks = false } = {}) {
+        const validatedUid = validateUid(uid);
+        const project = await projectsRepository.findOne({ uid: validatedUid });
+
+        if (!project) {
+            throw new NotFoundError('Project not found.');
+        }
+
+        let completedTasks = 0;
+        if (completeOpenTasks) {
+            const openTasks = await projectsRepository.findOpenTasks(
+                project.id
+            );
+            // One by one so task hooks (webhooks, history) still run
+            for (const task of openTasks) {
+                await task.update({ status: 2, completed_at: new Date() });
+            }
+            completedTasks = openTasks.length;
+        }
+
+        const updated = await this.update(userId, validatedUid, {
+            status: 'done',
+        });
+        return { project: updated, completed_tasks: completedTasks };
     }
 
     /**
@@ -539,3 +789,7 @@ class ProjectsService {
 
 module.exports = new ProjectsService();
 module.exports.updateProjectTags = updateProjectTags;
+module.exports.validateVisibility = validateVisibility;
+module.exports.prepareVisibilityChange = prepareVisibilityChange;
+module.exports.syncContainerShares = syncContainerShares;
+module.exports.resolveContainerId = resolveContainerId;

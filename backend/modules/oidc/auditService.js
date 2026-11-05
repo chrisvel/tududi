@@ -10,6 +10,12 @@ const EVENT_TYPES = {
     PASSWORD_RESET: 'password_reset',
     SIGN_IN_LINK_CREATED: 'sign_in_link_created',
     SIGN_IN_LINK_REVOKED: 'sign_in_link_revoked',
+    MFA_ENABLED: 'mfa_enabled',
+    MFA_DISABLED: 'mfa_disabled',
+    MFA_RESET: 'mfa_reset',
+    MFA_FAILED: 'mfa_failed',
+    MFA_RECOVERY_CODE_USED: 'mfa_recovery_code_used',
+    MFA_RECOVERY_CODES_REGENERATED: 'mfa_recovery_codes_regenerated',
 };
 
 const AUTH_METHODS = {
@@ -17,6 +23,7 @@ const AUTH_METHODS = {
     OIDC: 'oidc',
     API_TOKEN: 'api_token',
     SIGN_IN_LINK: 'sign_in_link',
+    MFA: 'mfa',
 };
 
 async function logEvent({

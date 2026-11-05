@@ -1,0 +1,34 @@
+<% const t = i18n.t; %>
+<!DOCTYPE html>
+<html lang="<%= i18n.meta.htmlLang %>" dir="<%= i18n.meta.dir || 'ltr' %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title><%= t('notFound.title') %> · tududi</title>
+    <link rel="icon" href="/landing-assets/favicon.ico">
+    <%- include('partials/head-assets') %>
+    <%- include('partials/styles') %>
+    <style>
+        .not-found { padding: 140px 16px 100px; }
+        .not-found-inner { max-width: 620px; margin: 0 auto; text-align: center; }
+        .not-found-code { font-family: 'Manrope', 'Inter', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; color: #6b7280; margin-bottom: 12px; }
+        .not-found h1 { font-family: 'Manrope', 'Inter', sans-serif; font-size: clamp(30px, 4.5vw, 44px); font-weight: 800; letter-spacing: -0.02em; color: #111827; margin-bottom: 10px; }
+        .not-found-lede { color: #4b5563; font-size: 17px; line-height: 1.6; margin-bottom: 32px; }
+    </style>
+</head>
+<body>
+    <%- include('partials/nav') %>
+
+    <main class="not-found" data-testid="not-found">
+        <div class="not-found-inner">
+            <p class="not-found-code">404</p>
+            <h1><%= t('notFound.title') %></h1>
+            <p class="not-found-lede"><%= t('notFound.lede') %></p>
+            <a href="<%= localePath(i18n.locale) %>" class="btn-primary"><i class="fas fa-arrow-left"></i><%= t('notFound.home') %></a>
+        </div>
+    </main>
+
+    <%- include('partials/footer') %>
+</body>
+</html>

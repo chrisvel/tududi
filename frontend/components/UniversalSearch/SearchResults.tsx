@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     CheckCircleIcon,
@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { searchUniversal } from '../../utils/searchService';
 import { focusKey, focusScopeParams, useFocus } from '../../utils/focus';
+import { openTaskPanel } from '../../store/taskPanelStore';
 
 interface SearchResultsProps {
     searchQuery: string;
@@ -51,7 +52,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
 
     useEffect(() => {
         const fetchResults = async () => {
@@ -145,9 +145,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             case 'Task':
                 // Tasks use uid directly
                 if (result.uid) {
-                    navigate(`/task/${result.uid}`, {
-                        state: { from: location.pathname + location.search },
-                    });
+                    openTaskPanel(result.uid);
                 }
                 break;
             case 'Project': {

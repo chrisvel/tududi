@@ -1,6 +1,5 @@
 const { Op } = require('sequelize');
 const { sequelize, RateLimit } = require('../models');
-const { isPostgres } = require('../utils/db-dialect');
 const { logError } = require('../services/logService');
 
 // express-rate-limit Store backed by the rate_limits table. The default
@@ -65,10 +64,7 @@ class DatabaseRateLimitStore {
     }
 }
 
-// Returns a shared store when the database can host one, otherwise
-// undefined so express-rate-limit falls back to its in-memory store.
 function createRateLimitStore(prefix) {
-    if (!isPostgres()) return undefined;
     return new DatabaseRateLimitStore(prefix);
 }
 

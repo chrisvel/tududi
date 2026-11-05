@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TFunction } from 'i18next';
 import { differenceInCalendarDays, format } from 'date-fns';
 import {
+    ArrowUturnLeftIcon,
     CameraIcon,
+    CheckCircleIcon,
     CheckIcon,
     ChevronDownIcon,
     EllipsisHorizontalIcon,
@@ -33,11 +35,18 @@ interface ProjectHeroProps {
     doneCount: number;
     totalCount: number;
     onUpdate: (patch: Partial<Project>) => Promise<void>;
+    // Marking done goes here instead of onUpdate, so open tasks can be asked about
+    onComplete?: () => void;
     onDeleteClick: () => void;
     onShareClick: () => void;
+    // Offered when the project is shared with the viewer (can_leave)
+    onLeaveClick?: () => void;
     onSaveAsTemplate?: () => void;
     onEditBannerClick?: () => void;
+    onEditClick?: () => void;
     onTogglePin?: () => void;
+    onImportClick?: () => void;
+    onExport?: (format: 'xlsx' | 'csv') => void;
 }
 
 const ProjectHero: React.FC<ProjectHeroProps> = ({
@@ -46,11 +55,16 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
     doneCount,
     totalCount,
     onUpdate,
+    onComplete,
     onDeleteClick,
     onShareClick,
+    onLeaveClick,
     onSaveAsTemplate,
     onEditBannerClick,
+    onEditClick,
     onTogglePin,
+    onImportClick,
+    onExport,
 }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -136,14 +150,29 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
     const changeStatus = async (status: ProjectStatus) => {
         setStatusOpen(false);
         if (status === project.status) return;
+        if (status === 'done' && onComplete) {
+            onComplete();
+            return;
+        }
         await onUpdate({ status }).catch(() => undefined);
     };
 
     const percent =
         totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
-    const startDate = project.created_at ? new Date(project.created_at) : null;
-    const dueDate = project.due_date_at ? new Date(project.due_date_at) : null;
+    // The project's own start, or the day it was created when none is set.
+    const startDate = project.start_date
+        ? new Date(`${project.start_date}T${project.start_time || '00:00'}:00`)
+        : project.created_at
+          ? new Date(project.created_at)
+          : null;
+    const startsLater = !!startDate && startDate.getTime() > Date.now();
+    const isDone = project.status === 'done';
+    const completedDate =
+        isDone && project.completed_at ? new Date(project.completed_at) : null;
+    // Once done, the due date countdown stops mattering
+    const dueDate =
+        !isDone && project.due_date_at ? new Date(project.due_date_at) : null;
     const today = new Date();
     const daysLeft = dueDate ? differenceInCalendarDays(dueDate, today) : null;
     // How much of the time between start and due date has passed, so the
@@ -284,20 +313,47 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                                     {dueText}
                                 </span>
                             )}
+                            {completedDate && (
+                                <span data-testid="project-completed-on">
+                                    {t(
+                                        'project.completedOn',
+                                        'Completed {{date}}',
+                                        {
+                                            date: format(
+                                                completedDate,
+                                                'MMM d, yyyy'
+                                            ),
+                                        }
+                                    )}
+                                </span>
+                            )}
                             {startDate && (
                                 <>
-                                    {dueText && <span>·</span>}
+                                    {(dueText || completedDate) && (
+                                        <span>·</span>
+                                    )}
                                     <span>
-                                        {t(
-                                            'project.startedOn',
-                                            'Started {{date}}',
-                                            {
-                                                date: format(
-                                                    startDate,
-                                                    'MMM d, yyyy'
-                                                ),
-                                            }
-                                        )}
+                                        {startsLater
+                                            ? t(
+                                                  'project.startsOn',
+                                                  'Starts {{date}}',
+                                                  {
+                                                      date: format(
+                                                          startDate,
+                                                          'MMM d, yyyy'
+                                                      ),
+                                                  }
+                                              )
+                                            : t(
+                                                  'project.startedOn',
+                                                  'Started {{date}}',
+                                                  {
+                                                      date: format(
+                                                          startDate,
+                                                          'MMM d, yyyy'
+                                                      ),
+                                                  }
+                                              )}
                                     </span>
                                 </>
                             )}
@@ -400,6 +456,27 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                     </div>
 
                     <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
+                        {isDone ? (
+                            <button
+                                type="button"
+                                onClick={() => changeStatus('in_progress')}
+                                className={actionClass}
+                                data-testid="project-reopen"
+                            >
+                                <ArrowUturnLeftIcon className="h-4 w-4" />
+                                {t('projects.reopen', 'Reopen')}
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => changeStatus('done')}
+                                className={actionClass}
+                                data-testid="project-mark-complete"
+                            >
+                                <CheckCircleIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                {t('project.markComplete', 'Complete')}
+                            </button>
+                        )}
                         {onTogglePin && (
                             <button
                                 type="button"
@@ -440,6 +517,19 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                             </button>
                             {menuOpen && (
                                 <div className="absolute right-0 top-full z-30 mt-1 w-52 overflow-hidden rounded-md bg-white py-1 shadow-lg dark:bg-gray-800">
+                                    {onEditClick && (
+                                        <button
+                                            type="button"
+                                            className={menuItemClass}
+                                            onClick={() => {
+                                                setMenuOpen(false);
+                                                onEditClick();
+                                            }}
+                                            data-testid="project-edit"
+                                        >
+                                            {t('common.edit', 'Edit')}
+                                        </button>
+                                    )}
                                     {onSaveAsTemplate && (
                                         <button
                                             type="button"
@@ -453,6 +543,64 @@ const ProjectHero: React.FC<ProjectHeroProps> = ({
                                                 'projectItem.saveAsTemplate',
                                                 'Save as Template'
                                             )}
+                                        </button>
+                                    )}
+                                    {onImportClick && (
+                                        <button
+                                            type="button"
+                                            className={menuItemClass}
+                                            onClick={() => {
+                                                setMenuOpen(false);
+                                                onImportClick();
+                                            }}
+                                        >
+                                            {t(
+                                                'spreadsheet.menu.import',
+                                                'Import from spreadsheet…'
+                                            )}
+                                        </button>
+                                    )}
+                                    {onExport && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                className={menuItemClass}
+                                                onClick={() => {
+                                                    setMenuOpen(false);
+                                                    onExport('xlsx');
+                                                }}
+                                            >
+                                                {t(
+                                                    'spreadsheet.menu.exportExcel',
+                                                    'Export to Excel'
+                                                )}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={menuItemClass}
+                                                onClick={() => {
+                                                    setMenuOpen(false);
+                                                    onExport('csv');
+                                                }}
+                                            >
+                                                {t(
+                                                    'spreadsheet.menu.exportCsv',
+                                                    'Export to CSV'
+                                                )}
+                                            </button>
+                                        </>
+                                    )}
+                                    {onLeaveClick && project.can_leave && (
+                                        <button
+                                            type="button"
+                                            className="block w-full px-4 py-2 text-left text-sm text-red-500 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-700"
+                                            onClick={() => {
+                                                setMenuOpen(false);
+                                                onLeaveClick();
+                                            }}
+                                            data-testid="project-leave"
+                                        >
+                                            {t('shares.leave.action', 'Leave')}
                                         </button>
                                     )}
                                     <button

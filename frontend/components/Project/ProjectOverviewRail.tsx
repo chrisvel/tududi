@@ -11,7 +11,10 @@ import { PriorityType } from '../../entities/Task';
 import AreaDropdown from '../Shared/AreaDropdown';
 import GoalDropdown from '../Shared/GoalDropdown';
 import PriorityDropdown from '../Shared/PriorityDropdown';
+import { toPriorityLevel } from '../Shared/PriorityBadge';
 import DatePicker from '../Shared/DatePicker';
+import DateTimePicker from '../Shared/DateTimePicker';
+import { fromDueParts, toDueParts } from '../../utils/dueDateTime';
 import ColorPicker from '../Shared/ColorPicker';
 import TagInput from '../Tag/TagInput';
 import { fetchGoals } from '../../utils/goalsService';
@@ -21,6 +24,7 @@ import { fetchAssignablePeopleForProject } from '../../utils/peopleService';
 import { Person } from '../../entities/Person';
 import { avatarTint } from '../../utils/avatarTint';
 import { getApiPath } from '../../config/paths';
+import { canManageProjectShares } from '../../utils/projectShareCache';
 
 interface ProjectOverviewRailProps {
     project: Project;
@@ -78,18 +82,6 @@ const Panel: React.FC<{
     </section>
 );
 
-const InfoRow: React.FC<{ label: string; children: React.ReactNode }> = ({
-    label,
-    children,
-}) => (
-    <div className="flex items-center justify-between gap-3 py-2 text-sm">
-        <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
-        <dd className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 text-right text-gray-800 dark:text-gray-200">
-            {children}
-        </dd>
-    </div>
-);
-
 // A project info row that edits in place. The value keeps its links; a
 // pencil (or the empty-state text) opens the editor under the row, and
 // picking a value saves it and closes the editor again.
@@ -144,7 +136,7 @@ const EditableRow: React.FC<{
 );
 
 type EditableField =
-    'area' | 'goal' | 'priority' | 'due' | 'tags' | 'color' | null;
+    'area' | 'goal' | 'priority' | 'start' | 'due' | 'tags' | 'color' | null;
 
 const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
     project,
@@ -203,16 +195,21 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
         new Map()
     );
 
+    const canManageShares = canManageProjectShares(project);
+
     useEffect(() => {
         if (!project.uid) return;
         let cancelled = false;
-        listShares('project', project.uid)
-            .then((rows) => {
-                if (!cancelled) setPeople(rows);
-            })
-            .catch(() => {
-                // The panel still shows the share button without the list.
-            });
+        // Members who can't manage the project would only get a 403.
+        if (canManageShares) {
+            listShares('project', project.uid)
+                .then((rows) => {
+                    if (!cancelled) setPeople(rows);
+                })
+                .catch(() => {
+                    // The panel still shows the share button without the list.
+                });
+        }
         fetchAssignablePeopleForProject(project.uid)
             .then((list) => {
                 if (cancelled) return;
@@ -230,7 +227,7 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
         return () => {
             cancelled = true;
         };
-    }, [project.uid, project.share_count]);
+    }, [project.uid, project.share_count, canManageShares]);
 
     const roleLabel = (row: ListSharesResponseRow) => {
         if (row.is_owner || row.access_level === 'owner') {
@@ -251,6 +248,7 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
         medium: 'bg-yellow-400',
         low: 'bg-blue-400',
     };
+    const priorityLevel = toPriorityLevel(project.priority);
     const recentNotes = [...notes].sort(
         (a, b) =>
             new Date(b.updated_at || 0).getTime() -
@@ -412,7 +410,7 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
                             'Change priority'
                         )}
                         empty={t('project.setPriority', 'Set priority')}
-                        hasValue={!!project.priority}
+                        hasValue={!!priorityLevel}
                         editing={editing === 'priority'}
                         onStartEdit={() => setEditing('priority')}
                         editor={
@@ -427,21 +425,48 @@ const ProjectOverviewRail: React.FC<ProjectOverviewRailProps> = ({
                         }
                     >
                         <span
-                            className={`h-2 w-2 rounded-full ${priorityColor[String(project.priority)] || 'bg-gray-400'}`}
+                            className={`h-2 w-2 rounded-full ${(priorityLevel && priorityColor[priorityLevel]) || 'bg-gray-400'}`}
                         />
-                        {t(
-                            `priority.${project.priority}`,
-                            String(project.priority)
-                        )}
+                        {t(`priority.${priorityLevel}`, String(priorityLevel))}
                     </EditableRow>
-                    {project.created_at && (
-                        <InfoRow label={t('project.started', 'Started')}>
-                            {format(
-                                new Date(project.created_at),
+                    <EditableRow
+                        label={t('task.startDate', 'Start')}
+                        editLabel={t(
+                            'forms.task.startDatePlaceholder',
+                            'Select start date'
+                        )}
+                        empty={t('task.noStartDate', 'No start date')}
+                        hasValue={!!project.start_date}
+                        editing={editing === 'start'}
+                        onStartEdit={() => setEditing('start')}
+                        editor={
+                            <DateTimePicker
+                                value={fromDueParts(
+                                    project.start_date,
+                                    project.start_time
+                                )}
+                                onChange={(iso) => {
+                                    const parts = toDueParts(iso);
+                                    save({
+                                        start_date: parts.date,
+                                        start_time: parts.date
+                                            ? parts.time
+                                            : null,
+                                    });
+                                }}
+                                placeholder={t(
+                                    'forms.task.startDatePlaceholder',
+                                    'Select start date'
+                                )}
+                            />
+                        }
+                    >
+                        {project.start_date &&
+                            `${format(
+                                new Date(`${project.start_date}T00:00:00`),
                                 'MMM d, yyyy'
-                            )}
-                        </InfoRow>
-                    )}
+                            )}${project.start_time ? ` ${project.start_time}` : ''}`}
+                    </EditableRow>
                     <EditableRow
                         label={t('common.due', 'Due')}
                         editLabel={t('project.changeDue', 'Change due date')}

@@ -1,5 +1,6 @@
 import { getApiPath } from '../config/paths';
 import { getCsrfToken } from './csrfService';
+import { readJsonOrThrow } from './mfaService';
 
 export interface ApiKeySummary {
     id: number;
@@ -18,12 +19,7 @@ export interface CreateApiKeyResponse {
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
-    if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        const message = errorBody?.error || 'Request failed';
-        throw new Error(message);
-    }
-    return (await response.json()) as T;
+    return readJsonOrThrow<T>(response);
 }
 
 export async function fetchApiKeys(): Promise<ApiKeySummary[]> {

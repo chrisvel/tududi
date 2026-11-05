@@ -50,6 +50,17 @@ module.exports = (sequelize) => {
                 type: DataTypes.DATE,
                 allowNull: true,
             },
+            // When the project begins. Whole-day starts are stored as the
+            // start of the day in the user's timezone.
+            start_date_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
+            start_has_time: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
+            },
             user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
@@ -97,6 +108,17 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: false,
             },
+            // 'area' lets the project's area and goal shares reach it;
+            // 'restricted' keeps it to its owner, the area owner and people
+            // added to the project itself.
+            visibility: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: 'area',
+                validate: {
+                    isIn: [['area', 'restricted']],
+                },
+            },
             ai_insights: {
                 type: DataTypes.JSON,
                 allowNull: true,
@@ -136,6 +158,10 @@ module.exports = (sequelize) => {
                 allowNull: false,
                 defaultValue: 'not_started',
             },
+            completed_at: {
+                type: DataTypes.DATE,
+                allowNull: true,
+            },
         },
         {
             tableName: 'projects',
@@ -149,7 +175,27 @@ module.exports = (sequelize) => {
                 {
                     fields: ['is_template'],
                 },
+                {
+                    fields: ['user_id', 'completed_at'],
+                    name: 'projects_user_id_completed_at',
+                },
             ],
+            hooks: {
+                // Every write path (REST, MCP, templates) goes through here,
+                // so the completion date always follows the status.
+                beforeSave: (project) => {
+                    if (!project.isNewRecord && !project.changed('status')) {
+                        return;
+                    }
+                    if (project.status === 'done') {
+                        if (!project.completed_at) {
+                            project.completed_at = new Date();
+                        }
+                    } else {
+                        project.completed_at = null;
+                    }
+                },
+            },
         }
     );
 

@@ -647,7 +647,7 @@ describe('MCP Tools Integration', () => {
                 expect(content.task.recurrence_type).toBe('none');
             });
 
-            it('should create a task with multiple tags without SQLITE_BUSY (issue #1526)', async () => {
+            it('should create a task with multiple tags (issue #1526)', async () => {
                 const response = await callMcpTool(
                     apiTokenValue,
                     'create_task',
@@ -2561,6 +2561,27 @@ describe('MCP Tools Integration', () => {
         });
 
         describe('create_project', () => {
+            it("should refuse another user's area", async () => {
+                const other = await createTestUser({
+                    email: `mcp_area_other_${Date.now()}@example.com`,
+                });
+                const foreign = await Area.create({
+                    name: 'Not mine',
+                    user_id: other.id,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_project',
+                    { name: 'Sneaky', area_id: foreign.id }
+                );
+
+                expect(getToolContent(response).isError).toBe(true);
+                expect(await Project.count({ where: { name: 'Sneaky' } })).toBe(
+                    0
+                );
+            });
+
             it('should create a project with required fields', async () => {
                 const response = await callMcpTool(
                     apiTokenValue,
@@ -2768,6 +2789,25 @@ describe('MCP Tools Integration', () => {
                 expect(content.message).toBe('Project updated successfully');
                 expect(content.project.name).toBe('Updated Name');
                 expect(content.project.status).toBe('in_progress');
+            });
+
+            it('should record when a project is marked done', async () => {
+                const project = await Project.create({
+                    user_id: user.id,
+                    name: 'Finish me',
+                    status: 'in_progress',
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'update_project',
+                    { uid: project.uid, status: 'done' }
+                );
+
+                const { content } = getToolContent(response);
+                expect(content.project.completed_at).toBeTruthy();
+                await project.reload();
+                expect(project.completed_at).toBeInstanceOf(Date);
             });
 
             it('should throw error for non-existent project', async () => {

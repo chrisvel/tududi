@@ -33,16 +33,17 @@ fi
 # Start backend and frontend
 cd "$ROOT_DIR"
 
-# Remove old test database to start fresh
-yellow "Removing old test database..."
-rm -f backend/db/test.sqlite3
+# Recreate the e2e database to start fresh (needs a running PostgreSQL,
+# e.g. docker compose -f docker-compose.dev.yml up -d db)
+export DATABASE_URL="${E2E_DATABASE_URL:-postgres://tududi:tududi@localhost:5432/tududi_e2e}"
+yellow "Recreating test database..."
+node e2e/bin/reset-e2e-db.js || exit 1
 
 yellow "Starting backend with test database..."
 (cd backend && \
 NODE_ENV=test \
 PORT=$BACKEND_PORT \
 HOST=$BACKEND_HOST \
-DB_FILE=db/test.sqlite3 \
 TUDUDI_USER_EMAIL="${E2E_EMAIL:-test@tududi.com}" \
 TUDUDI_USER_PASSWORD="${E2E_PASSWORD:-password123}" \
 SEQUELIZE_LOGGING=false \
@@ -69,7 +70,7 @@ cleanup() {
 
   # Remove test database
   yellow "Cleaning up test database..."
-  rm -f "$ROOT_DIR/backend/db/test.sqlite3"
+  (cd "$ROOT_DIR" && node e2e/bin/reset-e2e-db.js --drop-only) || true
 }
 trap cleanup EXIT INT TERM
 

@@ -20,7 +20,7 @@ const {
     sequelize,
 } = require('../../models');
 const entitlements = require('../../services/entitlementsService');
-const { createTestUser } = require('../helpers/testUtils');
+const { createTestUser, enrollMfa } = require('../helpers/testUtils');
 
 // On tududi Cloud the instance admin (the superadmin) and the customers who
 // administer their own account must never meet: an account owner manages its
@@ -62,9 +62,8 @@ const subscribe = (userId) =>
         provider: 'lemonsqueezy',
         provider_subscription_id: `sub_${userId}`,
         provider_subscription_item_id: `item_${userId}`,
-        seat_quantity: 1,
         status: 'active',
-        plan: 'pro',
+        plan: 'team_5',
     });
 
 // The Access routes an account admin may use, scoped to its own account.
@@ -166,6 +165,7 @@ describe('Cloud: workspace owners never see what the superadmin sees', () => {
         });
 
         superAgent = await login(superadmin.email);
+        await enrollMfa(superadmin);
         ownerAgent = await login(owner.email);
 
         const added = await ownerAgent.post('/api/members').send({

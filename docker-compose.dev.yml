@@ -1,4 +1,31 @@
+# Local development. Start only the database for `npm start`:
+#
+#   docker compose -f docker-compose.dev.yml up -d db
+#
+# and use DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_dev
+# (backend/.env.example). The test suite creates its own databases on the
+# same server. `docker compose -f docker-compose.dev.yml up` also builds and
+# runs the app image against it.
+
 services:
+  db:
+    image: postgres:16-alpine
+    container_name: tududi-dev-db
+    environment:
+      POSTGRES_DB: tududi_dev
+      POSTGRES_USER: tududi
+      POSTGRES_PASSWORD: tududi
+    volumes:
+      - tududi_dev_pgdata:/var/lib/postgresql/data
+    ports:
+      - "${DEV_DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tududi -d tududi_dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
   tududi:
     build:
       context: .
@@ -7,9 +34,16 @@ services:
     env_file:
       - path: .env
         required: false
+    environment:
+      DATABASE_URL: postgres://tududi:tududi@db:5432/tududi_dev
     volumes:
-      - ./tududi_db:/app/db
       - ./uploads:/app/uploads
     ports:
       - "3002:3002"
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
+
+volumes:
+  tududi_dev_pgdata:

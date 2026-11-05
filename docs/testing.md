@@ -35,7 +35,6 @@
 │   ├── mcp/                  # MCP tool tests
 │   └── ...
 │
-└── upgrade/                  # Legacy database upgrade suite (own Jest config)
 
 /e2e/tests/                   # E2E tests (Playwright)
 ├── caldav-client.spec.ts
@@ -57,6 +56,8 @@
 
 ### Backend Tests
 
+The backend suite needs a PostgreSQL server. Set `DATABASE_URL` (in `backend/.env` or the shell); one database per Jest worker is created from it automatically.
+
 ```bash
 # Run all backend tests
 npm test
@@ -72,11 +73,6 @@ npm run test:coverage
 # Watch mode (re-run on file changes)
 npm run test:watch
 
-# Upgrade suite: real migrations against legacy SQLite databases + schema parity
-npm run backend:test:upgrade
-
-# Upgrade with the real Docker images (slow; needs Docker, curl, sqlite3)
-npm run test:upgrade:docker
 ```
 
 ### Frontend Tests
@@ -90,6 +86,8 @@ npm run frontend:test -- --watch
 ```
 
 ### E2E Tests
+
+E2E runs against PostgreSQL too: the scripts in `e2e/bin` use `DATABASE_URL`, with a `tududi_e2e` database by default, and wipe it before each run.
 
 ```bash
 # Headless mode (default)
@@ -427,30 +425,27 @@ async function createTask(page, name: string, priority: number) {
 
 Backend tests never touch the development database. `backend/tests/helpers/setup.js` runs once per test file and:
 
-- **SQLite (default):** points `DB_FILE` at a fresh `/tmp/test-<id>.sqlite3` for that file
-- **PostgreSQL** (`DATABASE_URL` set): uses one database per Jest worker, named `<db>_w<workerId>`, created by `tests/helpers/globalSetup.js`
+- Uses one database per Jest worker, named `<db>_w<workerId>` after the database in `DATABASE_URL`, created by `tests/helpers/globalSetup.js`
 - Creates the schema with `sequelize.sync({ force: true })` in `beforeAll` (migrations are not run in tests)
 - Empties all tables between tests in `beforeEach` (`truncateTables` from `utils/db-dialect.js`)
 
-Run the suite against PostgreSQL locally with:
+Run the suite locally with:
 
 ```bash
 docker run -d -p 5432:5432 -e POSTGRES_USER=tududi -e POSTGRES_PASSWORD=tududi -e POSTGRES_DB=tududi_test postgres:16-alpine
-DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_test npm run backend:test:pg
+DATABASE_URL=postgres://tududi:tududi@localhost:5432/tududi_test npm run backend:test
 ```
 
-CI runs both: `test-sqlite` and `test-postgres` in `.github/workflows/ci.yml`. When a test encodes engine-specific behaviour, branch on `isPostgres()` from `utils/db-dialect.js` rather than skipping the file.
+Two overlapping runs against the same `DATABASE_URL` share the worker databases and drop each other's tables. Use a different database name for a second run.
 
-### Upgrade suite
+CI runs the suite against a `postgres:16-alpine` service in `.github/workflows/ci.yml`.
 
-`npm run backend:test:upgrade` runs `backend/tests/upgrade` with its own Jest config (`backend/jest.upgrade.config.js`), because these tests must not use the sync-based setup above:
+### Startup checks
 
-- `legacy-sqlite-upgrade.test.js` copies every database in `backend/tests/fixtures/legacy` (real files produced by older releases, see the README there), runs `scripts/db-prepare.js` and `sequelize-cli db:migrate` against the copy exactly as `cmd/start.sh` does, and checks: only the pending migrations ran, `SequelizeMeta` lists every migration file, `PRAGMA integrity_check` is ok, no rows were lost, a second run is a no-op, and a fresh process booting the app on the file can log in, read every list endpoint and write through the model hooks (`helpers/smoke-runner.js`).
-- `schema-parity.test.js` snapshots the schema `sequelize.sync()` produces from the models and compares it with a fresh SQLite install, each upgraded legacy fixture and, when `DATABASE_URL` is set, a freshly bootstrapped PostgreSQL database. A model table, column or unique index that a migration never created fails the run. Accepted differences are listed in `known-schema-drift.json` with a reason; `SCHEMA_PARITY_REPORT=1` prints every difference without failing.
+Two tests cover how `cmd/start.sh` treats existing data:
 
-Point `LEGACY_FIXTURE_DIR` at a directory with extra `.sqlite3` files (a copy of a real database, for example) to include them in a run without committing them.
-
-`npm run test:upgrade:docker` (`scripts/test-upgrade-docker.sh`) goes one level further: it starts the previous release image on a temporary volume, upgrades that volume with an image built from the current checkout and checks logins, data, the pre-migration backup and a restart. It runs from `.github/workflows/upgrade-docker.yml` on release tags, weekly and on demand.
+- `tests/unit/scripts/legacy-sqlite-guard.test.js` spawns `scripts/db-prepare.js` and `scripts/with-db-lock.js` and checks that a populated 1.x SQLite file stops startup before any PostgreSQL connection, unless `TUDUDI_ALLOW_DIALECT_SWITCH=true` is set.
+- `tests/integration/db-prepare-upgrade-gate.test.js` runs `scripts/db-prepare.js` against an existing database and checks that one missing the newest archived 1.x migration is refused, and one that has it is taken over.
 
 **Example cleanup:**
 ```javascript

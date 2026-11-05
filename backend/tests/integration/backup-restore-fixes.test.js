@@ -1,9 +1,6 @@
 const request = require('supertest');
 const path = require('path');
 const fs = require('fs');
-const os = require('os');
-const { execFileSync, spawnSync } = require('child_process');
-const sqlite3 = require('sqlite3');
 const app = require('../../app');
 const { Backup, Project, Tag, User } = require('../../models');
 const {
@@ -80,7 +77,7 @@ describe('saved backup errors', () => {
 });
 
 describe('backup import keeps', () => {
-    it('project templates, tag pins and keyboard shortcuts', async () => {
+    it('project templates, tag pins and colors, keyboard shortcuts', async () => {
         const source = await createTestUser({
             email: `ks_${Date.now()}@example.com`,
         });
@@ -93,7 +90,12 @@ describe('backup import keeps', () => {
             is_template: true,
             template_category: 'Work',
         });
-        await Tag.create({ name: 'focus', user_id: source.id, pinned: true });
+        await Tag.create({
+            name: 'focus',
+            user_id: source.id,
+            pinned: true,
+            color: '#ff8800',
+        });
         await source.update({ keyboard_shortcuts: { newTask: 'n' } });
 
         const backup = await exportUserData(source.id);
@@ -108,51 +110,8 @@ describe('backup import keeps', () => {
             where: { user_id: target.id, name: 'focus' },
         });
         expect(tag.pinned).toBe(true);
+        expect(tag.color).toBe('#ff8800');
         const reloaded = await User.findByPk(target.id);
         expect(reloaded.keyboard_shortcuts).toEqual({ newTask: 'n' });
-    });
-});
-
-describe('sqlite-backup script', () => {
-    const script = path.join(__dirname, '../../scripts/sqlite-backup.js');
-
-    const count = (file) =>
-        new Promise((resolve, reject) => {
-            const db = new sqlite3.Database(file, (openError) => {
-                if (openError) return reject(openError);
-                db.get('SELECT COUNT(*) AS c FROM t', (error, row) =>
-                    db.close(() => (error ? reject(error) : resolve(row.c)))
-                );
-            });
-        });
-
-    it('includes writes left in the -wal file by an unclean stop', async () => {
-        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sqlite-backup-'));
-        const source = path.join(dir, 'live.sqlite3');
-        const target = path.join(dir, 'backup.sqlite3');
-
-        // Commit rows in WAL mode, then die without closing the database.
-        const writer = `
-            const sqlite3 = require(${JSON.stringify(require.resolve('sqlite3'))});
-            const db = new sqlite3.Database(${JSON.stringify(source)});
-            db.serialize(() => {
-                db.run('PRAGMA journal_mode=WAL');
-                db.run('CREATE TABLE t(x)');
-                db.run('PRAGMA wal_checkpoint(TRUNCATE)');
-                db.run('PRAGMA wal_autocheckpoint=0');
-                for (let i = 0; i < 50; i++) db.run('INSERT INTO t VALUES (?)', i);
-                db.get('SELECT 1', () => process.kill(process.pid, 'SIGKILL'));
-            });`;
-        spawnSync(process.execPath, ['-e', writer]);
-        expect(fs.statSync(`${source}-wal`).size).toBeGreaterThan(0);
-
-        execFileSync(process.execPath, [script, source, target]);
-        expect(await count(target)).toBe(50);
-
-        // Never overwrites an existing file
-        const again = spawnSync(process.execPath, [script, source, target]);
-        expect(again.status).toBe(1);
-
-        fs.rmSync(dir, { recursive: true, force: true });
     });
 });

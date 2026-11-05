@@ -13,6 +13,7 @@ const {
     Goal,
 } = require('../models');
 const permissionSources = require('./permissionSources');
+const accountsService = require('./accountsService');
 const {
     calculateProjectPerms,
     calculateTaskPerms,
@@ -22,7 +23,9 @@ const {
     projectSubtreeChanges,
 } = require('./permissionsCalculators');
 const { logError } = require('./logService');
+const { resourcePhrase } = require('../utils/resourcePhrases');
 const { NotFoundError } = require('../shared/errors');
+const { unassignAfterAccessLoss } = require('./assignmentCleanup');
 
 const LEVEL_RANK = { ro: 1, rw: 2 };
 const INSERT_CHUNK_SIZE = 500;
@@ -70,31 +73,37 @@ async function computeGrantRows(tx, share) {
     return upserts;
 }
 
-// A member who already holds accepted access at this level or higher (from a
-// direct share or another group) is not asked again. Anything that would
-// raise their level starts as an invitation. Runs outside the write
-// transaction because it reads through the shared facade.
-async function resolveInitialStatuses(share, userIds) {
+// How each member's rows start. A member who already holds accepted access at
+// this level or higher (from a direct share or another group) is not asked
+// again and not told. On a hosted instance, a grant made by an admin of the
+// member's own account applies at once and the member is only told about it.
+// Anything else starts as an invitation. Runs outside the write transaction
+// because it reads through the shared facade. Sequential, since looking up an
+// account can create one.
+async function resolveInitialStatuses(share, userIds, sharerId) {
     const needed = LEVEL_RANK[share.access_level] || 0;
-    const entries = await Promise.all(
-        userIds.map(async (userId) => {
-            const held = await permissionSources.findAcceptedAccessLevel(
-                userId,
-                share.resource_type,
-                share.resource_uid
-            );
-            const status =
-                (LEVEL_RANK[held] || 0) >= needed ? 'accepted' : 'pending';
-            return [userId, status];
-        })
-    );
-    return new Map(entries);
+    const plans = new Map();
+    for (const userId of userIds) {
+        const held = await permissionSources.findAcceptedAccessLevel(
+            userId,
+            share.resource_type,
+            share.resource_uid
+        );
+        if ((LEVEL_RANK[held] || 0) >= needed) {
+            plans.set(userId, { status: 'accepted', notify: null });
+        } else if (await accountsService.isAdminOfAccountOf(sharerId, userId)) {
+            plans.set(userId, { status: 'accepted', notify: 'notice' });
+        } else {
+            plans.set(userId, { status: 'pending', notify: 'invitation' });
+        }
+    }
+    return plans;
 }
 
 // Writes one member's rows for a grant. Levels only ever go up and an
 // accepted row never drops back to pending, the same rules applyPerms uses
-// for direct shares. Returns whether the member's root row is new and pending,
-// which is when they should be notified.
+// for direct shares. Returns whether the member's root row is new, which is
+// when they should be notified.
 async function writeMemberRows(tx, share, userId, template, status) {
     const existing = await GroupPermission.findAll({
         where: { group_share_id: share.id, user_id: userId },
@@ -141,7 +150,7 @@ async function writeMemberRows(tx, share, userId, template, status) {
     const rootCreated = toCreate.some(
         (r) => rowKey(r.resource_type, r.resource_uid) === rootKey
     );
-    return rootCreated && status === 'pending';
+    return rootCreated;
 }
 
 async function describeResource(resourceType, resourceUid) {
@@ -188,7 +197,7 @@ async function notifyInvitees(share, group, userIds) {
             await Notification.createNotification({
                 userId: row.user_id,
                 type: 'share_invitation',
-                title: `${inviterLabel} shared a ${share.resource_type} with ${group.name}`,
+                title: `${inviterLabel} shared ${resourcePhrase(share.resource_type)} with ${group.name}`,
                 message: `"${resourceLabel}" was shared with the group "${group.name}" (${accessLabel}). Accept to add it to your workspace.`,
                 data: {
                     invitationId: `g${row.id}`,
@@ -210,8 +219,71 @@ async function notifyInvitees(share, group, userIds) {
     }
 }
 
+// One notice per member a grant applied to at once (see
+// resolveInitialStatuses). It has the invitation's shape without an
+// invitation id, so the notification UI shows it without Accept or Decline.
+async function notifyGrantees(share, group, userIds) {
+    if (userIds.length === 0) return;
+    try {
+        const [actor, resourceName] = await Promise.all([
+            User.findByPk(share.granted_by_user_id, {
+                attributes: ['id', 'email', 'name'],
+            }),
+            describeResource(share.resource_type, share.resource_uid),
+        ]);
+
+        const inviterLabel = actor?.name || actor?.email || 'Someone';
+        const resourceLabel = resourceName || share.resource_type;
+        const accessLabel =
+            share.access_level === 'rw' ? 'read & write' : 'read only';
+
+        for (const userId of userIds) {
+            await Notification.createNotification({
+                userId,
+                type: 'share_invitation',
+                title: `${inviterLabel} shared ${resourcePhrase(share.resource_type)} with ${group.name}`,
+                message: `"${resourceLabel}" was shared with the group "${group.name}" (${accessLabel}). It is in your workspace now.`,
+                data: {
+                    invitationId: null,
+                    accepted: true,
+                    actionId: null,
+                    resourceType: share.resource_type,
+                    resourceUid: share.resource_uid,
+                    resourceName,
+                    projectUid:
+                        share.resource_type === 'project'
+                            ? share.resource_uid
+                            : undefined,
+                    accessLevel: share.access_level,
+                    inviterEmail: actor?.email || null,
+                    groupName: group.name,
+                    groupUid: group.uid,
+                },
+            });
+        }
+    } catch (error) {
+        // The grant is recorded and already applies; a failed notice must
+        // not undo it.
+        logError('Failed to create group share notifications:', error);
+    }
+}
+
+// Splits the members whose root row was just created by how they should hear
+// about it.
+function sortNotified(plans, createdUserIds) {
+    const invited = [];
+    const told = [];
+    for (const userId of createdUserIds) {
+        const notify = plans.get(userId)?.notify;
+        if (notify === 'invitation') invited.push(userId);
+        else if (notify === 'notice') told.push(userId);
+    }
+    return { invited, told };
+}
+
 // Grants a group access to a resource. Every current member gets rows (pending
-// unless they already hold that access), and members added later get theirs
+// unless they already hold that access or the actor is an admin of their
+// account), and members added later get theirs
 // when they join. Re-sharing to the same group only raises the level.
 async function grantToGroup({
     actorUserId,
@@ -241,53 +313,70 @@ async function grantToGroup({
         .map((m) => m.user_id)
         .filter((id) => id !== ownerUserId);
 
-    const statuses = await resolveInitialStatuses(
+    const plans = await resolveInitialStatuses(
         {
             resource_type: resourceType,
             resource_uid: resourceUid,
             access_level: level,
         },
-        memberIds
+        memberIds,
+        actorUserId
     );
 
-    const { share, notifyUserIds } = await sequelize.transaction(async (tx) => {
-        const grant = existing
-            ? await existing.update(
-                  { access_level: level },
-                  { transaction: tx }
-              )
-            : await GroupShare.create(
-                  {
-                      group_id: group.id,
-                      resource_type: resourceType,
-                      resource_uid: resourceUid,
-                      access_level: level,
-                      granted_by_user_id: actorUserId,
-                  },
-                  { transaction: tx }
-              );
+    const { share, createdUserIds } = await sequelize.transaction(
+        async (tx) => {
+            const grant = existing
+                ? await existing.update(
+                      { access_level: level },
+                      { transaction: tx }
+                  )
+                : await GroupShare.create(
+                      {
+                          group_id: group.id,
+                          resource_type: resourceType,
+                          resource_uid: resourceUid,
+                          access_level: level,
+                          granted_by_user_id: actorUserId,
+                      },
+                      { transaction: tx }
+                  );
 
-        const template = await computeGrantRows(tx, grant);
-        const toNotify = [];
-        for (const userId of memberIds) {
-            const notify = await writeMemberRows(
-                tx,
-                grant,
-                userId,
-                template,
-                statuses.get(userId)
-            );
-            if (notify) toNotify.push(userId);
+            const template = await computeGrantRows(tx, grant);
+            const created = [];
+            for (const userId of memberIds) {
+                const rootCreated = await writeMemberRows(
+                    tx,
+                    grant,
+                    userId,
+                    template,
+                    plans.get(userId).status
+                );
+                if (rootCreated) created.push(userId);
+            }
+            return { share: grant, createdUserIds: created };
         }
-        return { share: grant, notifyUserIds: toNotify };
-    });
+    );
 
-    await notifyInvitees(share, group, notifyUserIds);
+    const { invited, told } = sortNotified(plans, createdUserIds);
+    await notifyInvitees(share, group, invited);
+    await notifyGrantees(share, group, told);
     return share;
 }
 
+// The (user, project) pairs a set of group rows reaches, for taking people
+// off the open tasks of projects they can no longer open.
+async function projectPairsOf(where, tx) {
+    const rows = await GroupPermission.findAll({
+        where: { ...where, resource_type: 'project' },
+        attributes: ['user_id', 'resource_uid'],
+        raw: true,
+        transaction: tx,
+    });
+    return rows.map((r) => ({ userId: r.user_id, projectUid: r.resource_uid }));
+}
+
 async function revokeFromGroup({ group, resourceType, resourceUid }) {
-    await sequelize.transaction(async (tx) => {
+    const pairs = await sequelize.transaction(async (tx) => {
         const share = await GroupShare.findOne({
             where: {
                 group_id: group.id,
@@ -301,12 +390,15 @@ async function revokeFromGroup({ group, resourceType, resourceUid }) {
                 'This resource is not shared with the group'
             );
         }
+        const lost = await projectPairsOf({ group_share_id: share.id }, tx);
         await GroupPermission.destroy({
             where: { group_share_id: share.id },
             transaction: tx,
         });
         await share.destroy({ transaction: tx });
+        return lost;
     });
+    await unassignAfterAccessLoss(pairs);
 }
 
 // The groups a resource is shared with, with how many members have accepted
@@ -357,8 +449,9 @@ async function listForResource(resourceType, resourceUid) {
 }
 
 // Adds members and gives each of them access to everything already shared with
-// the group, as invitations unless they already hold that access. The
-// membership and their rows commit together.
+// the group, as invitations unless they already hold that access or whoever
+// shared it is an admin of their account. The membership and their rows
+// commit together.
 async function addMembers({ group, userIds, addedByUserId }) {
     if (userIds.length === 0) return;
 
@@ -379,7 +472,11 @@ async function addMembers({ group, userIds, addedByUserId }) {
         plans.push({
             share,
             eligible,
-            statuses: await resolveInitialStatuses(share, eligible),
+            statuses: await resolveInitialStatuses(
+                share,
+                eligible,
+                share.granted_by_user_id
+            ),
         });
     }
 
@@ -393,39 +490,41 @@ async function addMembers({ group, userIds, addedByUserId }) {
             { transaction: tx }
         );
 
-        const pending = [];
+        const written = [];
         for (const { share, eligible, statuses } of plans) {
             const template = await computeGrantRows(tx, share);
-            const notifyUserIds = [];
+            const created = [];
             for (const userId of eligible) {
-                const notify = await writeMemberRows(
+                const rootCreated = await writeMemberRows(
                     tx,
                     share,
                     userId,
                     template,
-                    statuses.get(userId)
+                    statuses.get(userId).status
                 );
-                if (notify) notifyUserIds.push(userId);
+                if (rootCreated) created.push(userId);
             }
-            pending.push({ share, notifyUserIds });
+            written.push({ share, statuses, created });
         }
-        return pending;
+        return written;
     });
 
-    for (const { share, notifyUserIds } of toNotify) {
-        await notifyInvitees(share, group, notifyUserIds);
+    for (const { share, statuses, created } of toNotify) {
+        const { invited, told } = sortNotified(statuses, created);
+        await notifyInvitees(share, group, invited);
+        await notifyGrantees(share, group, told);
     }
 }
 
 // Removes a member and only the access that came through this group. Direct
 // shares and other groups keep working. Returns whether they were a member.
 async function removeMember({ group, userId }) {
-    return sequelize.transaction(async (tx) => {
+    const pairs = await sequelize.transaction(async (tx) => {
         const removed = await UserGroupMember.destroy({
             where: { group_id: group.id, user_id: userId },
             transaction: tx,
         });
-        if (!removed) return false;
+        if (!removed) return null;
 
         const shares = await GroupShare.findAll({
             where: { group_id: group.id },
@@ -433,14 +532,26 @@ async function removeMember({ group, userId }) {
             raw: true,
             transaction: tx,
         });
-        await GroupPermission.destroy({
-            where: {
-                user_id: userId,
-                group_share_id: shares.map((s) => s.id),
-            },
-            transaction: tx,
-        });
-        return true;
+        const where = {
+            user_id: userId,
+            group_share_id: shares.map((s) => s.id),
+        };
+        const lost = await projectPairsOf(where, tx);
+        await GroupPermission.destroy({ where, transaction: tx });
+        return lost;
+    });
+    if (!pairs) return false;
+    await unassignAfterAccessLoss(pairs);
+    return true;
+}
+
+// Takes one member off group grants while they stay in the group: their rows
+// for those grants go, the same as declining the invitation, and the other
+// members keep theirs. Sharing with the group again asks them again.
+async function leaveGroupShares({ userId, groupShareIds }) {
+    if (groupShareIds.length === 0) return;
+    await GroupPermission.destroy({
+        where: { user_id: userId, group_share_id: groupShareIds },
     });
 }
 
@@ -511,5 +622,6 @@ module.exports = {
     listForResource,
     addMembers,
     removeMember,
+    leaveGroupShares,
     mirrorContainerGrants,
 };

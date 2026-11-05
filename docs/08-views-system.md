@@ -38,7 +38,7 @@ This document explains how Views work in tududi from a user behavior perspective
    - Set due date filter (Today, This Week, Overdue, etc.)
    - Set defer filter (Deferred, Not Deferred, etc.)
    - Add tags
-   - Add extras (Recurring, Subtasks, etc.)
+   - Add extras (Recurring, Has Content, Deferred, Has Tags, Assigned to Project, Overdue, No Due Date). Most come in pairs with an opposite (is not Recurring, has no Content, is not Deferred, has no Tags, has no Project); picking one side drops the other
 
 3. **Click "Save as View"**
 4. **Enter a name** for your view
@@ -197,7 +197,7 @@ When you open a view, it displays:
 | `due` | String | Due date filter: "today", "this_week", "overdue", etc. (nullable) |
 | `defer` | String | Defer filter: "deferred", "not_deferred", etc. (nullable) |
 | `tags` | JSON Array | Tag names to filter by |
-| `extras` | JSON Array | Extra filters: "recurring", "subtasks", etc. |
+| `extras` | JSON Array | Extra filters: "recurring", "not_recurring", "overdue", "has_content", "no_content", "deferred", "not_deferred", "has_tags", "no_tags", "no_due_date", "assigned_to_project", "no_project" |
 | `is_pinned` | Boolean | Whether view is pinned to sidebar |
 | `created_at` | DateTime | When view was created |
 | `updated_at` | DateTime | Last modified time |

@@ -3,5 +3,6 @@
 const routes = require('./routes');
 const { webhookHandler } = require('./webhookRoutes');
 const billingService = require('./service');
+const { payPage } = require('./payPage');
 
-module.exports = { routes, webhookHandler, billingService };
+module.exports = { routes, webhookHandler, billingService, payPage };

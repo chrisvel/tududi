@@ -12,7 +12,7 @@ import {
     ArrowDownIcon,
     SparklesIcon,
 } from '@heroicons/react/24/outline';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Tooltip from '../../Shared/Tooltip';
 import { Task, PriorityType } from '../../../entities/Task';
 import BackButton from '../../Shared/BackButton';
@@ -20,6 +20,8 @@ import { formatDateTime } from '../../../utils/dateUtils';
 import TaskStatusControl from '../TaskStatusControl';
 import { getStatusValue } from '../../../constants/taskStatus';
 import QuickCaptureInput from '../../Inbox/QuickCaptureInput';
+import CopyTaskLinkButton from '../CopyTaskLinkButton';
+import { openTaskPanel } from '../../../store/taskPanelStore';
 
 interface TaskDetailsHeaderProps {
     task: Task;
@@ -72,7 +74,6 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
     autoEditTitle = false,
     ancestorChain = [],
 }) => {
-    const navigate = useNavigate();
     const { t } = useTranslation();
     const [isEditingTitle, setIsEditingTitle] = useState(autoEditTitle);
     const [editedTitle, setEditedTitle] = useState(task.name);
@@ -319,6 +320,12 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                     >
                                         {task.name}
                                     </h2>
+                                    {task.uid && (
+                                        <CopyTaskLinkButton
+                                            path={`/task/${encodeURIComponent(task.uid)}`}
+                                            className="-ml-1"
+                                        />
+                                    )}
 
                                     <div className="flex items-center gap-2 flex-wrap min-w-0">
                                         <TaskStatusControl
@@ -693,8 +700,8 @@ const TaskDetailsHeader: React.FC<TaskDetailsHeaderProps> = ({
                                                         )}
                                                         <button
                                                             onClick={() =>
-                                                                navigate(
-                                                                    `/task/${ancestor.uid}`
+                                                                openTaskPanel(
+                                                                    ancestor.uid
                                                                 )
                                                             }
                                                             className="text-[0.9em] text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 transition-colors truncate min-w-0"

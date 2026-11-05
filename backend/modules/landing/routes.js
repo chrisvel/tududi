@@ -3,7 +3,7 @@ const express = require('express');
 const ejs = require('ejs');
 const rateLimit = require('express-rate-limit');
 const { ipKeyGenerator } = require('express-rate-limit');
-const { getPlans } = require('../../config/plans');
+const { getPlans, TEAM_SEATS } = require('../../config/plans');
 const { getConfig } = require('../../config/config');
 const { logError } = require('../../services/logService');
 const { getStats } = require('./stats');
@@ -151,6 +151,85 @@ function buildContactLimiter() {
 
 const CONTACT_LIMITS = { name: 100, message: 5000 };
 
+function xmlEscape(value) {
+    return String(value).replace(
+        /[&<>"']/g,
+        (c) =>
+            ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&apos;',
+            })[c]
+    );
+}
+
+// The first path segment of every route in the frontend router
+// (frontend/App.tsx), plus the folders the app's static files are served
+// from. Only these are sent on to the app host, so old shared links such as
+// /task/:uid keep working while a mistyped or invented URL on the marketing
+// host gets a real 404 instead of a redirect to the app shell. Add a
+// segment here when a new top-level route is added to the app.
+const APP_SEGMENTS = new Set([
+    'about',
+    'admin',
+    'area',
+    'areas',
+    'auth',
+    'backup',
+    'blog',
+    'boards',
+    'calendar',
+    'demo',
+    'eisenhower',
+    'everyone',
+    'forgot-password',
+    'goal',
+    'goals',
+    'groups',
+    'habit',
+    'habits',
+    'inbox',
+    'insights',
+    'kanban',
+    'login',
+    'note',
+    'notes',
+    'people',
+    'person',
+    'profile',
+    'project',
+    'projects',
+    'public',
+    'register',
+    'reset-password',
+    'sign-in-link',
+    'subscription',
+    'tag',
+    'tags',
+    'task',
+    'tasks',
+    'templates',
+    'today',
+    'today_legacy',
+    'upcoming',
+    'views',
+    'welcome',
+    // Static folders
+    'backgrounds',
+    'banners',
+    'fonts',
+    'locales',
+]);
+
+// Root-level files the app serves: bundles, icons, the manifest and sw.js.
+const APP_FILE = /^\/[^/]+\.(js|css|map|json|ico|png|svg|jpe?g|gif|webp)$/;
+
+function isAppPath(urlPath) {
+    return APP_SEGMENTS.has(urlPath.split('/')[1]) || APP_FILE.test(urlPath);
+}
+
 // The chrome follows the remembered language without setting it, the same
 // as the legal pages.
 function rememberedLocale(req) {
@@ -190,6 +269,26 @@ function createLandingRouter(landing) {
             maximumFractionDigits: 0,
         }).format(amount);
 
+    // A decided price rise (config pricing.next), announced under the
+    // pricing cards until the day it starts. Null once it has started.
+    const nextPriceFor = (locale) => {
+        const next = landing.pricing.next;
+        if (!next?.from) return null;
+        const from = new Date(`${next.from}T00:00:00Z`);
+        if (Number.isNaN(from.getTime()) || from <= new Date()) return null;
+        return {
+            // Day before month in English too: the prices are in euros.
+            date: new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : locale, {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                timeZone: 'UTC',
+            }).format(from),
+            monthly: money(next.monthly),
+            annual: money(next.annual),
+        };
+    };
+
     // Absolute URL of one page in one locale: '/', '/fr', '/cloud',
     // '/fr/cloud'. localeUrl alone cannot build the sub-pages, since it
     // returns a bare origin for English and no trailing slash for the rest.
@@ -224,7 +323,9 @@ function createLandingRouter(landing) {
                     proStorageGb: Math.round(
                         plans.pro.limits.storage_mb / 1000
                     ),
+                    teamSeats: TEAM_SEATS,
                 },
+                nextPrice: nextPriceFor(locale),
                 trialDays: cloudTrialDays(),
                 appUrl,
                 siteOrigin: siteOrigin.replace(/\/$/, ''),
@@ -285,7 +386,9 @@ function createLandingRouter(landing) {
                     proStorageGb: Math.round(
                         plans.pro.limits.storage_mb / 1000
                     ),
+                    teamSeats: TEAM_SEATS,
                 },
+                nextPrice: nextPriceFor(locale),
                 trialDays: cloudTrialDays(),
                 appUrl,
                 siteOrigin: siteOrigin.replace(/\/$/, ''),
@@ -315,7 +418,9 @@ function createLandingRouter(landing) {
     // HTML. X's crawler reads robots.txt before fetching a card's image, and
     // without a usable one shared links got no card.
     router.get('/robots.txt', (req, res) => {
-        res.type('text/plain').send('User-agent: *\nAllow: /\n');
+        res.type('text/plain').send(
+            `User-agent: *\nAllow: /\n\nSitemap: ${siteOrigin.replace(/\/$/, '')}/sitemap.xml\n`
+        );
     });
 
     // Literal paths rather than '/:lang', so nothing outside this list is
@@ -543,16 +648,104 @@ function createLandingRouter(landing) {
         }
     );
 
+    // Built from the same lists the routes above are registered from, so a
+    // new page or locale lands in the sitemap without a second edit. The
+    // translated pages carry the same hreflang alternates their <head> does;
+    // contact and the legal pages are English only, one URL each.
+    const translatedPages = [
+        { paths: landingPaths, url: (locale) => localeUrl(locale) },
+        { paths: cloudPaths, url: (locale) => pageUrl(locale, '/cloud') },
+    ];
+    const singlePages = ['/contact', ...LEGAL_DOCS.map((d) => `/${d.slug}`)];
+    let sitemapXml = null;
+
+    router.get('/sitemap.xml', (req, res) => {
+        if (!sitemapXml) sitemapXml = buildSitemap();
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.type('application/xml').send(sitemapXml);
+    });
+
+    function buildSitemap() {
+        const origin = siteOrigin.replace(/\/$/, '');
+        const entries = [];
+        translatedPages.forEach((page) => {
+            const alternates = [
+                ...LOCALES.map(
+                    (l) =>
+                        `    <xhtml:link rel="alternate" hreflang="${xmlEscape(l.htmlLang)}" href="${xmlEscape(page.url(l.code))}"/>`
+                ),
+                `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(page.url(DEFAULT_LOCALE))}"/>`,
+            ].join('\n');
+            LOCALE_CODES.forEach((code) => {
+                entries.push(
+                    `  <url>\n    <loc>${xmlEscape(page.url(code))}</loc>\n${alternates}\n  </url>`
+                );
+            });
+        });
+        singlePages.forEach((p) => {
+            entries.push(
+                `  <url>\n    <loc>${xmlEscape(`${origin}${p}`)}</loc>\n  </url>`
+            );
+        });
+        return [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
+            ...entries,
+            '</urlset>',
+            '',
+        ].join('\n');
+    }
+
     router.use(
         '/landing-assets',
         express.static(PUBLIC_DIR, { maxAge: '1d', index: false })
     );
+
+    // Paths people guess or older links used. /blog goes to the blog host
+    // with the post slug kept; without one, the app's own /blog answers.
+    router.get('/pricing', (req, res) => res.redirect(301, '/#pricing'));
+    router.get('/features', (req, res) => res.redirect(301, '/#features'));
+    router.get(['/blog', '/blog/*'], (req, res, next) => {
+        if (!landing.blogUrl) return next();
+        const blogOrigin = landing.blogUrl.replace(/\/$/, '');
+        const rest = req.originalUrl.slice('/blog'.length);
+        res.redirect(
+            301,
+            `${blogOrigin}${rest.startsWith('/') ? '' : '/'}${rest}`
+        );
+    });
+
+    // Anything left that is not an app route is a real 404, so crawlers and
+    // visitors are not bounced to the app shell for a page that never was.
+    router.get('*', (req, res, next) => {
+        if (isAppPath(req.path)) return next();
+        res.status(404);
+        res.setHeader('Content-Security-Policy', csp);
+        res.setHeader('Cache-Control', 'no-store');
+        res.setHeader('X-Robots-Tag', 'noindex');
+        res.set('Vary', 'Cookie');
+        ejs.renderFile(
+            path.join(__dirname, 'views', 'not-found.ejs'),
+            {
+                i18n: createI18n(rememberedLocale(req)),
+                locales: LOCALES,
+                appUrl,
+                blogUrl: landing.blogUrl,
+                demo: demoSnapshot(),
+                localePath,
+            },
+            { cache: cacheRenders, rmWhitespace: false }
+        )
+            .then((html) => res.type('html').send(html))
+            .catch(next);
+    });
     return router;
 }
 
 // Splits traffic by hostname. On a marketing host the landing router
-// answers; anything it does not know is sent to the same path on the app
-// host, so product pages exist on exactly one hostname. API paths pass
+// answers, with a 404 for anything that is not an app route; app routes are
+// sent to the same path on the app host, so product pages exist on exactly
+// one hostname. API paths pass
 // through untouched so health checks work on either name. On every other
 // host, or when no marketing host is configured, this is a no-op.
 //

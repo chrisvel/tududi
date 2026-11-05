@@ -89,5 +89,29 @@
         "tip": "Dacă lista s-a lungit prea mult, începe cu puțin: deschide Plan, alege trei lucruri pentru azi și lasă restul pentru mai târziu.",
         "button": "Planifică ziua",
         "outro": "Nu îți vom mai trimite un astfel de e-mail până nu revii."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Autentificarea în doi pași este activată",
+            "body": "Autentificarea în doi pași a fost activată pentru contul tău Tududi. Pentru conectare ai nevoie acum de un cod din aplicația de autentificare, iar toate celelalte dispozitive au fost deconectate."
+        },
+        "mfaDisabled": {
+            "subject": "Autentificarea în doi pași este dezactivată",
+            "body": "Autentificarea în doi pași a fost dezactivată pentru contul tău Tududi. Pentru conectare ai nevoie acum doar de parolă."
+        },
+        "mfaReset": {
+            "subject": "Autentificarea ta în doi pași a fost resetată",
+            "body": "Un administrator a resetat autentificarea în doi pași pentru contul tău Tududi, iar toate dispozitivele au fost deconectate. Te poți conecta cu parola și o poți activa din nou."
+        },
+        "recoveryCodeUsed": {
+            "subject": "A fost folosit un cod de recuperare",
+            "body": "Cineva s-a conectat la contul tău Tududi cu unul dintre codurile tale de recuperare. Fiecare cod funcționează o singură dată."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Au fost create coduri de recuperare noi",
+            "body": "Au fost create coduri de recuperare noi pentru contul tău Tududi. Cele vechi nu mai funcționează."
+        },
+        "button": "Deschide setările de securitate",
+        "notYou": "Dacă nu ai fost tu, schimbă-ți parola acum și anunță-l pe administrator."
     }
 }

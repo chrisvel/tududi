@@ -5,8 +5,10 @@ const {
     Project,
     Task,
     Note,
+    Person,
     Permission,
     TaskAttachment,
+    Role,
     sequelize,
 } = require('../../models');
 const {
@@ -91,6 +93,24 @@ describe('Project Sharing Integration Tests', () => {
             expect(sharedProject).toBeDefined();
             expect(sharedProject.is_shared).toBe(true);
             expect(sharedProject.share_count).toBeGreaterThan(0);
+        });
+
+        test('says who may manage the shares, in the list and the detail', async () => {
+            await Role.destroy({ where: {} });
+            const canShare = async (agent) => {
+                const list = await agent.get('/api/projects');
+                const listed = list.body.projects.find(
+                    (p) => p.uid === project.uid
+                );
+                const detail = await agent.get(`/api/project/${project.uid}`);
+                return [listed.can_share, detail.body.can_share];
+            };
+
+            expect(await canShare(ownerAgent)).toEqual([true, true]);
+            expect(await canShare(sharedUserAgent)).toEqual([false, false]);
+
+            await Role.create({ user_id: sharedUser.id, is_admin: true });
+            expect(await canShare(sharedUserAgent)).toEqual([true, true]);
         });
 
         test('project with only a pending invitation still shows as shared', async () => {
@@ -227,8 +247,7 @@ describe('Project Sharing Integration Tests', () => {
             expect(foundTask).toBeUndefined();
         });
 
-        test('shared user should see tasks due today in shared projects', async () => {
-            // Create a task due today in shared project
+        test('shared user sees a task due today in a shared project once it is assigned to them', async () => {
             const today = new Date().toISOString().split('T')[0];
             const taskDueTodayResponse = await ownerAgent
                 .post('/api/task')
@@ -241,19 +260,30 @@ describe('Project Sharing Integration Tests', () => {
                 });
             const taskDueToday = taskDueTodayResponse.body;
 
-            // Fetch today's tasks as shared user with include_lists to get tasks_due_today
-            const response = await sharedUserAgent.get(
-                '/api/tasks?type=today&include_lists=true'
+            const fetchDueToday = async () => {
+                const response = await sharedUserAgent.get(
+                    '/api/tasks?type=today&include_lists=true'
+                );
+                expect(response.status).toBe(200);
+                expect(response.body.tasks_due_today).toBeDefined();
+                return response.body.tasks_due_today.find(
+                    (t) => t.id === taskDueToday.id
+                );
+            };
+
+            // Someone else's task in a shared project stays on the project
+            // page, out of the shared user's Today.
+            expect(await fetchDueToday()).toBeUndefined();
+
+            const sharedSelf = await Person.findOne({
+                where: { linked_user_id: sharedUser.id },
+            });
+            await Task.update(
+                { assigned_to: sharedSelf.uid },
+                { where: { id: taskDueToday.id } }
             );
 
-            expect(response.status).toBe(200);
-            expect(response.body.tasks).toBeDefined();
-
-            // Task should appear in tasks_due_today since it has a due date but today=false
-            expect(response.body.tasks_due_today).toBeDefined();
-            const foundTask = response.body.tasks_due_today.find(
-                (t) => t.id === taskDueToday.id
-            );
+            const foundTask = await fetchDueToday();
             expect(foundTask).toBeDefined();
             expect(foundTask.name).toBe('Task due today in shared project');
         });

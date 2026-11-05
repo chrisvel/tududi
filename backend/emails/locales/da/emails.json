@@ -82,5 +82,29 @@
         "tip": "Hvis listen er blevet for lang, så start i det små: åbn Plan, vælg tre ting til i dag, og gem resten til senere.",
         "button": "Planlæg i dag",
         "outro": "Vi sender ikke flere af disse, før du har været tilbage."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Totrinsbekræftelse er slået til",
+            "body": "Totrinsbekræftelse er slået til for din Tududi-konto. Når du logger ind, skal du nu bruge en kode fra din godkendelsesapp, og alle andre enheder er blevet logget ud."
+        },
+        "mfaDisabled": {
+            "subject": "Totrinsbekræftelse er slået fra",
+            "body": "Totrinsbekræftelse er slået fra for din Tududi-konto. Når du logger ind, skal du nu kun bruge din adgangskode."
+        },
+        "mfaReset": {
+            "subject": "Din totrinsbekræftelse er nulstillet",
+            "body": "En administrator har nulstillet totrinsbekræftelse for din Tududi-konto, og alle enheder er blevet logget ud. Du kan logge ind med din adgangskode og slå den til igen."
+        },
+        "recoveryCodeUsed": {
+            "subject": "En gendannelseskode blev brugt",
+            "body": "Nogen loggede ind på din Tududi-konto med en af dine gendannelseskoder. Hver kode virker én gang."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Der blev lavet nye gendannelseskoder",
+            "body": "Der blev lavet nye gendannelseskoder til din Tududi-konto. De gamle virker ikke længere."
+        },
+        "button": "Åbn sikkerhedsindstillinger",
+        "notYou": "Hvis det ikke var dig, så skift din adgangskode nu og giv din administrator besked."
     }
 }

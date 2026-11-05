@@ -1,13 +1,7 @@
-jest.mock('../../../../services/seatsService', () => ({
-    ...jest.requireActual('../../../../services/seatsService'),
-    reconcile: jest.fn(),
-}));
-
 const adminService = require('../../../../modules/admin/service');
 const adminRepository = require('../../../../modules/admin/repository');
 const rolesService = require('../../../../services/rolesService');
 const accountsService = require('../../../../services/accountsService');
-const seatsService = require('../../../../services/seatsService');
 const { Role, Setting, User } = require('../../../../models');
 const { getConfig } = require('../../../../config/config');
 const { createTestUser } = require('../../../helpers/testUtils');
@@ -146,7 +140,7 @@ describe('adminService edge cases', () => {
             ).rejects.toBeInstanceOf(ValidationError);
         });
 
-        it("frees a member's seat when the superadmin deletes it", async () => {
+        it('deletes a member for the superadmin', async () => {
             config.hosted.enabled = true;
             const owner = await newUser();
             const member = await newUser({ created_by_user_id: owner.id });
@@ -154,7 +148,6 @@ describe('adminService edge cases', () => {
             await adminService.deleteUser(admin.id, member.id);
 
             expect(await User.findByPk(member.id)).toBeNull();
-            expect(seatsService.reconcile).toHaveBeenCalledWith(owner.id);
         });
     });
 

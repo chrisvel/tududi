@@ -14,7 +14,7 @@ const {
 } = require('./modules/telegram/telegramInitializer');
 const taskScheduler = require('./modules/tasks/taskScheduler');
 const { initializeEmailService } = require('./services/emailService');
-const { setConfig, getConfig } = require('./config/config');
+const { getConfig } = require('./config/config');
 const config = getConfig();
 const distIndexPath = path.join(__dirname, 'dist', 'index.html');
 const serveFromDist = config.production || fs.existsSync(distIndexPath);
@@ -61,10 +61,20 @@ app.use(
                     "'unsafe-inline'",
                     "'unsafe-eval'",
                     'https://challenges.cloudflare.com',
+                    // Paddle.js, the checkout overlay of hosted billing
+                    'https://cdn.paddle.com',
                 ],
-                styleSrc: ["'self'", "'unsafe-inline'"],
+                styleSrc: [
+                    "'self'",
+                    "'unsafe-inline'",
+                    'https://cdn.paddle.com',
+                ],
                 imgSrc: ["'self'", 'data:', 'https:'],
-                connectSrc: ["'self'"],
+                connectSrc: [
+                    "'self'",
+                    'https://checkout-service.paddle.com',
+                    'https://sandbox-checkout-service.paddle.com',
+                ],
                 fontSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
@@ -74,6 +84,8 @@ app.use(
                     "'self'",
                     'https://challenges.cloudflare.com',
                     'https://www.youtube-nocookie.com',
+                    'https://buy.paddle.com',
+                    'https://sandbox-buy.paddle.com',
                 ],
                 upgradeInsecureRequests:
                     process.env.UPGRADE_INSECURE_REQUESTS === 'true'
@@ -169,6 +181,8 @@ const billingModule = require('./modules/billing');
 ['/api', API_BASE_PATH].forEach((base) => {
     app.post(`${base}/billing/webhook`, billingModule.webhookHandler());
 });
+// Paddle's default payment link (pay an invoice, replace a failed card).
+app.get('/billing/pay', billingModule.payPage);
 
 // Body parsing (skip for CalDAV routes which need raw body access)
 app.use((req, res, next) => {
@@ -276,6 +290,10 @@ app.use(require('./services/visitService').track());
 const landingModule = require('./modules/landing');
 app.use(landingModule.hostSwitch(config.landing));
 
+// On the app host itself, once those marketing hosts are set: a plain
+// robots.txt and a noindex header on everything but sign-in and sign-up.
+app.use(landingModule.appHostRobots(config.landing));
+
 // The blog at the root of the hostnames in TUDUDI_BLOG_HOSTS. Also a no-op
 // unless set; it serves the app shell marked as the blog, so it sits before
 // the static handlers for the same reason.
@@ -377,6 +395,7 @@ const { logError } = require('./services/logService');
 // Rate limiting middleware
 const {
     apiLimiter,
+    signInPageLimiter,
     authenticatedApiLimiter,
     bearerFailureLimiter,
 } = require('./middleware/rateLimiter');
@@ -423,6 +442,9 @@ const groupsModule = require('./modules/groups');
 const feedbackModule = require('./modules/feedback');
 const pushModule = require('./modules/push');
 const appriseModule = require('./modules/apprise');
+const webhooksModule = require('./modules/webhooks');
+const spreadsheetsModule = require('./modules/spreadsheets');
+const mfaModule = require('./modules/mfa');
 
 // Swagger documentation - enabled by default, protected by authentication
 // Mounted on /api-docs to avoid conflicts with API routes
@@ -492,6 +514,7 @@ healthPaths.forEach(registerHealthCheck);
 const registerRateLimiting = (basePath) => {
     app.use(basePath, bearerFailureLimiter);
     app.use(basePath, apiLimiter);
+    app.use(basePath, signInPageLimiter);
     app.use(basePath, authenticatedApiLimiter);
 };
 
@@ -504,6 +527,7 @@ if (API_VERSION && API_BASE_PATH !== '/api') {
 
 const registerApiRoutes = (basePath) => {
     app.use(basePath, authModule.routes);
+    app.use(basePath, mfaModule.publicRoutes);
     app.use(basePath, featureFlagsModule.routes);
     app.use(basePath, demoModule.routes);
     app.use(`${basePath}/oidc`, oidcModule.routes);
@@ -551,6 +575,9 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, feedbackModule.routes);
     app.use(basePath, pushModule.routes);
     app.use(basePath, appriseModule.routes);
+    app.use(basePath, webhooksModule.routes);
+    app.use(basePath, spreadsheetsModule.routes);
+    app.use(basePath, mfaModule.routes);
 };
 
 // Register routes at both /api and /api/v1 (if versioned) to maintain backwards compatibility
@@ -656,9 +683,8 @@ async function startServer() {
             console.error('Server error:', err);
         });
 
-        // Close the database on docker stop / Ctrl-C. SQLite then folds its
-        // -wal file back into the main file, so the next start-up backup
-        // and any copy of the file hold every write.
+        // Close the database on docker stop / Ctrl-C so in-flight queries
+        // finish and connections are returned cleanly.
         let shuttingDown = false;
         const shutdown = (signal) => {
             if (shuttingDown) return;

@@ -29,6 +29,7 @@ import { getApiPath } from '../config/paths';
 import { getCsrfToken } from '../utils/csrfService';
 import { isQueuedOfflineResponse } from '../utils/authUtils';
 import { isTaskActive } from '../constants/taskStatus';
+import { openTaskPanel } from '../store/taskPanelStore';
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -52,6 +53,8 @@ const Tasks: React.FC = () => {
     const { showSuccessToast, showErrorToast } = useToast();
 
     const [tasks, setTasks] = useState<Task[]>([]);
+    const tasksRef = useRef<Task[]>(tasks);
+    tasksRef.current = tasks;
     const latestFetchId = useRef(0);
     const projects = useStore((state: any) => state.projectsStore.projects);
     const [groupedTasks, setGroupedTasks] = useState<GroupedTasks | null>(null);
@@ -349,10 +352,14 @@ const Tasks: React.FC = () => {
     useEffect(() => {
         const handleTaskCreated = (event: CustomEvent) => {
             const newTask = event.detail;
-            if (newTask) {
-                setTasks((prevTasks) => [newTask, ...prevTasks]);
-                setTotalCount((prevCount) => prevCount + 1);
+            if (
+                !newTask ||
+                tasksRef.current.some((task) => task.uid === newTask.uid)
+            ) {
+                return;
             }
+            setTasks((prevTasks) => [newTask, ...prevTasks]);
+            setTotalCount((prevCount) => prevCount + 1);
         };
 
         window.addEventListener(
@@ -385,12 +392,15 @@ const Tasks: React.FC = () => {
             const taskLink = (
                 <span>
                     {t('task.created', 'Task')}{' '}
-                    <a
-                        href={`/task/${newTask.uid}`}
+                    <button
+                        type="button"
+                        onClick={() =>
+                            newTask.uid && openTaskPanel(newTask.uid)
+                        }
                         className="text-green-200 underline hover:text-green-100"
                     >
                         {newTask.name}
-                    </a>{' '}
+                    </button>{' '}
                     {t('task.createdSuccessfully', 'created successfully!')}
                 </span>
             );

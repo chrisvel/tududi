@@ -60,17 +60,6 @@ function mockFetch(url, options = {}) {
         );
         return jsonResponse(200, { data });
     }
-    m = path.match(/^\/subscription-items\/(\d+)$/);
-    if (m && method === 'PATCH') {
-        const { quantity } = JSON.parse(options.body).data.attributes;
-        return jsonResponse(200, {
-            data: {
-                type: 'subscription-items',
-                id: m[1],
-                attributes: { quantity },
-            },
-        });
-    }
     m = path.match(/^\/customers\/(\d+)$/);
     if (m && method === 'GET') {
         const customer = ls.customers[m[1]];
@@ -90,6 +79,8 @@ const { createTestUser } = require('../helpers/testUtils');
 const config = getConfig();
 const VARIANT_MONTH = '1001';
 const VARIANT_YEAR = '1002';
+const VARIANT_TEAM5_MONTH = '2001';
+const VARIANT_TEAM5_YEAR = '2002';
 const WEBHOOK_SECRET = 'ls_whsec_test';
 
 const login = async (user) => {
@@ -166,6 +157,9 @@ describe('Billing with Lemon Squeezy', () => {
         config.hosted.lemonsqueezy.webhookSecret = WEBHOOK_SECRET;
         config.hosted.lemonsqueezy.variants.proMonthly = VARIANT_MONTH;
         config.hosted.lemonsqueezy.variants.proAnnual = VARIANT_YEAR;
+        config.hosted.lemonsqueezy.variants.team = {
+            team_5: { month: VARIANT_TEAM5_MONTH, year: VARIANT_TEAM5_YEAR },
+        };
         entitlements.invalidate();
         ls.subscriptions = {};
         ls.customers = {};
@@ -183,6 +177,7 @@ describe('Billing with Lemon Squeezy', () => {
         config.hosted.lemonsqueezy.webhookSecret = undefined;
         config.hosted.lemonsqueezy.variants.proMonthly = undefined;
         config.hosted.lemonsqueezy.variants.proAnnual = undefined;
+        config.hosted.lemonsqueezy.variants.team = {};
         entitlements.invalidate();
     });
 
@@ -216,6 +211,37 @@ describe('Billing with Lemon Squeezy', () => {
         expect(
             call.body.data.attributes.product_options.redirect_url
         ).toContain('checkout=success');
+    });
+
+    it('lists Pro and the Team plans that have a variant', async () => {
+        const res = await agent.get('/api/billing');
+        expect(res.body.plans_available).toEqual([
+            { key: 'pro', seats: 1, intervals: { month: true, year: true } },
+            {
+                key: 'team_5',
+                seats: 5,
+                intervals: { month: true, year: true },
+            },
+        ]);
+    });
+
+    it('creates a checkout for a Team plan variant at quantity one', async () => {
+        const res = await agent
+            .post('/api/billing/checkout')
+            .send({ interval: 'month', plan: 'team_5' });
+        expect(res.status).toBe(200);
+        const call = ls.calls.find((c) => c.path === '/checkouts');
+        expect(call.body.data.relationships.variant.data.id).toBe(
+            VARIANT_TEAM5_MONTH
+        );
+    });
+
+    it('refuses a plan that has no variant', async () => {
+        const res = await agent
+            .post('/api/billing/checkout')
+            .send({ interval: 'year', plan: 'team_40' });
+        expect(res.status).toBe(400);
+        expect(ls.calls.find((c) => c.path === '/checkouts')).toBeUndefined();
     });
 
     it('syncs by email after the redirect, which carries no reference', async () => {
@@ -291,30 +317,37 @@ describe('Billing with Lemon Squeezy', () => {
             expect(status.body.portal_available).toBe(true);
         });
 
-        it('records the seat line and brings it up to the members already added', async () => {
-            await createTestUser({
-                email: `member_${Date.now()}@example.com`,
-                created_by_user_id: user.id,
+        it('moves to the Team plan of a changed variant without touching seats', async () => {
+            await BillingAccount.create({
+                user_id: user.id,
+                provider: 'lemonsqueezy',
+                provider_subscription_id: '2',
+                status: 'active',
+                plan: 'pro',
             });
             const data = subscriptionResource(2, user, {
-                first_subscription_item: { id: 900, quantity: 1 },
+                variant_id: Number(VARIANT_TEAM5_YEAR),
+                updated_at: '2026-10-27T10:00:00.000000Z',
             });
 
-            const res = await postEvent('subscription_created', data, {
+            const res = await postEvent('subscription_plan_changed', data, {
                 custom: { user_uid: user.uid },
             });
 
             expect(res.status).toBe(200);
-            const patch = ls.calls.find(
-                (c) =>
-                    c.method === 'PATCH' && c.path === '/subscription-items/900'
-            );
-            expect(patch.body.data.attributes.quantity).toBe(2);
             const account = await BillingAccount.findOne({
                 where: { user_id: user.id },
             });
-            expect(account.provider_subscription_item_id).toBe('900');
-            expect(account.seat_quantity).toBe(2);
+            expect(account.plan).toBe('team_5');
+            expect(account.billing_interval).toBe('year');
+            expect(ls.calls.some((c) => c.method === 'PATCH')).toBe(false);
+            const status = await agent.get('/api/billing');
+            expect(status.body.limits.max_members).toBe(4);
+            expect(status.body.seats).toEqual({
+                members: 0,
+                used: 1,
+                seats: 5,
+            });
         });
 
         it('keeps access until ends_at when cancelled, drops to Free when expired', async () => {

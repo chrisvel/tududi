@@ -61,6 +61,8 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 10a. **The Share dialog lists the members of your workspace by name.** Pick one to send them an invitation, including a member without an email. Members who already have access are greyed out. "Someone else, by email" invites anyone else with their exact email address, which is also all the dialog shows when your workspace has nobody else in it yet. Emails of other members are never listed (`GET /api/shares/candidates`).
 
+10b. **On a hosted instance, a share from an admin of your own account applies straight away.** When the account owner or another account admin shares an item with you, directly or through a group, you see it at once and get a notice instead of an invitation to accept. A share from a member who is not an admin, or from someone in another account, still waits for you to accept it. On a self-hosted instance every share is an invitation.
+
 ### Members without an email
 
 11. **Anyone with the invite permission can add a member from the People page.** Add member asks for a name, an optional email, an optional password and a role. With an email the member is invited by email. With an email and a password they are signed up. With neither, they are added as a member with no password, who signs in with a sign-in link (rules 14c to 14g). An admin always has the permission, and can also add members in Admin > Access > Users.
@@ -87,6 +89,10 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 14h. **Whoever added a member can rename it, give it an email, or remove it.** Renaming changes the account and its person. An email can only be added to a member that has none, which sends the invitation; an email that is set cannot be changed this way, so whoever made the account cannot take over its sign-in. Removing deletes the account and everything in it. An admin can do the same for any member who is not an admin. Anyone else is told the member does not exist (`PATCH` and `DELETE /api/members/:id`).
 
+14i. **Removing a member asks who takes over their open tasks.** The remove dialog says how many open tasks (anything not done, archived or cancelled, subtasks included) are assigned to the member, and offers "Hand their tasks to" with the person removing picked first. The list holds you and the people you work with; on tududi Cloud it is the members of the same account, so tasks never move to another customer. The chosen member gets one notice ("Lea handed you 7 tasks from Bea"), not one per task, and nobody is notified when you take them yourself. Done, archived and cancelled tasks are left as they are, and the member's own tasks go with their account. "Nobody" leaves the tasks unassigned. With no open tasks the dialog has no picker. Over the API, `DELETE /api/members/:id` takes an optional `reassign_to` (a member id or the uid of their person); without it the tasks are left unassigned as before. A `reassign_to` that is the member being removed is a `400`, one you may not hand to is a `404`, and in both cases nothing is removed. The handover and the removal happen in one transaction.
+
+14j. **Tasks a member created in someone else's project stay there.** When a member is removed or their account is deleted (by an admin or by themselves), tasks they created in projects they do not own (shared with them directly, through a group or through a shared area) stay in the project and pass to its owner, with their subtasks, recurring instances, attachments, history and comments. Links to the member's own tags, areas and goals are dropped. If such a task is open and assigned to the member, it is handed over with the rest and counted in the remove dialog. Only the member's own items are deleted.
+
 ### Turning a contact into a member
 
 14d. **Give account, on a contact's menu, turns that contact into a member.** The form is the same as Add member, filled in from the contact. The contact becomes the account's own person and keeps its history, so tasks that were assigned to it stay assigned and nobody ends up with two entries. The contact's phone number, color and relationship are kept. An email is used if you give one.
@@ -101,7 +107,9 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 16. **The capabilities are `create_people`, `invite_members` and `create_projects`.** `invite_members` lets an account add members (see above). An account gets them from its role: an admin has all three, a user can add people and create projects, and a guest has none. The role table and where the server enforces them are in [User Management](08-user-management.md#user-roles--permissions).
 
-16b. **On tududi Cloud every customer owns an account and is an admin of it.** With hosted mode on there is a fourth role, `account_admin`, shown as **Admin**: whoever signs up gets it, and can make other members of the account admins too (a family of four can have two admins and two users). Account admins manage the members, roles and groups of their own account from Access, and every member they add is a paid seat on the owner's subscription. They never see another account, and they see other members' items only when shared. The instance admin is shown as **Superadmin**, there is only one, and every other admin page is theirs alone. See [Hosted Mode](17-hosted-mode.md#accounts-customers-are-admins-of-their-own).
+16b. **On tududi Cloud every customer owns an account and is an admin of it.** With hosted mode on there is a fourth role, `account_admin`, shown as **Admin**: whoever signs up gets it, and can make other members of the account admins too (a family of four can have two admins and two users). Account admins manage the members, roles and groups of their own account from Access, and every member they add takes a seat of the owner's Team plan (Pro is one person). They never see another account, and they see other members' items only when shared. The instance admin is shown as **Superadmin**, there is only one, and every other admin page is theirs alone. See [Hosted Mode](17-hosted-mode.md#accounts-customers-are-admins-of-their-own).
+
+16c. **On tududi Cloud a member who is not an admin sees only the people they work with.** On Everyone, the People list (and the assignee lists and sidebar built from it) and the Share dialog, a member of an account who is not an account admin sees themselves, their own contacts, and the members they share at least one project or area with, in either direction, directly or through a group. Account admins and the superadmin still see the whole account. Assigning a task to a project's owner or collaborators works as before. A self-hosted instance is not affected: everyone sees their whole workspace (`getVisibleMemberIds` in `backend/services/workspaceMembers.js`).
 
 17. **The Roles tab in Admin > Access shows each role, how many accounts hold it and what it may do.** The role of an account is chosen in the Users tab when adding or editing it. That form lists what the chosen role allows, but cannot change it for one account. The roles themselves are fixed for now.
 
@@ -109,9 +117,13 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 
 18. **`/everyone` shows what each person in your workspace has on.** The sidebar link appears once you share with someone or are in a group with someone, and can be hidden under Profile > Sidebar.
 
-19. **There is one column per person.** You come first, then members, then contacts that have tasks. A member with nothing to do still gets a column. Each column groups tasks into Overdue, Today, Tomorrow, Upcoming (the next seven days) and No date. Tasks due more than a week away are left off until they get closer.
+19. **There is one column per person.** You come first, then members, then contacts that have tasks. Drag a column by its header to put people in your own order; it is saved to your account (`ui_settings.everyone.column_order`) and used on group boards too, with people not in it following in the default order. A member with nothing to do still gets a column. Each column groups tasks into Overdue, Today, Tomorrow, Upcoming (the next seven days) and No date. Tasks due more than a week away are left off until they get closer.
 
 20. **A task is shown under its assignee, or under whoever created it if nobody is assigned.** Habits are left out, and a recurring task is shown once with its current due date. Days are worked out in your own timezone. You can open and complete tasks from the board.
+
+21. **Each person has a colour, and dragging a task onto another column assigns it to them.** A person's own colour is used when set; others get distinct colours from a fixed set. The task keeps its due date. The drop goes through the same assignee check as the task page, so a person who can't see the task's project is refused and the board reloads. Group pages use the same board.
+
+22. **The Timeline view lays the same people out over time.** Switch the Everyone page from Board to Timeline to see a lane per person for 2 or 4 weeks: bars run from a task's start date to its due date, and a row under each lane adds up task estimates per day (each estimate spread evenly over its days), turning orange past your planning day (Profile > Planning). Your own lane also holds your private tasks, which only you see; other people's lanes follow the board's rules. Drag a bar sideways to move its dates or onto another lane to assign it.
 
 ---
 
@@ -127,10 +139,12 @@ For sign-up, login, profiles and API tokens see [User Management](08-user-manage
 | `GET /api/shares/candidates` | The workspace members the Share dialog offers (`id`, `uid`, `name`). `POST /api/shares` takes one as `target_user_id`; an id outside your workspace is a `404` |
 | `POST`, `PATCH`, `DELETE /api/people[/:uid]` | Add, change or remove one of your contacts. Adding needs `create_people` |
 | `GET /api/everyone` | The Everyone board |
+| `GET /api/everyone/timeline?from=YYYY-MM-DD&days=14` | The Timeline view: `lanes` (person, `is_self`, dated `tasks`) for tasks whose start or due date falls in the window, plus the viewer's `day_hours`. `days` is 1 to 62 |
 | `GET /api/groups/:uid` | One group's board: a column per member (group members and managing admins only, see [User Groups](18-user-groups.md)) |
 | `GET /api/admin/roles` | The three roles, their default capabilities and how many accounts hold each (admin) |
 | `POST /api/admin/users`, `PUT /api/admin/users/:id` | Create or change an account, including `role`, `capabilities` and an optional email (admin) |
-| `PATCH /api/members/:id`, `DELETE /api/members/:id` | Rename a member you added or give it an email (which invites it), or remove it with all its data. Creator or admin; on Cloud removing gives the seat back |
+| `PATCH /api/members/:id`, `DELETE /api/members/:id` | Rename a member you added or give it an email (which invites it), or remove it with all its data. `DELETE` takes an optional `reassign_to` (member id or person uid) that gets the member's open tasks. Creator or admin; on Cloud removing frees the seat |
+| `GET /api/members/:id/handoff` | Before removing: `open_assigned_tasks` (open tasks assigned to the member that outlive them) and `candidates` (`id`, `person_uid`, `name`, `is_self`) who can take them over, you first. Creator or admin |
 | `POST /api/members/:id/sign-in-link`, `DELETE /api/members/:id/sign-in-link` | Create a sign-in link for a member without an email (`201`, `{ url, path, expires_at }`), or take access back (`204`). Creator or admin |
 | `POST /api/sign-in-link/peek`, `POST /api/sign-in-link/redeem` | Public. Peek says whose link a token is (first name only), redeem signs in and uses the link up. The token goes in the body |
 

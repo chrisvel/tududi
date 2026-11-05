@@ -3,6 +3,7 @@ const { User } = require('../../../models');
 const { findValidTokenByValue } = require('../../users/apiTokenService');
 const { caldavAuthLimiter } = require('../../../middleware/rateLimiter');
 const { hasFeature } = require('../../../services/entitlementsService');
+const { isEnabled: isMfaEnabled } = require('../../mfa/service');
 
 // CalDAV is a plan feature on hosted instances. Checked once the account
 // is known, whichever way it authenticated.
@@ -76,12 +77,19 @@ async function caldavAuth(req, res, next) {
         const user = await User.findOne({
             where: { email: String(username).trim().toLowerCase() },
         });
-        // Accounts created through SSO have no password; bcrypt.compare
-        // against null would throw and turn a bad login into a 500.
-        const isValidPassword = user?.password_digest
-            ? await bcrypt.compare(password, user.password_digest)
-            : false;
-        if (!user || !isValidPassword) {
+        // An API token works as the password, which is how an account with
+        // two-factor sign-in connects a calendar app: the account password
+        // alone is not enough for it.
+        let isValid = false;
+        if (user && password.startsWith('tt_')) {
+            const tokenRecord = await findValidTokenByValue(password);
+            isValid = !!tokenRecord && tokenRecord.user_id === user.id;
+        } else if (user?.password_digest && !(await isMfaEnabled(user.id))) {
+            // Accounts created through SSO have no password; bcrypt.compare
+            // against null would throw and turn a bad login into a 500.
+            isValid = await bcrypt.compare(password, user.password_digest);
+        }
+        if (!user || !isValid) {
             return res
                 .status(401)
                 .set('WWW-Authenticate', 'Basic realm="Tududi CalDAV"')

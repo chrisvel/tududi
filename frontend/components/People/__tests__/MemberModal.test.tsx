@@ -20,6 +20,8 @@ jest.mock('react-i18next', () => ({
 
 jest.mock('../../../utils/membersService', () => ({
     createMember: jest.fn(),
+    PlanLimitShownError: jest.requireActual('../../../utils/membersService')
+        .PlanLimitShownError,
 }));
 
 const created = {
@@ -245,6 +247,25 @@ describe('Member form', () => {
                 await screen.findByText('Email already exists')
             ).toBeVisible();
             expect(onClose).not.toHaveBeenCalled();
+            expect(onCreated).not.toHaveBeenCalled();
+        });
+
+        it('closes without its own error when the upgrade dialog explains a plan limit', async () => {
+            const { PlanLimitShownError } = jest.requireActual(
+                '../../../utils/membersService'
+            );
+            (createMember as jest.Mock).mockRejectedValue(
+                new PlanLimitShownError()
+            );
+            renderModal();
+            fireEvent.change(screen.getByTestId('member-email'), {
+                target: { value: 'wife@example.com' },
+            });
+
+            fireEvent.click(screen.getByTestId('member-submit'));
+
+            await waitFor(() => expect(onClose).toHaveBeenCalled());
+            expect(screen.queryByText('Plan limit reached')).toBeNull();
             expect(onCreated).not.toHaveBeenCalled();
         });
 

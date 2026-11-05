@@ -331,6 +331,120 @@ describe('Projects Routes', () => {
         });
     });
 
+    describe('completed_at', () => {
+        it('is returned once a project is marked done and cleared on reopen', async () => {
+            const project = await Project.create({
+                name: 'History',
+                status: 'in_progress',
+                user_id: user.id,
+            });
+
+            const done = await agent
+                .patch(`/api/project/${project.uid}`)
+                .send({ status: 'done' });
+            expect(done.status).toBe(200);
+            expect(done.body.completed_at).toBeTruthy();
+
+            const list = await agent.get('/api/projects?status=done');
+            const listed = list.body.projects.find(
+                (p) => p.uid === project.uid
+            );
+            expect(listed.completed_at).toBe(done.body.completed_at);
+
+            const reopened = await agent
+                .patch(`/api/project/${project.uid}`)
+                .send({ status: 'in_progress' });
+            expect(reopened.body.completed_at).toBeNull();
+        });
+    });
+
+    describe('POST /api/project/:uid/complete', () => {
+        let project;
+
+        beforeEach(async () => {
+            project = await Project.create({
+                name: 'Wrap up',
+                status: 'in_progress',
+                user_id: user.id,
+            });
+            await Task.bulkCreate([
+                {
+                    name: 'Open',
+                    status: 0,
+                    user_id: user.id,
+                    project_id: project.id,
+                },
+                {
+                    name: 'Doing',
+                    status: 1,
+                    user_id: user.id,
+                    project_id: project.id,
+                },
+                {
+                    name: 'Done',
+                    status: 2,
+                    user_id: user.id,
+                    project_id: project.id,
+                },
+                {
+                    name: 'Weekly review',
+                    status: 0,
+                    recurrence_type: 'weekly',
+                    user_id: user.id,
+                    project_id: project.id,
+                },
+            ]);
+        });
+
+        it('marks the project done and leaves tasks alone by default', async () => {
+            const response = await agent
+                .post(`/api/project/${project.uid}/complete`)
+                .send({});
+
+            expect(response.status).toBe(200);
+            expect(response.body.project.status).toBe('done');
+            expect(response.body.project.completed_at).toBeTruthy();
+            expect(response.body.completed_tasks).toBe(0);
+            const open = await Task.count({
+                where: { project_id: project.id, status: 0 },
+            });
+            expect(open).toBe(2);
+        });
+
+        it('finishes open one-off tasks when asked, not recurring ones', async () => {
+            const response = await agent
+                .post(`/api/project/${project.uid}/complete`)
+                .send({ complete_open_tasks: true });
+
+            expect(response.status).toBe(200);
+            expect(response.body.completed_tasks).toBe(2);
+            const tasks = await Task.findAll({
+                where: { project_id: project.id },
+            });
+            const byName = Object.fromEntries(tasks.map((t) => [t.name, t]));
+            expect(byName.Open.status).toBe(2);
+            expect(byName.Open.completed_at).toBeTruthy();
+            expect(byName.Doing.status).toBe(2);
+            expect(byName['Weekly review'].status).toBe(0);
+        });
+
+        it("refuses another user's project", async () => {
+            const other = await createTestUser({ email: 'other@example.com' });
+            const theirs = await Project.create({
+                name: 'Not yours',
+                user_id: other.id,
+            });
+
+            const response = await agent
+                .post(`/api/project/${theirs.uid}/complete`)
+                .send({ complete_open_tasks: true });
+
+            expect([403, 404]).toContain(response.status);
+            await theirs.reload();
+            expect(theirs.status).toBe('not_started');
+        });
+    });
+
     describe('DELETE /api/project/:id', () => {
         let project;
 

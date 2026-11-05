@@ -191,7 +191,43 @@ module.exports = (sequelize) => {
             await sendAppriseNotification(notification);
         }
 
+        await Notification.emitWebhook(notification, {
+            title,
+            message,
+            data,
+        });
+
         return notification;
+    };
+
+    // Webhooks pick their own events, so they do not need a source. The
+    // title, message and data can be passed in when a notification was
+    // folded into an earlier one but receivers still want the single event.
+    Notification.emitWebhook = async function (
+        notification,
+        {
+            title = notification.title,
+            message = notification.message,
+            data = notification.data,
+        } = {}
+    ) {
+        const webhookDispatcher = require('../modules/webhooks/dispatcher');
+        const { eventForNotification } = require('../modules/webhooks/events');
+        const event = eventForNotification(notification);
+        if (!event) return;
+        await webhookDispatcher.emit(notification.user_id, event, {
+            text: message ? `${title}: ${message}` : title,
+            data: {
+                notification: {
+                    uid: notification.uid,
+                    type: notification.type,
+                    title,
+                    message,
+                    level: notification.level,
+                },
+                ...(data || {}),
+            },
+        });
     };
 
     async function sendAppriseNotification(notificationInstance) {

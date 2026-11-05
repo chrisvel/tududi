@@ -164,7 +164,7 @@ Formatting and block shortcuts are listed with the rest of the editor's keyboard
 
 ### Images and Files
 
-Paste or drop an image or file into a saved note, or type `/` and pick **Image or File**. It is uploaded to the note and placed where the caret is: images as `![name](/api/uploads/note-files/...)`, which show inline, and other files as a link that downloads them under their own name. A placeholder shows while it uploads and is removed if the upload fails. A brand-new note needs a title or some text first, so it is saved and can hold files. Files follow the note's access: anyone who can read the note can open them. Deleting the note deletes its files; removing a link from the text does not delete the file. A publicly shared note shows its images and files to anyone with the link (see [The public page](#the-public-page)).
+Paste or drop an image or file into a saved note, or type `/` and pick **Image or File**. It is uploaded to the note and placed where the caret is: images and MP4 or WebM videos as `![name](/api/uploads/note-files/...)`, which show inline (a video as a player with controls), and other files as a link that downloads them under their own name. A placeholder shows while it uploads and is removed if the upload fails. A brand-new note needs a title or some text first, so it is saved and can hold files. Files follow the note's access: anyone who can read the note can open them. Deleting the note deletes its files; removing a link from the text does not delete the file. A publicly shared note shows its images and files to anyone with the link (see [The public page](#the-public-page)).
 
 ### Block Handle
 
@@ -431,7 +431,7 @@ The link opens `/public/notes/<token>`, a page with no sidebar and no app naviga
 
 The title and content sit in one card. With styling inherited, the card uses the note's color, slightly translucent, and the note's background photo fills the page behind it with the photographer credited.
 
-**Images and files:** files attached to the note load on the public page without signing in. Their `/api/uploads/note-files/...` links are rewritten to `/api/public/notes/<token>/files/<name>`, which serves only files attached to that note, and only while it is shared. Turning sharing off or making a new link stops the old file addresses too. Files that are not safe to show inline (anything but PDF and common images) download instead of opening.
+**Images and files:** files attached to the note load on the public page without signing in. Their `/api/uploads/note-files/...` links are rewritten to `/api/public/notes/<token>/files/<name>`, which serves only files attached to that note, and only while it is shared. Turning sharing off or making a new link stops the old file addresses too. Files that are not safe to show inline (anything but PDF, common images and MP4 or WebM video) download instead of opening. A video is never used as a blog post's cover image.
 
 **Note links:** a `[[link]]` to another note of the same owner that is public too opens that note's public page. Any other note link shows a badge with a lock that says "This note is not shared publicly" when clicked. A private note and a missing one look the same, so readers learn nothing about notes they cannot open.
 
@@ -592,7 +592,7 @@ Note payloads never include the token. They carry `is_public` (boolean) instead,
 - **Blockquotes:** `> quote`
 - **Horizontal rules:** `---` or `***`
 - **Tables:** Pipe-separated cells
-- **Images:** `![alt](url)` (rendered as `<img>`)
+- **Images:** `![alt](url)` (rendered as `<img>`, or as `<video controls>` when the URL ends in `.mp4` or `.webm`)
 
 **Rendering engine:**
 - Uses `MarkdownRenderer` component

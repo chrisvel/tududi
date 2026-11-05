@@ -1,6 +1,6 @@
 const request = require('supertest');
 const app = require('../../app');
-const { Tag, User } = require('../../models');
+const { Tag, User, Area, Project, Task, Note } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
 
 describe('Tags Routes', () => {
@@ -203,6 +203,109 @@ describe('Tags Routes', () => {
             expect(response.body[1].name).toBe('someday');
             expect(response.body[2].name).toBe('today');
             expect(response.body[3].name).toBe('work');
+        });
+
+        describe('scoped to a focus', () => {
+            let area, project, otherProject, inProject, inNote, onProject;
+
+            beforeEach(async () => {
+                area = await Area.create({ name: 'Work', user_id: user.id });
+                project = await Project.create({
+                    name: 'Launch',
+                    user_id: user.id,
+                    area_id: area.id,
+                });
+                otherProject = await Project.create({
+                    name: 'Garden',
+                    user_id: user.id,
+                });
+                inProject = await Tag.create({
+                    name: 'launch-task',
+                    user_id: user.id,
+                });
+                inNote = await Tag.create({
+                    name: 'launch-note',
+                    user_id: user.id,
+                });
+                onProject = await Tag.create({
+                    name: 'launch-project',
+                    user_id: user.id,
+                });
+
+                const task = await Task.create({
+                    name: 'Ship it',
+                    user_id: user.id,
+                    project_id: project.id,
+                });
+                await task.addTag(inProject);
+                const note = await Note.create({
+                    title: 'Plan',
+                    user_id: user.id,
+                    project_id: project.id,
+                });
+                await note.addTag(inNote);
+                await project.addTag(onProject);
+
+                const gardenTask = await Task.create({
+                    name: 'Water',
+                    user_id: user.id,
+                    project_id: otherProject.id,
+                });
+                await gardenTask.addTag(tag2);
+            });
+
+            it('returns only tags used inside the project', async () => {
+                const response = await agent.get(
+                    `/api/tags?project_uid=${project.uid}`
+                );
+
+                expect(response.status).toBe(200);
+                expect(response.body.map((t) => t.name).sort()).toEqual([
+                    'launch-note',
+                    'launch-project',
+                    'launch-task',
+                ]);
+            });
+
+            it('returns only tags used inside the area', async () => {
+                const response = await agent.get(
+                    `/api/tags?area_uid=${area.uid}`
+                );
+
+                expect(response.status).toBe(200);
+                expect(response.body.map((t) => t.name)).not.toContain(
+                    'personal'
+                );
+                expect(response.body.map((t) => t.name)).toContain(
+                    'launch-task'
+                );
+            });
+
+            it('returns nothing for a project outside the area', async () => {
+                const response = await agent.get(
+                    `/api/tags?area_uid=${area.uid}&project_uid=${otherProject.uid}`
+                );
+
+                expect(response.status).toBe(200);
+                expect(response.body).toEqual([]);
+            });
+
+            it("returns nothing for another user's project", async () => {
+                const other = await createTestUser({
+                    email: 'other@example.com',
+                });
+                const theirs = await Project.create({
+                    name: 'Secret',
+                    user_id: other.id,
+                });
+
+                const response = await agent.get(
+                    `/api/tags?project_uid=${theirs.uid}`
+                );
+
+                expect(response.status).toBe(200);
+                expect(response.body).toEqual([]);
+            });
         });
 
         it('should require authentication', async () => {

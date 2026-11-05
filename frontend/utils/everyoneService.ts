@@ -53,3 +53,38 @@ export const EVERYONE_BUCKETS: Array<keyof EveryoneColumn['counts']> = [
     'upcoming',
     'no_date',
 ];
+
+export interface EveryoneTimelineLane {
+    person: {
+        uid: string;
+        name: string;
+        color: string | null;
+        linked_user_id: number | null;
+    };
+    is_self: boolean;
+    tasks: Task[];
+}
+
+export interface EveryoneTimelineResponse {
+    from: string;
+    days: number;
+    // The viewer's planning day, in minutes after midnight
+    day_hours: { start: number; end: number };
+    lanes: EveryoneTimelineLane[];
+}
+
+export const fetchEveryoneTimeline = async (
+    from: string,
+    days: number
+): Promise<EveryoneTimelineResponse> => {
+    const params = new URLSearchParams({ from, days: String(days) });
+    const response = await fetch(
+        getApiPath(`everyone/timeline?${params.toString()}`),
+        {
+            credentials: 'include',
+            headers: { Accept: 'application/json' },
+        }
+    );
+    await handleAuthResponse(response, 'Failed to load the timeline.');
+    return response.json();
+};

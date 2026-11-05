@@ -6,7 +6,7 @@ const { logError } = require('../../services/logService');
 const {
     shouldSendInAppNotification,
     shouldSendTelegramNotification,
-    shouldSendPushNotification,
+    reminderSources,
 } = require('../../utils/notificationPreferences');
 
 // Sends each task reminder once, at or after its reminder_at time.
@@ -58,9 +58,7 @@ async function checkTaskReminders(now = new Date()) {
                 message: `Reminder: "${task.name}"`,
                 sources: [
                     ...(telegram ? ['telegram'] : []),
-                    ...(shouldSendPushNotification(user, 'task_reminder')
-                        ? ['push']
-                        : []),
+                    ...reminderSources(user, 'task_reminder'),
                 ],
                 data: {
                     taskUid: task.uid,

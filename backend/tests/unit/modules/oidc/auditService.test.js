@@ -3,7 +3,7 @@ const { AuthAuditLog, User } = require('../../../../models');
 const { sequelize } = require('../../../../models');
 const bcrypt = require('bcrypt');
 
-// JSON columns come back as strings from SQLite and as objects from PostgreSQL
+// Older rows may hold the metadata as a JSON string
 const parseMetadata = (value) =>
     typeof value === 'string' ? JSON.parse(value) : value;
 

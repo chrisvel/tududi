@@ -19,6 +19,7 @@ import {
     fetchAIConfig,
     DailyBrief,
 } from '../../utils/aiAssistantService';
+import { openTaskPanel } from '../../store/taskPanelStore';
 
 function isBriefFromToday(generatedAt: string): boolean {
     const briefDate = new Date(generatedAt);
@@ -232,12 +233,13 @@ const DailyAssistant: React.FC = () => {
                                             </span>
                                             <div className="min-w-0 flex-1">
                                                 {item.task_uid ? (
-                                                    <Link
-                                                        to={`/task/${item.task_uid}`}
-                                                        className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openTaskPanel(item.task_uid)}
+                                                        className="text-left text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                                                     >
                                                         {item.action}
-                                                    </Link>
+                                                    </button>
                                                 ) : (
                                                     <p className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug">
                                                         {item.action}

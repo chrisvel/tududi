@@ -4,6 +4,8 @@ const oidcIdentityService = require('./oidcIdentityService');
 const providerConfig = require('./providerConfig');
 const auditService = require('./auditService');
 const { User } = require('../../models');
+const mfaService = require('../mfa/service');
+const mfaSession = require('../mfa/session');
 const { OidcUserError, toUserMessage } = require('./errors');
 
 // Ties a callback to the browser that started the flow: the random value in
@@ -155,26 +157,45 @@ async function handleCallback(req, res) {
             req
         );
 
-        req.session.userId = user.id;
-
         await auditService.logOidcProvision(user.id, slug, req, isNewUser);
-        await auditService.logLoginSuccess(
-            user.id,
-            auditService.AUTH_METHODS.OIDC,
-            req,
-            slug
-        );
 
-        req.session.save((err) => {
-            if (err) {
+        // Two-factor sign-in belongs to the account, so it applies after SSO
+        // too: the provider's sign-in only gets as far as the code prompt.
+        if (await mfaService.isEnabled(user.id)) {
+            try {
+                await mfaSession.startPendingLogin(req, user, {
+                    method: 'oidc',
+                    providerSlug: slug,
+                });
+            } catch (err) {
                 console.error('Error saving session after OIDC login:', err);
                 return res.redirect(
                     '/login?error=' +
                         encodeURIComponent('Failed to establish session')
                 );
             }
-            res.redirect('/today');
-        });
+            return res.redirect('/login?mfa=1');
+        }
+
+        try {
+            // No password or code was typed here, so the step-up window
+            // stays closed.
+            await mfaSession.signIn(req, user, { verified: false });
+        } catch (err) {
+            console.error('Error saving session after OIDC login:', err);
+            return res.redirect(
+                '/login?error=' +
+                    encodeURIComponent('Failed to establish session')
+            );
+        }
+
+        await auditService.logLoginSuccess(
+            user.id,
+            auditService.AUTH_METHODS.OIDC,
+            req,
+            slug
+        );
+        res.redirect('/today');
     } catch (error) {
         console.error('Error handling OIDC callback:', error);
 

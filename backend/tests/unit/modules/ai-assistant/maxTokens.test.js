@@ -24,7 +24,7 @@ describe('AI Assistant - configurable max_tokens', () => {
         process.env.LLM_API_KEY = 'test-key';
 
         mockCreate.mockResolvedValue({
-            choices: [{ message: { content: '{}' } }],
+            choices: [{ message: { content: '{"insight":"ok"}' } }],
             model: 'test-model',
             usage: { prompt_tokens: 10, completion_tokens: 5 },
         });

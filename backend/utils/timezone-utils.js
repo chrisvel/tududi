@@ -236,6 +236,47 @@ function isValidTimezone(timezone) {
     }
 }
 
+const START_TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
+const START_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+// Converts a start date (YYYY-MM-DD) and optional time (HH:mm) in the
+// user's timezone to the stored UTC instant. Without a time the start is
+// the beginning of that day.
+function startDateTimeToUTC(dateString, timeString, userTimezone) {
+    const date = dateString ? String(dateString).trim().slice(0, 10) : '';
+    if (!date) return { value: null, hasTime: false };
+    if (
+        !START_DATE_PATTERN.test(date) ||
+        !moment(date, 'YYYY-MM-DD', true).isValid()
+    ) {
+        throw new Error('start date must be in YYYY-MM-DD format');
+    }
+
+    const time = timeString ? String(timeString).trim() : '';
+    if (!time) {
+        return {
+            value: dateStringToUTC(date, userTimezone, 'start'),
+            hasTime: false,
+        };
+    }
+    if (!START_TIME_PATTERN.test(time)) {
+        throw new Error('start_time must be in HH:mm format');
+    }
+    return {
+        value: dueDateTimeToUTC(date, time, userTimezone),
+        hasTime: true,
+    };
+}
+
+// Splits a stored start instant into the user's local date and time.
+function startForResponse(utcStart, hasTime, userTimezone) {
+    if (!utcStart) return { date: null, time: null };
+    return {
+        date: utcToUserDateString(utcStart, userTimezone),
+        time: hasTime ? utcToUserTimeString(utcStart, userTimezone) : null,
+    };
+}
+
 /**
  * Get safe timezone (fallback to UTC if invalid)
  * @param {string} timezone - Timezone to validate
@@ -260,6 +301,8 @@ module.exports = {
     utcToUserTimeString,
     processDeferUntilForStorage,
     processDeferUntilForResponse,
+    startDateTimeToUTC,
+    startForResponse,
     isValidTimezone,
     getSafeTimezone,
     getWeekdayInTimezone,

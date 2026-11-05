@@ -82,5 +82,29 @@
         "tip": "Hvis listen har blitt for lang, start i det små: åpne Plan, velg tre ting for i dag, og spar resten til senere.",
         "button": "Planlegg i dag",
         "outro": "Vi sender ikke flere slike e-poster før du har vært tilbake."
+    },
+    "securityNotice": {
+        "mfaEnabled": {
+            "subject": "Tofaktorautentisering er på",
+            "body": "Tofaktorautentisering ble slått på for Tududi-kontoen din. Innlogging krever nå en kode fra autentiseringsappen din, og alle andre enheter ble logget ut."
+        },
+        "mfaDisabled": {
+            "subject": "Tofaktorautentisering er av",
+            "body": "Tofaktorautentisering ble slått av for Tududi-kontoen din. Innlogging krever nå bare passordet ditt."
+        },
+        "mfaReset": {
+            "subject": "Tofaktorautentiseringen din ble tilbakestilt",
+            "body": "En administrator tilbakestilte tofaktorautentisering for Tududi-kontoen din, og alle enheter ble logget ut. Du kan logge inn med passordet ditt og slå den på igjen."
+        },
+        "recoveryCodeUsed": {
+            "subject": "En gjenopprettingskode ble brukt",
+            "body": "Noen logget inn på Tududi-kontoen din med en av gjenopprettingskodene dine. Hver kode virker én gang."
+        },
+        "recoveryCodesRegenerated": {
+            "subject": "Nye gjenopprettingskoder ble laget",
+            "body": "Nye gjenopprettingskoder ble laget for Tududi-kontoen din. De gamle virker ikke lenger."
+        },
+        "button": "Åpne sikkerhetsinnstillinger",
+        "notYou": "Hvis dette ikke var deg, bytt passord nå og si fra til administratoren din."
     }
 }

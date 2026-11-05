@@ -129,11 +129,8 @@ const authController = {
     async login(req, res, next) {
         const { email, password } = req.body;
         try {
-            const result = await authService.login(
-                email,
-                password,
-                req.session
-            );
+            const result = await authService.login(email, password, req);
+            if (result.mfa_required) return res.json(result);
             await auditService.logLoginSuccess(
                 req.session.userId,
                 auditService.AUTH_METHODS.EMAIL_PASSWORD,

@@ -5,6 +5,7 @@ const groupsRepository = require('./repository');
 const adminService = require('../admin/service');
 const accountsService = require('../../services/accountsService');
 const groupSharing = require('../../services/groupSharing');
+const { unassignAfterAccessLoss } = require('../../services/assignmentCleanup');
 const { getGroupBoard } = require('../everyone/service');
 const {
     validateCreateGroup,
@@ -157,7 +158,8 @@ class GroupsService {
     async remove(requesterId, uid) {
         const scope = await adminService.accessScope(requesterId);
         const group = await this._requireGroup(uid, scope);
-        await groupsRepository.destroyWithGrants(group);
+        const lost = await groupsRepository.destroyWithGrants(group);
+        await unassignAfterAccessLoss(lost);
     }
 
     async addMembers(requesterId, uid, body) {

@@ -5,6 +5,7 @@ import { updateTask } from '../../../utils/tasksService';
 import { useToast } from '../../Shared/ToastContext';
 import { useStore } from '../../../store/useStore';
 import { resolveTaskTokens, tokenChanges } from '../../../utils/taskTokens';
+import { isStartAfterDue } from '../../../utils/dueDateTime';
 
 type RecurrencePayload = Partial<
     Pick<
@@ -25,6 +26,7 @@ export interface TaskRowSetters {
     setNote: (note: string) => Promise<void>;
     setPriority: (priority: PriorityType) => Promise<void>;
     setDue: (date: string | null, time: string | null) => Promise<void>;
+    setStart: (date: string | null, time: string | null) => Promise<void>;
     setDeferUntil: (deferUntil: string | null) => Promise<void>;
     setProject: (projectId: number | null) => Promise<void>;
     setTags: (tagNames: string[]) => Promise<void>;
@@ -109,6 +111,32 @@ export const useTaskRowSave = (
                 'task.dueDateUpdateError',
                 'Failed to update due date'
             ),
+        setStart: async (date, time) => {
+            if (
+                isStartAfterDue(
+                    date,
+                    time,
+                    task.due_date,
+                    task.due_has_time ? task.due_time : null
+                )
+            ) {
+                showErrorToast(
+                    t(
+                        'task.startAfterDueError',
+                        'Start cannot be after the due date'
+                    )
+                );
+                return;
+            }
+            await save(
+                {
+                    start_date: date || null,
+                    start_time: date ? time || null : null,
+                },
+                'task.startDateUpdateError',
+                'Failed to update start date'
+            );
+        },
         setDeferUntil: (deferUntil) =>
             save(
                 { defer_until: deferUntil || null },

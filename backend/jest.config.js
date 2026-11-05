@@ -3,9 +3,7 @@ module.exports = {
     globalSetup: '<rootDir>/tests/helpers/globalSetup.js',
     setupFilesAfterEnv: ['<rootDir>/tests/helpers/setup.js'],
     testMatch: ['<rootDir>/tests/**/*.test.js', '<rootDir>/tests/**/*.spec.js'],
-    // The upgrade suite has its own config (jest.upgrade.config.js) because it
-    // must not use the sync-based setup.js.
-    testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/upgrade/'],
+    testPathIgnorePatterns: ['/node_modules/'],
     collectCoverageFrom: [
         'routes/**/*.js',
         'models/**/*.js',
@@ -27,5 +25,10 @@ module.exports = {
     moduleNameMapper: {
         '^jose$': '<rootDir>/tests/mocks/jose.js',
         '^nanoid$': '<rootDir>/tests/mocks/nanoid.js',
+        // marked ships only an ES module, which Node 22 can require but Jest
+        // cannot; its UMD build is the same code.
+        '^marked$': require
+            .resolve('marked')
+            .replace(/marked\.esm\.js$/, 'marked.umd.js'),
     },
 };

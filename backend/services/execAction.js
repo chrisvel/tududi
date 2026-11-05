@@ -48,11 +48,17 @@ async function execAction(action) {
             ownerUserId = resource.user_id;
         }
 
-        await assertActorCanShare(
-            action.actorUserId,
-            action.resourceType,
-            ownerUserId
-        );
+        // Anyone may take back their own access (leaving a share).
+        const leavingOwnShare =
+            action.verb === 'share_revoke' &&
+            action.actorUserId === action.targetUserId;
+        if (!leavingOwnShare) {
+            await assertActorCanShare(
+                action.actorUserId,
+                action.resourceType,
+                ownerUserId
+            );
+        }
 
         const actionRow = await Action.create(
             {

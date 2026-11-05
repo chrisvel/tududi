@@ -83,6 +83,12 @@ Area: "Personal"
    - Used in URLs: `/project/:uid`
    - Cannot be changed
 
+4. **Start** (optional)
+   - When the project begins: a day, optionally with a time
+   - Same API shape as tasks: `start_date` (YYYY-MM-DD) and `start_time` (HH:mm) in the user's timezone, stored in `start_date_at`
+   - Shown and edited in the project's overview panel; the page header says "Starts" or "Started", or falls back to the created date when no start is set
+   - Cannot be after the project's due date in the web UI
+
 ### Organization
 
 4. **Area** (optional)
@@ -90,12 +96,14 @@ Area: "Personal"
    - Used for high-level grouping
    - Can be changed or removed
    - Examples: "Work", "Personal", "Health"
+   - Only an area you own or that is shared with you read-write can be picked; anything else is refused with `400 Invalid area.`
 
 5. **Goal** (optional)
    - Links the project to a specific goal within its area
    - Set via the Goal section (flag icon) in the project modal - area must be selected first
    - Stored as `goal_id`; set to `null` when "No goal" is selected
    - If the linked goal is deleted, `goal_id` is set to `null` automatically (SET NULL)
+   - Same rule as the area: the goal must be yours or shared with you read-write (`400 Invalid goal.` otherwise). Keeping the current area or goal on save is always allowed
 
 6. **Maintenance flag** (`is_maintenance`, boolean, default: `false`)
    - Marks the project as ongoing maintenance work rather than goal-directed progress
@@ -262,6 +270,22 @@ These properties are computed automatically based on project content:
 - Affects "active projects" filter (planned/in_progress/waiting)
 - Affects stalled detection
 - Updates last modified timestamp
+- Moving to `done` records `completed_at`; moving away from `done` clears it (a model `beforeSave` hook, so REST, MCP and every other write path behave the same). Cancelled projects get no `completed_at`.
+
+### Completing a Project
+
+- The project page has a **Complete** button (it turns into **Reopen** once the project is done), and picking **Completed** in any status menu does the same.
+- If the project still has open tasks, a dialog asks whether to **mark them done too** or **leave them open**. Recurring task patterns are never completed this way: they keep their schedule.
+- API: `POST /api/project/:uid/complete` with `{ "complete_open_tasks": true|false }` returns `{ project, completed_tasks }`. Requires write access. Open tasks are those not done, archived or cancelled, with `recurrence_type = 'none'`; each is updated on its own so task hooks (webhooks) still fire.
+- The project page shows "Completed <date>" in place of the due date countdown.
+
+### Completed Projects History
+
+- `/projects/completed` (the **History** button on the Projects page) lists done projects newest first, grouped by year and then month of `completed_at`.
+- Each row shows the area, tasks done out of total, how many days the project took (created to completed) and a **Reopen** action, which sets the status back to `in_progress`.
+- **Show cancelled** adds cancelled projects, dated by their last update. The choice is remembered per browser.
+- Projects that were already done before `completed_at` existed were backfilled from `updated_at` by the migration.
+- On an Area page, done and cancelled projects fold into a collapsed **Finished (n)** section below the active ones.
 
 ### Deleting a Project
 
@@ -348,6 +372,17 @@ No Area
 - API: `PUT /api/projects/order` with `{ "project_uids": [...] }` replaces the whole order; `GET /api/projects` returns `sort_position` (or `null`) on each project
 
 ---
+
+## Timeline View
+
+The project page has two tabs above the tasks: **Tasks** (the list) and **Timeline** (a Gantt chart). The chosen tab is remembered per browser.
+
+- **Bars** run from a task's start date to its due date. A task with only a due date shows as a diamond; one with only a start shows as a short faded bar. Tasks with neither sit in a "No dates yet" tray under the chart.
+- **Scheduling:** drag a bar to move both dates, drag either end to change one, drag a diamond to move the due date. Times of day are kept. Drag a task from the tray onto a day to give it that day as start and due. Clicking a bar opens the task.
+- **Arrows** show "blocks" relations between the project's tasks (`task_links` on `GET /api/project/:uid`, as `{ from_uid, to_uid }` pairs).
+- **Highlight the path** marks the chain of blocking tasks that sets the finish (from the linked task that ends last, back through the blocker that ends latest) and shows spare days on open tasks off that chain: days until what they block starts, or until the project's due date.
+- **Scale:** Days, Weeks or Months. A line marks today, dashed lines mark the project's start and due date, and open tasks past their due date are orange.
+- The chart follows the page's status filter and search.
 
 ## Tasks and Notes in Projects
 
@@ -459,6 +494,13 @@ The project page has an **Attachments** tab next to Tasks and Notes. It holds fi
   - All notes in the project
   - All subtasks of tasks in the project
 
+### Projects in a Shared Area
+
+A project kept in a shared area (or linked to a shared goal) is shared with everyone that area or goal is shared with. Two things change that:
+
+- **Moving the project out** of the area or goal takes that access back. Shares made on the project itself, directly or with a group, stay.
+- **Restricting the project** (`visibility: 'restricted'`) takes the area and goal access back and keeps the project out of them from then on. Only its owner, the owner of its area and people the project itself is shared with see it. The project owner or the area owner can restrict a project, or open it back up (`visibility: 'area'`, the default), which shares it with the area again.
+
 ### Shared Projects Behavior
 
 **For shared users:**
@@ -467,6 +509,7 @@ The project page has an **Attachments** tab next to Tasks and Notes. It holds fi
 - Shared indicator shown on project card
 - Can file the project under one of their own areas: the placement is stored per user (`user_project_areas`) and does not move the project for the owner or anyone else
 - Cannot delete project (only owner can)
+- Tasks in the project show up in their Today, Upcoming and plan suggestions only when they own them or the task is assigned to them; the rest stay on the project page (see [Today Page Sections](02-today-page-sections.md))
 
 **Notifications:**
 - Project owner sees share count badge

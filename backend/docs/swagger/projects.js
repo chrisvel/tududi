@@ -122,6 +122,14 @@
  *                 type: string
  *                 format: date-time
  *                 description: Project due date
+ *               start_date:
+ *                 type: string
+ *                 format: date
+ *                 description: When the project begins (YYYY-MM-DD, user's timezone)
+ *               start_time:
+ *                 type: string
+ *                 example: "09:30"
+ *                 description: Optional start time (HH:mm, user's timezone); omit for a whole-day start
  *               image_url:
  *                 type: string
  *                 description: Project image URL
@@ -187,6 +195,14 @@
  *                 type: string
  *                 format: date-time
  *                 description: Project due date
+ *               start_date:
+ *                 type: string
+ *                 format: date
+ *                 description: When the project begins (YYYY-MM-DD, user's timezone)
+ *               start_time:
+ *                 type: string
+ *                 example: "09:30"
+ *                 description: Optional start time (HH:mm, user's timezone); omit for a whole-day start
  *               image_url:
  *                 type: string
  *                 description: Project image URL
@@ -242,6 +258,52 @@
  *                   example: "Project deleted successfully."
  *       401:
  *         description: Unauthorized
+ *       404:
+ *         description: Project not found
+ */
+
+/**
+ * @swagger
+ * /api/project/{uid}/complete:
+ *   post:
+ *     summary: Mark a project done
+ *     description: Sets the status to done and records completed_at. With complete_open_tasks, open one-off tasks in the project are marked done first; recurring tasks are left alone.
+ *     tags: [Projects]
+ *     security:
+ *       - cookieAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: uid
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Project UID
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               complete_open_tasks:
+ *                 type: boolean
+ *                 default: false
+ *     responses:
+ *       200:
+ *         description: Project completed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 project:
+ *                   $ref: '#/components/schemas/Project'
+ *                 completed_tasks:
+ *                   type: integer
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: No write access
  *       404:
  *         description: Project not found
  */

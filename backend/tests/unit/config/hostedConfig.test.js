@@ -39,7 +39,6 @@ describe('hostedConfigProblems', () => {
                 hosted: { enabled: true },
                 trustProxy: false,
                 emailConfig: { enabled: false, smtp: {} },
-                db: { dialect: 'sqlite' },
             }
         );
 
@@ -50,8 +49,7 @@ describe('hostedConfigProblems', () => {
         expect(text).toMatch(/FRONTEND_URL/);
         expect(text).toMatch(/BACKEND_URL/);
         expect(text).toMatch(/ENABLE_EMAIL/);
-        expect(text).toMatch(/PostgreSQL/);
-        expect(problems).toHaveLength(7);
+        expect(problems).toHaveLength(6);
     });
 
     it('treats localhost URLs as unset', () => {

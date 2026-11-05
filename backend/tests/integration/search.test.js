@@ -2,7 +2,6 @@ const request = require('supertest');
 const app = require('../../app');
 const { Task, Project, Area, Note, Tag, User } = require('../../models');
 const { createTestUser } = require('../helpers/testUtils');
-const { isPostgres } = require('../../utils/db-dialect');
 const moment = require('moment-timezone');
 
 describe('Universal Search Routes', () => {
@@ -1105,6 +1104,71 @@ describe('Universal Search Routes', () => {
                 expect(names).not.toContain('Regular Task');
             });
 
+            it('should return only non-recurring tasks when extras include not_recurring', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'not_recurring',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).not.toContain('Recurring Template');
+                expect(names).not.toContain('Recurring Instance');
+            });
+
+            it('should return only tasks without a note when extras include no_content', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Blank Note Task',
+                    note: '   ',
+                    status: 0,
+                });
+
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'no_content',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).toContain('Blank Note Task');
+                expect(names).not.toContain('Content Task');
+            });
+
+            it('should return only tasks that are not deferred when extras include not_deferred', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Past Defer Task',
+                    defer_until: moment().subtract(1, 'day').toDate(),
+                    status: 0,
+                });
+
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'not_deferred',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).toContain('Past Defer Task');
+                expect(names).not.toContain('Deferred Task');
+            });
+
+            it('should return only tasks without a project when extras include no_project', async () => {
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    extras: 'no_project',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Regular Task');
+                expect(names).not.toContain('Project Task');
+            });
+
             it('should return only tasks without tags when extras include no_tags', async () => {
                 const response = await agent.get('/api/search').query({
                     filters: 'Task',
@@ -1420,10 +1484,6 @@ describe('Universal Search Routes', () => {
             });
 
             it('should perform case-insensitive search for ASCII characters', async () => {
-                // NOTE: SQLite's LOWER() function only supports ASCII characters
-                // For Unicode (Cyrillic, Greek, etc.), search is case-sensitive
-                // This is a known limitation of SQLite without ICU extension
-
                 // Create test data with mixed case ASCII
                 await Task.create({
                     user_id: user.id,
@@ -1493,13 +1553,9 @@ describe('Universal Search Routes', () => {
                 );
             });
 
-            it('should demonstrate Cyrillic search limitation', async () => {
-                // NOTE: This test documents the current Cyrillic search limitation
-                // SQLite's LOWER() only works with ASCII, so our search uses:
-                //   - JavaScript toLowerCase() on search query: "Тест" -> "тест"
-                //   - SQLite LOWER() on database: "Тест Русский" -> "Тест Русский" (unchanged)
-                // Result: Case-insensitive search doesn't work for Cyrillic
-                // Future improvement: Add ICU extension, FTS5, or normalized search fields
+            it('should search Cyrillic text case-insensitively', async () => {
+                // The query is lowercased in JavaScript and PostgreSQL's
+                // LOWER() is Unicode-aware, so Cyrillic matches in any case.
 
                 // Create test data with Cyrillic text (all lowercase to match search query)
                 await Task.create({
@@ -1564,8 +1620,7 @@ describe('Universal Search Routes', () => {
                     status: 0,
                 });
 
-                // Lowercase search will NOT find uppercase Cyrillic on SQLite
-                // (limitation); PostgreSQL's LOWER() is Unicode-aware and does.
+                // Lowercase search finds uppercase Cyrillic too.
                 const response4 = await agent.get('/api/search').query({
                     q: 'тест uppercase',
                     filters: 'Task',
@@ -1575,7 +1630,7 @@ describe('Universal Search Routes', () => {
                     (r) => r.type === 'Task'
                 );
                 expect(tasks4.some((t) => t.name.includes('UPPERCASE'))).toBe(
-                    isPostgres()
+                    true
                 );
             });
         });

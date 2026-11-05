@@ -8,6 +8,7 @@ import {
     fetchTaskRelations,
 } from '../../../../utils/tasksService';
 import { searchUniversal } from '../../../../utils/searchService';
+import { useTaskPanel } from '../../../../store/taskPanelStore';
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -59,14 +60,12 @@ describe('TaskRelationsCard', () => {
         ]);
     });
 
-    it('groups relations by type and links to the other task', async () => {
+    it('groups relations by type and opens the other task in the side panel', async () => {
         render(<TaskRelationsCard taskUid="task-a" />);
 
         expect(await screen.findByText('Buy paint')).toBeInTheDocument();
-        expect(screen.getByText('Buy paint').closest('a')).toHaveAttribute(
-            'href',
-            '/task/task-b'
-        );
+        fireEvent.click(screen.getByText('Buy paint'));
+        expect(useTaskPanel.getState().uid).toBe('task-b');
         expect(screen.getByText('Pick colors')).toHaveClass('line-through');
         expect(screen.getByText('(2)')).toBeInTheDocument();
     });

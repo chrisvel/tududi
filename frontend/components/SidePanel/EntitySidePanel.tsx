@@ -84,6 +84,21 @@ const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
         }, SIDE_PANEL_SLIDE_MS);
     };
 
+    // A dropdown open inside the panel takes Escape and outside clicks first:
+    // they close the dropdown and leave the panel open. Menus portal to the
+    // body with data-portal-menu; inline ones mark their trigger.
+    const hasOpenMenu = () =>
+        !!document.querySelector('[data-portal-menu]') ||
+        !!panelRef.current?.querySelector(
+            '[aria-haspopup][aria-expanded="true"]'
+        );
+
+    const closeOpenMenus = () => {
+        document.body.dispatchEvent(
+            new MouseEvent('mousedown', { bubbles: true })
+        );
+    };
+
     const requestClose = () => {
         if (closingRef.current || lockedRef.current) return;
         if (dirtyRef.current) {
@@ -98,10 +113,17 @@ const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key !== 'Escape' || showDiscard) return;
             event.preventDefault();
+            if (hasOpenMenu()) {
+                event.stopPropagation();
+                closeOpenMenus();
+                return;
+            }
             requestClose();
         };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
+        // Capture phase, so the open-menu check runs before a menu closes itself
+        document.addEventListener('keydown', handleKeyDown, true);
+        return () =>
+            document.removeEventListener('keydown', handleKeyDown, true);
         // requestClose reads refs, so re-registering on these two is enough
     }, [isOpen, showDiscard]);
 
@@ -111,7 +133,10 @@ const EntitySidePanel: React.FC<EntitySidePanelProps> = ({
         <>
             <div
                 aria-hidden="true"
-                onMouseDown={requestClose}
+                onMouseDown={() => {
+                    // The menu's own outside-click handler closes it
+                    if (!hasOpenMenu()) requestClose();
+                }}
                 className={`fixed inset-0 z-[55] bg-gray-900/20 transition-opacity duration-200 motion-reduce:transition-none dark:bg-black/40 ${
                     shown ? 'opacity-100' : 'opacity-0'
                 }`}
