@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Taal wijzigen",
     "langSwitcherCurrent": "Taal: {{name}}",
-    "description": "Leg alles vast, plan je dag met AI rond je agenda en houd gebieden, doelen, projecten, notities en gewoonten in één systeem. Een MCP-server met {{tools}} tools laat AI-agents met je lijst werken. Een tududi Cloud-account staat in een minuut klaar.",
-    "title": "tududi: taakbeheer en levensbeheersysteem, met MCP voor AI-agenten"
+    "description": "tududi is een levensbeheersysteem voor werk, thuis en gezin. Plan je dag, volg gewoontes en deel met anderen. Probeer tududi Cloud gratis, zonder kaart.",
+    "title": "tududi: een rustig levensbeheersysteem voor drukke mensen"
   },
   "nav": {
     "demo": "Live demo",
@@ -419,7 +419,7 @@
       "Exporteer alles, op elk moment"
     ],
     "lede": "Hetzelfde systeem in beide gevallen. Het verschil is wie het om drie uur 's nachts draaiend, gepatcht en gebackupt houdt.",
-    "metaDescription": "tududi Cloud is hetzelfde open source systeem, draaiend op onze servers, met updates, back-ups en e-mail voor je geregeld. Pro voor één persoon of een Team-abonnement voor een groep, per maand of per jaar, altijd opzegbaar.",
+    "metaDescription": "tududi Cloud draait je levensbeheersysteem, met updates, back-ups en e-mail geregeld. Pro voor één persoon of een Team-abonnement. Altijd opzegbaar.",
     "metaTitle": "tududi Cloud: het gehoste tududi, voor je gedraaid",
     "note": "Dezelfde MIT-gelicentieerde app. Exporteer alles, op elk moment.",
     "orAnnual": "of",
@@ -452,7 +452,7 @@
         "title": "Updates voor je toegepast"
       }
     },
-    "title": "Waarom tududi Cloud gebruiken?",
+    "title": "Waarom tududi Cloud voor je levensbeheersysteem?",
     "whyEyebrow": "Cloud",
     "whySub": "Geen functies. Elke functie zit ook in de zelfgehoste build.",
     "whyTitle": "Waarvoor je eigenlijk betaalt",

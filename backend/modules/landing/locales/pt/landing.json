@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Mudar de idioma",
     "langSwitcherCurrent": "Idioma: {{name}}",
-    "description": "Anote tudo, planeje o dia com IA em torno do seu calendário e mantenha áreas, metas, projetos, notas e hábitos num só sistema. Um servidor MCP com {{tools}} ferramentas deixa agentes de IA trabalharem na sua lista. Crie uma conta tududi Cloud em um minuto.",
-    "title": "tududi: gerenciador de tarefas e sistema de organização de vida, com MCP para agentes de IA"
+    "description": "tududi é um sistema de organização de vida para trabalho, casa e família. Planeje o dia, acompanhe hábitos e compartilhe. Teste o tududi Cloud grátis.",
+    "title": "tududi: sistema de organização de vida calmo para quem corre"
   },
   "nav": {
     "demo": "Demo ao vivo",
@@ -419,7 +419,7 @@
       "Exporte tudo, a qualquer momento"
     ],
     "lede": "O mesmo sistema nos dois casos. A diferença é quem o mantém funcionando, corrigido e com backup às três da manhã.",
-    "metaDescription": "O tududi Cloud é o mesmo sistema de código aberto, rodando nos nossos servidores, com atualizações, backups e e-mail cuidados por nós. Pro para uma pessoa ou um plano Equipe para um grupo, mensal ou anual, cancele quando quiser.",
+    "metaDescription": "O tududi Cloud roda seu sistema de organização de vida, com atualizações, backups e e-mail. Pro para uma pessoa ou plano Equipe. Cancele quando quiser.",
     "metaTitle": "tududi Cloud: o tududi hospedado, administrado para você",
     "note": "O mesmo app com licença MIT. Exporte tudo, a qualquer momento.",
     "orAnnual": "ou",
@@ -452,7 +452,7 @@
         "title": "Atualizações aplicadas para você"
       }
     },
-    "title": "Por que usar o tududi Cloud?",
+    "title": "Por que usar o tududi Cloud no seu sistema de organização de vida?",
     "whyEyebrow": "Cloud",
     "whySub": "Não são recursos. Todo recurso também está na versão autoalojada.",
     "whyTitle": "Pelo que você realmente está pagando",

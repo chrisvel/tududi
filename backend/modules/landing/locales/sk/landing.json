@@ -1,7 +1,7 @@
 {
   "meta": {
-    "title": "tududi: správca úloh a systém na riadenie života, s MCP pre AI agentov",
-    "description": "Zachyťte čokoľvek, naplánujte si deň s AI podľa svojho kalendára a majte oblasti, ciele, projekty, poznámky a návyky v jednom systéme. MCP server so {{tools}} nástrojmi umožní AI agentom pracovať s vaším zoznamom. Účet v tududi Cloud si založíte za minútu.",
+    "title": "tududi: pokojný systém na riadenie života pre rušné dni",
+    "description": "tududi je systém na riadenie života pre prácu, domov a rodinu. Naplánuj si deň, sleduj návyky a zdieľaj. Vyskúšaj tududi Cloud zadarmo, bez karty.",
     "langSwitcherLabel": "Zmeniť jazyk",
     "langSwitcherCurrent": "Jazyk: {{name}}"
   },
@@ -404,8 +404,8 @@
   },
   "cloud": {
     "metaTitle": "tududi Cloud: hostované tududi, ktoré prevádzkujeme za vás",
-    "metaDescription": "tududi Cloud je ten istý open source systém, bežiaci na našich serveroch, s aktualizáciami, zálohami a e-mailom vybavenými za vás. Pro pre jednu osobu alebo plán Tím pre skupinu, mesačne alebo ročne, zrušiť môžete kedykoľvek.",
-    "title": "Prečo používať tududi Cloud?",
+    "metaDescription": "tududi Cloud prevádzkuje váš systém na riadenie života za vás, s aktualizáciami, zálohami a e-mailom. Pro pre jedného alebo plán Tím. Zrušíte kedykoľvek.",
+    "title": "Prečo tududi Cloud pre váš systém na riadenie života?",
     "lede": "Systém je v oboch prípadoch rovnaký. Rozdiel je v tom, kto ho o tretej ráno udržiava v chode, aktualizuje a zálohuje.",
     "ctaPrimary": "Začať",
     "ctaPricing": "Pozrieť cenu",

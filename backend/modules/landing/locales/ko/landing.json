@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "언어 변경",
     "langSwitcherCurrent": "언어: {{name}}",
-    "description": "무엇이든 기록하고, 캘린더에 맞춰 AI로 하루를 계획하고, 영역, 목표, 프로젝트, 노트, 습관을 하나의 시스템에. {{tools}}개의 도구를 제공하는 MCP 서버로 AI 에이전트가 목록을 다룰 수 있습니다. tududi Cloud 계정은 1분이면 준비됩니다.",
-    "title": "tududi: AI 에이전트를 위한 MCP를 갖춘 작업 관리자 및 인생 관리 시스템"
+    "description": "tududi는 일, 집, 가족을 위한 인생 관리 시스템입니다. 하루를 계획하고 습관을 기록하고 함께 공유하세요. 카드 없이 tududi Cloud를 무료로 사용해 보세요.",
+    "title": "tududi: 바쁜 사람을 위한 차분한 인생 관리 시스템"
   },
   "nav": {
     "demo": "라이브 데모",
@@ -419,7 +419,7 @@
       "언제든지 모든 것을 내보내기"
     ],
     "lede": "어느 쪽이든 같은 시스템입니다. 차이는 새벽 세 시에 그것을 계속 작동시키고, 패치하고, 백업하는 사람이 누구인가입니다.",
-    "metaDescription": "tududi Cloud는 같은 오픈 소스 시스템을 저희 서버에서 운영하며, 업데이트, 백업, 이메일을 대신 처리합니다. 1인용 Pro 또는 그룹용 팀 요금제, 월간 또는 연간, 언제든 해지할 수 있습니다.",
+    "metaDescription": "tududi Cloud가 업데이트, 백업, 이메일까지 챙기며 인생 관리 시스템을 대신 운영합니다. 1인용 Pro 또는 팀 요금제. 언제든 해지할 수 있습니다.",
     "metaTitle": "tududi Cloud: 당신을 위해 운영되는 호스팅형 tududi",
     "note": "동일한 MIT 라이선스 앱입니다. 언제든지 모든 것을 내보내세요.",
     "orAnnual": "또는",
@@ -452,7 +452,7 @@
         "title": "당신을 위해 적용되는 업데이트"
       }
     },
-    "title": "왜 tududi Cloud를 사용해야 할까요?",
+    "title": "인생 관리 시스템으로 왜 tududi Cloud를 써야 할까요?",
     "whyEyebrow": "Cloud",
     "whySub": "기능이 아닙니다. 모든 기능은 자체 호스팅 빌드에도 있습니다.",
     "whyTitle": "실제로 무엇에 대해 지불하는가",

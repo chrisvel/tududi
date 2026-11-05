@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Đổi ngôn ngữ",
     "langSwitcherCurrent": "Ngôn ngữ: {{name}}",
-    "description": "Ghi lại mọi thứ, lên kế hoạch ngày bằng AI quanh lịch của bạn, và giữ lĩnh vực, mục tiêu, dự án, ghi chú, thói quen trong một hệ thống. Máy chủ MCP với {{tools}} công cụ cho phép tác tử AI làm việc với danh sách của bạn. Tài khoản tududi Cloud sẵn sàng trong một phút.",
-    "title": "tududi: trình quản lý nhiệm vụ và hệ thống quản lý cuộc sống, với MCP cho các trợ lý AI"
+    "description": "tududi là hệ thống quản lý cuộc sống cho công việc, nhà cửa và gia đình. Lên kế hoạch ngày, theo dõi thói quen, chia sẻ. Dùng thử tududi Cloud miễn phí.",
+    "title": "tududi: hệ thống quản lý cuộc sống cho người bận rộn"
   },
   "nav": {
     "demo": "Bản demo trực tiếp",
@@ -419,7 +419,7 @@
       "Xuất mọi thứ, bất cứ lúc nào"
     ],
     "lede": "Cùng một hệ thống trong cả hai trường hợp. Sự khác biệt là ai giữ cho nó chạy, được vá lỗi và sao lưu vào lúc ba giờ sáng.",
-    "metaDescription": "tududi Cloud là cùng một hệ thống mã nguồn mở, chạy trên máy chủ của chúng tôi, với cập nhật, sao lưu và email được lo sẵn cho bạn. Pro cho một người hoặc gói Nhóm cho một nhóm, theo tháng hoặc theo năm, hủy bất cứ lúc nào.",
+    "metaDescription": "tududi Cloud vận hành hệ thống quản lý cuộc sống thay bạn, lo cả cập nhật, sao lưu và email. Pro cho một người hoặc gói Nhóm. Hủy bất cứ lúc nào.",
     "metaTitle": "tududi Cloud: tududi được lưu trữ, vận hành cho bạn",
     "note": "Cùng một ứng dụng có bản quyền MIT. Xuất mọi thứ, bất cứ lúc nào.",
     "orAnnual": "hoặc",
@@ -452,7 +452,7 @@
         "title": "Cập nhật được áp dụng cho bạn"
       }
     },
-    "title": "Vì sao nên dùng tududi Cloud?",
+    "title": "Vì sao nên dùng tududi Cloud cho hệ thống quản lý cuộc sống của bạn?",
     "whyEyebrow": "Cloud",
     "whySub": "Không phải là tính năng. Mọi tính năng đều có trong bản tự lưu trữ.",
     "whyTitle": "Bạn thực sự đang trả tiền cho điều gì",

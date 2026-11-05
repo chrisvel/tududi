@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "切换语言",
     "langSwitcherCurrent": "语言：{{name}}",
-    "description": "随手记录一切，用 AI 围绕日历规划一天，把领域、目标、项目、笔记和习惯放进一个系统。提供 {{tools}} 个工具的 MCP 服务器让 AI 代理处理你的清单。一分钟即可开通 tududi Cloud 账户。",
-    "title": "tududi：任务管理器与生活管理系统，为 AI 代理配备 MCP"
+    "description": "tududi 是覆盖工作、家庭与亲人的生活管理系统。规划每一天，追踪习惯，与他人共享。免费试用 tududi Cloud，无需绑卡。",
+    "title": "tududi：为忙碌的人打造的从容生活管理系统"
   },
   "nav": {
     "demo": "在线演示",
@@ -419,7 +419,7 @@
       "随时导出所有内容"
     ],
     "lede": "无论哪种方式都是同一个系统。区别在于谁在凌晨三点让它保持运行、打好补丁并备份。",
-    "metaDescription": "tududi Cloud 是同一套开源系统，运行在我们的服务器上，更新、备份和邮件都由我们为您处理。一人用 Pro，团队用团队套餐，按月或按年付费，随时可以取消。",
+    "metaDescription": "tududi Cloud 替你运行生活管理系统，更新、备份和邮件都已搞定。个人选 Pro，团队选团队方案。随时可取消。",
     "metaTitle": "tududi Cloud：为您运营的托管版 tududi",
     "note": "同一个 MIT 许可的应用程序。随时导出所有内容。",
     "orAnnual": "或",
@@ -452,7 +452,7 @@
         "title": "为您应用的更新"
       }
     },
-    "title": "为什么使用 tududi Cloud？",
+    "title": "为什么用 tududi Cloud 运行你的生活管理系统？",
     "whyEyebrow": "Cloud",
     "whySub": "不是功能。每个功能在自托管版本中也存在。",
     "whyTitle": "您实际付费的是什么",

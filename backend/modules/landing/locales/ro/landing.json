@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Schimbă limba",
     "langSwitcherCurrent": "Limba: {{name}}",
-    "description": "Notează orice, planifică ziua cu AI în jurul calendarului și ține ariile, obiectivele, proiectele, notele și obiceiurile într-un singur sistem. Un server MCP cu {{tools}} instrumente le permite agenților AI să lucreze cu lista ta. Un cont tududi Cloud se creează într-un minut.",
-    "title": "tududi: manager de sarcini și sistem de gestionare a vieții, cu MCP pentru agenți AI"
+    "description": "tududi e un sistem de gestionare a vieții pentru muncă, casă și familie. Planifică ziua, urmărește obiceiuri, împarte. Încearcă tududi Cloud gratuit.",
+    "title": "tududi: sistem calm de gestionare a vieții pentru zile pline"
   },
   "nav": {
     "demo": "Demo live",
@@ -419,7 +419,7 @@
       "Exportă totul, oricând"
     ],
     "lede": "Același sistem în ambele cazuri. Diferența este cine îl ține funcțional, actualizat și cu backup la ora trei dimineața.",
-    "metaDescription": "tududi Cloud este același sistem open source, rulat pe serverele noastre, cu actualizări, backupuri și e-mail gestionate pentru tine. Pro pentru o persoană sau un plan Echipă pentru un grup, lunar sau anual, anulezi oricând.",
+    "metaDescription": "tududi Cloud rulează sistemul tău de gestionare a vieții: actualizări, backup și e-mail. Pro pentru o persoană sau plan Echipă. Anulezi oricând.",
     "metaTitle": "tududi Cloud: tududi găzduit, administrat pentru tine",
     "note": "Aceeași aplicație licențiată MIT. Exportă totul, oricând.",
     "orAnnual": "sau",
@@ -452,7 +452,7 @@
         "title": "Actualizări aplicate pentru tine"
       }
     },
-    "title": "De ce să folosești tududi Cloud?",
+    "title": "De ce tududi Cloud pentru sistemul tău de gestionare a vieții?",
     "whyEyebrow": "Cloud",
     "whySub": "Nu funcții. Fiecare funcție este și în versiunea auto-hostată.",
     "whyTitle": "Pentru ce plătești de fapt",

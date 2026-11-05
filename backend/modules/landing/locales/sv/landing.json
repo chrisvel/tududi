@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Byt språk",
     "langSwitcherCurrent": "Språk: {{name}}",
-    "description": "Fånga allt, planera dagen med AI runt din kalender och håll områden, mål, projekt, anteckningar och vanor i ett system. En MCP-server med {{tools}} verktyg låter AI-agenter jobba med din lista. Ett tududi Cloud-konto är klart på en minut.",
-    "title": "tududi: uppgiftshanterare och livshanteringssystem, med MCP för AI-agenter"
+    "description": "tududi är ett livshanteringssystem för jobb, hem och familj. Planera dagen, följ vanor och dela med andra. Prova tududi Cloud gratis, utan kort.",
+    "title": "tududi: ett lugnt livshanteringssystem för upptagna"
   },
   "nav": {
     "demo": "Livedemo",
@@ -419,7 +419,7 @@
       "Exportera allt, när du vill"
     ],
     "lede": "Samma system i båda fallen. Skillnaden är vem som håller det igång, patchat och säkerhetskopierat vid tre på natten.",
-    "metaDescription": "tududi Cloud är samma system med öppen källkod, som körs på våra servrar med uppdateringar, säkerhetskopior och e-post skötta åt dig. Pro för en person eller ett Team-abonnemang för en grupp, månadsvis eller årsvis, avsluta när som helst.",
+    "metaDescription": "tududi Cloud kör ditt livshanteringssystem, med uppdateringar, backup och e-post skötta. Pro för en person eller en Team-plan. Avsluta när du vill.",
     "metaTitle": "tududi Cloud: det hostade tududi, driftat för dig",
     "note": "Samma MIT-licensierade app. Exportera allt, när du vill.",
     "orAnnual": "eller",
@@ -452,7 +452,7 @@
         "title": "Uppdateringar tillämpade för dig"
       }
     },
-    "title": "Varför använda tududi Cloud?",
+    "title": "Varför använda tududi Cloud för ditt livshanteringssystem?",
     "whyEyebrow": "Cloud",
     "whySub": "Inte funktioner. Varje funktion finns även i den självhostade byggen.",
     "whyTitle": "Vad du egentligen betalar för",

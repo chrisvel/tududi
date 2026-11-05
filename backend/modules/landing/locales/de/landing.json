@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Sprache wechseln",
     "langSwitcherCurrent": "Sprache: {{name}}",
-    "description": "Alles festhalten, den Tag mit KI rund um deinen Kalender planen und Bereiche, Ziele, Projekte, Notizen und Gewohnheiten in einem System. Ein MCP-Server mit {{tools}} Werkzeugen lässt KI-Agenten mit deiner Liste arbeiten. Ein tududi-Cloud-Konto ist in einer Minute eingerichtet.",
-    "title": "tududi: Aufgabenverwaltung und Lebensorganisationssystem, mit MCP für KI-Agenten"
+    "description": "tududi ist ein Lebensorganisationssystem für Arbeit, Zuhause und Familie. Plane den Tag, pflege Gewohnheiten, teile mit anderen. Teste tududi Cloud gratis.",
+    "title": "tududi: das ruhige Lebensorganisationssystem für volle Tage"
   },
   "nav": {
     "demo": "Live-Demo",
@@ -419,7 +419,7 @@
       "Exportiere jederzeit alles"
     ],
     "lede": "Das gleiche System in beiden Fällen. Der Unterschied ist, wer es um drei Uhr morgens am Laufen, gepatcht und gesichert hält.",
-    "metaDescription": "tududi Cloud ist dasselbe Open-Source-System, betrieben auf unseren Servern, mit Updates, Backups und E-Mail für Sie erledigt. Pro für eine Person oder ein Team-Tarif für eine Gruppe, monatlich oder jährlich, jederzeit kündbar.",
+    "metaDescription": "tududi Cloud betreibt Ihr Lebensorganisationssystem für Sie, mit Updates, Backups und E-Mail. Pro für eine Person oder ein Team-Tarif. Jederzeit kündbar.",
     "metaTitle": "tududi Cloud: das gehostete tududi, für dich betrieben",
     "note": "Dieselbe MIT-lizenzierte App. Exportiere jederzeit alles.",
     "orAnnual": "oder",
@@ -452,7 +452,7 @@
         "title": "Updates werden für dich eingespielt"
       }
     },
-    "title": "Warum tududi Cloud nutzen?",
+    "title": "Warum tududi Cloud für Ihr Lebensorganisationssystem?",
     "whyEyebrow": "Cloud",
     "whySub": "Keine Funktionen. Jede Funktion steckt auch im Self-Hosted-Build.",
     "whyTitle": "Wofür du eigentlich bezahlst",

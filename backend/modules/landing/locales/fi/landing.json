@@ -2,8 +2,8 @@
   "meta": {
     "langSwitcherLabel": "Vaihda kieltä",
     "langSwitcherCurrent": "Kieli: {{name}}",
-    "description": "Kirjaa kaikki, suunnittele päivä tekoälyllä kalenterisi ympärille ja pidä alueet, tavoitteet, projektit, muistiinpanot ja tavat yhdessä järjestelmässä. MCP-palvelin, jossa on {{tools}} työkalua, antaa tekoälyagenttien käsitellä listaasi. tududi Cloud -tili on valmis minuutissa.",
-    "title": "tududi: tehtävienhallinta ja elämänhallintajärjestelmä, MCP:llä AI-agenteille"
+    "description": "tududi on elämänhallintajärjestelmä työhön, kotiin ja perheeseen. Suunnittele päiväsi, seuraa tapoja ja jaa muille. Kokeile tududi Cloudia ilmaiseksi.",
+    "title": "tududi: rauhallinen elämänhallintajärjestelmä kiireisille"
   },
   "nav": {
     "demo": "Live-demo",
@@ -419,7 +419,7 @@
       "Vie kaikki, milloin tahansa"
     ],
     "lede": "Sama järjestelmä molemmissa tapauksissa. Ero on siinä, kuka pitää sen käynnissä, päivitettynä ja varmuuskopioituna kolmelta yöllä.",
-    "metaDescription": "tududi Cloud on sama avoimen lähdekoodin järjestelmä palvelimillamme, ja hoidamme päivitykset, varmuuskopiot ja sähköpostin puolestasi. Pro yhdelle henkilölle tai Tiimi-tilaus ryhmälle, kuukausittain tai vuosittain, peru milloin tahansa.",
+    "metaDescription": "tududi Cloud pyörittää elämänhallintajärjestelmääsi: päivitykset, varmuuskopiot ja sähköposti hoidettu. Pro yhdelle tai Tiimi-paketti. Peru milloin vain.",
     "metaTitle": "tududi Cloud: isännöity tududi, ylläpidettynä puolestasi",
     "note": "Samat MIT-lisensoidut sovellus. Vie kaikki, milloin tahansa.",
     "orAnnual": "tai",
@@ -452,7 +452,7 @@
         "title": "Päivitykset asennettuna puolestasi"
       }
     },
-    "title": "Miksi käyttää tududi Cloudia?",
+    "title": "Miksi tududi Cloud elämänhallintajärjestelmällesi?",
     "whyEyebrow": "Cloud",
     "whySub": "Eivät ominaisuudet. Kaikki ominaisuudet löytyvät myös itse ylläpidetystä versiosta.",
     "whyTitle": "Mistä oikeastaan maksat",
