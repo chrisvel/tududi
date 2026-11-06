@@ -4,6 +4,11 @@ const ICAL = require('ical.js');
 const moment = require('moment-timezone');
 
 const MAX_ITERATIONS = 20000;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+// Dates are compared as printed in the event's own zone, which can sit more
+// than a day from the user's. The pad only ever lets extra events through to
+// the exact, zone-aware check.
+const WINDOW_PAD_DAYS = 3;
 
 function parseCalendar(text) {
     const root = new ICAL.Component(ICAL.parse(text));
@@ -92,64 +97,147 @@ function wallMinute(at, dayStart, dayEnd) {
     return local.hours() * 60 + local.minutes();
 }
 
-function buildOccurrence(event, start, end, date, userTimezone, tzid) {
-    if (isCancelled(event)) return null;
-
-    if (start.isDate) {
-        const first = dateOnly(start);
-        const last = end ? dateOnly(end) : null;
-        const overlaps = first <= date && (last ? date < last : date === first);
-        if (!overlaps) return null;
-        return {
-            uid: event.uid,
-            title: event.summary || '',
-            all_day: true,
-            busy: false,
-            start: first,
-            end: last || first,
-            start_minute: null,
-            end_minute: null,
-        };
-    }
-
-    const startAt = toMoment(start, tzid, userTimezone);
-    const endAt = end
-        ? toMoment(end, end.zone === start.zone ? tzid : null, userTimezone)
-        : startAt.clone();
-    const dayStart = moment.tz(date, 'YYYY-MM-DD', userTimezone);
-    const dayEnd = dayStart.clone().add(1, 'day');
-
-    const touchesDay =
-        startAt.isBefore(dayEnd) &&
-        (endAt.isAfter(dayStart) ||
-            (endAt.isSame(startAt) && !startAt.isBefore(dayStart)));
-    if (!touchesDay) return null;
-
-    const clippedStart = moment.max(startAt, dayStart);
-    const clippedEnd = moment.min(endAt, dayEnd);
-    return {
-        uid: event.uid,
-        title: event.summary || '',
-        all_day: false,
-        busy: isBusy(event),
-        start: startAt.toISOString(),
-        end: endAt.toISOString(),
-        start_minute: wallMinute(clippedStart, dayStart, dayEnd),
-        end_minute: wallMinute(clippedEnd, dayStart, dayEnd),
-    };
-}
-
-function eachDay(startDate, endDate, userTimezone) {
-    const days = [];
+function dayBoundsBetween(startDate, endDate, userTimezone) {
+    const bounds = [];
     const last = moment.tz(endDate, 'YYYY-MM-DD', userTimezone);
     for (
         const day = moment.tz(startDate, 'YYYY-MM-DD', userTimezone);
         !day.isAfter(last);
         day.add(1, 'day')
     ) {
-        days.push(day.format('YYYY-MM-DD'));
+        const date = day.format('YYYY-MM-DD');
+        const dayStart = moment.tz(date, 'YYYY-MM-DD', userTimezone);
+        const dayEnd = dayStart.clone().add(1, 'day');
+        bounds.push({ date, dayStart, dayEnd });
     }
-    return days;
+    return bounds;
+}
+
+// One entry per day of `dayBounds` that the occurrence touches.
+function occurrencesByDay(event, start, end, dayBounds, userTimezone, tzid) {
+    if (isCancelled(event)) return [];
+    const results = [];
+
+    if (start.isDate) {
+        const first = dateOnly(start);
+        const last = end ? dateOnly(end) : null;
+        for (const { date } of dayBounds) {
+            const overlaps =
+                first <= date && (last ? date < last : date === first);
+            if (!overlaps) continue;
+            results.push({
+                uid: event.uid,
+                title: event.summary || '',
+                all_day: true,
+                busy: false,
+                start: first,
+                end: last || first,
+                start_minute: null,
+                end_minute: null,
+                date,
+            });
+        }
+        return results;
+    }
+
+    const startAt = toMoment(start, tzid, userTimezone);
+    const endAt = end
+        ? toMoment(end, end.zone === start.zone ? tzid : null, userTimezone)
+        : startAt.clone();
+    const startMs = startAt.valueOf();
+    const endMs = endAt.valueOf();
+
+    for (const { date, dayStart, dayEnd } of dayBounds) {
+        const dayStartMs = dayStart.valueOf();
+        const touchesDay =
+            startMs < dayEnd.valueOf() &&
+            (endMs > dayStartMs ||
+                (endMs === startMs && startMs >= dayStartMs));
+        if (!touchesDay) continue;
+
+        const clippedStart = moment.max(startAt, dayStart);
+        const clippedEnd = moment.min(endAt, dayEnd);
+        results.push({
+            uid: event.uid,
+            title: event.summary || '',
+            all_day: false,
+            busy: isBusy(event),
+            start: startAt.toISOString(),
+            end: endAt.toISOString(),
+            start_minute: wallMinute(clippedStart, dayStart, dayEnd),
+            end_minute: wallMinute(clippedEnd, dayStart, dayEnd),
+            date,
+        });
+    }
+    return results;
+}
+
+// The calendar date printed on an ICAL.Time, as a day count. Comparing these
+// needs no timezone work, which is what makes skipping old events cheap.
+function dayNumber(year, month, day) {
+    return Date.UTC(year, month - 1, day) / MS_PER_DAY;
+}
+
+function timeDayNumber(time) {
+    return dayNumber(time.year, time.month, time.day);
+}
+
+// A moved instance can land in the window from anywhere in the series, and a
+// RANGE=THISANDFUTURE exception shifts every later occurrence.
+function hasExceptionInWindow(event, firstDay, lastDay) {
+    if (event.rangeExceptions.length > 0) return true;
+    return Object.values(event.exceptions).some(
+        (exception) =>
+            timeDayNumber(exception.endDate) >= firstDay &&
+            timeDayNumber(exception.startDate) <= lastDay
+    );
+}
+
+// The single RRULE of a series, or null when it also has RDATEs or several
+// rules, whose dates cannot be reasoned about from one rule alone.
+function singleRule(event) {
+    if (event.component.hasProperty('rdate')) return null;
+    const rules = event.component.getAllProperties('rrule');
+    return rules.length === 1 ? rules[0].getFirstValue() : null;
+}
+
+function endedBefore(event, day) {
+    const rule = singleRule(event);
+    return Boolean(rule?.until) && timeDayNumber(rule.until) <= day;
+}
+
+// How many days apart a rule's cycles are, when every cycle looks the same.
+// Months and years vary in length, and a COUNT has to be walked to be spent.
+function fixedCycleDays(rule) {
+    if (rule.count) return null;
+    const parts = Object.keys(rule.parts);
+    const interval = rule.interval || 1;
+    if (rule.freq === 'DAILY' && parts.length === 0) return interval;
+    if (
+        rule.freq === 'WEEKLY' &&
+        parts.every((part) => part === 'BYDAY') &&
+        (rule.parts.BYDAY || []).every((byDay) => /^[A-Z]{2}$/.test(byDay))
+    ) {
+        return interval * 7;
+    }
+    return null;
+}
+
+// Where to start expanding a long-running series: a whole number of cycles
+// after DTSTART, so the pattern stays aligned, and still before `day`.
+function startNear(event, day) {
+    const rule = singleRule(event);
+    const cycleDays = rule && fixedCycleDays(rule);
+    if (!cycleDays) return undefined;
+
+    const cycles = Math.floor(
+        (day - timeDayNumber(event.startDate)) / cycleDays
+    );
+    if (cycles <= 0) return undefined;
+
+    const start = event.startDate.clone();
+    start.adjust(cycles * cycleDays, 0, 0, 0);
+    return start;
 }
 
 // Every event touching a day from `startDate` to `endDate` (YYYY-MM-DD) in
@@ -157,30 +245,13 @@ function eachDay(startDate, endDate, userTimezone) {
 // and moved instances). An event spanning several days appears once per day,
 // each tagged with that `date`.
 function eventsForRange(events, startDate, endDate, userTimezone) {
-    const days = eachDay(startDate, endDate, userTimezone);
-    // Pad the window by a day each side: zone offsets can shift an
-    // occurrence's local date either way.
-    const windowStart = moment
-        .tz(startDate, 'YYYY-MM-DD', userTimezone)
-        .subtract(1, 'day');
-    const windowEnd = moment
-        .tz(endDate, 'YYYY-MM-DD', userTimezone)
-        .add(2, 'day');
+    const dayBounds = dayBoundsBetween(startDate, endDate, userTimezone);
+    const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+    const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+    const firstDay =
+        dayNumber(startYear, startMonth, startDay) - WINDOW_PAD_DAYS;
+    const lastDay = dayNumber(endYear, endMonth, endDay) + WINDOW_PAD_DAYS;
     const results = [];
-
-    const collect = (event, start, end, tzid) => {
-        for (const day of days) {
-            const occurrence = buildOccurrence(
-                event,
-                start,
-                end,
-                day,
-                userTimezone,
-                tzid
-            );
-            if (occurrence) results.push({ ...occurrence, date: day });
-        }
-    };
 
     for (const event of events) {
         const tzid = event.component
@@ -188,38 +259,56 @@ function eventsForRange(events, startDate, endDate, userTimezone) {
             ?.getParameter('tzid');
 
         if (!event.isRecurring()) {
-            collect(event, event.startDate, event.endDate, tzid);
+            const { startDate: start, endDate: end } = event;
+            if (
+                timeDayNumber(end) < firstDay ||
+                timeDayNumber(start) > lastDay
+            ) {
+                continue;
+            }
+            results.push(
+                ...occurrencesByDay(
+                    event,
+                    start,
+                    end,
+                    dayBounds,
+                    userTimezone,
+                    tzid
+                )
+            );
             continue;
         }
 
-        const iterator = event.iterator();
+        const lengthInDays =
+            timeDayNumber(event.endDate) - timeDayNumber(event.startDate);
+        const canSkipOld = !hasExceptionInWindow(event, firstDay, lastDay);
+        const lastStartToSkip = firstDay - lengthInDays - 1;
+        if (canSkipOld && endedBefore(event, lastStartToSkip)) continue;
+
+        const iterator = event.iterator(
+            canSkipOld ? startNear(event, lastStartToSkip) : undefined
+        );
         let next;
         let count = 0;
         while ((next = iterator.next()) && count++ < MAX_ITERATIONS) {
-            const at = next.isDate
-                ? moment.tz(dateOnly(next), 'YYYY-MM-DD', userTimezone)
-                : toMoment(next, tzid, userTimezone);
-            if (at.isAfter(windowEnd)) break;
+            const day = timeDayNumber(next);
+            if (day > lastDay) break;
+            if (canSkipOld && day <= lastStartToSkip) continue;
 
             const details = event.getOccurrenceDetails(next);
-            const endAt = details.endDate.isDate
-                ? moment.tz(
-                      dateOnly(details.endDate),
-                      'YYYY-MM-DD',
-                      userTimezone
-                  )
-                : toMoment(details.endDate, tzid, userTimezone);
-            if (endAt.isBefore(windowStart)) continue;
-
-            collect(
-                details.item,
-                details.startDate,
-                details.endDate,
-                details.item === event
-                    ? tzid
-                    : details.item.component
-                          .getFirstProperty('dtstart')
-                          ?.getParameter('tzid')
+            results.push(
+                ...occurrencesByDay(
+                    details.item,
+                    details.startDate,
+                    details.endDate,
+                    dayBounds,
+                    userTimezone,
+                    details.item === event
+                        ? tzid
+                        : details.item.component
+                              .getFirstProperty('dtstart')
+                              ?.getParameter('tzid')
+                )
             );
         }
     }

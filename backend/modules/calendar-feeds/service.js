@@ -18,10 +18,16 @@ const MIN_REFRESH_MS = 30 * 1000;
 const MAX_FEEDS_PER_USER = 10;
 const MAX_RANGE_DAYS = 62;
 const COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
+const MAX_CACHED_RANGES = 12;
 
-// Parsed feeds per process, keyed by feed uid. A feed changes rarely and
-// Google only refreshes its secret address every few hours anyway.
+// Parsed feeds per process, keyed by feed uid, with the ranges already
+// expanded from each copy. A feed changes rarely and Google only refreshes
+// its secret address every few hours anyway.
 const cache = new Map();
+
+function newCacheEntry(events) {
+    return { events, fetchedAt: Date.now(), ranges: new Map() };
+}
 
 function serializeFeed(feed) {
     return {
@@ -110,7 +116,7 @@ async function create(userId, body = {}) {
         url_host: new URL(url).host,
         last_fetched_at: new Date(),
     });
-    cache.set(feed.uid, { events, fetchedAt: Date.now() });
+    cache.set(feed.uid, newCacheEntry(events));
     return serializeFeed(feed);
 }
 
@@ -132,7 +138,7 @@ async function update(userId, uid, body = {}) {
         updates.url_host = new URL(url).host;
         updates.last_fetched_at = new Date();
         updates.last_error = null;
-        cache.set(feed.uid, { events, fetchedAt: Date.now() });
+        cache.set(feed.uid, newCacheEntry(events));
     }
     await feed.update(updates);
     return serializeFeed(feed);
@@ -144,19 +150,19 @@ async function remove(userId, uid) {
     await feed.destroy();
 }
 
-async function loadFeedEvents(feed, refresh = false) {
+async function loadFeedEntry(feed, refresh = false) {
     const cached = cache.get(feed.uid);
     const maxAge = refresh ? MIN_REFRESH_MS : CACHE_TTL_MS;
     if (cached && Date.now() - cached.fetchedAt < maxAge) {
-        return cached.events;
+        return cached;
     }
 
     try {
         const url = secretCipher.decrypt(feed.url_encrypted);
-        const events = parseCalendar(await fetchFeed(url));
-        cache.set(feed.uid, { events, fetchedAt: Date.now() });
+        const entry = newCacheEntry(parseCalendar(await fetchFeed(url)));
+        cache.set(feed.uid, entry);
         await feed.update({ last_fetched_at: new Date(), last_error: null });
-        return events;
+        return entry;
     } catch (err) {
         const message =
             err instanceof FeedFetchError
@@ -164,9 +170,22 @@ async function loadFeedEvents(feed, refresh = false) {
                 : 'Could not read this calendar';
         await feed.update({ last_error: message });
         // Keep showing the last good copy rather than an empty day.
-        if (cached) return cached.events;
+        if (cached) return cached;
         throw new FeedFetchError(message);
     }
+}
+
+function expandedRange(entry, startDate, endDate, timezone) {
+    const key = `${startDate}|${endDate}|${timezone}`;
+    let expanded = entry.ranges.get(key);
+    if (!expanded) {
+        expanded = eventsForRange(entry.events, startDate, endDate, timezone);
+        if (entry.ranges.size >= MAX_CACHED_RANGES) {
+            entry.ranges.delete(entry.ranges.keys().next().value);
+        }
+        entry.ranges.set(key, expanded);
+    }
+    return expanded;
 }
 
 function validDay(value, name) {
@@ -196,9 +215,9 @@ async function eventsBetween(
     await Promise.all(
         feeds.map(async (feed) => {
             try {
-                const parsed = await loadFeedEvents(feed, refresh);
-                for (const event of eventsForRange(
-                    parsed,
+                const entry = await loadFeedEntry(feed, refresh);
+                for (const event of expandedRange(
+                    entry,
                     startDate,
                     endDate,
                     timezone
