@@ -563,7 +563,46 @@ async function skipRecurringOccurrence(task, userId, userTimezone) {
     return { originalDueDate, nextDueDate };
 }
 
+async function getRecurringHistory(task, timezone, { limit, offset }) {
+    const safeTimezone = getSafeTimezone(timezone);
+    const where = { task_id: task.id };
+    const [rows, total, skippedCount] = await Promise.all([
+        RecurringCompletion.findAll({
+            where,
+            order: [
+                ['completed_at', 'DESC'],
+                ['id', 'DESC'],
+            ],
+            limit,
+            offset,
+        }),
+        RecurringCompletion.count({ where }),
+        RecurringCompletion.count({ where: { ...where, skipped: true } }),
+    ]);
+
+    return {
+        occurrences: rows.map((row) => ({
+            id: row.id,
+            scheduled_for: processDueDateForResponse(
+                row.original_due_date,
+                safeTimezone
+            ),
+            completed_at: row.completed_at.toISOString(),
+            completed_date: processDueDateForResponse(
+                row.completed_at,
+                safeTimezone
+            ),
+            skipped: Boolean(row.skipped),
+        })),
+        total,
+        completed_count: total - skippedCount,
+        skipped_count: skippedCount,
+        has_more: offset + rows.length < total,
+    };
+}
+
 module.exports = {
+    getRecurringHistory,
     handleRecurrenceUpdate,
     calculateNextIterations,
     planOccurrenceAdvance,

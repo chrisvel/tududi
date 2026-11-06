@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import RecurrenceDisplay from '../RecurrenceDisplay';
 import TaskRecurrenceSection from '../TaskForm/TaskRecurrenceSection';
 import TaskRecurringInstanceInfo from './TaskRecurringInstanceInfo';
+import TaskRecurringHistory from './TaskRecurringHistory';
 import { Task, RecurrenceType } from '../../../entities/Task';
 import { TaskIteration } from '../../../utils/tasksService';
 import { getTodayDateString, parseDateString } from '../../../utils/dateUtils';
@@ -299,6 +300,16 @@ const TaskRecurrenceCard: React.FC<TaskRecurrenceCardProps> = ({
                     </>
                 )}
             </div>
+            {task.uid &&
+                !task.recurring_parent_id &&
+                task.recurrence_type &&
+                task.recurrence_type !== 'none' && (
+                    <TaskRecurringHistory
+                        taskUid={task.uid}
+                        refreshKey={task.due_date ?? undefined}
+                        className="mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50"
+                    />
+                )}
         </div>
     );
 };

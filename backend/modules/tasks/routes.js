@@ -72,6 +72,7 @@ const {
     planOccurrenceAdvance,
     recordOccurrence,
     skipRecurringOccurrence,
+    getRecurringHistory,
 } = require('./operations/recurring');
 
 const { getTaskMetrics } = require('./queries/metrics-computation');
@@ -1056,6 +1057,41 @@ router.get('/task/:uid/next-iterations', async (req, res) => {
         res.status(500).json({ error: 'Failed to get next iterations' });
     }
 });
+
+const HISTORY_DEFAULT_LIMIT = 10;
+const HISTORY_MAX_LIMIT = 100;
+
+router.get(
+    '/task/:uid/recurring-history',
+    requireTaskReadAccess,
+    async (req, res) => {
+        try {
+            const task = await taskRepository.findByUid(req.params.uid);
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found.' });
+            }
+
+            const limit = Number.parseInt(req.query.limit, 10);
+            const offset = Number.parseInt(req.query.offset, 10);
+
+            res.json(
+                await getRecurringHistory(task, req.currentUser.timezone, {
+                    limit:
+                        limit > 0
+                            ? Math.min(limit, HISTORY_MAX_LIMIT)
+                            : HISTORY_DEFAULT_LIMIT,
+                    offset: offset > 0 ? offset : 0,
+                })
+            );
+        } catch (error) {
+            logError('Error fetching recurring history:', error);
+            res.status(500).json({
+                error: 'Failed to fetch recurring history',
+            });
+        }
+    }
+);
 
 router.post(
     '/task/:uid/skip-occurrence',

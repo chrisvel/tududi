@@ -83,8 +83,10 @@ This document explains how recurring tasks work in tududi from a user behavior p
     - But it's really the same task showing at different dates
 
 15. **You can see completion history:**
-    - Records of when you completed past occurrences
-    - Shows your pattern of completing the task
+    - A recurring task's side panel and its full page have a History section, shown once there is something to list
+    - Each occurrence shows the date it was scheduled for and the date it was completed, or Skipped
+    - Newest first, ten at a time, with totals for completed and skipped
+    - `GET /api/task/:uid/recurring-history?limit=&offset=` returns the same list (limit up to 100)
 
 ---
 

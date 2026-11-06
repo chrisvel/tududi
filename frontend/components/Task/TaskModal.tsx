@@ -40,6 +40,7 @@ import TaskDeferUntilSection from './TaskForm/TaskDeferUntilSection';
 import TaskRecurrenceSection from './TaskForm/TaskRecurrenceSection';
 import TaskSubtasksCard from './TaskDetails/TaskSubtasksCard';
 import TaskAttachmentsCard from './TaskDetails/TaskAttachmentsCard';
+import TaskRecurringHistory from './TaskDetails/TaskRecurringHistory';
 import TaskComments from './TaskComments';
 import { TaskStatusDropdown, TaskProjectDropdown } from './TaskPanelDropdowns';
 import {
@@ -692,6 +693,16 @@ const TaskModal: React.FC<TaskModalProps> = ({
                     />
                 )}
             </SidePanelSection>
+
+            {task.uid &&
+                !isRecurringInstance &&
+                task.recurrence_type &&
+                task.recurrence_type !== 'none' && (
+                    <TaskRecurringHistory
+                        taskUid={task.uid}
+                        refreshKey={task.due_date ?? undefined}
+                    />
+                )}
 
             {task.uid && (
                 <>

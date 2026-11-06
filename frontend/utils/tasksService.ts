@@ -176,6 +176,40 @@ export const skipTaskOccurrence = async (taskUid: string): Promise<Task> => {
     return await response.json();
 };
 
+export interface RecurringOccurrence {
+    id: number;
+    scheduled_for: string;
+    completed_at: string;
+    completed_date: string;
+    skipped: boolean;
+}
+
+export interface RecurringHistory {
+    occurrences: RecurringOccurrence[];
+    total: number;
+    completed_count: number;
+    skipped_count: number;
+    has_more: boolean;
+}
+
+export const fetchRecurringHistory = async (
+    taskUid: string,
+    offset = 0
+): Promise<RecurringHistory> => {
+    const response = await fetch(
+        getApiPath(
+            `task/${encodeURIComponent(taskUid)}/recurring-history?offset=${offset}`
+        ),
+        {
+            credentials: 'include',
+            headers: { Accept: 'application/json' },
+        }
+    );
+
+    await handleAuthResponse(response, 'Failed to load history.');
+    return await response.json();
+};
+
 export const fetchTaskOrder = async (
     scope: TaskOrderScope
 ): Promise<string[]> => {
