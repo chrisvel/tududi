@@ -5,6 +5,14 @@ Notable changes to tududi. Versions match the git tags and the
 
 ## Unreleased
 
+### Security
+
+- Web Push only accepts and sends to endpoints on the browser push services.
+  Subscriptions saved earlier on any other host are deleted instead of sent
+  (#2056).
+- Creating or updating a project, through the API or MCP, requires owning the
+  area or goal or having it shared read-write (#2057).
+
 ## 1.6.0
 
 ### Changed
