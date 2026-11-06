@@ -5,6 +5,8 @@ Notable changes to tududi. Versions match the git tags and the
 
 ## Unreleased
 
+## 1.15.1
+
 ### Security
 
 - Web Push only accepts and sends to endpoints on the browser push services.
