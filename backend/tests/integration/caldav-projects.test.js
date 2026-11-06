@@ -392,7 +392,10 @@ describe('CalDAV Per-Project Calendars', () => {
                     .send(berlinReportXml)
                     .expect(207);
 
-                expect(response.text).toContain('DUE:20261020T070000Z');
+                expect(response.text).toContain(
+                    'DUE;TZID=Europe/Berlin:20261020T090000'
+                );
+                expect(response.text).toContain('BEGIN:VTIMEZONE');
                 expect(response.text).not.toContain('DUE;VALUE=DATE:20261020');
             });
         });

@@ -4,15 +4,48 @@ const {
     tududiToIcalPriority,
 } = require('./field-mappings');
 const { generateRRULE } = require('./rrule-generator');
+const { toZonedTime, buildVTimezone } = require('./vtimezone');
 const { utcToUserDateString } = require('../../../utils/timezone-utils');
 
-function serializeTaskToVTODO(task, options = {}) {
-    const { userTimezone } = options;
-
+function newCalendar() {
     const comp = new ICAL.Component('vcalendar');
     comp.addPropertyWithValue('version', '2.0');
     comp.addPropertyWithValue('prodid', '-//Tududi//Task Manager//EN');
     comp.addPropertyWithValue('calscale', 'GREGORIAN');
+    return comp;
+}
+
+// A timed DUE/DTSTART goes out in the user's zone: Apple Reminders labels any
+// time in another zone, so a UTC value reads "09:30 (16:30 GMT)" (#2008). Falls
+// back to UTC when the zone cannot carry the instant. Returns the instant when
+// it was written with a TZID, so the caller can add the matching VTIMEZONE.
+function addTimedProperty(vtodo, name, value, userTimezone) {
+    const date = new Date(value);
+    const zoned = toZonedTime(date, userTimezone);
+    if (!zoned) {
+        vtodo.addPropertyWithValue(name, ICAL.Time.fromJSDate(date, true));
+        return null;
+    }
+    vtodo.addPropertyWithValue(name, zoned).setParameter('tzid', userTimezone);
+    return date;
+}
+
+function serializeTaskToVTODO(task, options = {}) {
+    const { vtodo, zonedInstants } = buildVTODO(task, options);
+
+    const comp = newCalendar();
+    const vtimezone = buildVTimezone(options.userTimezone, zonedInstants);
+    if (vtimezone) {
+        comp.addSubcomponent(vtimezone);
+    }
+    comp.addSubcomponent(vtodo);
+
+    return comp.toString();
+}
+
+function buildVTODO(task, options = {}) {
+    const { userTimezone } = options;
+    const zonedInstants = [];
 
     const vtodo = new ICAL.Component('vtodo');
 
@@ -37,11 +70,15 @@ function serializeTaskToVTODO(task, options = {}) {
 
     if (task.due_date && task.due_has_time) {
         try {
-            // A due time is an instant, so DUE is a UTC DATE-TIME.
-            vtodo.addPropertyWithValue(
+            const instant = addTimedProperty(
+                vtodo,
                 'due',
-                ICAL.Time.fromJSDate(new Date(task.due_date), true)
+                task.due_date,
+                userTimezone
             );
+            if (instant) {
+                zonedInstants.push(instant);
+            }
         } catch (error) {
             console.error('Error formatting due date:', error);
         }
@@ -67,11 +104,16 @@ function serializeTaskToVTODO(task, options = {}) {
     if (task.defer_until && task.due_date && task.due_has_time) {
         try {
             // RFC 5545: DTSTART must have the same value type as DUE, so a
-            // timed DUE gets a UTC DATE-TIME DTSTART too.
-            vtodo.addPropertyWithValue(
+            // timed DUE gets a DATE-TIME DTSTART too.
+            const instant = addTimedProperty(
+                vtodo,
                 'dtstart',
-                ICAL.Time.fromJSDate(new Date(task.defer_until), true)
+                task.defer_until,
+                userTimezone
             );
+            if (instant) {
+                zonedInstants.push(instant);
+            }
         } catch (error) {
             console.error('Error formatting defer_until date:', error);
         }
@@ -220,9 +262,7 @@ function serializeTaskToVTODO(task, options = {}) {
         }
     }
 
-    comp.addSubcomponent(vtodo);
-
-    return comp.toString();
+    return { vtodo, zonedInstants };
 }
 
 function getStatusName(status) {
@@ -239,19 +279,14 @@ function getStatusName(status) {
 }
 
 async function serializeCollectionToVCALENDAR(tasks, options = {}) {
-    const comp = new ICAL.Component('vcalendar');
-    comp.addPropertyWithValue('version', '2.0');
-    comp.addPropertyWithValue('prodid', '-//Tududi//Task Manager//EN');
-    comp.addPropertyWithValue('calscale', 'GREGORIAN');
+    const vtodos = [];
+    const zonedInstants = [];
 
     for (const task of tasks) {
         try {
-            const vtodoStr = serializeTaskToVTODO(task, options);
-            const taskComp = new ICAL.Component(ICAL.parse(vtodoStr));
-            const vtodo = taskComp.getFirstSubcomponent('vtodo');
-            if (vtodo) {
-                comp.addSubcomponent(vtodo);
-            }
+            const built = buildVTODO(task, options);
+            vtodos.push(built.vtodo);
+            zonedInstants.push(...built.zonedInstants);
         } catch (err) {
             console.error(
                 `Error serializing task ${task.uid} for collection:`,
@@ -259,6 +294,13 @@ async function serializeCollectionToVCALENDAR(tasks, options = {}) {
             );
         }
     }
+
+    const comp = newCalendar();
+    const vtimezone = buildVTimezone(options.userTimezone, zonedInstants);
+    if (vtimezone) {
+        comp.addSubcomponent(vtimezone);
+    }
+    vtodos.forEach((vtodo) => comp.addSubcomponent(vtodo));
 
     return comp.toString();
 }

@@ -1,5 +1,9 @@
 const crypto = require('crypto');
 
+// Bump when the iCalendar output changes for tasks that did not. ETags and CTags
+// otherwise only follow the task, so clients would keep their old copies.
+const ICAL_FORMAT_VERSION = 2;
+
 function generateETag(task) {
     if (!task) {
         return null;
@@ -11,6 +15,7 @@ function generateETag(task) {
         updated_at: task.updated_at,
         completed_at: task.completed_at,
         status: task.status,
+        format: ICAL_FORMAT_VERSION,
     });
 
     const hash = crypto.createHash('sha256').update(content).digest('hex');
@@ -61,6 +66,7 @@ function matchesETag(etag1, etag2) {
 }
 
 module.exports = {
+    ICAL_FORMAT_VERSION,
     generateETag,
     generateCTag,
     parseETag,
