@@ -89,6 +89,7 @@
     "productivityAssistant": "生产力助手",
     "assignedToMe": "分配给我",
     "everyone": "所有人",
+    "roadmap": "路线图",
     "goals": "目标",
     "habits": "习惯",
     "templates": "模板",
@@ -3445,5 +3446,25 @@
     "adminRequiredTitle": "请先开启两步验证",
     "adminRequiredBody": "此账户可以查看所有客户，因此只有开启两步验证后才能打开管理面板。",
     "adminRequiredAction": "立即设置"
+  },
+  "roadmap": {
+    "title": "路线图",
+    "range": "{{start}} 至 {{end}}",
+    "noDates": "暂无日期",
+    "projectDates": "{{range}}(项目日期)",
+    "noArea": "无区域",
+    "toggle": "显示或隐藏 {{name}}",
+    "previousQuarter": "上一季度",
+    "nextQuarter": "下一季度",
+    "thisQuarter": "本季度",
+    "expandAll": "全部展开",
+    "collapseAll": "全部折叠",
+    "loadError": "无法加载路线图。",
+    "empty": "暂无内容。条形来自项目中任务的开始日期和截止日期。",
+    "items": "区域 / 项目 / 任务",
+    "goalsOutside": "不在本季度:{{count}}",
+    "legendGoal": "目标日期",
+    "legendArea": "区域汇总",
+    "legendProject": "项目汇总"
   }
 }

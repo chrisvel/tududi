@@ -89,6 +89,7 @@
     "productivityAssistant": "생산성 도우미",
     "assignedToMe": "내게 할당됨",
     "everyone": "모두",
+    "roadmap": "로드맵",
     "goals": "목표",
     "habits": "습관",
     "templates": "템플릿",
@@ -3445,5 +3446,25 @@
     "adminRequiredTitle": "먼저 2단계 인증을 켜세요",
     "adminRequiredBody": "이 계정은 모든 고객을 볼 수 있으므로, 관리자 패널은 2단계 인증을 켠 후에만 열립니다.",
     "adminRequiredAction": "설정하기"
+  },
+  "roadmap": {
+    "title": "로드맵",
+    "range": "{{start}}~{{end}}",
+    "noDates": "아직 날짜 없음",
+    "projectDates": "{{range}} (프로젝트 날짜)",
+    "noArea": "영역 없음",
+    "toggle": "{{name}} 표시 또는 숨기기",
+    "previousQuarter": "이전 분기",
+    "nextQuarter": "다음 분기",
+    "thisQuarter": "이번 분기",
+    "expandAll": "모두 펼치기",
+    "collapseAll": "모두 접기",
+    "loadError": "로드맵을 불러올 수 없습니다.",
+    "empty": "아직 표시할 내용이 없습니다. 막대는 프로젝트 작업의 시작일과 마감일로 만들어집니다.",
+    "items": "영역 / 프로젝트 / 작업",
+    "goalsOutside": "이번 분기 외: {{count}}",
+    "legendGoal": "목표 날짜",
+    "legendArea": "영역 요약",
+    "legendProject": "프로젝트 요약"
   }
 }

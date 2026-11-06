@@ -89,6 +89,7 @@
     "productivityAssistant": "生産性アシスタント",
     "assignedToMe": "私に割り当てられた",
     "everyone": "全員",
+    "roadmap": "ロードマップ",
     "goals": "目標",
     "habits": "習慣",
     "templates": "テンプレート",
@@ -3446,5 +3447,25 @@
     "adminRequiredTitle": "先に2段階認証をオンにしてください",
     "adminRequiredBody": "このアカウントはすべての顧客を閲覧できるため、管理パネルは2段階認証がオンのときにのみ開きます。",
     "adminRequiredAction": "設定する"
+  },
+  "roadmap": {
+    "title": "ロードマップ",
+    "range": "{{start}}〜{{end}}",
+    "noDates": "日付はまだありません",
+    "projectDates": "{{range}}(プロジェクトの日付)",
+    "noArea": "エリアなし",
+    "toggle": "{{name}} を表示または非表示",
+    "previousQuarter": "前の四半期",
+    "nextQuarter": "次の四半期",
+    "thisQuarter": "今四半期",
+    "expandAll": "すべて展開",
+    "collapseAll": "すべて折りたたむ",
+    "loadError": "ロードマップを読み込めませんでした。",
+    "empty": "まだ表示するものがありません。バーはプロジェクト内のタスクの開始日と期限から作られます。",
+    "items": "エリア / プロジェクト / タスク",
+    "goalsOutside": "この四半期外: {{count}}",
+    "legendGoal": "目標日",
+    "legendArea": "エリアの概要",
+    "legendProject": "プロジェクトの概要"
   }
 }

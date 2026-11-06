@@ -99,6 +99,7 @@ describe('SidebarLayoutEditor', () => {
                 'allTasks',
                 'assignedToMe',
                 'everyone',
+                'roadmap',
             ],
             sectionOrder: [
                 'notes',
@@ -111,7 +112,7 @@ describe('SidebarLayoutEditor', () => {
 
         const ids = renderedIds();
         expect(ids.slice(0, 2)).toEqual(['today', 'inbox']);
-        expect(ids.slice(7, 9)).toEqual(['notes', 'projects']);
+        expect(ids.slice(8, 10)).toEqual(['notes', 'projects']);
     });
 
     it('has a switch on every row that reflects what is visible', () => {
@@ -126,7 +127,7 @@ describe('SidebarLayoutEditor', () => {
         expect(
             screen.getByRole('switch', { name: 'Show Notes' })
         ).toHaveAttribute('aria-checked', 'true');
-        expect(screen.getAllByRole('switch')).toHaveLength(19);
+        expect(screen.getAllByRole('switch')).toHaveLength(20);
     });
 
     it('reports the item when a switch is clicked', () => {
@@ -234,6 +235,7 @@ describe('SidebarLayoutEditor', () => {
                 'allTasks',
                 'assignedToMe',
                 'everyone',
+                'roadmap',
             ]);
         });
 

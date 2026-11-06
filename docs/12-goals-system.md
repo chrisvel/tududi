@@ -162,6 +162,12 @@ Only `status = active` goals are shown in the expandable list.
 
 ---
 
+## Roadmap
+
+A goal with a target date shows as a diamond on the [Roadmap](31-roadmap.md) when the date falls in the quarter on view. Active and achieved goals count; paused and dropped ones don't.
+
+---
+
 ## Project–Goal Relationship
 
 Each project in an area can be in one of three states relative to goals:

@@ -145,6 +145,7 @@ describe('AppLauncherModal', () => {
                 'tasks',
                 'assigned-to-me',
                 'everyone',
+                'roadmap',
             ]);
             expect(idsIn('sections')).toEqual([
                 'projects',

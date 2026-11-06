@@ -89,6 +89,7 @@
     "productivityAssistant": "Tuottavuusavustaja",
     "assignedToMe": "Mulle osoitettu",
     "everyone": "Kaikki",
+    "roadmap": "Tiekartta",
     "goals": "Tavoitteet",
     "habits": "Tavat",
     "templates": "Mallit",
@@ -3449,5 +3450,25 @@
     "adminRequiredTitle": "Ota ensin kaksivaiheinen tunnistautuminen käyttöön",
     "adminRequiredBody": "Tällä tilillä näkee kaikki asiakkaat, joten hallintapaneeli avautuu vasta, kun kaksivaiheinen tunnistautuminen on käytössä.",
     "adminRequiredAction": "Ota käyttöön"
+  },
+  "roadmap": {
+    "title": "Tiekartta",
+    "range": "{{start}} – {{end}}",
+    "noDates": "Ei vielä päivämääriä",
+    "projectDates": "{{range}} (projektin päivämäärät)",
+    "noArea": "Ei aluetta",
+    "toggle": "Näytä tai piilota {{name}}",
+    "previousQuarter": "Edellinen neljännes",
+    "nextQuarter": "Seuraava neljännes",
+    "thisQuarter": "Tämä neljännes",
+    "expandAll": "Laajenna kaikki",
+    "collapseAll": "Tiivistä kaikki",
+    "loadError": "Tiekartan lataaminen epäonnistui.",
+    "empty": "Ei vielä näytettävää. Palkit muodostuvat projektiesi tehtävien aloitus- ja eräpäivistä.",
+    "items": "Alue / Projekti / Tehtävä",
+    "goalsOutside": "Tämän neljänneksen ulkopuolella: {{count}}",
+    "legendGoal": "Tavoitepäivä",
+    "legendArea": "Alueen yhteenveto",
+    "legendProject": "Projektin yhteenveto"
   }
 }

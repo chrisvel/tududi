@@ -89,6 +89,7 @@
     "productivityAssistant": "Assistente alla Produttività",
     "assignedToMe": "Assegnato a me",
     "everyone": "Tutti",
+    "roadmap": "Roadmap",
     "goals": "Obiettivi",
     "habits": "Abitudini",
     "templates": "Modelli",
@@ -3453,5 +3454,25 @@
     "adminRequiredTitle": "Attiva prima l'autenticazione a due fattori",
     "adminRequiredBody": "Questo account può vedere tutti i clienti, quindi il pannello di amministrazione si apre solo quando l'autenticazione a due fattori è attiva.",
     "adminRequiredAction": "Configurala"
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "range": "Da {{start}} a {{end}}",
+    "noDates": "Ancora nessuna data",
+    "projectDates": "{{range}} (date del progetto)",
+    "noArea": "Nessuna area",
+    "toggle": "Mostra o nascondi {{name}}",
+    "previousQuarter": "Trimestre precedente",
+    "nextQuarter": "Trimestre successivo",
+    "thisQuarter": "Questo trimestre",
+    "expandAll": "Espandi tutto",
+    "collapseAll": "Comprimi tutto",
+    "loadError": "Impossibile caricare la roadmap.",
+    "empty": "Ancora niente da mostrare. Le barre derivano dalle date di inizio e scadenza delle attività nei tuoi progetti.",
+    "items": "Area / Progetto / Attività",
+    "goalsOutside": "Fuori da questo trimestre: {{count}}",
+    "legendGoal": "Data obiettivo",
+    "legendArea": "Riepilogo area",
+    "legendProject": "Riepilogo progetto"
   }
 }

@@ -447,6 +447,7 @@ const membersModule = require('./modules/members');
 const templatesModule = require('./modules/templates');
 const reportsModule = require('./modules/reports');
 const everyoneModule = require('./modules/everyone');
+const roadmapModule = require('./modules/roadmap');
 const groupsModule = require('./modules/groups');
 const feedbackModule = require('./modules/feedback');
 const pushModule = require('./modules/push');
@@ -580,6 +581,7 @@ const registerApiRoutes = (basePath) => {
     app.use(basePath, templatesModule.routes);
     app.use(basePath, reportsModule.routes);
     app.use(basePath, everyoneModule.routes);
+    app.use(basePath, roadmapModule.routes);
     app.use(basePath, groupsModule.routes);
     app.use(basePath, feedbackModule.routes);
     app.use(basePath, pushModule.routes);

@@ -89,6 +89,7 @@
     "productivityAssistant": "مساعد الإنتاجية",
     "assignedToMe": "مخصص لي",
     "everyone": "الجميع",
+    "roadmap": "خارطة الطريق",
     "goals": "الأهداف",
     "habits": "العادات",
     "templates": "القوالب",
@@ -3473,5 +3474,25 @@
     "adminRequiredTitle": "فعّل المصادقة الثنائية أولًا",
     "adminRequiredBody": "يمكن لهذا الحساب رؤية جميع العملاء، لذا لا تُفتح لوحة الإدارة إلا بعد تفعيل المصادقة الثنائية.",
     "adminRequiredAction": "إعدادها"
+  },
+  "roadmap": {
+    "title": "خارطة الطريق",
+    "range": "{{start}} إلى {{end}}",
+    "noDates": "لا توجد تواريخ بعد",
+    "projectDates": "{{range}} (تواريخ المشروع)",
+    "noArea": "بلا منطقة",
+    "toggle": "إظهار أو إخفاء {{name}}",
+    "previousQuarter": "الربع السابق",
+    "nextQuarter": "الربع التالي",
+    "thisQuarter": "هذا الربع",
+    "expandAll": "توسيع الكل",
+    "collapseAll": "طي الكل",
+    "loadError": "تعذر تحميل خارطة الطريق.",
+    "empty": "لا يوجد ما يُعرض بعد. تأتي الأشرطة من تواريخ البدء والاستحقاق لمهام مشاريعك.",
+    "items": "المنطقة / المشروع / المهمة",
+    "goalsOutside": "خارج هذا الربع: {{count}}",
+    "legendGoal": "التاريخ المستهدف",
+    "legendArea": "ملخص المنطقة",
+    "legendProject": "ملخص المشروع"
   }
 }
