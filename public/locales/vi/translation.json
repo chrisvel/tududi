@@ -89,6 +89,7 @@
     "productivityAssistant": "Trợ lý Năng suất",
     "assignedToMe": "Được giao cho tôi",
     "everyone": "Mọi người",
+    "roadmap": "Lộ trình",
     "goals": "Mục tiêu",
     "habits": "Thói quen",
     "templates": "Mẫu",
@@ -3445,5 +3446,25 @@
     "adminRequiredTitle": "Hãy bật xác minh hai bước trước",
     "adminRequiredBody": "Tài khoản này xem được mọi khách hàng, nên bảng quản trị chỉ mở khi xác minh hai bước đã bật.",
     "adminRequiredAction": "Thiết lập"
+  },
+  "roadmap": {
+    "title": "Lộ trình",
+    "range": "{{start}} đến {{end}}",
+    "noDates": "Chưa có ngày",
+    "projectDates": "{{range}} (ngày của dự án)",
+    "noArea": "Không có khu vực",
+    "toggle": "Hiện hoặc ẩn {{name}}",
+    "previousQuarter": "Quý trước",
+    "nextQuarter": "Quý sau",
+    "thisQuarter": "Quý này",
+    "expandAll": "Mở rộng tất cả",
+    "collapseAll": "Thu gọn tất cả",
+    "loadError": "Không thể tải lộ trình.",
+    "empty": "Chưa có gì để hiển thị. Các thanh được lấy từ ngày bắt đầu và hạn của công việc trong dự án của bạn.",
+    "items": "Khu vực / Dự án / Công việc",
+    "goalsOutside": "Ngoài quý này: {{count}}",
+    "legendGoal": "Ngày mục tiêu",
+    "legendArea": "Tóm tắt khu vực",
+    "legendProject": "Tóm tắt dự án"
   }
 }

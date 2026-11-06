@@ -89,6 +89,7 @@
     "productivityAssistant": "Produktivitetsassistent",
     "assignedToMe": "Tilldelat mig",
     "everyone": "Alla",
+    "roadmap": "Färdplan",
     "goals": "Mål",
     "habits": "Vanor",
     "templates": "Mallar",
@@ -3449,5 +3450,25 @@
     "adminRequiredTitle": "Slå på tvåfaktorsautentisering först",
     "adminRequiredBody": "Det här kontot kan se alla kunder, så adminpanelen öppnas först när tvåfaktorsautentisering är på.",
     "adminRequiredAction": "Konfigurera"
+  },
+  "roadmap": {
+    "title": "Färdplan",
+    "range": "{{start}} till {{end}}",
+    "noDates": "Inga datum ännu",
+    "projectDates": "{{range}} (projektdatum)",
+    "noArea": "Inget område",
+    "toggle": "Visa eller dölj {{name}}",
+    "previousQuarter": "Föregående kvartal",
+    "nextQuarter": "Nästa kvartal",
+    "thisQuarter": "Det här kvartalet",
+    "expandAll": "Expandera alla",
+    "collapseAll": "Fäll ihop alla",
+    "loadError": "Det gick inte att läsa in färdplanen.",
+    "empty": "Inget att visa ännu. Staplarna kommer från start- och förfallodatum för uppgifterna i dina projekt.",
+    "items": "Område / Projekt / Uppgift",
+    "goalsOutside": "Utanför det här kvartalet: {{count}}",
+    "legendGoal": "Måldatum",
+    "legendArea": "Områdessammanfattning",
+    "legendProject": "Projektsammanfattning"
   }
 }

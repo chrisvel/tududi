@@ -89,6 +89,7 @@
     "productivityAssistant": "Asistente de Productividad",
     "assignedToMe": "Asignado a mí",
     "everyone": "Todos",
+    "roadmap": "Hoja de ruta",
     "goals": "Metas",
     "habits": "Hábitos",
     "templates": "Plantillas",
@@ -3440,5 +3441,25 @@
     "adminRequiredTitle": "Activa primero la autenticación de dos factores",
     "adminRequiredBody": "Esta cuenta puede ver a todos los clientes, así que el panel de administración solo se abre cuando la autenticación de dos factores está activada.",
     "adminRequiredAction": "Configurarla"
+  },
+  "roadmap": {
+    "title": "Hoja de ruta",
+    "range": "{{start}} a {{end}}",
+    "noDates": "Aún sin fechas",
+    "projectDates": "{{range}} (fechas del proyecto)",
+    "noArea": "Sin área",
+    "toggle": "Mostrar u ocultar {{name}}",
+    "previousQuarter": "Trimestre anterior",
+    "nextQuarter": "Trimestre siguiente",
+    "thisQuarter": "Este trimestre",
+    "expandAll": "Expandir todo",
+    "collapseAll": "Contraer todo",
+    "loadError": "No se pudo cargar la hoja de ruta.",
+    "empty": "Aún no hay nada que mostrar. Las barras salen de las fechas de inicio y vencimiento de las tareas de tus proyectos.",
+    "items": "Área / Proyecto / Tarea",
+    "goalsOutside": "Fuera de este trimestre: {{count}}",
+    "legendGoal": "Fecha objetivo",
+    "legendArea": "Resumen del área",
+    "legendProject": "Resumen del proyecto"
   }
 }

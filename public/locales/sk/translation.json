@@ -87,6 +87,7 @@
         "productivityAssistant": "Asistent produktivity",
         "assignedToMe": "Priradené mne",
         "everyone": "Všetci",
+        "roadmap": "Plán",
         "people": "Ľudia",
         "goals": "Ciele",
         "habits": "Návyky",
@@ -3476,5 +3477,25 @@
         "adminRequiredTitle": "Najprv zapnite dvojfaktorové overenie",
         "adminRequiredBody": "Tento účet vidí všetkých zákazníkov, preto sa panel správcu otvorí až po zapnutí dvojfaktorového overenia.",
         "adminRequiredAction": "Nastaviť"
+    },
+    "roadmap": {
+        "title": "Plán",
+        "range": "{{start}} až {{end}}",
+        "noDates": "Zatiaľ bez dátumov",
+        "projectDates": "{{range}} (dátumy projektu)",
+        "noArea": "Bez oblasti",
+        "toggle": "Zobraziť alebo skryť: {{name}}",
+        "previousQuarter": "Predchádzajúci štvrťrok",
+        "nextQuarter": "Nasledujúci štvrťrok",
+        "thisQuarter": "Tento štvrťrok",
+        "expandAll": "Rozbaliť všetko",
+        "collapseAll": "Zbaliť všetko",
+        "loadError": "Plán sa nepodarilo načítať.",
+        "empty": "Zatiaľ nie je čo zobraziť. Pruhy vychádzajú z dátumov začiatku a termínov úloh vo vašich projektoch.",
+        "items": "Oblasť / Projekt / Úloha",
+        "goalsOutside": "Mimo tohto štvrťroka: {{count}}",
+        "legendGoal": "Cieľový dátum",
+        "legendArea": "Súhrn oblasti",
+        "legendProject": "Súhrn projektu"
     }
 }

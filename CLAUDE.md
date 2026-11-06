@@ -358,6 +358,11 @@ See [docs/architecture.md](docs/architecture.md) for full diagrams; the essentia
     - Instance export on 1.x, import in merge mode on 2.0, `TUDUDI_ALLOW_DIALECT_SWITCH`
     - What comes across and what has to be set up again
 
+40. **[Roadmap](docs/31-roadmap.md)**
+    - One quarter across areas, projects and tasks, with goals pinned as diamonds
+    - Project and area summary bars from earliest task start to latest task finish
+    - `GET /api/roadmap` and which tasks, projects and goals count
+
 ---
 
 ## Project Overview

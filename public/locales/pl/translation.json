@@ -89,6 +89,7 @@
     "productivityAssistant": "Asystent produktywności",
     "assignedToMe": "Przypisane do mnie",
     "everyone": "Wszyscy",
+    "roadmap": "Plan działania",
     "goals": "Cele",
     "habits": "Nawyki",
     "templates": "Szablony",
@@ -3461,5 +3462,25 @@
     "adminRequiredTitle": "Najpierw włącz weryfikację dwuetapową",
     "adminRequiredBody": "To konto widzi wszystkich klientów, więc panel administracyjny otwiera się dopiero po włączeniu weryfikacji dwuetapowej.",
     "adminRequiredAction": "Skonfiguruj"
+  },
+  "roadmap": {
+    "title": "Plan działania",
+    "range": "{{start}} do {{end}}",
+    "noDates": "Brak dat",
+    "projectDates": "{{range}} (daty projektu)",
+    "noArea": "Bez obszaru",
+    "toggle": "Pokaż lub ukryj: {{name}}",
+    "previousQuarter": "Poprzedni kwartał",
+    "nextQuarter": "Następny kwartał",
+    "thisQuarter": "Ten kwartał",
+    "expandAll": "Rozwiń wszystko",
+    "collapseAll": "Zwiń wszystko",
+    "loadError": "Nie udało się wczytać planu działania.",
+    "empty": "Nie ma jeszcze nic do pokazania. Paski powstają z dat rozpoczęcia i terminów zadań w Twoich projektach.",
+    "items": "Obszar / Projekt / Zadanie",
+    "goalsOutside": "Poza tym kwartałem: {{count}}",
+    "legendGoal": "Data docelowa",
+    "legendArea": "Podsumowanie obszaru",
+    "legendProject": "Podsumowanie projektu"
   }
 }

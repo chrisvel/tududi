@@ -89,6 +89,7 @@
     "productivityAssistant": "Produktivitetsassistent",
     "assignedToMe": "Tildelt meg",
     "everyone": "Alle",
+    "roadmap": "Veikart",
     "goals": "Mål",
     "habits": "Vaner",
     "templates": "Maler",
@@ -3454,5 +3455,25 @@
     "adminRequiredTitle": "Slå på tofaktorautentisering først",
     "adminRequiredBody": "Denne kontoen kan se alle kunder, så administrasjonspanelet åpnes bare når tofaktorautentisering er på.",
     "adminRequiredAction": "Sett det opp"
+  },
+  "roadmap": {
+    "title": "Veikart",
+    "range": "{{start}} til {{end}}",
+    "noDates": "Ingen datoer ennå",
+    "projectDates": "{{range}} (prosjektdatoer)",
+    "noArea": "Intet område",
+    "toggle": "Vis eller skjul {{name}}",
+    "previousQuarter": "Forrige kvartal",
+    "nextQuarter": "Neste kvartal",
+    "thisQuarter": "Dette kvartalet",
+    "expandAll": "Utvid alle",
+    "collapseAll": "Skjul alle",
+    "loadError": "Kunne ikke laste veikartet.",
+    "empty": "Ingenting å vise ennå. Stolpene kommer fra start- og forfallsdatoene til oppgavene i prosjektene dine.",
+    "items": "Område / Prosjekt / Oppgave",
+    "goalsOutside": "Utenfor dette kvartalet: {{count}}",
+    "legendGoal": "Måldato",
+    "legendArea": "Områdesammendrag",
+    "legendProject": "Prosjektsammendrag"
   }
 }

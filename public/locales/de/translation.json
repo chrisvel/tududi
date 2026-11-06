@@ -89,6 +89,7 @@
     "productivityAssistant": "Produktivitätsassistent",
     "assignedToMe": "Mir zugewiesen",
     "everyone": "Jeder",
+    "roadmap": "Roadmap",
     "goals": "Ziele",
     "habits": "Gewohnheiten",
     "templates": "Vorlagen",
@@ -3458,5 +3459,25 @@
     "adminRequiredTitle": "Schalten Sie zuerst die Zwei-Faktor-Anmeldung ein",
     "adminRequiredBody": "Dieses Konto kann alle Kunden sehen. Deshalb öffnet sich der Admin-Bereich erst, wenn die Zwei-Faktor-Anmeldung eingeschaltet ist.",
     "adminRequiredAction": "Einrichten"
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "range": "{{start}} bis {{end}}",
+    "noDates": "Noch keine Termine",
+    "projectDates": "{{range}} (Projekttermine)",
+    "noArea": "Kein Bereich",
+    "toggle": "{{name}} ein- oder ausblenden",
+    "previousQuarter": "Vorheriges Quartal",
+    "nextQuarter": "Nächstes Quartal",
+    "thisQuarter": "Dieses Quartal",
+    "expandAll": "Alle aufklappen",
+    "collapseAll": "Alle zuklappen",
+    "loadError": "Die Roadmap konnte nicht geladen werden.",
+    "empty": "Noch nichts anzuzeigen. Die Balken ergeben sich aus den Start- und Fälligkeitsdaten der Aufgaben in deinen Projekten.",
+    "items": "Bereich / Projekt / Aufgabe",
+    "goalsOutside": "Außerhalb dieses Quartals: {{count}}",
+    "legendGoal": "Zieldatum",
+    "legendArea": "Bereichsübersicht",
+    "legendProject": "Projektübersicht"
   }
 }

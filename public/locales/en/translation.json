@@ -88,6 +88,7 @@
     "productivityAssistant": "Productivity Assistant",
     "assignedToMe": "Assigned to me",
     "everyone": "Everyone",
+    "roadmap": "Roadmap",
     "people": "People",
     "goals": "Goals",
     "habits": "Habits",
@@ -3854,5 +3855,25 @@
     "adminRequiredTitle": "Turn on two-factor sign-in first",
     "adminRequiredBody": "This account can see every customer, so the admin panel opens only once two-factor sign-in is on.",
     "adminRequiredAction": "Set it up"
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "range": "{{start}} to {{end}}",
+    "noDates": "No dates yet",
+    "projectDates": "{{range}} (project dates)",
+    "noArea": "No area",
+    "toggle": "Show or hide {{name}}",
+    "previousQuarter": "Previous quarter",
+    "nextQuarter": "Next quarter",
+    "thisQuarter": "This quarter",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all",
+    "loadError": "Could not load the roadmap.",
+    "empty": "Nothing to show yet. Bars come from the start and due dates of tasks in your projects.",
+    "items": "Area / Project / Task",
+    "goalsOutside": "Outside this quarter: {{count}}",
+    "legendGoal": "Goal target date",
+    "legendArea": "Area summary",
+    "legendProject": "Project summary"
   }
 }

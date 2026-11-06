@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+    Bars3BottomLeftIcon,
     BookOpenIcon,
     CalendarDaysIcon,
     CalendarIcon,
@@ -348,6 +349,11 @@ const SidebarLayoutEditor: React.FC<SidebarLayoutEditorProps> = ({
             note: hasCollaborators
                 ? undefined
                 : t('profile.sidebarNoCollaborators', 'No collaborators'),
+        },
+        {
+            id: 'roadmap',
+            label: t('sidebar.roadmap', 'Roadmap'),
+            Icon: Bars3BottomLeftIcon,
         },
     ];
 

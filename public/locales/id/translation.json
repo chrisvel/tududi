@@ -89,6 +89,7 @@
     "productivityAssistant": "Asisten Produktivitas",
     "assignedToMe": "Ditetapkan untuk saya",
     "everyone": "Semua orang",
+    "roadmap": "Peta jalan",
     "goals": "Tujuan",
     "habits": "Kebiasaan",
     "templates": "Templat",
@@ -3445,5 +3446,25 @@
     "adminRequiredTitle": "Aktifkan verifikasi dua langkah terlebih dahulu",
     "adminRequiredBody": "Akun ini bisa melihat semua pelanggan, jadi panel admin hanya terbuka setelah verifikasi dua langkah aktif.",
     "adminRequiredAction": "Atur sekarang"
+  },
+  "roadmap": {
+    "title": "Peta jalan",
+    "range": "{{start}} sampai {{end}}",
+    "noDates": "Belum ada tanggal",
+    "projectDates": "{{range}} (tanggal proyek)",
+    "noArea": "Tanpa area",
+    "toggle": "Tampilkan atau sembunyikan {{name}}",
+    "previousQuarter": "Kuartal sebelumnya",
+    "nextQuarter": "Kuartal berikutnya",
+    "thisQuarter": "Kuartal ini",
+    "expandAll": "Bentangkan semua",
+    "collapseAll": "Ciutkan semua",
+    "loadError": "Tidak dapat memuat peta jalan.",
+    "empty": "Belum ada yang bisa ditampilkan. Bilah berasal dari tanggal mulai dan tenggat tugas di proyek Anda.",
+    "items": "Area / Proyek / Tugas",
+    "goalsOutside": "Di luar kuartal ini: {{count}}",
+    "legendGoal": "Tanggal target",
+    "legendArea": "Ringkasan area",
+    "legendProject": "Ringkasan proyek"
   }
 }

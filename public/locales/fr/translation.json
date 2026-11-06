@@ -89,6 +89,7 @@
     "productivityAssistant": "Assistant de productivité",
     "assignedToMe": "Assigné à moi",
     "everyone": "Tout le monde",
+    "roadmap": "Feuille de route",
     "goals": "Objectifs",
     "habits": "Habitudes",
     "templates": "Modèles",
@@ -3453,5 +3454,25 @@
     "adminRequiredTitle": "Activez d'abord l'authentification à deux facteurs",
     "adminRequiredBody": "Ce compte peut voir tous les clients, le panneau d'administration ne s'ouvre donc qu'une fois l'authentification à deux facteurs activée.",
     "adminRequiredAction": "La configurer"
+  },
+  "roadmap": {
+    "title": "Feuille de route",
+    "range": "{{start}} au {{end}}",
+    "noDates": "Pas encore de dates",
+    "projectDates": "{{range}} (dates du projet)",
+    "noArea": "Aucune zone",
+    "toggle": "Afficher ou masquer {{name}}",
+    "previousQuarter": "Trimestre précédent",
+    "nextQuarter": "Trimestre suivant",
+    "thisQuarter": "Ce trimestre",
+    "expandAll": "Tout développer",
+    "collapseAll": "Tout réduire",
+    "loadError": "Impossible de charger la feuille de route.",
+    "empty": "Rien à afficher pour le moment. Les barres viennent des dates de début et d’échéance des tâches de vos projets.",
+    "items": "Zone / Projet / Tâche",
+    "goalsOutside": "Hors de ce trimestre : {{count}}",
+    "legendGoal": "Date cible",
+    "legendArea": "Résumé de la zone",
+    "legendProject": "Résumé du projet"
   }
 }

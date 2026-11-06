@@ -89,6 +89,7 @@
     "productivityAssistant": "Asistent de Productivitate",
     "assignedToMe": "Atribuit mie",
     "everyone": "Toată lumea",
+    "roadmap": "Foaie de parcurs",
     "goals": "Obiective",
     "habits": "Obiceiuri",
     "templates": "Șabloane",
@@ -3457,5 +3458,25 @@
     "adminRequiredTitle": "Activează mai întâi autentificarea în doi pași",
     "adminRequiredBody": "Acest cont vede toți clienții, așa că panoul de administrare se deschide doar după ce autentificarea în doi pași este activată.",
     "adminRequiredAction": "Configureaz-o"
+  },
+  "roadmap": {
+    "title": "Foaie de parcurs",
+    "range": "{{start}} – {{end}}",
+    "noDates": "Încă fără date",
+    "projectDates": "{{range}} (datele proiectului)",
+    "noArea": "Fără zonă",
+    "toggle": "Afișează sau ascunde {{name}}",
+    "previousQuarter": "Trimestrul anterior",
+    "nextQuarter": "Trimestrul următor",
+    "thisQuarter": "Acest trimestru",
+    "expandAll": "Extinde tot",
+    "collapseAll": "Restrânge tot",
+    "loadError": "Foaia de parcurs nu a putut fi încărcată.",
+    "empty": "Încă nu este nimic de afișat. Barele provin din datele de început și scadență ale sarcinilor din proiectele tale.",
+    "items": "Zonă / Proiect / Sarcină",
+    "goalsOutside": "În afara acestui trimestru: {{count}}",
+    "legendGoal": "Data țintă",
+    "legendArea": "Rezumatul zonei",
+    "legendProject": "Rezumatul proiectului"
   }
 }
