@@ -19,6 +19,7 @@ import { useScreenCovered } from './useScreenCovered';
 const PHONE_BUTTON_HIDDEN_ON = ['/inbox', '/task/', '/note/'];
 
 const NAVBAR_BUTTON = '[data-testid="capture-navbar-button"]';
+const SCRIM = '[data-testid="capture-scrim"]';
 const PHONE_BUTTON = '[data-testid="capture-phone-button"]';
 // Matches the phone button's lg:hidden.
 const PHONE_QUERY = '(max-width: 1023px)';
@@ -54,13 +55,19 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
         return () => query.removeEventListener('change', onChange);
     }, []);
     // A click or tap anywhere outside closes it. The navbar button toggles
-    // on its own, so it is left out.
+    // on its own, so it is left out. The scrim closes it on its own click:
+    // closing on pointerdown there would remove it before a phone sends the
+    // tap's click, and that click would land on whatever sits underneath.
     useEffect(() => {
         if (!open) return undefined;
         const onPointerDown = (event: PointerEvent) => {
             const node = event.target as Node | null;
             if (!node || dialogRef.current?.contains(node)) return;
-            if (node instanceof Element && node.closest(NAVBAR_BUTTON)) return;
+            if (
+                node instanceof Element &&
+                (node.closest(NAVBAR_BUTTON) || node.closest(SCRIM))
+            )
+                return;
             closeCapture();
         };
         document.addEventListener('pointerdown', onPointerDown);
@@ -127,13 +134,14 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
                 </button>
             )}
             {open && (
-                // Dims the page so the box reads as the one thing in front.
-                // A click on it closes the box through the outside-click
-                // handler above.
+                // Dims the page so the box reads as the one thing in front,
+                // and catches taps so they never reach the page. It sits
+                // above task rows (z-[10000]) and below pickers (z-[10050]).
                 <div
                     aria-hidden="true"
                     data-testid="capture-scrim"
-                    className="fixed inset-0 z-50 bg-gray-900/20 dark:bg-black/50"
+                    onClick={closeCapture}
+                    className="fixed inset-0 z-[10040] bg-gray-900/20 dark:bg-black/50"
                 />
             )}
             {everOpened && (
@@ -148,7 +156,7 @@ const CaptureHost: React.FC<CaptureHostProps> = ({ sidebarOpen = false }) => {
                             '--capture-dock-left': dockLeft,
                         } as React.CSSProperties
                     }
-                    className="fixed z-50 inset-x-0 bottom-0 pb-[env(safe-area-inset-bottom)] bg-white dark:bg-gray-800 rounded-t-2xl shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.3)] max-h-[85vh] lg:inset-x-auto lg:left-[var(--capture-dock-left)] lg:top-[4.5rem] lg:bottom-auto lg:w-[640px] lg:pb-0 lg:rounded-2xl lg:shadow-[0_18px_40px_-12px_rgba(23,32,43,0.4),0_0_0_1px_theme(colors.gray.300)] dark:lg:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.85),0_0_0_1px_theme(colors.gray.600)]"
+                    className="fixed z-[10045] inset-x-0 bottom-0 pb-[env(safe-area-inset-bottom)] bg-white dark:bg-gray-800 rounded-t-2xl shadow-[0_-10px_30px_-10px_rgba(0,0,0,0.3)] max-h-[85vh] lg:inset-x-auto lg:left-[var(--capture-dock-left)] lg:top-[4.5rem] lg:bottom-auto lg:w-[640px] lg:pb-0 lg:rounded-2xl lg:shadow-[0_18px_40px_-12px_rgba(23,32,43,0.4),0_0_0_1px_theme(colors.gray.300)] dark:lg:shadow-[0_18px_40px_-12px_rgba(0,0,0,0.85),0_0_0_1px_theme(colors.gray.600)]"
                 >
                     <div className="max-h-[85vh] overflow-y-auto rounded-t-2xl lg:rounded-2xl">
                         <QuickCaptureInput

@@ -176,6 +176,24 @@ describe('CaptureHost', () => {
         expect(screen.getByTestId('capture-dialog')).not.toBeVisible();
     });
 
+    it('keeps the scrim up until the tap ends so it never hits the page', async () => {
+        renderHost();
+        act(() => toggleCapture());
+        await waitFor(() =>
+            expect(screen.getByTestId('capture-dialog')).toBeVisible()
+        );
+
+        // A phone sends the tap's click after the finger lifts; the scrim
+        // has to still be there to take it.
+        fireEvent.pointerDown(screen.getByTestId('capture-scrim'));
+        expect(screen.getByTestId('capture-scrim')).toBeInTheDocument();
+        expect(screen.getByTestId('capture-dialog')).toBeVisible();
+
+        fireEvent.click(screen.getByTestId('capture-scrim'));
+        expect(screen.queryByTestId('capture-scrim')).not.toBeInTheDocument();
+        expect(screen.getByTestId('capture-dialog')).not.toBeVisible();
+    });
+
     it('opens from Plan my day locked on Task and Today', () => {
         renderHost();
         act(() => openCapture('inbox', 'today'));
