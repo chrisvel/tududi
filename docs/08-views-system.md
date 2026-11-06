@@ -35,10 +35,10 @@ This document explains how Views work in tududi from a user behavior perspective
    - Select entity types (Tasks, Notes, Projects)
    - Set priority filter (High, Medium, Low)
    - Set status filter (e.g. In Progress)
-   - Set due date filter (Today, This Week, Overdue, etc.)
+   - Set due date filter (today, tomorrow, next week, next month, or has no Due Date). Has no Due Date finds unscheduled items, and picking it drops a chosen date and is Overdue
    - Set defer filter (Deferred, Not Deferred, etc.)
    - Add tags
-   - Add extras (Recurring, Has Content, Deferred, Has Tags, Assigned to Project, Overdue, No Due Date). Most come in pairs with an opposite (is not Recurring, has no Content, is not Deferred, has no Tags, has no Project); picking one side drops the other
+   - Add extras (Recurring, Has Content, Deferred, Has Tags, Assigned to Project, Overdue). Most come in pairs with an opposite (is not Recurring, has no Content, is not Deferred, has no Tags, has no Project); picking one side drops the other
 
 3. **Click "Save as View"**
 4. **Enter a name** for your view
@@ -225,7 +225,8 @@ A view shows items that match **ALL** of the following criteria (AND logic):
 
 4. **Due date matches** (if set)
    - Filters based on due date range
-   - Options: today, this_week, next_week, overdue, no_due_date
+   - Options: today, tomorrow, next_week, next_month
+   - Items with no due date use the `no_due_date` extra, shown in the same row in the search menu
 
 5. **Defer matches** (if set)
    - Filters based on defer status

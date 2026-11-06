@@ -82,7 +82,6 @@ const extrasOptions = [
     { value: 'not_deferred', labelKey: 'search.extrasFilter.isNotDeferred' },
     { value: 'has_tags', labelKey: 'search.extrasFilter.hasTags' },
     { value: 'no_tags', labelKey: 'search.extrasFilter.hasNoTags' },
-    { value: 'no_due_date', labelKey: 'search.extrasFilter.hasNoDueDate' },
     {
         value: 'assigned_to_project',
         labelKey: 'search.extrasFilter.isAssignedToProject',
@@ -90,10 +89,18 @@ const extrasOptions = [
     { value: 'no_project', labelKey: 'search.extrasFilter.hasNoProject' },
 ];
 
+// Sent as an extra, but shown in the Due row next to the date options
+const noDueDateOption = {
+    value: 'no_due_date',
+    labelKey: 'search.extrasFilter.hasNoDueDate',
+};
+
 // Each extra and its opposite can't both apply, so picking one drops the other
 const oppositeExtras: Record<string, string> = {
     recurring: 'not_recurring',
     not_recurring: 'recurring',
+    overdue: noDueDateOption.value,
+    [noDueDateOption.value]: 'overdue',
     has_content: 'no_content',
     no_content: 'has_content',
     deferred: 'not_deferred',
@@ -157,6 +164,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
 
     const handleDueToggle = (due: string) => {
         setSelectedDue(selectedDue === due ? null : due);
+        setSelectedExtras((prev) =>
+            prev.filter((e) => e !== noDueDateOption.value)
+        );
     };
 
     const handleDeferToggle = (defer: string) => {
@@ -182,6 +192,9 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
         );
         if (isSelecting && extra === 'no_tags') {
             setSelectedTags([]);
+        }
+        if (isSelecting && extra === noDueDateOption.value) {
+            setSelectedDue(null);
         }
     };
 
@@ -426,7 +439,7 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                 <span key="extras-label">{t('search.thatAre') + ' '}</span>
             );
             const extrasElements = selectedExtras.map((extra) => {
-                const extraOption = extrasOptions.find(
+                const extraOption = [...extrasOptions, noDueDateOption].find(
                     (opt) => opt.value === extra
                 );
                 const extraLabel = extraOption
@@ -625,6 +638,17 @@ const SearchMenu: React.FC<SearchMenuProps> = ({
                                             }
                                         />
                                     ))}
+                                    <FilterBadge
+                                        name={t(noDueDateOption.labelKey)}
+                                        isSelected={selectedExtras.includes(
+                                            noDueDateOption.value
+                                        )}
+                                        onToggle={() =>
+                                            handleExtrasToggle(
+                                                noDueDateOption.value
+                                            )
+                                        }
+                                    />
                                 </div>
                             </div>
 
