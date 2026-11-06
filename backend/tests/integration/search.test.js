@@ -1193,6 +1193,37 @@ describe('Universal Search Routes', () => {
                 expect(names).not.toContain('Overdue Task');
             });
 
+            it('should combine a task status with no_due_date for a backlog of unscheduled tasks', async () => {
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Unscheduled Not Started',
+                    status: Task.STATUS.NOT_STARTED,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Unscheduled In Progress',
+                    status: Task.STATUS.IN_PROGRESS,
+                });
+                await Task.create({
+                    user_id: user.id,
+                    name: 'Scheduled Not Started',
+                    status: Task.STATUS.NOT_STARTED,
+                    due_date: new Date(Date.now() + 86400000),
+                });
+
+                const response = await agent.get('/api/search').query({
+                    filters: 'Task',
+                    task_status: 'not_started',
+                    extras: 'no_due_date',
+                });
+
+                expect(response.status).toBe(200);
+                const names = getTaskNames(response);
+                expect(names).toContain('Unscheduled Not Started');
+                expect(names).not.toContain('Unscheduled In Progress');
+                expect(names).not.toContain('Scheduled Not Started');
+            });
+
             it('should return only projects without tags when extras include no_tags', async () => {
                 const taggedProject = await Project.create({
                     user_id: user.id,
