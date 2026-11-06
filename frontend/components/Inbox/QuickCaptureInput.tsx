@@ -37,7 +37,16 @@ import {
     splitFirstLine,
 } from '../../utils/captureText';
 import type { CaptureProject } from '../../utils/captureUi';
-import { InboxTokenKind, splitInboxTokens } from '../../utils/inboxTokens';
+import {
+    escapeTokenName,
+    formatTokenName,
+    InboxTokenKind,
+    PROJECT_QUERY_PATTERN,
+    QUOTED_NAME,
+    readTokenName,
+    splitInboxTokens,
+    tokenizeInboxText,
+} from '../../utils/inboxTokens';
 import {
     isTouchDevice,
     updateCaptureSettings,
@@ -95,6 +104,10 @@ export interface QuickCaptureInputHandle {
     submit: (forceInbox?: boolean) => Promise<void>;
     focus: () => void;
 }
+
+// A +project or ~area token, quoted or not, to take out of a title
+const PROJECT_TOKEN_PATTERN = new RegExp(`\\+(?:${QUOTED_NAME}|\\S+)`, 'g');
+const AREA_TOKEN_PATTERN = new RegExp(`(^|\\s)~(?:${QUOTED_NAME}|\\S+)`, 'g');
 
 export interface InboxComposerFooterContext {
     text: string;
@@ -370,18 +383,16 @@ const QuickCaptureInput = React.forwardRef<
         // Text with the picked tokens added to its first line, where the
         // box reads dates, people and areas
         const withPicked = (text: string, destination: CaptureTarget) => {
-            const name = (value: string) =>
-                /\s/.test(value) ? `"${value}"` : value;
             const tokens = [
                 ...picked.tags.map((tag) => `#${tag}`),
                 ...(picked.project && destination !== 'project'
-                    ? [`+${name(picked.project)}`]
+                    ? [`+${formatTokenName(picked.project)}`]
                     : []),
                 // Only an inbox item keeps the area as ~Name text; a task or
                 // project takes it by uid in captureOne, since the server
                 // would re-read the name and miss punctuation or non-ASCII.
                 ...(picked.area && destination === 'inbox'
-                    ? [`~${name(picked.area.name)}`]
+                    ? [`~${formatTokenName(picked.area.name)}`]
                     : []),
             ];
             if (tokens.length === 0) return text;
@@ -561,7 +572,7 @@ const QuickCaptureInput = React.forwardRef<
             const trimmedText = text.trim();
             const matches: string[] = [];
 
-            const tokens = tokenizeText(trimmedText);
+            const tokens = tokenizeInboxText(trimmedText);
 
             let i = 0;
             while (i < tokens.length) {
@@ -577,14 +588,9 @@ const QuickCaptureInput = React.forwardRef<
 
                     for (let j = i; j < groupEnd; j++) {
                         if (tokens[j].startsWith('+')) {
-                            let projectName = tokens[j].substring(1);
-
-                            if (
-                                projectName.startsWith('"') &&
-                                projectName.endsWith('"')
-                            ) {
-                                projectName = projectName.slice(1, -1);
-                            }
+                            const projectName = readTokenName(
+                                tokens[j].substring(1)
+                            );
 
                             if (projectName && !matches.includes(projectName)) {
                                 matches.push(projectName);
@@ -677,42 +683,6 @@ const QuickCaptureInput = React.forwardRef<
             setUrlPreviewImageError(false);
         }, [urlPreview?.url]);
 
-        const tokenizeText = (text: string): string[] => {
-            const tokens: string[] = [];
-            let currentToken = '';
-            let inQuotes = false;
-            let i = 0;
-
-            while (i < text.length) {
-                const char = text[i];
-
-                if (
-                    char === '"' &&
-                    (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')
-                ) {
-                    inQuotes = true;
-                    currentToken += char;
-                } else if (char === '"' && inQuotes) {
-                    inQuotes = false;
-                    currentToken += char;
-                } else if (char === ' ' && !inQuotes) {
-                    if (currentToken) {
-                        tokens.push(currentToken);
-                        currentToken = '';
-                    }
-                } else {
-                    currentToken += char;
-                }
-                i++;
-            }
-
-            if (currentToken) {
-                tokens.push(currentToken);
-            }
-
-            return tokens;
-        };
-
         const getCurrentHashtagQuery = (
             text: string,
             position: number
@@ -755,13 +725,14 @@ const QuickCaptureInput = React.forwardRef<
         ): string => {
             const beforeCursor = text.substring(0, position);
             const afterCursor = text.substring(position);
-            const projectMatch = beforeCursor.match(
-                /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
-            );
+            const projectMatch = beforeCursor.match(PROJECT_QUERY_PATTERN);
 
             if (!projectMatch) return '';
 
-            const projectQuery = projectMatch[1] || projectMatch[2] || '';
+            const projectQuery =
+                projectMatch[1] !== undefined
+                    ? readTokenName(`"${projectMatch[1]}"`)
+                    : projectMatch[2] || '';
 
             const projectStart = beforeCursor.lastIndexOf('+');
             const textBeforeProject = text.substring(0, projectStart).trim();
@@ -853,9 +824,7 @@ const QuickCaptureInput = React.forwardRef<
             const afterCursor = inputText.substring(cursorPosition);
             if (!PERSON_QUERY_PATTERN.test(beforeCursor)) return;
 
-            const formatted = /\s/.test(personName)
-                ? `"${personName}"`
-                : personName;
+            const formatted = formatTokenName(personName);
             const newBefore = beforeCursor.replace(
                 PERSON_QUERY_PATTERN,
                 (_, lead) => `${lead}@${formatted} `
@@ -911,8 +880,9 @@ const QuickCaptureInput = React.forwardRef<
 
         const removeProjectFromText = (projectToRemove: string) => {
             const escaped = escapeRegExp(projectToRemove);
+            const quoted = escapeRegExp(escapeTokenName(projectToRemove));
             const quotedPattern = new RegExp(
-                `(^|\\s)\\+"${escaped}"(?=$|\\s)`,
+                `(^|\\s)\\+"${quoted}"(?=$|\\s)`,
                 'gi'
             );
             const simplePattern = new RegExp(
@@ -924,8 +894,9 @@ const QuickCaptureInput = React.forwardRef<
 
         const removePersonFromText = (personName: string) => {
             const escaped = escapeRegExp(personName);
+            const quoted = escapeRegExp(escapeTokenName(personName));
             const pattern = new RegExp(
-                `(^|\\s)@(?:"${escaped}"|${escaped})(?=$|[\\s.,;:!?)])`,
+                `(^|\\s)@(?:"${quoted}"|${escaped})(?=$|[\\s.,;:!?)])`,
                 'gi'
             );
             stripFromText(pattern);
@@ -933,8 +904,9 @@ const QuickCaptureInput = React.forwardRef<
 
         const removeAreaFromText = (areaName: string) => {
             const escaped = escapeRegExp(areaName);
+            const quoted = escapeRegExp(escapeTokenName(areaName));
             const pattern = new RegExp(
-                `(^|\\s)~(?:"${escaped}"|${escaped})(?=$|[\\s.,;:!?)])`,
+                `(^|\\s)~(?:"${quoted}"|${escaped})(?=$|[\\s.,;:!?)])`,
                 'gi'
             );
             stripFromText(pattern);
@@ -1234,7 +1206,7 @@ const QuickCaptureInput = React.forwardRef<
 
             return text
                 .replace(/#[a-zA-Z0-9_-]+/g, '')
-                .replace(/\+(?:"[^"]+"|\S+)/g, '')
+                .replace(PROJECT_TOKEN_PATTERN, '')
                 .trim();
         };
 
@@ -1374,16 +1346,14 @@ const QuickCaptureInput = React.forwardRef<
         const handleProjectSelect = (projectName: string) => {
             const beforeCursor = inputText.substring(0, cursorPosition);
             const afterCursor = inputText.substring(cursorPosition);
-            const projectMatch = beforeCursor.match(
-                /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
-            );
+            const projectMatch = beforeCursor.match(PROJECT_QUERY_PATTERN);
 
             if (projectMatch && unified) {
                 addPicked('project', projectName);
                 const dropped = dropTrigger(
                     beforeCursor,
                     afterCursor,
-                    /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/
+                    PROJECT_QUERY_PATTERN
                 );
                 setInputText(dropped.text);
                 closeSuggestions();
@@ -1398,15 +1368,12 @@ const QuickCaptureInput = React.forwardRef<
             }
 
             if (projectMatch) {
-                const formattedProjectName = projectName.includes(' ')
-                    ? `"${projectName}"`
-                    : projectName;
-
-                const newText =
-                    beforeCursor.replace(
-                        /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
-                        `+${formattedProjectName} `
-                    ) + afterCursor;
+                // A function replacer, so a name with $& or $1 is kept as is
+                const withProject = beforeCursor.replace(
+                    PROJECT_QUERY_PATTERN,
+                    () => `+${formatTokenName(projectName)} `
+                );
+                const newText = withProject + afterCursor;
                 setInputText(newText);
                 setShowProjectSuggestions(false);
                 setFilteredProjects([]);
@@ -1415,10 +1382,7 @@ const QuickCaptureInput = React.forwardRef<
                 setTimeout(() => {
                     if (inputRef.current) {
                         inputRef.current.focus();
-                        const newCursorPos = beforeCursor.replace(
-                            /\+(?:"([^"]*)"|([a-zA-Z0-9_\s]*))$/,
-                            `+${formattedProjectName} `
-                        ).length;
+                        const newCursorPos = withProject.length;
                         inputRef.current.setSelectionRange(
                             newCursorPos,
                             newCursorPos
@@ -1824,8 +1788,8 @@ const QuickCaptureInput = React.forwardRef<
                 analysis?.cleaned_content ??
                 line
                     .replace(/#[a-zA-Z0-9_-]+/g, '')
-                    .replace(/(^|\s)~(?:"[^"]+"|\S+)/g, '$1')
-                    .replace(/\+(?:"[^"]+"|\S+)/g, '')
+                    .replace(AREA_TOKEN_PATTERN, '$1')
+                    .replace(PROJECT_TOKEN_PATTERN, '')
             ).trim();
             return cleaned || line.trim();
         };

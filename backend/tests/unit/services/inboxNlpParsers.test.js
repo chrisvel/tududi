@@ -2,6 +2,7 @@ const {
     parseDueDate,
     parseRecurrence,
     parsePersonRef,
+    parseAreaRefs,
 } = require('../../../modules/inbox/nlpParsers');
 const {
     processInboxItem,
@@ -202,6 +203,29 @@ describe('inbox natural-language parsing', () => {
         it('ignores email addresses', () => {
             expect(parsePersonRef('Email bob@example.com')).toBeNull();
         });
+
+        it('reads an escaped quote in a quoted name', () => {
+            expect(
+                parsePersonRef('Call @"Ann \\"Jo\\" Lee" today')
+            ).toMatchObject({
+                name: 'Ann "Jo" Lee',
+                text: '@"Ann \\"Jo\\" Lee"',
+            });
+        });
+    });
+
+    describe('parseAreaRefs', () => {
+        it('reads an escaped quote in a quoted area name', () => {
+            expect(
+                parseAreaRefs('Pack ~"Mom\'s \\"big\\" move" boxes')
+            ).toEqual([
+                {
+                    name: 'Mom\'s "big" move',
+                    text: '~"Mom\'s \\"big\\" move"',
+                    index: 5,
+                },
+            ]);
+        });
     });
 
     describe('processInboxItem', () => {
@@ -218,6 +242,15 @@ describe('inbox natural-language parsing', () => {
                 suggested_type: 'task',
                 suggested_reason: 'date_detected',
             });
+        });
+
+        it('finds no date inside a project name with an escaped quote', () => {
+            const result = processInboxItem(
+                '+"Q4 \\" Friday plan" call bob',
+                options
+            );
+            expect(result.parsed_projects).toEqual(['Q4 " Friday plan']);
+            expect(result.parsed_due_date).toBeNull();
         });
 
         it('leaves no dangling "until" in the title', () => {

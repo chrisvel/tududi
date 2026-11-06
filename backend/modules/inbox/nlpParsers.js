@@ -7,6 +7,11 @@
 
 const chrono = require('chrono-node');
 const moment = require('moment-timezone');
+const {
+    QUOTED_NAME,
+    QUOTED_NAME_NONEMPTY,
+    readTokenName,
+} = require('./quotedName');
 
 const WEEKDAYS = {
     sunday: 0,
@@ -52,13 +57,15 @@ const WEEKDAY_PATTERN =
 
 // Replace #tags, +projects, @people, ~areas and URLs with spaces of equal
 // length so the date parsers never match inside them and indexes stay aligned.
+const TOKEN_PATTERN = new RegExp(
+    `https?:\\/\\/\\S+|(^|\\s)([#+@~](?:${QUOTED_NAME}|\\S+))`,
+    'g'
+);
 const maskTokens = (text) =>
-    text.replace(
-        /https?:\/\/\S+|(^|\s)([#+@~](?:"[^"]*"|\S+))/g,
-        (match, lead = '') =>
-            match.startsWith('http')
-                ? ' '.repeat(match.length)
-                : lead + ' '.repeat(match.length - lead.length)
+    text.replace(TOKEN_PATTERN, (match, lead = '') =>
+        match.startsWith('http')
+            ? ' '.repeat(match.length)
+            : lead + ' '.repeat(match.length - lead.length)
     );
 
 const todayInTimezone = (timezone) => moment.tz(timezone).format('YYYY-MM-DD');
@@ -281,10 +288,16 @@ const parseDueDate = (
 };
 
 // @Name or @"Full Name", only at the start of a word so emails never match.
+const PERSON_PATTERN = new RegExp(
+    `(^|\\s)@(?:(${QUOTED_NAME_NONEMPTY})|([^\\s"@]+))`,
+    'u'
+);
 const parsePersonRef = (text) => {
-    const match = /(^|\s)@(?:"([^"]+)"|([^\s"@]+))/u.exec(text);
+    const match = PERSON_PATTERN.exec(text);
     if (!match) return null;
-    const name = (match[2] || match[3] || '').replace(/[.,;:!?)]+$/, '').trim();
+    const name = (match[2] ? readTokenName(match[2]) : match[3] || '')
+        .replace(/[.,;:!?)]+$/, '')
+        .trim();
     if (!name) return null;
     const start = match.index + match[1].length;
     const raw = match[2] ? match[0].slice(match[1].length) : `@${name}`;
@@ -295,11 +308,14 @@ const parsePersonRef = (text) => {
 // ~word is only a reference once it names a real area, so the caller picks
 // the first one that does and the rest stay in the text.
 const parseAreaRefs = (text) => {
-    const pattern = /(^|\s)~(?:"([^"]+)"|([^\s"~]+))/gu;
+    const pattern = new RegExp(
+        `(^|\\s)~(?:(${QUOTED_NAME_NONEMPTY})|([^\\s"~]+))`,
+        'gu'
+    );
     const refs = [];
     let match;
     while ((match = pattern.exec(text)) !== null) {
-        let name = (match[2] || match[3] || '').trim();
+        let name = (match[2] ? readTokenName(match[2]) : match[3] || '').trim();
         // Trailing sentence punctuation is not part of an unquoted name
         if (!match[2]) {
             let end = name.length;

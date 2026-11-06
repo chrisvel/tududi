@@ -24,6 +24,11 @@ import {
     InboxAnalysis,
 } from '../../utils/inboxService';
 import { carriedTokens, withCarried } from '../../utils/carriedTokens';
+import {
+    QUOTED_NAME_NONEMPTY,
+    readTokenName,
+    tokenizeInboxText,
+} from '../../utils/inboxTokens';
 
 interface InboxItemDetailProps {
     item: InboxItem;
@@ -128,35 +133,6 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
 
     // ── Parsing helpers ───────────────────────────────────────────────────────
 
-    const tokenizeText = (text: string): string[] => {
-        const tokens: string[] = [];
-        let currentToken = '';
-        let inQuotes = false;
-
-        for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            if (
-                char === '"' &&
-                (i === 0 || text[i - 1] === '+' || text[i - 1] === '@')
-            ) {
-                inQuotes = true;
-                currentToken += char;
-            } else if (char === '"' && inQuotes) {
-                inQuotes = false;
-                currentToken += char;
-            } else if (char === ' ' && !inQuotes) {
-                if (currentToken) {
-                    tokens.push(currentToken);
-                    currentToken = '';
-                }
-            } else {
-                currentToken += char;
-            }
-        }
-        if (currentToken) tokens.push(currentToken);
-        return tokens;
-    };
-
     const parseHashtags = (text: string): string[] => {
         const words = text.trim().split(/\s+/);
         const matches: string[] = [];
@@ -190,7 +166,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     };
 
     const parseProjectRefs = (text: string): string[] => {
-        const tokens = tokenizeText(text.trim());
+        const tokens = tokenizeInboxText(text.trim());
         const matches: string[] = [];
         let i = 0;
         while (i < tokens.length) {
@@ -204,12 +180,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     groupEnd++;
                 for (let j = i; j < groupEnd; j++) {
                     if (tokens[j].startsWith('+')) {
-                        let projectName = tokens[j].substring(1);
-                        if (
-                            projectName.startsWith('"') &&
-                            projectName.endsWith('"')
-                        )
-                            projectName = projectName.slice(1, -1);
+                        const projectName = readTokenName(
+                            tokens[j].substring(1)
+                        );
                         if (projectName && !matches.includes(projectName)) {
                             matches.push(projectName);
                             return matches;
@@ -225,7 +198,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     };
 
     const cleanTextFromTagsAndProjects = (text: string): string => {
-        const tokens = tokenizeText(text.trim());
+        const tokens = tokenizeInboxText(text.trim());
         const cleanedTokens: string[] = [];
         let i = 0;
         while (i < tokens.length) {
@@ -272,8 +245,12 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
     const renderInlineSegments = (text: string): React.ReactNode => {
         // Only render the first line for the preview
         const firstLine = text.split('\n')[0];
-        const re =
-            /#([\w-]+)|\+(?:"([^"]+)"|(\w+))|(?<!\S)@(?:"([^"]+)"|([\w.'-]*\w))|(?<!\S)~(?:"([^"]+)"|([\w.'-]*\w))/gu;
+        // Quoted names keep their quotes in the match and are read with
+        // readTokenName, so they split the same way as everywhere else.
+        const re = new RegExp(
+            String.raw`#([\w-]+)|\+(?:(${QUOTED_NAME_NONEMPTY})|(\w+))|(?<!\S)@(?:(${QUOTED_NAME_NONEMPTY})|([\w.'-]*\w))|(?<!\S)~(?:(${QUOTED_NAME_NONEMPTY})|([\w.'-]*\w))`,
+            'gu'
+        );
         const nodes: React.ReactNode[] = [];
         let last = 0;
         let m: RegExpExecArray | null;
@@ -312,7 +289,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 );
             } else if (m[4] || m[5]) {
                 // @person
-                const personName = m[4] || m[5];
+                const personName = m[4] ? readTokenName(m[4]) : m[5];
                 nodes.push(
                     <span
                         key={`person-${idx}`}
@@ -334,7 +311,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 );
             } else if (m[6] || m[7]) {
                 // ~area
-                const areaName = m[6] || m[7];
+                const areaName = m[6] ? readTokenName(m[6]) : m[7];
                 nodes.push(
                     <span
                         key={`area-${idx}`}
@@ -356,7 +333,7 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                 );
             } else {
                 // +project
-                const projectName = m[2] || m[3];
+                const projectName = m[2] ? readTokenName(m[2]) : m[3];
                 nodes.push(
                     <span
                         key={`proj-${idx}`}
@@ -650,7 +627,9 @@ const InboxItemDetail: React.FC<InboxItemDetailProps> = ({
                     ref={composerRef}
                     mode="edit"
                     initialValue={cleanedEditText ?? fullContent}
-                    carriedText={cleanedEditText === null ? '' : carriedEditText}
+                    carriedText={
+                        cleanedEditText === null ? '' : carriedEditText
+                    }
                     hidePrimaryButton
                     projects={projects}
                     onSubmitOverride={handleSubmitEdit}
