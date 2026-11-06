@@ -39,6 +39,13 @@ jest.mock('react-router-dom', () => ({
     useNavigate: () => mockNavigate,
 }));
 
+jest.mock('../../Roadmap/RoadmapChart', () => ({
+    __esModule: true,
+    default: ({ areaUid }: { areaUid: string }) => (
+        <div>roadmap chart for {areaUid}</div>
+    ),
+}));
+
 jest.mock('../../Shared/ShareModal', () => ({
     __esModule: true,
     default: () => null,
@@ -141,6 +148,20 @@ describe('AreaDetails header stats', () => {
     });
 });
 
+describe('AreaDetails timeline', () => {
+    it('shows the chart for this area on its tab', async () => {
+        renderPage();
+        await screen.findByText('Project one');
+
+        fireEvent.click(screen.getByRole('button', { name: 'Timeline' }));
+
+        expect(
+            screen.getByText('roadmap chart for areauid1')
+        ).toBeInTheDocument();
+        expect(screen.queryByText('Project one')).not.toBeInTheDocument();
+    });
+});
+
 describe('AreaDetails finished projects', () => {
     it('folds done projects away until the Finished toggle is opened', async () => {
         renderPage();
@@ -178,6 +199,8 @@ describe('AreaDetails leaving a shared area', () => {
         await waitFor(() =>
             expect(mockLeaveShare).toHaveBeenCalledWith('area', 'areauid1')
         );
-        await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/areas'));
+        await waitFor(() =>
+            expect(mockNavigate).toHaveBeenCalledWith('/areas')
+        );
     });
 });

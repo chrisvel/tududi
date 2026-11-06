@@ -5,6 +5,7 @@ import {
     fromDay,
     shiftDates,
     spareDays,
+    summarizeItems,
     toDay,
     weekdayOf,
 } from '../timelineLayout';
@@ -17,6 +18,20 @@ describe('timelineLayout', () => {
     it('round-trips calendar days', () => {
         expect(fromDay(toDay('2026-10-26') as number)).toBe('2026-10-26');
         expect(toDay(null)).toBeNull();
+    });
+
+    it('summarizes from the earliest start to the latest finish', () => {
+        const { items } = buildItems([
+            task('range', { start_date: '2026-11-04', due_date: '2026-11-20' }),
+            task('due', { due_date: '2026-11-03' }),
+            task('start', { start_date: '2026-12-01' }),
+            task('undated'),
+        ]);
+        expect(summarizeItems(items)).toEqual({
+            from: toDay('2026-11-03'),
+            to: toDay('2026-12-01'),
+        });
+        expect(summarizeItems([])).toBeNull();
     });
 
     it('splits dated and undated tasks and orders by start', () => {
