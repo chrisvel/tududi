@@ -182,6 +182,219 @@ describe('eventsForRange', () => {
     });
 });
 
+describe('eventsForRange on a long-lived feed', () => {
+    const feed = (...events) =>
+        parseCalendar(
+            [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//test//EN',
+                ...events.flatMap((lines) => [
+                    'BEGIN:VEVENT',
+                    ...lines,
+                    'END:VEVENT',
+                ]),
+                'END:VCALENDAR',
+            ].join('\r\n')
+        );
+    const series = (uid, ...lines) => [
+        `UID:${uid}`,
+        `SUMMARY:${uid}`,
+        ...lines,
+    ];
+    const datesOf = (
+        events,
+        start = '2026-11-01',
+        end = '2026-11-21',
+        timezone = 'Europe/Athens'
+    ) => eventsForRange(events, start, end, timezone).map((e) => e.date);
+
+    it('keeps an every-other-week series on its own weeks', () => {
+        const events = feed(
+            series(
+                'gym',
+                'DTSTART;TZID=Europe/Athens:20120102T090000',
+                'DTEND;TZID=Europe/Athens:20120102T100000',
+                'RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,TH'
+            )
+        );
+        expect(datesOf(events)).toEqual([
+            '2026-11-02',
+            '2026-11-05',
+            '2026-11-16',
+            '2026-11-19',
+        ]);
+    });
+
+    it('keeps a daily series with an interval on its own days', () => {
+        const events = feed(
+            series(
+                'pills',
+                'DTSTART;TZID=Europe/Athens:20100101T070000',
+                'DTEND;TZID=Europe/Athens:20100101T071000',
+                'RRULE:FREQ=DAILY;INTERVAL=3'
+            )
+        );
+        expect(datesOf(events, '2026-11-01', '2026-11-10')).toEqual([
+            '2026-11-03',
+            '2026-11-06',
+            '2026-11-09',
+        ]);
+    });
+
+    it('still applies an EXDATE on an old-running series', () => {
+        const events = feed(
+            series(
+                'standup',
+                'DTSTART;TZID=Europe/Athens:20120102T090000',
+                'DTEND;TZID=Europe/Athens:20120102T100000',
+                'RRULE:FREQ=WEEKLY',
+                'EXDATE;TZID=Europe/Athens:20261109T090000'
+            )
+        );
+        expect(datesOf(events)).toEqual(['2026-11-02', '2026-11-16']);
+    });
+
+    it('counts occurrences from the first one when a rule has a COUNT', () => {
+        const events = feed(
+            // The 775th Monday from 2012-01-02 is 2026-11-02.
+            series(
+                'ends-in-window',
+                'DTSTART;TZID=Europe/Athens:20120102T090000',
+                'DTEND;TZID=Europe/Athens:20120102T100000',
+                'RRULE:FREQ=WEEKLY;COUNT=775'
+            ),
+            series(
+                'ended',
+                'DTSTART;TZID=Europe/Athens:20120102T090000',
+                'DTEND;TZID=Europe/Athens:20120102T100000',
+                'RRULE:FREQ=WEEKLY;COUNT=10'
+            )
+        );
+        expect(datesOf(events)).toEqual(['2026-11-02']);
+    });
+
+    it('stops a series at its UNTIL', () => {
+        const events = feed(
+            series(
+                'ends-in-window',
+                'DTSTART;TZID=Europe/Athens:20120102T090000',
+                'DTEND;TZID=Europe/Athens:20120102T100000',
+                'RRULE:FREQ=WEEKLY;UNTIL=20261110T000000Z'
+            ),
+            series(
+                'ended',
+                'DTSTART;TZID=Europe/Athens:20120102T090000',
+                'DTEND;TZID=Europe/Athens:20120102T100000',
+                'RRULE:FREQ=WEEKLY;UNTIL=20180101T000000Z'
+            )
+        );
+        expect(datesOf(events)).toEqual(['2026-11-02', '2026-11-09']);
+    });
+
+    it('shows an old instance that was moved into the range', () => {
+        const events = feed(
+            series(
+                'review',
+                'DTSTART;TZID=Europe/Athens:20200106T100000',
+                'DTEND;TZID=Europe/Athens:20200106T110000',
+                'RRULE:FREQ=WEEKLY;UNTIL=20210201T000000Z'
+            ),
+            [
+                'UID:review',
+                'SUMMARY:review moved',
+                'RECURRENCE-ID;TZID=Europe/Athens:20210104T100000',
+                'DTSTART;TZID=Europe/Athens:20261111T150000',
+                'DTEND;TZID=Europe/Athens:20261111T160000',
+            ]
+        );
+        const range = eventsForRange(
+            events,
+            '2026-11-11',
+            '2026-11-11',
+            'Europe/Athens'
+        );
+        expect(range.map((e) => e.title)).toEqual(['review moved']);
+    });
+
+    it('leaves out an instance moved out of the range', () => {
+        const events = feed(
+            series(
+                'review',
+                'DTSTART;TZID=Europe/Athens:20200106T100000',
+                'DTEND;TZID=Europe/Athens:20200106T110000',
+                'RRULE:FREQ=WEEKLY'
+            ),
+            [
+                'UID:review',
+                'SUMMARY:review moved',
+                'RECURRENCE-ID;TZID=Europe/Athens:20261109T100000',
+                'DTSTART;TZID=Europe/Athens:20300101T150000',
+                'DTEND;TZID=Europe/Athens:20300101T160000',
+            ]
+        );
+        expect(datesOf(events, '2026-11-08', '2026-11-10')).toEqual([]);
+    });
+
+    it('shows a long occurrence that started before the range', () => {
+        const events = feed(
+            series(
+                'trip',
+                'DTSTART;VALUE=DATE:20120110',
+                'DTEND;VALUE=DATE:20120120',
+                'RRULE:FREQ=MONTHLY'
+            ),
+            series(
+                'on-call',
+                'DTSTART:20120101T120000Z',
+                'DURATION:P10D',
+                'RRULE:FREQ=WEEKLY'
+            )
+        );
+        const range = eventsForRange(events, '2026-11-15', '2026-11-15', 'UTC');
+        expect(range.find((e) => e.uid === 'trip')).toMatchObject({
+            start: '2026-11-10',
+            end: '2026-11-20',
+        });
+        expect(
+            range.filter((e) => e.uid === 'on-call').map((e) => e.start)
+        ).toEqual(['2026-11-08T12:00:00.000Z', '2026-11-15T12:00:00.000Z']);
+    });
+
+    it('finds an event whose printed date is days from the user date', () => {
+        const events = feed(
+            // 10:00 UTC on the 11th: 23:00 on the 10th in Pago Pago.
+            series(
+                'far-zone',
+                'DTSTART;TZID=Pacific/Kiritimati:20261112T000000',
+                'DTEND;TZID=Pacific/Kiritimati:20261112T003000'
+            )
+        );
+        expect(
+            datesOf(events, '2026-11-10', '2026-11-10', 'Pacific/Pago_Pago')
+        ).toEqual(['2026-11-10']);
+    });
+
+    it('does not list one-off events from other years', () => {
+        const events = feed(
+            series('old', 'DTSTART:20120105T100000Z', 'DTEND:20120105T110000Z'),
+            series('now', 'DTSTART:20261105T100000Z', 'DTEND:20261105T110000Z'),
+            series(
+                'later',
+                'DTSTART:20301105T100000Z',
+                'DTEND:20301105T110000Z'
+            )
+        );
+        const range = eventsForRange(
+            events,
+            '2026-11-01',
+            '2026-11-21',
+            'Europe/Athens'
+        );
+        expect(range.map((e) => e.uid)).toEqual(['now']);
+    });
+});
+
 describe('DST change days', () => {
     const dstEvents = parseCalendar(
         [

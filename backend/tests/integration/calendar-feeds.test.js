@@ -3,6 +3,11 @@ jest.mock('../../modules/calendar-feeds/fetcher', () => {
     return { ...actual, fetchFeed: jest.fn() };
 });
 
+jest.mock('../../modules/calendar-feeds/icsEvents', () => {
+    const actual = jest.requireActual('../../modules/calendar-feeds/icsEvents');
+    return { ...actual, eventsForRange: jest.fn() };
+});
+
 const request = require('supertest');
 const moment = require('moment-timezone');
 const app = require('../../app');
@@ -13,6 +18,7 @@ const {
     FeedFetchError,
 } = require('../../modules/calendar-feeds/fetcher');
 const calendarFeedsService = require('../../modules/calendar-feeds/service');
+const { eventsForRange } = require('../../modules/calendar-feeds/icsEvents');
 
 const SECRET_URL =
     'https://calendar.google.com/calendar/ical/me%40example.com/private-abc123/basic.ics';
@@ -54,6 +60,10 @@ describe('Calendar feed routes', () => {
         fetchFeed.mockReset();
         today = moment.tz('Europe/Athens').format('YYYY-MM-DD');
         fetchFeed.mockResolvedValue(icsFor(today));
+        eventsForRange.mockImplementation(
+            jest.requireActual('../../modules/calendar-feeds/icsEvents')
+                .eventsForRange
+        );
 
         await createTestUser({
             email: 'feeds@example.com',
@@ -212,6 +222,37 @@ describe('Calendar feed routes', () => {
             const res = await agent.get(`${url}&refresh=1`);
             expect(res.status).toBe(200);
             expect(fetchFeed).toHaveBeenCalledTimes(1);
+        } finally {
+            nowSpy.mockRestore();
+        }
+    });
+
+    it('expands a range once until the feed is fetched again', async () => {
+        await agent
+            .post('/api/calendar-feeds')
+            .send({ name: 'Google', url: SECRET_URL });
+        const url = `/api/calendar-feeds/events?start=${today}&end=${today}`;
+
+        const first = await agent.get(url);
+        const second = await agent.get(url);
+        expect(second.body.events).toEqual(first.body.events);
+        expect(second.body.events).toHaveLength(1);
+        expect(eventsForRange).toHaveBeenCalledTimes(1);
+
+        const tomorrow = moment(today).add(1, 'day').format('YYYY-MM-DD');
+        await agent.get(
+            `/api/calendar-feeds/events?start=${today}&end=${tomorrow}`
+        );
+        expect(eventsForRange).toHaveBeenCalledTimes(2);
+
+        const realNow = Date.now();
+        const nowSpy = jest
+            .spyOn(Date, 'now')
+            .mockReturnValue(realNow + 60 * 1000);
+        try {
+            await agent.get(`${url}&refresh=1`);
+            expect(fetchFeed).toHaveBeenCalledTimes(2);
+            expect(eventsForRange).toHaveBeenCalledTimes(3);
         } finally {
             nowSpy.mockRestore();
         }
