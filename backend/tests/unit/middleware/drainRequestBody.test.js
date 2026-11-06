@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const net = require('net');
 const request = require('supertest');
 const drainRequestBody = require('../../../middleware/drainRequestBody');
 
@@ -15,11 +16,12 @@ const drainRequestBody = require('../../../middleware/drainRequestBody');
 describe('drainRequestBody', () => {
     const upload = multer({ storage: multer.memoryStorage() });
     const FILE_BYTES = 1024 * 1024;
+    const MAX_DRAIN_BYTES = 4 * FILE_BYTES;
 
     const buildApp = (state = {}) => {
         const instance = express();
         instance.use(express.json());
-        instance.use(drainRequestBody);
+        instance.use(drainRequestBody({ maxBytes: MAX_DRAIN_BYTES }));
 
         // Refuses before anything reads the body, which is what an upload route
         // does when it is not signed in.
@@ -27,6 +29,10 @@ describe('drainRequestBody', () => {
             res.on('finish', () => {
                 state.completeAtFinish = req.complete;
                 state.readableEndedAtFinish = req.readableEnded;
+            });
+            req.on('close', () => {
+                state.completeAtClose = req.complete;
+                state.socketDestroyedAtClose = req.socket.destroyed;
             });
             res.status(401).json({ error: 'Authentication required' });
         });
@@ -55,6 +61,73 @@ describe('drainRequestBody', () => {
         expect(state.completeAtFinish || state.readableEndedAtFinish).toBe(
             true
         );
+    });
+
+    it('stops draining past the limit, answers and destroys the socket', async () => {
+        const state = {};
+        const server = buildApp(state).listen(0);
+        const { port } = server.address();
+        const socket = net.connect(port, '127.0.0.1');
+        let response = '';
+        socket.on('data', (data) => {
+            response += data.toString('latin1');
+        });
+        const closed = new Promise((resolve) => {
+            socket.on('close', resolve);
+        });
+        socket.on('error', () => {});
+
+        // Declares far more than the limit, sends just past it, then keeps the
+        // upload open: only the server can end this connection.
+        socket.write(
+            'POST /refuse HTTP/1.1\r\n' +
+                `Host: 127.0.0.1:${port}\r\n` +
+                'Content-Type: application/octet-stream\r\n' +
+                `Content-Length: ${MAX_DRAIN_BYTES * 10}\r\n\r\n`
+        );
+        socket.write(Buffer.alloc(MAX_DRAIN_BYTES + 1, 1));
+
+        await closed;
+        server.close();
+
+        expect(response).toMatch(/^HTTP\/1\.1 401 /);
+        expect(response).toMatch(/connection: close/i);
+        expect(state.completeAtClose).toBe(false);
+        expect(state.socketDestroyedAtClose).toBe(true);
+    });
+
+    it('keeps waiting for a body still under the limit', async () => {
+        const state = {};
+        const server = buildApp(state).listen(0);
+        const { port } = server.address();
+        const socket = net.connect(port, '127.0.0.1');
+        let response = '';
+        socket.on('data', (data) => {
+            response += data.toString('latin1');
+        });
+        const closed = new Promise((resolve) => {
+            socket.on('close', resolve);
+        });
+        socket.on('error', () => {});
+
+        socket.write(
+            'POST /refuse HTTP/1.1\r\n' +
+                `Host: 127.0.0.1:${port}\r\n` +
+                'Connection: close\r\n' +
+                'Content-Type: application/octet-stream\r\n' +
+                `Content-Length: ${MAX_DRAIN_BYTES}\r\n\r\n`
+        );
+        socket.write(Buffer.alloc(MAX_DRAIN_BYTES - 1, 1));
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        expect(response).toBe('');
+
+        socket.write(Buffer.alloc(1, 1));
+        await closed;
+        server.close();
+
+        expect(response).toMatch(/^HTTP\/1\.1 401 /);
+        expect(state.completeAtFinish).toBe(true);
     });
 
     it('leaves a request the parsers already read alone', async () => {

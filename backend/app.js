@@ -219,7 +219,7 @@ app.use((req, res, next) => {
 // after the parsers, so a JSON or urlencoded body has already been consumed and
 // the response is untouched.
 const drainRequestBody = require('./middleware/drainRequestBody');
-app.use(drainRequestBody);
+app.use(drainRequestBody({ maxBytes: config.fileUploadLimitMB * 1024 * 1024 }));
 
 // RFC 9728 - Protected Resource Metadata (no auth required)
 const oauthRoutes = require('./modules/oauth/routes');
