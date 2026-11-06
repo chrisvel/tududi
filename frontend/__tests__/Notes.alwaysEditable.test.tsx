@@ -51,8 +51,9 @@ jest.mock('../components/Note/NoteFocusMode', () => ({
     default: () => null,
 }));
 
-import { updateNote, fetchNoteBySlug } from '../utils/notesService';
+import { createNote, updateNote, fetchNoteBySlug } from '../utils/notesService';
 
+const mockCreateNote = createNote as jest.Mock;
 const mockUpdateNote = updateNote as jest.Mock;
 const mockFetchNoteBySlug = fetchNoteBySlug as jest.Mock;
 
@@ -151,5 +152,80 @@ describe('Notes always-editable', () => {
         await act(async () => {
             await new Promise((resolve) => setTimeout(resolve, 1100));
         });
+    });
+
+    it('saves what was typed when leaving Notes inside the save delay', async () => {
+        const user = userEvent.setup();
+        render(
+            <MemoryRouter initialEntries={['/notes/note-a']}>
+                <Link to="/today">go to Today</Link>
+                <Routes>
+                    <Route path="/notes/:uid" element={<Notes />} />
+                    <Route path="/today" element={<div>Today page</div>} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        const editor = await screen.findByLabelText('markdown-editor');
+        await user.type(editor, '!');
+
+        await act(async () => {
+            await user.click(screen.getByText('go to Today'));
+        });
+
+        expect(await screen.findByText('Today page')).toBeInTheDocument();
+        await waitFor(() => {
+            expect(mockUpdateNote).toHaveBeenCalledWith(
+                'note-a',
+                expect.objectContaining({ content: 'Alpha!' })
+            );
+        });
+    });
+
+    it('creates a new note once when a save fires while it is being created', async () => {
+        const user = userEvent.setup();
+        let finishCreate: (note: any) => void = () => {};
+        mockCreateNote.mockImplementation(
+            (data: any) =>
+                new Promise((resolve) => {
+                    finishCreate = () => resolve({ ...data, uid: 'note-new' });
+                })
+        );
+
+        render(
+            <MemoryRouter
+                initialEntries={[{ pathname: '/notes', state: { newNote: 1 } }]}
+            >
+                <Routes>
+                    <Route path="/notes" element={<Notes />} />
+                    <Route path="/notes/:uid" element={<Notes />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+        const title = await screen.findByPlaceholderText(
+            'notes.titlePlaceholder'
+        );
+        await user.type(title, 'Fresh');
+        await act(async () => {
+            await new Promise((resolve) => setTimeout(resolve, 1100));
+        });
+        expect(mockCreateNote).toHaveBeenCalledTimes(1);
+
+        await user.type(title, ' idea');
+        await act(async () => {
+            await new Promise((resolve) => setTimeout(resolve, 1100));
+        });
+        await act(async () => {
+            finishCreate({});
+        });
+
+        await waitFor(() => {
+            expect(mockUpdateNote).toHaveBeenCalledWith(
+                'note-new',
+                expect.objectContaining({ title: 'Fresh idea' })
+            );
+        });
+        expect(mockCreateNote).toHaveBeenCalledTimes(1);
     });
 });

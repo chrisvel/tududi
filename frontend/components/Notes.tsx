@@ -115,37 +115,83 @@ const Notes: React.FC = () => {
         }
     }, [hasLoaded, isLoading, isError, loadNotes]);
 
-    const debouncedSave = useDebouncedCallback(async (noteToSave: Note) => {
-        if (!noteToSave.title) return;
+    const isMountedRef = useRef(true);
+    useEffect(() => {
+        isMountedRef.current = true;
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, []);
 
-        try {
-            setSaveStatus('saving');
+    // The create request of the blank note being written, so a save that
+    // fires while it is in flight updates that note instead of creating a
+    // second one. Reset when another blank note is started.
+    const pendingCreateRef = useRef<Promise<Note> | null>(null);
 
-            if (noteToSave.tags && noteToSave.tags.length > 0) {
-                const { tagsStore } = useStore.getState();
-                tagsStore.addNewTags(noteToSave.tags.map((t) => t.name));
-            }
-
-            if (noteToSave.uid) {
-                const savedNote = await updateNote(noteToSave.uid, noteToSave);
-                const updatedNotes = notes.map((n) =>
-                    n.uid === noteToSave.uid ? savedNote : n
-                );
-                setNotes(updatedNotes);
-                setEditingNote((current) => mergeSavedNote(current, savedNote));
-            } else {
-                const newNote = await createNote(noteToSave);
-                setNotes([newNote, ...notes]);
-                setEditingNote((current) => mergeSavedNote(current, newNote));
-                navigate(`/notes/${newNote.uid}`, { replace: true });
-            }
-
-            setSaveStatus('saved');
-        } catch (err) {
-            console.error('Error autosaving note:', err);
-            setSaveStatus('unsaved');
+    // Saves a note and returns the stored copy plus whether it was created.
+    // Reads the notes list from the store, as this can run after unmount.
+    const persistNote = async (
+        noteToSave: Note
+    ): Promise<{ saved: Note; created: boolean }> => {
+        if (noteToSave.tags && noteToSave.tags.length > 0) {
+            const { tagsStore } = useStore.getState();
+            tagsStore.addNewTags(noteToSave.tags.map((t) => t.name));
         }
-    }, 1000);
+
+        let target = noteToSave;
+        if (!target.uid && pendingCreateRef.current) {
+            const created = await pendingCreateRef.current.catch(() => null);
+            if (created) {
+                target = { ...target, id: created.id, uid: created.uid };
+            }
+        }
+
+        const currentNotes = useStore.getState().notesStore.notes;
+        if (target.uid) {
+            const saved = await updateNote(target.uid, target);
+            setNotes(
+                currentNotes.map((n) => (n.uid === saved.uid ? saved : n))
+            );
+            return { saved, created: false };
+        }
+
+        const request = createNote(target);
+        pendingCreateRef.current = request;
+        try {
+            const saved = await request;
+            setNotes([saved, ...useStore.getState().notesStore.notes]);
+            return { saved, created: true };
+        } catch (err) {
+            if (pendingCreateRef.current === request) {
+                pendingCreateRef.current = null;
+            }
+            throw err;
+        }
+    };
+
+    // flushOnExit: leaving Notes (or the whole page) inside the debounce
+    // window still saves what was typed since the last save.
+    const debouncedSave = useDebouncedCallback(
+        async (noteToSave: Note) => {
+            if (!noteToSave.title) return;
+
+            try {
+                setSaveStatus('saving');
+                const { saved, created } = await persistNote(noteToSave);
+                if (!isMountedRef.current) return;
+                setEditingNote((current) => mergeSavedNote(current, saved));
+                if (created) {
+                    navigate(`/notes/${saved.uid}`, { replace: true });
+                }
+                setSaveStatus('saved');
+            } catch (err) {
+                console.error('Error autosaving note:', err);
+                if (isMountedRef.current) setSaveStatus('unsaved');
+            }
+        },
+        1000,
+        { flushOnExit: true }
+    );
 
     const handleNoteChange = useCallback(
         (updates: Partial<Note>) => {
@@ -171,27 +217,9 @@ const Notes: React.FC = () => {
     const handleSelectNote = async (note: Note | null) => {
         if (isEditing && editingNote) {
             if (editingNote.title) {
+                debouncedSave.cancel();
                 try {
-                    if (editingNote.tags && editingNote.tags.length > 0) {
-                        const { tagsStore } = useStore.getState();
-                        tagsStore.addNewTags(
-                            editingNote.tags.map((t) => t.name)
-                        );
-                    }
-
-                    if (editingNote.uid) {
-                        const savedNote = await updateNote(
-                            editingNote.uid,
-                            editingNote
-                        );
-                        const updatedNotes = notes.map((n) =>
-                            n.uid === editingNote.uid ? savedNote : n
-                        );
-                        setNotes(updatedNotes);
-                    } else {
-                        const newNote = await createNote(editingNote);
-                        setNotes([newNote, ...notes]);
-                    }
+                    await persistNote(editingNote);
                 } catch (err) {
                     console.error('Error saving note:', err);
                 }
@@ -386,6 +414,8 @@ const Notes: React.FC = () => {
         const focusProject = focus?.project_uid
             ? projects.find((project) => project.uid === focus.project_uid)
             : undefined;
+        debouncedSave.flush();
+        pendingCreateRef.current = null;
         setPreviewNote(null);
         setEditingNote({
             title: '',
@@ -404,7 +434,7 @@ const Notes: React.FC = () => {
         setIsEditing(true);
         setSaveStatus('saved');
         setIsFocusMode(false);
-    }, [focus, projects]);
+    }, [focus, projects, debouncedSave]);
 
     // Open a blank editor when navigated here with the "new note" flag
     // (sidebar + button, footer create menu, keyboard shortcut). The ref
