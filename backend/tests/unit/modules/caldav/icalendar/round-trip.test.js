@@ -271,4 +271,35 @@ END:VCALENDAR`;
         expect(task.status).toBe(originalTask.status);
         expect(task.priority).toBe(originalTask.priority);
     });
+
+    // #2008: timed values go out with a TZID and must read back to the same
+    // instant, on both sides of a DST change.
+    it.each([
+        ['America/Los_Angeles', '2026-10-29T16:30:00.000Z'],
+        ['America/Los_Angeles', '2026-11-03T17:30:00.000Z'],
+        ['Europe/Berlin', '2026-03-28T08:00:00.000Z'],
+        ['Europe/Berlin', '2026-03-30T07:00:00.000Z'],
+        ['Asia/Tokyo', '2026-06-01T00:15:00.000Z'],
+        ['Asia/Kolkata', '2026-06-01T00:15:00.000Z'],
+        ['America/Los_Angeles', '2026-11-01T09:30:00.000Z'],
+    ])('should keep a timed due date in %s at %s', async (zone, instant) => {
+        const task = {
+            id: 1,
+            uid: 'round-trip-timed',
+            name: 'Timed',
+            status: 0,
+            due_date: new Date(instant),
+            due_has_time: true,
+            defer_until: new Date(new Date(instant).getTime() - 86400000),
+            created_at: new Date('2026-04-01T10:00:00Z'),
+            updated_at: new Date('2026-04-14T12:00:00Z'),
+        };
+
+        const ical = await serializeTaskToVTODO(task, { userTimezone: zone });
+        const parsed = await parseVTODOToTask(ical, zone);
+
+        expect(parsed.due_date.toISOString()).toBe(instant);
+        expect(parsed.due_has_time).toBe(true);
+        expect(parsed.defer_until.getTime()).toBe(task.defer_until.getTime());
+    });
 });

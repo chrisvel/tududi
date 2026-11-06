@@ -521,7 +521,7 @@ When the same task is modified both locally and remotely:
 |--------------|----------------|-------|
 | Name | SUMMARY | Task title |
 | Note | DESCRIPTION | Task description |
-| Due Date | DUE | ISO 8601 UTC timestamp |
+| Due Date | DUE | `VALUE=DATE` for a date-only task; a timed task uses `TZID=<user timezone>` with a VTIMEZONE (UTC for UTC users) |
 | Defer Until | DTSTART | Start date/time |
 | Completed At | COMPLETED | Completion timestamp |
 | Status | STATUS | See status mapping below |
@@ -690,7 +690,7 @@ CALDAV_REQUEST_TIMEOUT=30000                 # Milliseconds
 3. **Tags:** Exported as CATEGORIES, but colors/metadata only in Tududi
 4. **Projects:** Association stored in X-TUDUDI-PROJECT-UID, not shown externally
 5. **Status Granularity:** 7 Tududi statuses mapped to 4 CalDAV statuses (some nuance lost)
-6. **Timezone Handling:** All dates stored as UTC; local timezone conversion in clients
+6. **Timezone Handling:** All dates stored as UTC; timed DUE and DTSTART are served in the user's timezone, other timestamps in UTC
 7. **Large Recurring Sequences:** Expanding far into future creates many VTODOs
 
 ---

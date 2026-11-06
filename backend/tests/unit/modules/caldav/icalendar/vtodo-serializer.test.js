@@ -1,5 +1,6 @@
 const {
     serializeTaskToVTODO,
+    serializeCollectionToVCALENDAR,
 } = require('../../../../../modules/caldav/icalendar/vtodo-serializer');
 const ICAL = require('ical.js');
 
@@ -214,7 +215,7 @@ describe('VTODO Serializer', () => {
 
     // #1928: a task with a due time keeps it on the way out; a date-only task
     // stays VALUE=DATE (#1146).
-    it('should write a timed due date as a UTC DATE-TIME', async () => {
+    it('should write a timed due date in the user timezone', async () => {
         const vtodoString = await serializeTaskToVTODO(
             {
                 ...basicTask,
@@ -223,7 +224,8 @@ describe('VTODO Serializer', () => {
             },
             { userTimezone: 'Europe/Berlin' }
         );
-        expect(vtodoString).toContain('DUE:20261020T070000Z');
+        expect(vtodoString).toContain('DUE;TZID=Europe/Berlin:20261020T090000');
+        expect(vtodoString).not.toContain('20261020T070000Z');
         expect(vtodoString).not.toContain('DUE;VALUE=DATE');
     });
 
@@ -239,7 +241,7 @@ describe('VTODO Serializer', () => {
         expect(vtodoString).toContain('DUE;VALUE=DATE:20261020');
     });
 
-    it('should write DTSTART as a UTC DATE-TIME next to a timed DUE', async () => {
+    it('should write DTSTART in the user timezone next to a timed DUE', async () => {
         const vtodoString = await serializeTaskToVTODO(
             {
                 ...basicTask,
@@ -250,8 +252,10 @@ describe('VTODO Serializer', () => {
             },
             { userTimezone: 'Europe/Berlin' }
         );
-        expect(vtodoString).toContain('DUE:20261020T070000Z');
-        expect(vtodoString).toContain('DTSTART:20261016T220000Z');
+        expect(vtodoString).toContain('DUE;TZID=Europe/Berlin:20261020T090000');
+        expect(vtodoString).toContain(
+            'DTSTART;TZID=Europe/Berlin:20261017T000000'
+        );
         expect(vtodoString).not.toContain('VALUE=DATE');
     });
 
@@ -267,5 +271,90 @@ describe('VTODO Serializer', () => {
         );
         expect(vtodoString).toContain('DUE;VALUE=DATE:20261020');
         expect(vtodoString).toContain('DTSTART;VALUE=DATE:20261017');
+    });
+
+    // #2008: Apple Reminders labels a time in any other zone.
+    describe('timed values and VTIMEZONE', () => {
+        const timedTask = {
+            ...basicTask,
+            due_date: new Date('2026-10-29T16:30:00Z'),
+            due_has_time: true,
+        };
+        const options = { userTimezone: 'America/Los_Angeles' };
+
+        it('should define the TZID it uses', async () => {
+            const ical = await serializeTaskToVTODO(timedTask, options);
+            expect(ical).toContain(
+                'DUE;TZID=America/Los_Angeles:20261029T093000'
+            );
+            expect(ical).toContain('BEGIN:VTIMEZONE');
+            expect(ical).toContain('TZID:America/Los_Angeles');
+            expect(ical.indexOf('BEGIN:VTIMEZONE')).toBeLessThan(
+                ical.indexOf('BEGIN:VTODO')
+            );
+        });
+
+        it('should add no VTIMEZONE to a date-only task', async () => {
+            const ical = await serializeTaskToVTODO(basicTask, options);
+            expect(ical).not.toContain('VTIMEZONE');
+        });
+
+        it('should keep UTC for a UTC user', async () => {
+            const ical = await serializeTaskToVTODO(timedTask, {
+                userTimezone: 'UTC',
+            });
+            expect(ical).toContain('DUE:20261029T163000Z');
+            expect(ical).not.toContain('VTIMEZONE');
+        });
+
+        it('should keep UTC without a usable timezone', async () => {
+            for (const userTimezone of [undefined, 'Not/AZone']) {
+                const ical = await serializeTaskToVTODO(timedTask, {
+                    userTimezone,
+                });
+                expect(ical).toContain('DUE:20261029T163000Z');
+                expect(ical).not.toContain('VTIMEZONE');
+            }
+        });
+
+        it('should keep UTC for the repeated hour at the end of DST', async () => {
+            // 2026-11-01 01:30 PST, the second 01:30 that day in Los Angeles.
+            const ical = await serializeTaskToVTODO(
+                { ...timedTask, due_date: new Date('2026-11-01T09:30:00Z') },
+                options
+            );
+            expect(ical).toContain('DUE:20261101T093000Z');
+        });
+
+        it('should keep VALARM triggers in UTC', async () => {
+            const ical = await serializeTaskToVTODO(
+                {
+                    ...timedTask,
+                    reminder_at: new Date('2026-10-29T16:00:00Z'),
+                },
+                options
+            );
+            expect(ical).toContain('20261029T160000Z');
+        });
+
+        it('should add one VTIMEZONE to a collection, covering every task', async () => {
+            const ical = await serializeCollectionToVCALENDAR(
+                [
+                    timedTask,
+                    {
+                        ...timedTask,
+                        uid: 'task-later',
+                        due_date: new Date('2028-01-15T17:00:00Z'),
+                    },
+                    { ...basicTask, uid: 'task-date-only' },
+                ],
+                options
+            );
+            expect(ical.match(/BEGIN:VTIMEZONE/g)).toHaveLength(1);
+            expect(ical.match(/BEGIN:VTODO/g)).toHaveLength(3);
+            // Offsets in force for both ends of the range are defined.
+            expect(ical).toContain('DTSTART:20260308T020000');
+            expect(ical).toContain('DTSTART:20271107T020000');
+        });
     });
 });
