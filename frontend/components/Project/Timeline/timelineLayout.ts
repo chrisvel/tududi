@@ -112,6 +112,17 @@ export const buildItems = (
     return { items, undated };
 };
 
+// Earliest start and latest finish across the dated tasks; null without any.
+export const summarizeItems = (
+    items: TimelineItem[]
+): { from: number; to: number } | null =>
+    items.length === 0
+        ? null
+        : {
+              from: Math.min(...items.map((item) => item.from)),
+              to: Math.max(...items.map((item) => item.to)),
+          };
+
 // First and last day shown: every bar, today and the project's own dates,
 // with some room either side and at least `minDays` wide.
 export const buildRange = (

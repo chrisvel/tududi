@@ -326,6 +326,12 @@ No Area
 
 ---
 
+## Timeline tab
+
+The area page has a **Timeline** tab: the [Roadmap](31-roadmap.md) chart for this area only, with its projects, tasks and goals over a quarter.
+
+---
+
 ## Area-Project Relationship
 
 ### Assigning Projects to Areas

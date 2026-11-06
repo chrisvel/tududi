@@ -13,6 +13,7 @@ import {
     fromDay,
     shiftDates,
     spareDays,
+    summarizeItems,
     toDay,
     todayDay,
     weekdayOf,
@@ -85,18 +86,22 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
     const today = todayDay();
     const projectStart = toDay(project.start_date);
     const projectDue = toDay(project.due_date_at);
+    const goal = project.Goal ?? project.goal ?? null;
+    const goalDay = toDay(goal?.target_date);
 
     const { items, undated } = useMemo(() => buildItems(tasks), [tasks]);
     const { first, last } = useMemo(
         () =>
             buildRange(
                 items,
-                [projectStart, projectDue],
+                [projectStart, projectDue, goalDay],
                 today,
                 zoom === 'months' ? 120 : 35
             ),
-        [items, projectStart, projectDue, today, zoom]
+        [items, projectStart, projectDue, goalDay, today, zoom]
     );
+    const summary = useMemo(() => summarizeItems(items), [items]);
+    const hasSummaryRow = summary !== null || goalDay !== null;
     // The path follows "blocks" links, so it needs at least one between
     // two tasks on the chart
     const hasLinks = useMemo(() => {
@@ -384,6 +389,32 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                     >
                         {t('tasks.title', 'Tasks')}
                     </div>
+                    {hasSummaryRow && (
+                        <div
+                            className="flex flex-col justify-center bg-gray-500/[0.06] px-3 dark:bg-white/[0.05]"
+                            style={{ height: ROW_HEIGHT }}
+                        >
+                            <span className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                                {t('roadmap.legendProject', 'Project summary')}
+                            </span>
+                            {summary && (
+                                <span className="truncate text-xs text-gray-500 dark:text-gray-400">
+                                    {summary.from === summary.to
+                                        ? formatDay(summary.from)
+                                        : t(
+                                              'roadmap.range',
+                                              '{{start}} to {{end}}',
+                                              {
+                                                  start: formatDay(
+                                                      summary.from
+                                                  ),
+                                                  end: formatDay(summary.to),
+                                              }
+                                          )}
+                                </span>
+                            )}
+                        </div>
+                    )}
                     {items.map((item, i) => (
                         <button
                             key={item.task.uid}
@@ -468,6 +499,41 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                             ))}
                         </div>
 
+                        {hasSummaryRow && (
+                            <div
+                                className="relative bg-gray-500/[0.06] dark:bg-white/[0.05]"
+                                style={{ height: ROW_HEIGHT }}
+                            >
+                                <div
+                                    className="absolute inset-y-0 w-0.5 bg-blue-600 dark:bg-blue-400"
+                                    style={{ left: x(today) + dayW / 2 - 1 }}
+                                />
+                                {summary && (
+                                    <div
+                                        data-testid="project-timeline-summary"
+                                        className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-sm bg-gray-400"
+                                        style={{
+                                            left: x(summary.from),
+                                            width: Math.max(
+                                                (summary.to -
+                                                    summary.from +
+                                                    1) *
+                                                    dayW,
+                                                4
+                                            ),
+                                        }}
+                                    />
+                                )}
+                                {goal && goalDay !== null && (
+                                    <div
+                                        data-testid="project-timeline-goal"
+                                        title={`${goal.title}, ${formatDay(goalDay)}`}
+                                        className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-sm bg-violet-500 dark:bg-violet-300"
+                                        style={{ left: x(goalDay) + dayW / 2 }}
+                                    />
+                                )}
+                            </div>
+                        )}
                         <div
                             className="relative"
                             style={{ height: bodyHeight }}

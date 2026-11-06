@@ -382,6 +382,7 @@ The project page has two tabs above the tasks: **Tasks** (the list) and **Timeli
 - **Arrows** show "blocks" relations between the project's tasks (`task_links` on `GET /api/project/:uid`, as `{ from_uid, to_uid }` pairs).
 - **Highlight the path** marks the chain of blocking tasks that sets the finish (from the linked task that ends last, back through the blocker that ends latest) and shows spare days on open tasks off that chain: days until what they block starts, or until the project's due date.
 - **Scale:** Days, Weeks or Months. A line marks today, dashed lines mark the project's start and due date, and open tasks past their due date are orange.
+- A summary row on top runs from the earliest start to the latest finish of the tasks on the chart, with a diamond on the target date of the project's goal.
 - The chart follows the page's status filter and search.
 
 For every project at once over a quarter, with summary bars and goals, see the [Roadmap](31-roadmap.md).

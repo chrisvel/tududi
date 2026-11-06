@@ -42,18 +42,18 @@ const GOAL_LANE_HEIGHT = 44;
 const OPEN_KEY = 'roadmap_open_rows';
 const INDENT = { area: 8, project: 24, task: 52 };
 
-const readOpen = (): Set<string> | null => {
+const readOpen = (storageKey: string): Set<string> | null => {
     try {
-        const saved = localStorage.getItem(OPEN_KEY);
+        const saved = localStorage.getItem(storageKey);
         return saved ? new Set(JSON.parse(saved) as string[]) : null;
     } catch {
         return null;
     }
 };
 
-const writeOpen = (open: Set<string>) => {
+const writeOpen = (storageKey: string, open: Set<string>) => {
     try {
-        localStorage.setItem(OPEN_KEY, JSON.stringify([...open]));
+        localStorage.setItem(storageKey, JSON.stringify([...open]));
     } catch {
         // Open rows are a convenience; the chart works without saving them
     }
@@ -85,7 +85,11 @@ const RoadmapChart: React.FC<RoadmapChartProps> = ({ areaUid }) => {
 
     const [data, setData] = useState<RoadmapResponse | null>(null);
     const [failed, setFailed] = useState(false);
-    const [saved, setSaved] = useState<Set<string> | null>(readOpen);
+    // Each area's tab keeps its own rows, apart from the Roadmap page
+    const storageKey = areaUid ? `${OPEN_KEY}_${areaUid}` : OPEN_KEY;
+    const [saved, setSaved] = useState<Set<string> | null>(() =>
+        readOpen(storageKey)
+    );
     const [panelTask, setPanelTask] = useState<Task | null>(null);
     const [reloadCount, setReloadCount] = useState(0);
 
@@ -120,7 +124,7 @@ const RoadmapChart: React.FC<RoadmapChartProps> = ({ areaUid }) => {
 
     const changeOpen = (next: Set<string>) => {
         setSaved(next);
-        writeOpen(next);
+        writeOpen(storageKey, next);
     };
 
     const toggle = (rowKey: string) => {

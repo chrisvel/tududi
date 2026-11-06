@@ -11,6 +11,7 @@ import { fetchTasks } from '../../utils/tasksService';
 import { fetchProjects } from '../../utils/projectsService';
 import { updateArea } from '../../utils/areasService';
 import { updateGoal } from '../../utils/goalsService';
+import RoadmapChart from '../Roadmap/RoadmapChart';
 import AreaModal from './AreaModal';
 import AreaHero from './AreaHero';
 import GoalRow from '../Goal/GoalRow';
@@ -23,7 +24,7 @@ import { useToast } from '../Shared/ToastContext';
 import { leaveShare } from '../../utils/sharesService';
 import { TASK_SHEET_CLASS } from '../Task/taskSheet';
 
-type AreaTab = 'projects' | 'goals' | 'tasks';
+type AreaTab = 'projects' | 'goals' | 'tasks' | 'timeline';
 
 const AreaDetails: React.FC = () => {
     const { t } = useTranslation();
@@ -296,9 +297,19 @@ const AreaDetails: React.FC = () => {
                             {t('areas.tasksInArea', 'Tasks')} (
                             {areaTasks.length})
                         </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('timeline')}
+                            className={tabClass('timeline')}
+                            aria-pressed={activeTab === 'timeline'}
+                        >
+                            {t('projectTimeline.title', 'Timeline')}
+                        </button>
                     </div>
                 </div>
             </div>
+
+            {activeTab === 'timeline' && <RoadmapChart areaUid={area.uid} />}
 
             {activeTab === 'projects' &&
                 (areaProjects.length === 0 ? (

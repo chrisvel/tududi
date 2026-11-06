@@ -2,6 +2,8 @@
 
 The Roadmap page (`/roadmap`, in the sidebar) shows one calendar quarter across everything the user can see: areas, the projects in them, and the tasks in those projects, with goals pinned on top. Where the project Timeline answers "how does this project run", the Roadmap answers "how does the quarter look".
 
+The same chart is the **Timeline** tab on an area's page, narrowed to that area and its goals.
+
 ## Reading the chart
 
 - **Goals** sit in the first row as diamonds on their target date, with a dashed line running down the chart. Only active and achieved goals with a target date inside the quarter show; the row also says how many are outside it. Achieved goals are lighter.
