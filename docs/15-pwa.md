@@ -207,7 +207,7 @@ Signing out removes the device from the account on the server but keeps the brow
 |----------|---------|
 | `GET /api/push/config` | Public VAPID key |
 | `GET /api/push/subscriptions` | The user's devices |
-| `POST /api/push/subscriptions` | Add or refresh this device (`{ endpoint, keys: { p256dh, auth } }`) |
+| `POST /api/push/subscriptions` | Add or refresh this device (`{ endpoint, keys: { p256dh, auth } }`). The endpoint must be on a browser push service (FCM, Mozilla, Apple, Windows) |
 | `DELETE /api/push/subscriptions` | Remove this device (`{ endpoint }`) |
 
 Push requests bypass the offline mutation queue.

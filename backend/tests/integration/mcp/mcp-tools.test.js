@@ -2561,6 +2561,27 @@ describe('MCP Tools Integration', () => {
         });
 
         describe('create_project', () => {
+            it("should refuse another user's area", async () => {
+                const other = await createTestUser({
+                    email: `mcp_area_other_${Date.now()}@example.com`,
+                });
+                const foreign = await Area.create({
+                    name: 'Not mine',
+                    user_id: other.id,
+                });
+
+                const response = await callMcpTool(
+                    apiTokenValue,
+                    'create_project',
+                    { name: 'Sneaky', area_id: foreign.id }
+                );
+
+                expect(getToolContent(response).isError).toBe(true);
+                expect(await Project.count({ where: { name: 'Sneaky' } })).toBe(
+                    0
+                );
+            });
+
             it('should create a project with required fields', async () => {
                 const response = await callMcpTool(
                     apiTokenValue,

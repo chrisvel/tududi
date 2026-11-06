@@ -60,7 +60,8 @@ jobs:
         run: |
           if [ "$GITHUB_EVENT_NAME" = "push" ]; then
             VERSION="${GITHUB_REF_NAME#v}"
-            LATEST="true"
+            # release/1.x only: 2.x owns :latest, a 1.x fix must not take it.
+            LATEST="false"
             RELEASE="true"
           elif [ "$INPUT_RELEASE" = "true" ]; then
             VERSION="$INPUT_TAG"
@@ -269,7 +270,8 @@ jobs:
           if [ "$PRERELEASE" = "true" ]; then
             set -- "$@" --prerelease
           else
-            set -- "$@" --latest
+            # release/1.x only: the 2.x release stays marked as latest.
+            set -- "$@" --latest=false
           fi
           gh release "$ACTION" "$@"
           gh release view "$TAG" --json tagName,isPrerelease,url \

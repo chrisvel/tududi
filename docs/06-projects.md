@@ -96,12 +96,14 @@ Area: "Personal"
    - Used for high-level grouping
    - Can be changed or removed
    - Examples: "Work", "Personal", "Health"
+   - Only an area you own or that is shared with you read-write can be picked; anything else is refused with `400 Invalid area.`
 
 5. **Goal** (optional)
    - Links the project to a specific goal within its area
    - Set via the Goal section (flag icon) in the project modal - area must be selected first
    - Stored as `goal_id`; set to `null` when "No goal" is selected
    - If the linked goal is deleted, `goal_id` is set to `null` automatically (SET NULL)
+   - Same rule as the area: the goal must be yours or shared with you read-write (`400 Invalid goal.` otherwise). Keeping the current area or goal on save is always allowed
 
 6. **Maintenance flag** (`is_maintenance`, boolean, default: `false`)
    - Marks the project as ongoing maintenance work rather than goal-directed progress
