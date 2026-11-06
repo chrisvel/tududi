@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
+    Bars3BottomLeftIcon,
     BookOpenIcon,
     CalendarDaysIcon,
     CalendarIcon,
@@ -142,6 +143,15 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
                 title: t('sidebar.everyone', 'Everyone'),
                 Icon: UsersIcon,
                 gradient: 'from-indigo-400 to-blue-700',
+            },
+            {
+                id: 'roadmap',
+                group: 'links',
+                orderKey: 'roadmap',
+                path: '/roadmap',
+                title: t('sidebar.roadmap', 'Roadmap'),
+                Icon: Bars3BottomLeftIcon,
+                gradient: 'from-violet-400 to-purple-600',
             },
             {
                 id: 'projects',

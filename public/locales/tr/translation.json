@@ -89,6 +89,7 @@
     "productivityAssistant": "Verimlilik Asistanı",
     "assignedToMe": "Bana atanmış",
     "everyone": "Herkes",
+    "roadmap": "Yol haritası",
     "goals": "Hedefler",
     "habits": "Alışkanlıklar",
     "templates": "Şablonlar",
@@ -3449,5 +3450,25 @@
     "adminRequiredTitle": "Önce iki adımlı doğrulamayı açın",
     "adminRequiredBody": "Bu hesap tüm müşterileri görebilir, bu yüzden yönetim paneli yalnızca iki adımlı doğrulama açıkken açılır.",
     "adminRequiredAction": "Kur"
+  },
+  "roadmap": {
+    "title": "Yol haritası",
+    "range": "{{start}} - {{end}}",
+    "noDates": "Henüz tarih yok",
+    "projectDates": "{{range}} (proje tarihleri)",
+    "noArea": "Alan yok",
+    "toggle": "{{name}} öğesini göster veya gizle",
+    "previousQuarter": "Önceki çeyrek",
+    "nextQuarter": "Sonraki çeyrek",
+    "thisQuarter": "Bu çeyrek",
+    "expandAll": "Tümünü genişlet",
+    "collapseAll": "Tümünü daralt",
+    "loadError": "Yol haritası yüklenemedi.",
+    "empty": "Henüz gösterilecek bir şey yok. Çubuklar, projelerinizdeki görevlerin başlangıç ve bitiş tarihlerinden oluşur.",
+    "items": "Alan / Proje / Görev",
+    "goalsOutside": "Bu çeyreğin dışında: {{count}}",
+    "legendGoal": "Hedef tarih",
+    "legendArea": "Alan özeti",
+    "legendProject": "Proje özeti"
   }
 }

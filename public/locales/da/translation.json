@@ -89,6 +89,7 @@
     "productivityAssistant": "Produktivitetsassistent",
     "assignedToMe": "Tildelt til mig",
     "everyone": "Alle",
+    "roadmap": "Køreplan",
     "goals": "Mål",
     "habits": "Vaner",
     "templates": "Skabeloner",
@@ -3449,5 +3450,25 @@
     "adminRequiredTitle": "Slå totrinsbekræftelse til først",
     "adminRequiredBody": "Denne konto kan se alle kunder, så administrationspanelet åbner først, når totrinsbekræftelse er slået til.",
     "adminRequiredAction": "Konfigurer det"
+  },
+  "roadmap": {
+    "title": "Køreplan",
+    "range": "{{start}} til {{end}}",
+    "noDates": "Ingen datoer endnu",
+    "projectDates": "{{range}} (projektdatoer)",
+    "noArea": "Intet område",
+    "toggle": "Vis eller skjul {{name}}",
+    "previousQuarter": "Forrige kvartal",
+    "nextQuarter": "Næste kvartal",
+    "thisQuarter": "Dette kvartal",
+    "expandAll": "Udvid alle",
+    "collapseAll": "Skjul alle",
+    "loadError": "Køreplanen kunne ikke indlæses.",
+    "empty": "Intet at vise endnu. Bjælkerne kommer fra start- og forfaldsdatoerne for opgaverne i dine projekter.",
+    "items": "Område / Projekt / Opgave",
+    "goalsOutside": "Uden for dette kvartal: {{count}}",
+    "legendGoal": "Måldato",
+    "legendArea": "Områdeoversigt",
+    "legendProject": "Projektoversigt"
   }
 }

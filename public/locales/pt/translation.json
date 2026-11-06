@@ -89,6 +89,7 @@
     "productivityAssistant": "Assistente de Produtividade",
     "assignedToMe": "Atribuído a mim",
     "everyone": "Todos",
+    "roadmap": "Roteiro",
     "goals": "Metas",
     "habits": "Hábitos",
     "templates": "Modelos",
@@ -3453,5 +3454,25 @@
     "adminRequiredTitle": "Ative primeiro a verificação em duas etapas",
     "adminRequiredBody": "Esta conta pode ver todos os clientes, então o painel de administração só abre depois que a verificação em duas etapas estiver ativada.",
     "adminRequiredAction": "Configurar"
+  },
+  "roadmap": {
+    "title": "Roteiro",
+    "range": "{{start}} a {{end}}",
+    "noDates": "Ainda sem datas",
+    "projectDates": "{{range}} (datas do projeto)",
+    "noArea": "Sem área",
+    "toggle": "Mostrar ou ocultar {{name}}",
+    "previousQuarter": "Trimestre anterior",
+    "nextQuarter": "Próximo trimestre",
+    "thisQuarter": "Este trimestre",
+    "expandAll": "Expandir tudo",
+    "collapseAll": "Recolher tudo",
+    "loadError": "Não foi possível carregar o roteiro.",
+    "empty": "Ainda não há nada para mostrar. As barras vêm das datas de início e de vencimento das tarefas dos seus projetos.",
+    "items": "Área / Projeto / Tarefa",
+    "goalsOutside": "Fora deste trimestre: {{count}}",
+    "legendGoal": "Data-alvo",
+    "legendArea": "Resumo da área",
+    "legendProject": "Resumo do projeto"
   }
 }

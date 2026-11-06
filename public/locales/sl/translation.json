@@ -89,6 +89,7 @@
     "productivityAssistant": "Asistent za produktivnost",
     "assignedToMe": "Dodeljeno meni",
     "everyone": "Vsi",
+    "roadmap": "Načrt",
     "goals": "Cilji",
     "habits": "Navade",
     "templates": "Predloge",
@@ -3461,5 +3462,25 @@
     "adminRequiredTitle": "Najprej vklopite dvostopenjsko preverjanje",
     "adminRequiredBody": "Ta račun vidi vse stranke, zato se skrbniška plošča odpre šele, ko je dvostopenjsko preverjanje vklopljeno.",
     "adminRequiredAction": "Nastavi"
+  },
+  "roadmap": {
+    "title": "Načrt",
+    "range": "{{start}} do {{end}}",
+    "noDates": "Še brez datumov",
+    "projectDates": "{{range}} (datumi projekta)",
+    "noArea": "Brez področja",
+    "toggle": "Prikaži ali skrij: {{name}}",
+    "previousQuarter": "Prejšnje četrtletje",
+    "nextQuarter": "Naslednje četrtletje",
+    "thisQuarter": "To četrtletje",
+    "expandAll": "Razširi vse",
+    "collapseAll": "Strni vse",
+    "loadError": "Načrta ni bilo mogoče naložiti.",
+    "empty": "Še ni česa prikazati. Stolpci izhajajo iz začetnih datumov in rokov nalog v vaših projektih.",
+    "items": "Področje / Projekt / Naloga",
+    "goalsOutside": "Zunaj tega četrtletja: {{count}}",
+    "legendGoal": "Ciljni datum",
+    "legendArea": "Povzetek področja",
+    "legendProject": "Povzetek projekta"
   }
 }

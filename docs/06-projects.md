@@ -384,6 +384,8 @@ The project page has two tabs above the tasks: **Tasks** (the list) and **Timeli
 - **Scale:** Days, Weeks or Months. A line marks today, dashed lines mark the project's start and due date, and open tasks past their due date are orange.
 - The chart follows the page's status filter and search.
 
+For every project at once over a quarter, with summary bars and goals, see the [Roadmap](31-roadmap.md).
+
 ## Tasks and Notes in Projects
 
 ### Adding Tasks to Projects

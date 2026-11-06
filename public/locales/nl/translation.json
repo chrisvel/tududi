@@ -89,6 +89,7 @@
     "productivityAssistant": "Productiviteitsassistent",
     "assignedToMe": "Aan mij toegewezen",
     "everyone": "Iedereen",
+    "roadmap": "Roadmap",
     "goals": "Doelen",
     "habits": "Gewoonten",
     "templates": "Sjablonen",
@@ -3449,5 +3450,25 @@
     "adminRequiredTitle": "Schakel eerst tweestapsverificatie in",
     "adminRequiredBody": "Dit account kan alle klanten zien, dus het beheerpaneel opent pas als tweestapsverificatie aan staat.",
     "adminRequiredAction": "Instellen"
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "range": "{{start}} tot {{end}}",
+    "noDates": "Nog geen datums",
+    "projectDates": "{{range}} (projectdatums)",
+    "noArea": "Geen gebied",
+    "toggle": "{{name}} tonen of verbergen",
+    "previousQuarter": "Vorig kwartaal",
+    "nextQuarter": "Volgend kwartaal",
+    "thisQuarter": "Dit kwartaal",
+    "expandAll": "Alles uitvouwen",
+    "collapseAll": "Alles samenvouwen",
+    "loadError": "De roadmap kon niet worden geladen.",
+    "empty": "Nog niets te tonen. De balken komen van de start- en einddatums van taken in je projecten.",
+    "items": "Gebied / Project / Taak",
+    "goalsOutside": "Buiten dit kwartaal: {{count}}",
+    "legendGoal": "Streefdatum",
+    "legendArea": "Gebiedsoverzicht",
+    "legendProject": "Projectoverzicht"
   }
 }

@@ -44,6 +44,7 @@ export interface SidebarVisibleSections {
     upcomingTasks?: boolean;
     assignedToMe?: boolean;
     everyone?: boolean;
+    roadmap?: boolean;
     favorites?: boolean;
     projects?: boolean;
     areas?: boolean;
