@@ -16,6 +16,7 @@ const {
     ProjectAttachment,
     NoteAttachment,
     User,
+    sequelize,
 } = require('../../models');
 const { getConfig } = require('../../config/config');
 const {
@@ -418,6 +419,104 @@ describe('Backup export and import round trip (format 2)', () => {
         const task = await Task.findOne({ where: { uid: 'legacy-task' } });
         expect(task.project_id).toBeNull();
         expect(task.parent_task_id).toBeNull();
+    });
+
+    it('keeps original dates, due times and finished project dates', async () => {
+        const old = new Date('2025-03-04T05:06:07.000Z');
+        const changed = new Date('2025-04-05T06:07:08.000Z');
+        const finished = new Date('2025-05-06T07:08:09.000Z');
+        const done = await Project.create({
+            name: 'Finished',
+            user_id: source.id,
+            status: 'done',
+            completed_at: finished,
+        });
+        const timed = await Task.create({
+            name: 'Due at nine',
+            user_id: source.id,
+            due_date: new Date('2026-12-01T21:00:00.000Z'),
+            due_has_time: true,
+        });
+        for (const [table, id] of [
+            ['projects', done.id],
+            ['tasks', timed.id],
+            [
+                'notes',
+                (await Note.findOne({ where: { user_id: source.id } })).id,
+            ],
+        ]) {
+            await sequelize.query(
+                `UPDATE ${table} SET created_at = :old, updated_at = :changed WHERE id = :id`,
+                { replacements: { old, changed, id } }
+            );
+        }
+        await source.update({ onboarding_starter: 'empty' });
+
+        const backup = await exportUserData(source.id);
+        await peopleService.createSelfPerson(target);
+        await importUserData(target.id, backup);
+
+        const project = await Project.findOne({
+            where: { user_id: target.id, name: 'Finished' },
+        });
+        expect(new Date(project.completed_at).toISOString()).toBe(
+            finished.toISOString()
+        );
+        expect(new Date(project.created_at).toISOString()).toBe(
+            old.toISOString()
+        );
+        expect(new Date(project.updated_at).toISOString()).toBe(
+            changed.toISOString()
+        );
+        const task = await Task.findOne({
+            where: { user_id: target.id, name: 'Due at nine' },
+        });
+        expect(task.due_has_time).toBe(true);
+        expect(new Date(task.created_at).toISOString()).toBe(old.toISOString());
+        expect(new Date(task.updated_at).toISOString()).toBe(
+            changed.toISOString()
+        );
+        const note = await Note.findOne({ where: { user_id: target.id } });
+        expect(new Date(note.created_at).toISOString()).toBe(old.toISOString());
+        expect((await User.findByPk(target.id)).onboarding_starter).toBe(
+            'empty'
+        );
+    });
+
+    it('leaves a task whose parent was deleted without a parent', async () => {
+        const backup = await exportUserData(source.id);
+        // The target's own task takes the numeric id the backup still holds
+        const unrelated = await Task.create({
+            name: 'Unrelated',
+            user_id: target.id,
+        });
+        const child = backup.data.tasks.find((t) => t.name === 'Child');
+        child.parent_task_uid = null;
+        child.parent_task_id = unrelated.id;
+        backup.data.tasks = backup.data.tasks.filter(
+            (t) => t.name !== 'Parent'
+        );
+        await peopleService.createSelfPerson(target);
+
+        await importUserData(target.id, backup);
+
+        const imported = await Task.findOne({
+            where: { user_id: target.id, name: 'Child' },
+        });
+        expect(imported.parent_task_id).toBeNull();
+    });
+
+    it('skips the welcome page after restoring a backup without onboarding fields', async () => {
+        const backup = await exportUserData(source.id);
+        delete backup.user.onboarding_starter;
+        delete backup.user.onboarded_at;
+        await peopleService.createSelfPerson(target);
+
+        await importUserData(target.id, backup);
+
+        const restored = await User.findByPk(target.id);
+        expect(restored.onboarding_starter).toBe('empty');
+        expect(restored.onboarded_at).toBeTruthy();
     });
 
     it('carries inbox item files through export and import', async () => {

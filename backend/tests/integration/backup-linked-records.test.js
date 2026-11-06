@@ -83,6 +83,7 @@ async function seedAccount() {
     const plan = await DailyPlan.create({
         user_id: user.id,
         plan_date: '2026-01-02',
+        created_at: new Date('2026-01-02T08:00:00Z'),
     });
     await DailyPlanItem.create({
         daily_plan_id: plan.id,
@@ -268,6 +269,9 @@ describe('Backup of comments, plans, feeds, webhooks and orders', () => {
             include: [{ model: DailyPlanItem, as: 'Items' }],
         });
         expect(plan.plan_date).toBe('2026-01-02');
+        expect(new Date(plan.created_at).toISOString()).toBe(
+            '2026-01-02T08:00:00.000Z'
+        );
         expect(plan.Items.map((i) => [i.task_id, i.duration_minutes])).toEqual([
             [paint.id, 90],
         ]);
