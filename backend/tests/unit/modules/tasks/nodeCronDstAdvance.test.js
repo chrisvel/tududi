@@ -21,13 +21,14 @@ describe('node-cron DST advance (issue #2085)', () => {
 
     it('getNextMatch advances across Europe/Berlin autumn DST with UTC cron tz', () => {
         process.env.TZ = 'Europe/Berlin';
-        const task = cron.schedule(
-            '*/5 * * * *',
-            () => {},
-            { timezone: 'UTC', scheduled: false }
-        );
+        const task = cron.schedule('*/5 * * * *', () => {}, {
+            timezone: 'UTC',
+            scheduled: false,
+        });
         assert.ok(
-            task && task.timeMatcher && typeof task.timeMatcher.getNextMatch === 'function',
+            task &&
+                task.timeMatcher &&
+                typeof task.timeMatcher.getNextMatch === 'function',
             'node-cron schedule() should expose timeMatcher.getNextMatch'
         );
         let current = new Date('2026-10-25T00:50:00Z');
