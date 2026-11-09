@@ -14,6 +14,7 @@ const {
     buildPropstat,
     parsePropfind,
     parseCalendarQuery,
+    resourceNameOf,
 } = require('./utils');
 const { generateETag } = require('../utils/etag-generator');
 const { generateCTag } = require('../utils/ctag-generator');
@@ -30,6 +31,11 @@ const {
     isWritable,
     ACCESS,
 } = require('../access');
+const {
+    resourceNameFromParam,
+    resourceNameFromHref,
+    findTaskResource,
+} = require('./task-resource');
 
 const INBOX_UID = '__inbox__';
 const INCLUDE_PROJECT = CALDAV_TASK_INCLUDES;
@@ -43,7 +49,7 @@ function perProjectEnabled() {
 const enc = encodeURIComponent;
 const homeHref = (u) => `/caldav/${enc(u)}/projects/`;
 const calHref = (u, p) => `/caldav/${enc(u)}/projects/${enc(p)}/`;
-const itemHref = (u, p, uid) => `${calHref(u, p)}${enc(uid)}.ics`;
+const itemHref = (u, p, name) => `${calHref(u, p)}${enc(name)}.ics`;
 
 // Resolve a :projectUid (or the inbox sentinel) to { name, where, writable }
 // scoping the task query. Returns null if the calendar does not exist or the
@@ -102,7 +108,9 @@ function calendarProps(displayname, ctag, username, writable = true) {
 }
 
 async function buildItemResponse(task, username, projectUid, userTimezone) {
-    const href = itemHref(username, projectUid, task.uid);
+    // The resource a client uploaded under is part of its URL (RFC 4791 5.3.2),
+    // so the href is built from the stored name, not from the uid.
+    const href = itemHref(username, projectUid, resourceNameOf(task));
     try {
         // Without the user's timezone the serializer reads a due date's UTC
         // date parts, and any task due at local midnight leaks into the
@@ -256,10 +264,10 @@ async function handleProjectPropfind(req, res) {
 
         const responses = [];
         if (req.params.uid) {
-            const uid = req.params.uid.replace('.ics', '');
-            const task = await taskRepository.findByUid(uid, {
-                include: INCLUDE_PROJECT,
-            });
+            const task = await findTaskResource(
+                resourceNameFromParam(req.params.uid),
+                userId
+            );
             if (!(await canReadTask(task, userId))) {
                 return res.status(404).json({ error: 'Task not found' });
             }
@@ -338,8 +346,8 @@ async function handleProjectReport(req, res) {
         const responses = [];
         if (queryRequest.isMultiget) {
             for (const href of queryRequest.hrefs) {
-                const match = href.match(/\/([^/]+)\.ics$/);
-                if (!match) {
+                const resourceName = resourceNameFromHref(href);
+                if (!resourceName) {
                     responses.push(
                         buildResponse(
                             href,
@@ -348,10 +356,7 @@ async function handleProjectReport(req, res) {
                     );
                     continue;
                 }
-                const uid = decodeURIComponent(match[1]);
-                const task = await taskRepository.findByUid(uid, {
-                    include: INCLUDE_PROJECT,
-                });
+                const task = await findTaskResource(resourceName, userId);
                 if (!(await canReadTask(task, userId))) {
                     responses.push(
                         buildResponse(
@@ -404,7 +409,7 @@ async function handleProjectReport(req, res) {
                 }
                 responses.push(
                     buildResponse(
-                        itemHref(username, projectUid, task.uid),
+                        itemHref(username, projectUid, resourceNameOf(task)),
                         buildPropstat(props)
                     )
                 );
