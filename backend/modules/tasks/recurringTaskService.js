@@ -1,4 +1,39 @@
+const moment = require('moment-timezone');
 const { getWeekdayInTimezone } = require('../../utils/timezone-utils');
+
+// The monthly calculations read calendar fields in UTC, but a due date is the
+// user's local day (stored as the end of that day in UTC). Run them on the
+// local date and clock, then turn the result back into an instant.
+const inLocalTime = (fromDate, timezone, calculate) => {
+    const local = moment.tz(fromDate, timezone);
+    const next = calculate(
+        new Date(
+            Date.UTC(
+                local.year(),
+                local.month(),
+                local.date(),
+                local.hours(),
+                local.minutes(),
+                local.seconds(),
+                local.milliseconds()
+            )
+        )
+    );
+    return moment
+        .tz(
+            {
+                year: next.getUTCFullYear(),
+                month: next.getUTCMonth(),
+                date: next.getUTCDate(),
+                hour: next.getUTCHours(),
+                minute: next.getUTCMinutes(),
+                second: next.getUTCSeconds(),
+                millisecond: next.getUTCMilliseconds(),
+            },
+            timezone
+        )
+        .toDate();
+};
 
 const calculateNextDueDate = (task, fromDate, timezone = 'UTC') => {
     if (
@@ -29,24 +64,30 @@ const calculateNextDueDate = (task, fromDate, timezone = 'UTC') => {
             );
 
         case 'monthly':
-            return calculateMonthlyRecurrence(
-                startDate,
-                task.recurrence_interval || 1,
-                task.recurrence_month_day
+            return inLocalTime(startDate, timezone, (date) =>
+                calculateMonthlyRecurrence(
+                    date,
+                    task.recurrence_interval || 1,
+                    task.recurrence_month_day
+                )
             );
 
         case 'monthly_weekday':
-            return calculateMonthlyWeekdayRecurrence(
-                startDate,
-                task.recurrence_interval || 1,
-                task.recurrence_weekday,
-                task.recurrence_week_of_month
+            return inLocalTime(startDate, timezone, (date) =>
+                calculateMonthlyWeekdayRecurrence(
+                    date,
+                    task.recurrence_interval || 1,
+                    task.recurrence_weekday,
+                    task.recurrence_week_of_month
+                )
             );
 
         case 'monthly_last_day':
-            return calculateMonthlyLastDayRecurrence(
-                startDate,
-                task.recurrence_interval || 1
+            return inLocalTime(startDate, timezone, (date) =>
+                calculateMonthlyLastDayRecurrence(
+                    date,
+                    task.recurrence_interval || 1
+                )
             );
 
         default:
@@ -276,7 +317,6 @@ const calculateVirtualOccurrences = (
     startFrom = null,
     userTimezone = 'UTC'
 ) => {
-    const moment = require('moment-timezone');
     const occurrences = [];
 
     // Parse start date properly in user's timezone
