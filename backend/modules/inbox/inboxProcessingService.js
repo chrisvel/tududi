@@ -356,6 +356,7 @@ const processInboxItem = (content, options = {}) => {
     const {
         referenceDate = new Date(),
         timezone = 'UTC',
+        language = 'en',
         parseDates = true,
         personResolved = false,
         areaName = null,
@@ -365,11 +366,11 @@ const processInboxItem = (content, options = {}) => {
     const projects = parseProjectRefs(content);
 
     const recurrence = parseDates
-        ? parseRecurrence(content, { timezone })
+        ? parseRecurrence(content, { timezone, language })
         : null;
     const dueDate =
         parseDates && !recurrence
-            ? parseDueDate(content, { referenceDate, timezone })
+            ? parseDueDate(content, { referenceDate, timezone, language })
             : null;
     const person = parsePersonRef(content);
     const area = areaName
