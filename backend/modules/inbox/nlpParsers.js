@@ -33,6 +33,23 @@ const WEEKDAYS = {
     sat: 6,
 };
 
+const GERMAN_WEEKDAYS = {
+    sonntag: 0,
+    so: 0,
+    montag: 1,
+    mo: 1,
+    dienstag: 2,
+    di: 2,
+    mittwoch: 3,
+    mi: 3,
+    donnerstag: 4,
+    do: 4,
+    freitag: 5,
+    fr: 5,
+    samstag: 6,
+    sa: 6,
+};
+
 const ORDINALS = {
     first: 1,
     '1st': 1,
@@ -51,6 +68,8 @@ const AMBIGUOUS_DATE_WORDS = new Set(['sun', 'sat', 'wed', 'mar', 'may']);
 // Words that only introduce a due date ("until next thursday", "due by fri")
 const DATE_LEAD_PATTERN =
     /(^|\s)((?:due\s+(?:by|on|before)|due|until|till|by|before)\s+)$/i;
+const GERMAN_DATE_LEAD_PATTERN =
+    /(^|\s)((?:spätestens\s+bis|spätestens|fällig(?:\s+am)?|bis)\s+)$/iu;
 
 const WEEKDAY_PATTERN =
     '(?:sunday|monday|tuesday|wednesday|thursday|friday|saturday|sun|mon|tues|tue|wed|thurs|thur|thu|fri|sat)';
@@ -217,9 +236,81 @@ const RECURRENCE_RULES = [
     },
 ];
 
-const parseRecurrence = (text, { timezone = 'UTC' } = {}) => {
+const GERMAN_RECURRENCE_RULES = [
+    {
+        pattern:
+            /\bjeden\s+ersten\s+(sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag)\b/iu,
+        build: (match) => ({
+            recurrence_type: 'monthly_weekday',
+            recurrence_interval: 1,
+            recurrence_weekday: GERMAN_WEEKDAYS[match[1].toLowerCase()],
+            recurrence_week_of_month: 1,
+        }),
+    },
+    {
+        pattern: /\bjeden\s+monatsletzten\b/iu,
+        build: () => ({
+            recurrence_type: 'monthly_last_day',
+            recurrence_interval: 1,
+        }),
+    },
+    {
+        pattern: /\bwerktags\b|\ban\s+werktagen\b/iu,
+        build: () => ({
+            recurrence_type: 'weekly',
+            recurrence_interval: 1,
+            recurrence_weekdays: [1, 2, 3, 4, 5],
+        }),
+    },
+    {
+        pattern:
+            /\bjeden\s+(sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag)\b/iu,
+        build: (match) => ({
+            recurrence_type: 'weekly',
+            recurrence_interval: 1,
+            recurrence_weekdays: [GERMAN_WEEKDAYS[match[1].toLowerCase()]],
+        }),
+    },
+    {
+        pattern: /\balle\s+(\d{1,3})\s+(tage?|wochen?|monate?)\b/iu,
+        build: (match) => {
+            const interval = Number(match[1]);
+            const unit = match[2].toLowerCase();
+            const normalized = unit.startsWith('tag')
+                ? 'day'
+                : unit.startsWith('woch')
+                  ? 'week'
+                  : 'month';
+            return unitRecurrence(normalized, interval);
+        },
+    },
+    {
+        pattern: /\b(jeden\s+tag|täglich)\b/iu,
+        build: () => ({ recurrence_type: 'daily', recurrence_interval: 1 }),
+    },
+    {
+        pattern: /\b(jede\s+woche|wöchentlich)\b/iu,
+        build: () => ({ recurrence_type: 'weekly', recurrence_interval: 1 }),
+    },
+    {
+        pattern: /\b(jeden\s+monat|monatlich)\b/iu,
+        build: () => ({ recurrence_type: 'monthly', recurrence_interval: 1 }),
+    },
+];
+
+const languageCode = (language) =>
+    String(language || 'en')
+        .toLowerCase()
+        .split(/[-_]/, 1)[0];
+
+const recurrenceRulesFor = (language) =>
+    languageCode(language) === 'de'
+        ? [...GERMAN_RECURRENCE_RULES, ...RECURRENCE_RULES]
+        : RECURRENCE_RULES;
+
+const parseRecurrence = (text, { timezone = 'UTC', language = 'en' } = {}) => {
     const masked = maskTokens(text);
-    for (const rule of RECURRENCE_RULES) {
+    for (const rule of recurrenceRulesFor(language)) {
         const match = rule.pattern.exec(masked);
         if (!match) continue;
         const recurrence = rule.build(match);
@@ -237,14 +328,15 @@ const parseRecurrence = (text, { timezone = 'UTC' } = {}) => {
 
 const parseDueDate = (
     text,
-    { referenceDate = new Date(), timezone = 'UTC' } = {}
+    { referenceDate = new Date(), timezone = 'UTC', language = 'en' } = {}
 ) => {
     const masked = maskTokens(text);
     const reference = {
         instant: referenceDate,
         timezone: moment.tz(referenceDate, timezone).utcOffset(),
     };
-    const results = chrono.casual
+    const parser = chrono[languageCode(language)]?.casual || chrono.casual;
+    let results = parser
         .parse(masked, reference, { forwardDate: true })
         .filter((result) => {
             const start = result.start;
@@ -253,6 +345,19 @@ const parseDueDate = (
             }
             return !AMBIGUOUS_DATE_WORDS.has(result.text.trim().toLowerCase());
         });
+    if (results.length === 0 && parser !== chrono.casual) {
+        results = chrono.casual
+            .parse(masked, reference, { forwardDate: true })
+            .filter((result) => {
+                const start = result.start;
+                if (!start.isCertain('day') && !start.isCertain('weekday')) {
+                    return false;
+                }
+                return !AMBIGUOUS_DATE_WORDS.has(
+                    result.text.trim().toLowerCase()
+                );
+            });
+    }
     if (results.length === 0) return null;
 
     const result = results[results.length - 1];
@@ -273,7 +378,9 @@ const parseDueDate = (
     // "until", "by" or "due" right before a cut phrase goes with it, so the
     // title does not end in "pay the bill until".
     const lead = removable
-        ? DATE_LEAD_PATTERN.exec(masked.slice(0, result.index))
+        ? (languageCode(language) === 'de'
+              ? GERMAN_DATE_LEAD_PATTERN.exec(masked.slice(0, result.index))
+              : null) || DATE_LEAD_PATTERN.exec(masked.slice(0, result.index))
         : null;
     const index = lead ? lead.index + lead[1].length : result.index;
 
