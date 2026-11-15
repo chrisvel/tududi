@@ -26,11 +26,12 @@ class FakeResponse {
     }
 }
 
-const fakeRequest = (url: string) => ({
+const fakeRequest = (url: string, method = 'GET') => ({
     url,
-    method: 'GET',
+    method,
     mode: 'cors',
-    headers: { get: () => null },
+    headers: { get: () => null, entries: () => [] },
+    text: async () => '{}',
 });
 
 type Listener = (event: any) => void;
@@ -133,10 +134,10 @@ function loadWorker(fetchImpl: (url: string) => Promise<FakeResponse>) {
         FakeResponse
     );
 
-    const get = async (url: string) => {
+    const send = async (url: string, method = 'GET') => {
         let pending: Promise<FakeResponse> | undefined;
         listeners.fetch({
-            request: fakeRequest(url),
+            request: fakeRequest(url, method),
             respondWith: (p: Promise<FakeResponse>) => {
                 pending = p;
             },
@@ -154,7 +155,10 @@ function loadWorker(fetchImpl: (url: string) => Promise<FakeResponse>) {
         await pending;
     };
 
-    return { caches, idb, posted, get, sync };
+    const get = (url: string) => send(url);
+    const post = (url: string) => send(url, 'POST');
+
+    return { caches, idb, posted, get, post, sync };
 }
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 10));
@@ -231,5 +235,34 @@ describe('service worker auth responses', () => {
         const left = [...sw.idb.rows.values()].map((row) => row.url);
         expect(left).toEqual([`${ORIGIN}/api/task/flaky`]);
         expect(sw.posted).toEqual([{ type: 'SYNC_COMPLETE' }]);
+    });
+});
+
+describe('service worker offline sign-in', () => {
+    const offline = async (): Promise<FakeResponse> => {
+        throw new TypeError('Failed to fetch');
+    };
+
+    it.each(['/api/login', '/api/login/mfa', '/api/reset-password'])(
+        'answers %s with a 503 and queues nothing',
+        async (path) => {
+            const sw = loadWorker(offline);
+
+            const response = await sw.post(`${ORIGIN}${path}`);
+            await flush();
+
+            expect(response.status).toBe(503);
+            expect(sw.idb.rows.size).toBe(0);
+        }
+    );
+
+    it('still queues an ordinary edit made offline', async () => {
+        const sw = loadWorker(offline);
+
+        const response = await sw.post(`${ORIGIN}/api/task`);
+        await flush();
+
+        expect(response.status).toBe(202);
+        expect(sw.idb.rows.size).toBe(1);
     });
 });
