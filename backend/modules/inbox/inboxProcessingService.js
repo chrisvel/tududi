@@ -347,6 +347,7 @@ const generateSuggestion = (
 // Options:
 // - referenceDate: what "today" means for relative dates (defaults to now)
 // - timezone: the user's timezone
+// - language: the user's language, so dates and repeats are also read in it
 // - parseDates: false skips date and recurrence parsing
 // - personResolved: true when the @person matched someone, so it is cut
 //   from the title and counts as a task signal
@@ -356,6 +357,7 @@ const processInboxItem = (content, options = {}) => {
     const {
         referenceDate = new Date(),
         timezone = 'UTC',
+        language = null,
         parseDates = true,
         personResolved = false,
         areaName = null,
@@ -365,11 +367,11 @@ const processInboxItem = (content, options = {}) => {
     const projects = parseProjectRefs(content);
 
     const recurrence = parseDates
-        ? parseRecurrence(content, { timezone })
+        ? parseRecurrence(content, { timezone, language })
         : null;
     const dueDate =
         parseDates && !recurrence
-            ? parseDueDate(content, { referenceDate, timezone })
+            ? parseDueDate(content, { referenceDate, timezone, language })
             : null;
     const person = parsePersonRef(content);
     const area = areaName
