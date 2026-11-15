@@ -103,6 +103,7 @@ const inboxController = {
             const result = await inboxService.analyzeText(userId, content, {
                 referenceDate: validateReferenceDate(reference_date),
                 timezone: req.currentUser?.timezone || 'UTC',
+                language: req.currentUser?.language || 'en',
                 parseDates: parse_dates !== false,
             });
             res.json(result);

@@ -140,6 +140,19 @@ describe('POST /api/inbox/analyze-text: dates and @people', () => {
         expect(response.body.cleaned_content).toBe('Call plumber');
     });
 
+    it('uses the current user language for natural-language dates', async () => {
+        await owner.update({ language: 'de' });
+
+        const response = await analyze({
+            content: 'Arzttermin morgen',
+            reference_date: '2026-01-10T12:00:00Z',
+        });
+
+        expect(response.body.parsed_due_date).toBe('2026-01-11');
+        expect(response.body.parsed_date_text).toBe('morgen');
+        expect(response.body.cleaned_content).toBe('Arzttermin');
+    });
+
     it('skips dates when parse_dates is false', async () => {
         const response = await analyze({
             content: 'Call plumber tomorrow',

@@ -157,10 +157,10 @@ class InboxService {
     async analyzeText(
         userId,
         content,
-        { referenceDate, timezone, parseDates = true } = {}
+        { referenceDate, timezone, language = 'en', parseDates = true } = {}
     ) {
         validateContent(content);
-        const options = { referenceDate, timezone, parseDates };
+        const options = { referenceDate, timezone, language, parseDates };
         const result = processInboxItem(content, options);
 
         const assignee = result.parsed_person

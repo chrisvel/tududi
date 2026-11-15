@@ -104,6 +104,27 @@ describe('inbox natural-language parsing', () => {
                 }).date
             ).toBe('2026-09-21');
         });
+
+        it('parses German relative dates and German due-date lead words', () => {
+            expect(
+                parseDueDate('Rechnung spätestens bis morgen', {
+                    ...options,
+                    language: 'de',
+                })
+            ).toMatchObject({
+                date: '2026-09-26',
+                text: 'spätestens bis morgen',
+            });
+        });
+
+        it('falls back to English dates for a German-language user', () => {
+            expect(
+                parseDueDate('Call plumber tomorrow', {
+                    ...options,
+                    language: 'de',
+                })
+            ).toMatchObject({ date: '2026-09-26', text: 'tomorrow' });
+        });
     });
 
     describe('parseRecurrence', () => {
@@ -177,6 +198,44 @@ describe('inbox natural-language parsing', () => {
 
         it('leaves "weekly" alone inside a title', () => {
             expect(parseRecurrence('Write weekly report', options)).toBeNull();
+        });
+
+        it.each([
+            [
+                'Journal täglich',
+                { recurrence_type: 'daily', recurrence_interval: 1 },
+            ],
+            [
+                'Wasser alle 2 Wochen',
+                { recurrence_type: 'weekly', recurrence_interval: 2 },
+            ],
+            [
+                'Sport jeden Montag',
+                { recurrence_type: 'weekly', recurrence_weekdays: [1] },
+            ],
+            [
+                'Büro werktags',
+                {
+                    recurrence_type: 'weekly',
+                    recurrence_weekdays: [1, 2, 3, 4, 5],
+                },
+            ],
+        ])('parses German recurrence phrase "%s"', (text, recurrence) => {
+            expect(
+                parseRecurrence(text, { ...options, language: 'de' }).recurrence
+            ).toMatchObject(recurrence);
+        });
+
+        it('falls back to English recurrence for a German-language user', () => {
+            expect(
+                parseRecurrence('Journal every Monday', {
+                    ...options,
+                    language: 'de',
+                }).recurrence
+            ).toMatchObject({
+                recurrence_type: 'weekly',
+                recurrence_weekdays: [1],
+            });
         });
     });
 
