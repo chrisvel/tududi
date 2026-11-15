@@ -180,6 +180,15 @@ Write a date in plain English and it becomes the task's due date:
 - Bare words that are usually just words are ignored: `may`, `march`, `sun`, `sat`, `wed`, and numbers on their own. Nothing inside a `#tag`, `+project`, `@person` or URL is read as a date.
 - A calendar chip under the input shows the date. Its × keeps the words as plain text and nothing is parsed from that phrase.
 
+**Other languages:**
+
+Dates are also read in your interface language (Profile → Language) when it is German, Spanish, French, Italian, Dutch, Portuguese, Swedish, Finnish, Russian, Ukrainian, Japanese, Chinese or Vietnamese. English keeps working in every language.
+
+- German: `Arzt anrufen morgen`, `Tisch buchen nächsten Freitag`, `Nachfassen in 3 Tagen`, `Pass verlängern am 20. November`, and the short forms `20.11.` and `20.11.2026`.
+- In German `bis`, `bis zum`, `fällig`, `spätestens` and `vor` are removed with the date, the way `by`, `due` and `until` are in English. In the other languages only the date itself is removed.
+- Two and three letter weekday short forms (`So`, `Do`, `mar`, `jeu`) are not read as dates outside English, because they are usually plain words. Write the full weekday.
+- A word that means both "tomorrow" and "morning" is the morning after an article or greeting: `Guten Morgen`, `por la mañana`.
+
 ### 5. Recurrence
 
 `every ...` phrases make a recurring task, starting at the first matching day:
@@ -197,6 +206,22 @@ Write a date in plain English and it becomes the task's due date:
 | `every last day of the month` | The last day of each month |
 
 `daily`, `weekly` and `monthly` only count as the last word, so `Write weekly report` stays a plain name.
+
+With the interface in German the same repeats can be written in German (the English phrases still work):
+
+| You write | Repeats |
+|-----------|---------|
+| `jeden Tag`, `täglich` (first or last word) | Every day |
+| `alle 3 Tage`, `alle zwei Wochen`, `jeden zweiten Tag` | That interval |
+| `jede Woche`, `wöchentlich` (first or last word) | Every week |
+| `werktags`, `jeden Werktag` | Monday to Friday |
+| `jeden Montag und Mittwoch`, `montags` | Those weekdays |
+| `jeden Monat`, `monatlich` (first or last word) | Every month |
+| `jeden Monat am 15.`, `jeden 15.` | That day of the month |
+| `jeden ersten Montag`, `jeden letzten Freitag` | That weekday of the month |
+| `jeden Monatsletzten`, `jeden letzten Tag im Monat` | The last day of each month |
+
+Repeats in other languages are not read yet.
 
 ### 6. People (@person)
 

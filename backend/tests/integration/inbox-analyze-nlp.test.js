@@ -158,4 +158,23 @@ describe('POST /api/inbox/analyze-text: dates and @people', () => {
 
         expect(response.status).toBe(400);
     });
+
+    it("reads dates and repeats in the user's language", async () => {
+        await owner.update({ language: 'de' });
+
+        const due = await analyze({
+            content: 'Arzt anrufen morgen',
+            reference_date: '2026-11-10T10:00:00Z',
+        });
+        expect(due.status).toBe(200);
+        expect(due.body.parsed_due_date).toBe('2026-11-11');
+        expect(due.body.cleaned_content).toBe('Arzt anrufen');
+
+        const repeat = await analyze({ content: 'Yoga jeden Montag' });
+        expect(repeat.body.parsed_recurrence).toMatchObject({
+            recurrence_type: 'weekly',
+            recurrence_weekdays: [1],
+        });
+        expect(repeat.body.cleaned_content).toBe('Yoga');
+    });
 });
