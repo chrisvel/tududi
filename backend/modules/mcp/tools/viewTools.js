@@ -1,7 +1,10 @@
 'use strict';
 
 const viewsRepository = require('../../views/repository');
-const { validateTaskStatus } = require('../../views/validation');
+const { DATE_FILTERS } = require('../../search/validation');
+const { validateTaskStatus, validateDue } = require('../../views/validation');
+
+const DUE_FILTER_DESCRIPTION = `Due date filter (${DATE_FILTERS.join(', ')})`;
 
 const TASK_STATUS_DESCRIPTION =
     'Task status filter (not_started, planned, in_progress, waiting, done, cancelled, archived)';
@@ -139,7 +142,8 @@ function registerViewTools(server, context, tools) {
                 },
                 due: {
                     type: 'string',
-                    description: 'Due date filter (e.g. today, this_week)',
+                    enum: DATE_FILTERS,
+                    description: DUE_FILTER_DESCRIPTION,
                 },
                 task_status: {
                     type: 'string',
@@ -163,7 +167,7 @@ function registerViewTools(server, context, tools) {
                 search_query: params.search_query || null,
                 is_pinned: params.is_pinned || false,
                 priority: params.priority || null,
-                due: params.due || null,
+                due: validateDue(params.due),
                 task_status: validateTaskStatus(params.task_status),
                 tags: params.tags || [],
                 filters: [],
@@ -224,7 +228,8 @@ function registerViewTools(server, context, tools) {
                 },
                 due: {
                     type: 'string',
-                    description: 'New due date filter',
+                    enum: DATE_FILTERS,
+                    description: `New due date filter (${DATE_FILTERS.join(', ')})`,
                 },
                 task_status: {
                     type: 'string',
@@ -256,7 +261,7 @@ function registerViewTools(server, context, tools) {
                 updates.is_pinned = params.is_pinned;
             if (params.priority !== undefined)
                 updates.priority = params.priority;
-            if (params.due !== undefined) updates.due = params.due;
+            if (params.due !== undefined) updates.due = validateDue(params.due);
             if (params.task_status !== undefined)
                 updates.task_status = validateTaskStatus(params.task_status);
             if (params.tags !== undefined) updates.tags = params.tags;
