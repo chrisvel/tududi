@@ -219,6 +219,21 @@
       "done": "Done",
       "dropHere": "Drop here"
     },
+    "boardScope": {
+      "areas": "Areas",
+      "projects": "Projects",
+      "area": "Area",
+      "project": "Project",
+      "activeFilters": "Active filters",
+      "removeFilter": "Remove filter {{name}}",
+      "clearAll": "Clear all",
+      "notFound": "A filter matches nothing you can see (deleted, not shared with you, or unknown); it is marked in red.",
+      "lookupFailed": "Could not load some filters.",
+      "tag": "Tag",
+      "tags": "Tags",
+      "priority": "Priority",
+      "priorities": "Priority"
+    },
     "show": "Show",
     "open": "Open",
     "all": "All",
