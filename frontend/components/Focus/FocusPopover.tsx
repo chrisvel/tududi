@@ -5,6 +5,7 @@ import TagInput from '../Tag/TagInput';
 import FilterDropdown from '../Shared/FilterDropdown';
 import { applyFocus, Focus } from '../../utils/focus';
 import { fetchTags } from '../../utils/tagsService';
+import { projectAreaUid } from '../../utils/projectArea';
 import type { Area } from '../../entities/Area';
 import type { Project } from '../../entities/Project';
 import type { Tag } from '../../entities/Tag';
@@ -82,10 +83,9 @@ const FocusPopover: React.FC<FocusPopoverProps> = ({ focus, onClose }) => {
                     return false;
                 }
                 if (!areaUid) return true;
-                const projectAreaUid = project.area?.uid ?? project.area_uid;
-                return projectAreaUid === areaUid;
+                return projectAreaUid(project, areas) === areaUid;
             }),
-        [projects, areaUid, projectUid]
+        [projects, areas, areaUid, projectUid]
     );
 
     const changeArea = (uid: string) => {
@@ -95,7 +95,7 @@ const FocusPopover: React.FC<FocusPopoverProps> = ({ focus, onClose }) => {
             !projects.some((project) => {
                 if (project.uid !== projectUid) return false;
                 if (!uid) return true;
-                return (project.area?.uid ?? project.area_uid) === uid;
+                return projectAreaUid(project, areas) === uid;
             })
         ) {
             setProjectUid('');
