@@ -189,12 +189,14 @@ const calculateMonthlyWeekdayRecurrence = (
     weekday,
     weekOfMonth
 ) => {
-    const nextDate = new Date(fromDate);
-    nextDate.setUTCMonth(nextDate.getUTCMonth() + interval);
+    // Step to the target month from its year and month, not with setUTCMonth:
+    // from the 29th-31st that overflows into the month after (30 January +
+    // 1 month = "30 February" = 2 March), which would skip a month.
+    const totalMonths = fromDate.getUTCMonth() + interval;
+    const targetYear = fromDate.getUTCFullYear() + Math.floor(totalMonths / 12);
+    const targetMonth = totalMonths % 12;
 
-    const firstOfMonth = new Date(
-        Date.UTC(nextDate.getUTCFullYear(), nextDate.getUTCMonth(), 1)
-    );
+    const firstOfMonth = new Date(Date.UTC(targetYear, targetMonth, 1));
     const firstWeekday = firstOfMonth.getUTCDay();
 
     const daysToAdd = (weekday - firstWeekday + 7) % 7;
@@ -204,7 +206,7 @@ const calculateMonthlyWeekdayRecurrence = (
     const targetDate = new Date(firstOccurrence);
     targetDate.setUTCDate(firstOccurrence.getUTCDate() + (weekOfMonth - 1) * 7);
 
-    if (targetDate.getUTCMonth() !== nextDate.getUTCMonth()) {
+    if (targetDate.getUTCMonth() !== targetMonth) {
         targetDate.setUTCDate(targetDate.getUTCDate() - 7);
     }
 
