@@ -39,6 +39,7 @@ interface Profile {
         everyone?: {
             column_order?: string[];
         };
+        pinned_boards?: { id: string; name: string; path: string }[] | null;
     };
 }
 

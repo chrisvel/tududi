@@ -7,6 +7,7 @@ import { Project } from '../../entities/Project';
 import { Tag } from '../../entities/Tag';
 import MultiFilterDropdown from '../Shared/MultiFilterDropdown';
 import { projectAreaUid } from '../../utils/projectArea';
+import BoardPinButton from './BoardPinButton';
 import {
     BOARD_PRIORITIES,
     BoardScope,
@@ -266,6 +267,9 @@ const BoardScopeFilter: React.FC<BoardScopeFilterProps> = ({
                             {t('tasks.boardScope.clearAll', 'Clear all')}
                         </button>
                     )}
+                    <div className="ml-auto">
+                        <BoardPinButton filterLabels={entries.map(labelOf)} />
+                    </div>
                 </>
             )}
         </div>

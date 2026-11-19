@@ -68,6 +68,7 @@ import type { StarterResult } from './utils/onboardingService';
 import { getApiPath, getLocalesPath } from './config/paths';
 import { useStore } from './store/useStore';
 import { sanitizeFocus } from './utils/focus';
+import { sanitizePinnedBoards } from './utils/pinnedBoards';
 import { invalidateProfileCache } from './utils/profileService';
 import { notifySwSession, notifySwClearCache } from './utils/swUtils';
 import { resyncPush } from './utils/pushService';
@@ -198,6 +199,11 @@ const App: React.FC = () => {
                     .getState()
                     .userSettingsStore.setFocus(
                         sanitizeFocus(data.user.ui_settings?.focus)
+                    );
+                useStore
+                    .getState()
+                    .userSettingsStore.setPinnedBoards(
+                        sanitizePinnedBoards(data.user.ui_settings?.pinned_boards)
                     );
             } else {
                 setCurrentUser(null);

@@ -244,7 +244,13 @@
       "tag": "Étiquette",
       "tags": "Étiquettes",
       "priority": "Priorité",
-      "priorities": "Priorité"
+      "priorities": "Priorité",
+      "pin": "Épingler",
+      "pinned": "Épinglé",
+      "pinTitle": "Épingler ce tableau et ses filtres dans les Signets",
+      "unpinTitle": "Désépingler « {{name}} »",
+      "pinName": "Nom dans les Signets",
+      "pinError": "Impossible d'épingler le tableau."
     },
     "chaseUp": "Relancer",
     "habit": "Habitude",

@@ -232,7 +232,13 @@
       "tag": "Tag",
       "tags": "Tags",
       "priority": "Priority",
-      "priorities": "Priority"
+      "priorities": "Priority",
+      "pin": "Pin",
+      "pinned": "Pinned",
+      "pinTitle": "Pin this board and its filters under Favorites",
+      "unpinTitle": "Unpin \"{{name}}\"",
+      "pinName": "Name in Favorites",
+      "pinError": "Could not pin the board."
     },
     "show": "Show",
     "open": "Open",

@@ -162,6 +162,55 @@ function sanitizeEveryone(everyone) {
     return { column_order: order };
 }
 
+const MAX_PINNED_BOARDS = 50;
+const MAX_PINNED_BOARD_NAME = 120;
+const PINNED_BOARD_ID = /^[A-Za-z0-9_-]{1,64}$/;
+// Only the Kanban and Eisenhower boards, with their filters in the query
+// string: the sidebar navigates to this path, so nothing else gets in.
+const PINNED_BOARD_PATH = /^\/boards\/(kanban|eisenhower)(\?[^\s#]{0,2000})?$/;
+
+// Boards pinned under Favorites with their filters: a list of
+// { id, name, path }, deduped by id, at most fifty.
+function sanitizePinnedBoards(boards) {
+    if (boards === null) return [];
+    if (!Array.isArray(boards)) {
+        throw new ValidationError('Pinned boards must be a list.');
+    }
+    if (boards.length > MAX_PINNED_BOARDS) {
+        throw new ValidationError(
+            `At most ${MAX_PINNED_BOARDS} boards can be pinned.`
+        );
+    }
+    const seen = new Set();
+    const clean = [];
+    for (const board of boards) {
+        if (!board || typeof board !== 'object' || Array.isArray(board)) {
+            throw new ValidationError('A pinned board must be an object.');
+        }
+        const id = typeof board.id === 'string' ? board.id.trim() : '';
+        const name = typeof board.name === 'string' ? board.name.trim() : '';
+        const boardPath =
+            typeof board.path === 'string' ? board.path.trim() : '';
+        if (!PINNED_BOARD_ID.test(id)) {
+            throw new ValidationError('A pinned board needs a valid id.');
+        }
+        if (!name || name.length > MAX_PINNED_BOARD_NAME) {
+            throw new ValidationError(
+                `A pinned board needs a name of 1 to ${MAX_PINNED_BOARD_NAME} characters.`
+            );
+        }
+        if (!PINNED_BOARD_PATH.test(boardPath)) {
+            throw new ValidationError(
+                'A pinned board must point to the Kanban or Eisenhower board.'
+            );
+        }
+        if (seen.has(id)) continue;
+        seen.add(id);
+        clean.push({ id, name, path: boardPath });
+    }
+    return clean;
+}
+
 class UsersService {
     // The user directory is an admin view. Regular users share by typing an
     // exact email, so they never need (and must not get) the full list.
@@ -321,12 +370,15 @@ class UsersService {
                     current = null;
                 }
             }
-            // The Focus chip saves through its own endpoint too, so a
-            // profile save must not clear it.
+            // The Focus chip and the pinned boards save through their own
+            // endpoint too, so a profile save must not clear them.
             const kept = {};
             if (current?.planning) kept.planning = current.planning;
             if (current?.focus !== undefined) kept.focus = current.focus;
             if (current?.everyone) kept.everyone = current.everyone;
+            if (current?.pinned_boards) {
+                kept.pinned_boards = current.pinned_boards;
+            }
             allowedUpdates.ui_settings =
                 ui_settings && Object.keys(kept).length > 0
                     ? { ...ui_settings, ...kept }
@@ -779,7 +831,8 @@ class UsersService {
             throw new NotFoundError('User not found.');
         }
 
-        const { project, appearance, inbox, focus, everyone } = data;
+        const { project, appearance, inbox, focus, everyone, pinned_boards } =
+            data;
 
         const currentSettings =
             user.ui_settings && typeof user.ui_settings === 'object'
@@ -826,6 +879,10 @@ class UsersService {
 
         if (everyone !== undefined) {
             newSettings.everyone = sanitizeEveryone(everyone);
+        }
+
+        if (pinned_boards !== undefined) {
+            newSettings.pinned_boards = sanitizePinnedBoards(pinned_boards);
         }
 
         await usersRepository.update(user, { ui_settings: newSettings });
