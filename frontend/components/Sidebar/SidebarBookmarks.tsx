@@ -6,6 +6,8 @@ import {
     TagIcon,
     ChevronRightIcon,
     XMarkIcon,
+    Squares2X2Icon,
+    ViewColumnsIcon,
 } from '@heroicons/react/24/outline';
 import PushPinIcon from '../Shared/Icons/PushPinIcon';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +19,12 @@ import { createNoteUrl, createTagUrl } from '../../utils/slugUtils';
 import { Project } from '../../entities/Project';
 import { Note } from '../../entities/Note';
 import { Tag } from '../../entities/Tag';
+import {
+    PinnedBoard,
+    boardPathKey,
+    unpinBoard,
+    usePinnedBoards,
+} from '../../utils/pinnedBoards';
 
 interface SidebarBookmarksProps {
     handleNavClick: (path: string, title: string, icon: JSX.Element) => void;
@@ -66,11 +74,13 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
     const pinnedProjects = projects.filter((p) => p.pin_to_sidebar);
     const pinnedNotes = notes.filter((n) => n.pin_to_sidebar);
     const pinnedTags = tags.filter((t) => t.pinned);
+    const pinnedBoards = usePinnedBoards();
 
     const hasBookmarks =
         pinnedProjects.length > 0 ||
         pinnedNotes.length > 0 ||
-        pinnedTags.length > 0;
+        pinnedTags.length > 0 ||
+        pinnedBoards.length > 0;
 
     if (!hasBookmarks) return null;
 
@@ -117,6 +127,29 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                 )
             );
         }
+    };
+
+    // A pinned board is active only with the same filters. itemClass('')
+    // never matches the current page; the board adds its own background.
+    const currentBoardKey = boardPathKey(location.pathname + location.search);
+    const boardItemClass = (board: PinnedBoard) =>
+        `${itemClass('')}${
+            boardPathKey(board.path) === currentBoardKey
+                ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]'
+                : ''
+        }`;
+
+    // Same icons as the Boards section: columns for Kanban, four squares
+    // for the Eisenhower matrix.
+    const boardIcon = (board: PinnedBoard) =>
+        board.path.startsWith('/boards/eisenhower')
+            ? Squares2X2Icon
+            : ViewColumnsIcon;
+
+    const removeBoard = (board: PinnedBoard, e: React.MouseEvent) => {
+        e.stopPropagation();
+        // unpinBoard puts the list back itself if the save fails.
+        unpinBoard(board.id).catch(() => {});
     };
 
     const unpinTag = async (tag: Tag, e: React.MouseEvent) => {
@@ -237,6 +270,36 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
                             </button>
                         </div>
                     ))}
+
+                    {pinnedBoards.map((board) => {
+                        const Icon = boardIcon(board);
+                        return (
+                            <div
+                                key={board.id}
+                                className={boardItemClass(board)}
+                                onClick={() =>
+                                    handleNavClick(
+                                        board.path,
+                                        board.name,
+                                        <Icon className="h-4 w-4 mr-2" />
+                                    )
+                                }
+                            >
+                                <span className="flex items-center gap-1.5 min-w-0">
+                                    <Icon className="h-3.5 w-3.5 flex-shrink-0 opacity-60" />
+                                    <span className="truncate">{board.name}</span>
+                                </span>
+                                <button
+                                    onClick={(e) => removeBoard(board, e)}
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
+                                    aria-label={`Unpin ${board.name}`}
+                                    title={`Unpin ${board.name}`}
+                                >
+                                    <XMarkIcon className="h-3.5 w-3.5" />
+                                </button>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>

@@ -158,6 +158,42 @@ describe('FocusChip', () => {
         expect(screen.queryByTestId('focus-popover')).toBeNull();
     });
 
+    it('lists the projects of the picked area as GET /api/projects returns them', () => {
+        // The projects list carries area_id and the Area association, not
+        // area_uid; a shared project carries the viewer's own placement.
+        useStore.getState().projectsStore.setProjects([
+            {
+                id: 10,
+                uid: 'launch',
+                name: 'Launch',
+                area_id: 1,
+                Area: { id: 1, uid: 'work', name: 'Work' },
+            },
+            {
+                id: 11,
+                uid: 'garden',
+                name: 'Garden',
+                area_id: 2,
+                Area: { id: 2, uid: 'home', name: 'Home' },
+            },
+            { id: 14, uid: 'loose', name: 'Loose', area_id: null },
+        ] as unknown as Project[]);
+        render(<FocusChip />);
+        fireEvent.click(screen.getByTestId('focus-chip'));
+        const areaField = within(screen.getByTestId('focus-area'));
+        fireEvent.click(areaField.getAllByRole('button')[0]);
+        fireEvent.click(areaField.getByRole('button', { name: 'Work' }));
+
+        const projectField = within(screen.getByTestId('focus-project'));
+        fireEvent.click(projectField.getAllByRole('button')[0]);
+        expect(
+            projectField
+                .getAllByRole('button')
+                .slice(1)
+                .map((button) => button.textContent)
+        ).toEqual(['Any project', 'Launch']);
+    });
+
     it('offers only the tags used in the picked project', async () => {
         render(<FocusChip />);
         fireEvent.click(screen.getByTestId('focus-chip'));

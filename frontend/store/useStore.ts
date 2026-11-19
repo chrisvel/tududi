@@ -10,6 +10,7 @@ import { Goal } from '../entities/Goal';
 import { Person } from '../entities/Person';
 import type { SidebarVisibleSections } from '../components/Profile/types';
 import type { Focus } from '../utils/focus';
+import type { PinnedBoard } from '../utils/pinnedBoards';
 import {
     DEFAULT_LINK_ORDER,
     DEFAULT_SECTION_ORDER,
@@ -152,6 +153,9 @@ interface UserSettingsStore {
     // The Focus chip's scope (see utils/focus.ts); null when none is set
     focus: Focus | null;
     setFocus: (focus: Focus | null) => void;
+    // Boards pinned under Favorites with their filters (utils/pinnedBoards.ts)
+    pinnedBoards: PinnedBoard[];
+    setPinnedBoards: (boards: PinnedBoard[]) => void;
 }
 
 interface GoalsStore {
@@ -1161,6 +1165,14 @@ export const useStore = create<StoreState>((set: any) => ({
                 userSettingsStore: {
                     ...state.userSettingsStore,
                     sidebarWidthPercent: clampSidebarPercent(percent),
+                },
+            })),
+        pinnedBoards: [],
+        setPinnedBoards: (pinnedBoards) =>
+            set((state) => ({
+                userSettingsStore: {
+                    ...state.userSettingsStore,
+                    pinnedBoards,
                 },
             })),
         focus: null,
