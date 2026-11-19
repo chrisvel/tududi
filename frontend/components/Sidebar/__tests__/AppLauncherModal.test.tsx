@@ -160,6 +160,7 @@ describe('AppLauncherModal', () => {
                 'kanban',
                 'productivity',
                 'reports',
+                'daily-brief',
             ]);
             expect(idsIn('bottom')).toEqual(['templates', 'access']);
         });
@@ -175,9 +176,10 @@ describe('AppLauncherModal', () => {
             renderModal();
 
             expect(idsIn('links').slice(0, 2)).toEqual(['tasks', 'today']);
-            expect(idsIn('sections').slice(0, 5)).toEqual([
+            expect(idsIn('sections').slice(0, 6)).toEqual([
                 'productivity',
                 'reports',
+                'daily-brief',
                 'notes',
                 'eisenhower',
                 'kanban',
@@ -231,6 +233,33 @@ describe('AppLauncherModal', () => {
         fireEvent.click(screen.getByTestId('app-launcher-projects'));
 
         expect(onSelect).toHaveBeenCalledWith('/projects', 'Projects');
+    });
+
+    it('opens the Daily Brief from the Insights tiles', () => {
+        const { onSelect } = renderModal();
+
+        const tile = screen.getByTestId('app-launcher-daily-brief');
+        expect(tile).toHaveTextContent('Daily Brief');
+        fireEvent.click(tile);
+
+        expect(onSelect).toHaveBeenCalledWith(
+            '/insights/daily-brief',
+            'Daily Brief'
+        );
+
+        const sectionIds = Array.from(
+            screen
+                .getByTestId('app-launcher-group-sections')
+                .querySelectorAll('[data-testid^="app-launcher-"]')
+        ).map((el) =>
+            el.getAttribute('data-testid')!.replace('app-launcher-', '')
+        );
+        const productivity = sectionIds.indexOf('productivity');
+        const reports = sectionIds.indexOf('reports');
+        const dailyBrief = sectionIds.indexOf('daily-brief');
+        expect(productivity).toBeGreaterThanOrEqual(0);
+        expect(reports).toBe(productivity + 1);
+        expect(dailyBrief).toBe(reports + 1);
     });
 
     it('closes on Escape, the close button and a backdrop click', () => {
