@@ -25,6 +25,24 @@ class TaskRepository {
         });
     }
 
+    // RFC 4791 5.3.2: a resource URL names a task by its uid or by the name
+    // the client chose. The uid is tried first because it is globally unique;
+    // a name is only unique to its client, so options.where must scope it.
+    async findByUidOrResourceName(name, options = {}) {
+        const { where = {}, ...rest } = options;
+
+        const byUid = await this.model.findOne({
+            where: { uid: name, ...where },
+            ...rest,
+        });
+        if (byUid) return byUid;
+
+        return await this.model.findOne({
+            where: { caldav_resource_name: name, ...where },
+            ...rest,
+        });
+    }
+
     async findRecurringChildren(recurringParentId, options = {}) {
         const { where = {}, ...restOptions } = options;
         return await this.model.findAll({

@@ -4,6 +4,7 @@ const {
     buildResponse,
     buildPropstat,
     buildHref,
+    resourceNameOf,
 } = require('./utils');
 const { generateETag } = require('../utils/etag-generator');
 const taskRepository = require('../../tasks/repository');
@@ -12,6 +13,7 @@ const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { Op } = require('sequelize');
 const { ciLike } = require('../../../utils/db-dialect');
 const { canReadTask, visibleTaskWhere } = require('../access');
+const { resourceNameFromHref, findTaskResource } = require('./task-resource');
 
 async function handleReport(req, res) {
     try {
@@ -39,8 +41,8 @@ async function handleReport(req, res) {
             const responses = [];
 
             for (const href of queryRequest.hrefs) {
-                const match = href.match(/\/([^/]+)\.ics$/);
-                if (!match) {
+                const resourceName = resourceNameFromHref(href);
+                if (!resourceName) {
                     responses.push(
                         buildResponse(
                             href,
@@ -50,10 +52,7 @@ async function handleReport(req, res) {
                     continue;
                 }
 
-                const uid = decodeURIComponent(match[1]);
-                const task = await taskRepository.findByUid(uid, {
-                    include: CALDAV_TASK_INCLUDES,
-                });
+                const task = await findTaskResource(resourceName, userId);
 
                 if (!(await canReadTask(task, userId))) {
                     responses.push(
@@ -179,7 +178,7 @@ async function buildCalendarQueryResponse(
     userTimezone
 ) {
     try {
-        const href = buildHref(username, task.uid);
+        const href = buildHref(username, resourceNameOf(task));
         const etag = generateETag(task);
 
         const props = {

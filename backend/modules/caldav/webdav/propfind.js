@@ -4,6 +4,7 @@ const {
     buildResponse,
     buildPropstat,
     buildHref,
+    resourceNameOf,
 } = require('./utils');
 const { generateETag } = require('../utils/etag-generator');
 const { generateCTag } = require('../utils/ctag-generator');
@@ -12,6 +13,7 @@ const taskRepository = require('../../tasks/repository');
 const { CALDAV_TASK_INCLUDES } = require('../task-includes');
 const vtodoSerializer = require('../icalendar/vtodo-serializer');
 const { canReadTask, visibleTaskWhere } = require('../access');
+const { resourceNameFromParam, findTaskResource } = require('./task-resource');
 
 async function handlePropfind(req, res) {
     try {
@@ -40,10 +42,10 @@ async function handlePropfind(req, res) {
         const userTimezone = req.currentUser.timezone || 'UTC';
 
         if (isTaskRequest) {
-            const taskUid = req.params.uid.replace('.ics', '');
-            const task = await taskRepository.findByUid(taskUid, {
-                include: CALDAV_TASK_INCLUDES,
-            });
+            const task = await findTaskResource(
+                resourceNameFromParam(req.params.uid),
+                userId
+            );
 
             if (!(await canReadTask(task, userId))) {
                 return res.status(404).json({ error: 'Task not found' });
@@ -140,7 +142,7 @@ async function buildTaskResponse(
     propfindRequest,
     userTimezone
 ) {
-    const href = buildHref(username, task.uid);
+    const href = buildHref(username, resourceNameOf(task));
     const etag = generateETag(task);
 
     try {
