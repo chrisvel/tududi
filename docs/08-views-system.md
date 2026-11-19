@@ -195,7 +195,7 @@ When you open a view, it displays:
 | `filters` | JSON Array | Entity types ["Tasks", "Notes", "Projects"] |
 | `priority` | String | Priority filter: "high", "medium", "low" (nullable) |
 | `due` | String | Due date filter: "today", "tomorrow", "this_week", "next_week", "next_month" (nullable). `this_week` is the same rolling window as `next_week` |
-| `defer` | String | Defer filter: "deferred", "not_deferred", etc. (nullable) |
+| `defer` | String | Defer-until filter: "today", "tomorrow", "this_week", "next_week", "next_month" (nullable). For deferred or not deferred items use the `deferred` and `not_deferred` extras |
 | `tags` | JSON Array | Tag names to filter by |
 | `extras` | JSON Array | Extra filters: "recurring", "not_recurring", "overdue", "has_content", "no_content", "deferred", "not_deferred", "has_tags", "no_tags", "no_due_date", "assigned_to_project", "no_project" |
 | `is_pinned` | Boolean | Whether view is pinned to sidebar |
@@ -229,8 +229,9 @@ A view shows items that match **ALL** of the following criteria (AND logic):
    - Items with no due date use the `no_due_date` extra, shown in the same row in the search menu
 
 5. **Defer matches** (if set)
-   - Filters based on defer status
-   - Options: deferred, not_deferred
+   - Filters based on the defer-until date range
+   - Options: today, tomorrow, this_week, next_week, next_month
+   - To show items that are or are not deferred, use the `deferred` and `not_deferred` extras
 
 6. **Has ALL specified tags** (if set)
    - Items must have every tag in the list
