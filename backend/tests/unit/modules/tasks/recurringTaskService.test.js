@@ -679,6 +679,47 @@ describe('RecurringTaskService - UTC Consistency', () => {
             expect(result.getUTCMilliseconds()).toBe(0);
         });
 
+        it('should keep a monthly due date on its local day in the user timezone', () => {
+            const localDay = (date, tz) =>
+                moment.tz(date, tz).format('YYYY-MM-DD');
+            // date-only due dates are stored as the end of the local day
+            const endOfDay = (day, tz) =>
+                moment.tz(day, tz).endOf('day').toDate();
+
+            const monthly = {
+                recurrence_type: 'monthly',
+                recurrence_interval: 1,
+                recurrence_month_day: 15,
+            };
+            const lastDay = {
+                recurrence_type: 'monthly_last_day',
+                recurrence_interval: 1,
+            };
+
+            for (const tz of ['America/New_York', 'Europe/Berlin']) {
+                expect(
+                    localDay(
+                        calculateNextDueDate(
+                            monthly,
+                            endOfDay('2026-03-15', tz),
+                            tz
+                        ),
+                        tz
+                    )
+                ).toBe('2026-04-15');
+                expect(
+                    localDay(
+                        calculateNextDueDate(
+                            lastDay,
+                            endOfDay('2026-03-31', tz),
+                            tz
+                        ),
+                        tz
+                    )
+                ).toBe('2026-04-30');
+            }
+        });
+
         it('should handle null or invalid input gracefully', () => {
             expect(calculateNextDueDate(null, new Date())).toBeNull();
             expect(calculateNextDueDate({}, new Date())).toBeNull();
