@@ -123,8 +123,9 @@ const TaskRow: React.FC<TaskRowProps> = ({
     // stale task.comments_count every time the panel remounts.
     const [commentCount, setCommentCount] = useState(task.comments_count ?? 0);
 
-    // Blocked flags refetched after a relation change on this or a linked
-    // task. Cleared whenever the parent passes fresh server data.
+    // Blocked flags refetched after a relation change, or after a subtask
+    // status change that may have resolved a blocker. Cleared whenever the
+    // parent passes fresh server data.
     const [blockedOverride, setBlockedOverride] = useState<Pick<
         Task,
         'is_blocked' | 'blocked_by_count'
@@ -132,6 +133,22 @@ const TaskRow: React.FC<TaskRowProps> = ({
     useEffect(() => {
         setBlockedOverride(null);
     }, [task.uid, task.is_blocked, task.blocked_by_count]);
+    const refreshBlockedState = useCallback(async () => {
+        if (!task.uid) return null;
+        try {
+            const fresh = await fetchTaskByUid(task.uid);
+            if (!fresh) return null;
+            const next = {
+                is_blocked: !!fresh.is_blocked,
+                blocked_by_count: fresh.blocked_by_count || 0,
+            };
+            setBlockedOverride(next);
+            return next;
+        } catch (error) {
+            console.error('Error refreshing blocked state:', error);
+            return null;
+        }
+    }, [task.uid]);
     useEffect(() => {
         const uid = task.uid;
         if (!uid) return;
@@ -139,15 +156,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
             const { taskUids } =
                 (event as CustomEvent<TaskRelationsChangedDetail>).detail || {};
             if (!taskUids?.includes(uid)) return;
-            try {
-                const fresh = await fetchTaskByUid(uid);
-                setBlockedOverride({
-                    is_blocked: !!fresh.is_blocked,
-                    blocked_by_count: fresh.blocked_by_count || 0,
-                });
-            } catch (error) {
-                console.error('Error refreshing blocked state:', error);
-            }
+            await refreshBlockedState();
         };
         window.addEventListener(
             TASK_RELATIONS_CHANGED_EVENT,
@@ -158,7 +167,7 @@ const TaskRow: React.FC<TaskRowProps> = ({
                 TASK_RELATIONS_CHANGED_EVENT,
                 onRelationsChanged
             );
-    }, [task.uid]);
+    }, [task.uid, refreshBlockedState]);
     // Saves from the task side panel land here, so the row shows them even
     // when the page keeps its own copy of the list.
     const [panelSaved, setPanelSaved] = useState<Task | null>(null);
@@ -352,11 +361,19 @@ const TaskRow: React.FC<TaskRowProps> = ({
     };
 
     // Completing a blocked task is allowed, but asked about first.
+    // The list snapshot can still say blocked after the blockers were
+    // finished in this session, so confirm against the live count (#2083).
     const handleToggleCompletion = async () => {
         if (!task.id) return;
         if (displayTask.is_blocked && !isTaskCompleted(task.status)) {
-            setIsBlockedConfirmOpen(true);
-            return;
+            const fresh = await refreshBlockedState();
+            const stillBlocked = fresh
+                ? fresh.is_blocked
+                : !!displayTask.is_blocked;
+            if (stillBlocked) {
+                setIsBlockedConfirmOpen(true);
+                return;
+            }
         }
         await performToggleCompletion();
     };
@@ -586,6 +603,9 @@ const TaskRow: React.FC<TaskRowProps> = ({
                                     key={subtask.id ?? subtask.uid}
                                     task={subtask}
                                     onTaskUpdate={async (updated) => {
+                                        const previous = subtasks.find(
+                                            (st) => st.id === updated.id
+                                        );
                                         setSubtasks((prev) =>
                                             prev.map((st) =>
                                                 st.id === updated.id
@@ -593,6 +613,12 @@ const TaskRow: React.FC<TaskRowProps> = ({
                                                     : st
                                             )
                                         );
+                                        if (
+                                            previous &&
+                                            previous.status !== updated.status
+                                        ) {
+                                            await refreshBlockedState();
+                                        }
                                     }}
                                     onTaskDelete={(subtaskUid) => {
                                         deleteTask(subtaskUid)
