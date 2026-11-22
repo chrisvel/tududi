@@ -104,4 +104,72 @@ describe('Login', () => {
         fireEvent.click(screen.getByTestId('mfa-toggle-recovery'));
         expect(screen.getByText('Recovery code')).toBeInTheDocument();
     });
+
+    it('shows only the SSO button when password sign-in is off', async () => {
+        global.fetch = jest.fn((url: string) => {
+            if (String(url).includes('oidc/providers'))
+                return okJson({
+                    providers: [{ slug: 'pocketid', name: 'PocketID' }],
+                });
+            return okJson({ enabled: false });
+        }) as unknown as typeof fetch;
+
+        render(
+            <MemoryRouter>
+                <Login />
+            </MemoryRouter>
+        );
+
+        expect(await screen.findByTestId('oidc-pocketid')).toBeInTheDocument();
+        expect(screen.queryByTestId('login-password')).not.toBeInTheDocument();
+    });
+
+    it('does not fall back to the password form when the server cannot be read', async () => {
+        const answers = { failing: true };
+        // What a proxy sign-in page or a dropped connection looks like: a
+        // body that is not JSON, or a 503 from the service worker.
+        global.fetch = jest.fn((url: string) => {
+            const path = String(url);
+            if (answers.failing && path.includes('password-auth-status'))
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.reject(new SyntaxError('not JSON')),
+                });
+            if (answers.failing && path.includes('oidc/providers'))
+                return Promise.resolve({
+                    ok: false,
+                    status: 503,
+                    json: () => Promise.resolve({ offline: true }),
+                });
+            if (path.includes('oidc/providers'))
+                return okJson({
+                    providers: [{ slug: 'pocketid', name: 'PocketID' }],
+                });
+            return okJson({ enabled: false });
+        }) as unknown as typeof fetch;
+        const consoleError = jest
+            .spyOn(console, 'error')
+            .mockImplementation(() => undefined);
+
+        render(
+            <MemoryRouter>
+                <Login />
+            </MemoryRouter>
+        );
+
+        expect(
+            await screen.findByTestId('login-unavailable')
+        ).toBeInTheDocument();
+        expect(screen.queryByTestId('login-password')).not.toBeInTheDocument();
+
+        answers.failing = false;
+        fireEvent.click(screen.getByTestId('login-retry'));
+
+        expect(await screen.findByTestId('oidc-pocketid')).toBeInTheDocument();
+        expect(screen.queryByTestId('login-password')).not.toBeInTheDocument();
+        expect(
+            screen.queryByTestId('login-unavailable')
+        ).not.toBeInTheDocument();
+        consoleError.mockRestore();
+    });
 });

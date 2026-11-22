@@ -12,6 +12,12 @@ const {
     QUOTED_NAME_NONEMPTY,
     readTokenName,
 } = require('./quotedName');
+const {
+    dateParserFor,
+    dateLeadPatternFor,
+    isLocalizedDateNoise,
+    recurrenceRulesFor,
+} = require('./nlpLocales');
 
 const WEEKDAYS = {
     sunday: 0,
@@ -217,9 +223,11 @@ const RECURRENCE_RULES = [
     },
 ];
 
-const parseRecurrence = (text, { timezone = 'UTC' } = {}) => {
+// The user's language is tried first, then English.
+const parseRecurrence = (text, { timezone = 'UTC', language = null } = {}) => {
     const masked = maskTokens(text);
-    for (const rule of RECURRENCE_RULES) {
+    const rules = [...recurrenceRulesFor(language), ...RECURRENCE_RULES];
+    for (const rule of rules) {
         const match = rule.pattern.exec(masked);
         if (!match) continue;
         const recurrence = rule.build(match);
@@ -235,24 +243,49 @@ const parseRecurrence = (text, { timezone = 'UTC' } = {}) => {
     return null;
 };
 
+const isDayResult = (result) =>
+    result.start.isCertain('day') || result.start.isCertain('weekday');
+
+const findDateResults = (masked, reference, language) => {
+    const options = { forwardDate: true };
+    const localized = dateParserFor(language);
+    if (localized) {
+        const results = localized
+            .parse(masked, reference, options)
+            .filter(
+                (result) =>
+                    isDayResult(result) &&
+                    !isLocalizedDateNoise(language, masked, result)
+            );
+        if (results.length > 0) {
+            return { results, leadPattern: dateLeadPatternFor(language) };
+        }
+    }
+    const results = chrono.casual
+        .parse(masked, reference, options)
+        .filter(
+            (result) =>
+                isDayResult(result) &&
+                !AMBIGUOUS_DATE_WORDS.has(result.text.trim().toLowerCase())
+        );
+    return { results, leadPattern: null };
+};
+
+// Dates are read in the user's language first, then in English.
 const parseDueDate = (
     text,
-    { referenceDate = new Date(), timezone = 'UTC' } = {}
+    { referenceDate = new Date(), timezone = 'UTC', language = null } = {}
 ) => {
     const masked = maskTokens(text);
     const reference = {
         instant: referenceDate,
         timezone: moment.tz(referenceDate, timezone).utcOffset(),
     };
-    const results = chrono.casual
-        .parse(masked, reference, { forwardDate: true })
-        .filter((result) => {
-            const start = result.start;
-            if (!start.isCertain('day') && !start.isCertain('weekday')) {
-                return false;
-            }
-            return !AMBIGUOUS_DATE_WORDS.has(result.text.trim().toLowerCase());
-        });
+    const { results, leadPattern } = findDateResults(
+        masked,
+        reference,
+        language
+    );
     if (results.length === 0) return null;
 
     const result = results[results.length - 1];
@@ -273,7 +306,7 @@ const parseDueDate = (
     // "until", "by" or "due" right before a cut phrase goes with it, so the
     // title does not end in "pay the bill until".
     const lead = removable
-        ? DATE_LEAD_PATTERN.exec(masked.slice(0, result.index))
+        ? (leadPattern || DATE_LEAD_PATTERN).exec(masked.slice(0, result.index))
         : null;
     const index = lead ? lead.index + lead[1].length : result.index;
 

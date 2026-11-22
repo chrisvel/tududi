@@ -126,6 +126,30 @@ describe('Views Routes', () => {
             expect(response.body.error).toBe('Invalid task status');
         });
 
+        it('should save this_week as a due date filter', async () => {
+            const response = await agent.post('/api/views').send({
+                name: 'This Week',
+                filters: ['Task'],
+                due: 'this_week',
+                defer: 'this_week',
+            });
+
+            expect(response.status).toBe(201);
+            expect(response.body.due).toBe('this_week');
+            expect(response.body.defer).toBe('this_week');
+        });
+
+        it('should reject an unknown due date filter', async () => {
+            const response = await agent.post('/api/views').send({
+                name: 'Bad Due',
+                filters: ['Task'],
+                due: 'overdue',
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid due date filter');
+        });
+
         it('should require view name', async () => {
             const response = await agent.post('/api/views').send({
                 name: '',
@@ -269,6 +293,15 @@ describe('Views Routes', () => {
                 .send({ task_status: null });
             expect(clearResponse.status).toBe(200);
             expect(clearResponse.body.task_status).toBeNull();
+        });
+
+        it('should reject an unknown defer date filter', async () => {
+            const response = await agent.patch(`/api/views/${viewUid}`).send({
+                defer: 'not_a_window',
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.error).toBe('Invalid defer date filter');
         });
 
         it('should clear tags when set to empty array', async () => {

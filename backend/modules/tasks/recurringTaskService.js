@@ -116,12 +116,19 @@ const calculateWeeklyRecurrence = (
             const isOnSundayWithHigherDays =
                 currentDay === 0 && sorted.every((d) => d === 0 || d > 0);
 
+            // Counting from a day outside the pattern (completed on another
+            // weekday, or no due date) starts a fresh cycle, so the interval
+            // applies in full.
+            const isOffPattern = !sorted.includes(currentDay);
+
             if (
                 interval > 1 &&
-                !isAdjacentDay &&
-                (isOnLastWeekday || isOnSundayWithHigherDays)
+                (isOffPattern ||
+                    (!isAdjacentDay &&
+                        (isOnLastWeekday || isOnSundayWithHigherDays)))
             ) {
-                // We're on the last weekday of the pattern cycle, add interval skip
+                // Off the pattern, or on the last weekday of the pattern
+                // cycle: add interval skip
                 daysToNext += (interval - 1) * 7;
             }
         } else {
