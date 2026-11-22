@@ -1,7 +1,12 @@
 'use strict';
 
 const viewsRepository = require('./repository');
-const { validateName, validateTaskStatus } = require('./validation');
+const {
+    validateName,
+    validateTaskStatus,
+    validateDue,
+    validateDefer,
+} = require('./validation');
 const { NotFoundError } = require('../../shared/errors');
 
 class ViewsService {
@@ -42,8 +47,8 @@ class ViewsService {
             search_query: search_query || null,
             filters: filters || [],
             priority: priority || null,
-            due: due || null,
-            defer: defer || null,
+            due: validateDue(due),
+            defer: validateDefer(defer),
             tags: tags || [],
             extras: extras || [],
             recurring: recurring || null,
@@ -77,8 +82,8 @@ class ViewsService {
         if (search_query !== undefined) updates.search_query = search_query;
         if (filters !== undefined) updates.filters = filters;
         if (priority !== undefined) updates.priority = priority;
-        if (due !== undefined) updates.due = due;
-        if (defer !== undefined) updates.defer = defer;
+        if (due !== undefined) updates.due = validateDue(due);
+        if (defer !== undefined) updates.defer = validateDefer(defer);
         if (tags !== undefined) updates.tags = tags;
         if (extras !== undefined) updates.extras = extras;
         if (recurring !== undefined) updates.recurring = recurring;

@@ -35,6 +35,9 @@ class SearchService {
                 startDate = startOfToday.clone().add(1, 'day');
                 endDate = startOfToday.clone().add(1, 'day').endOf('day');
                 break;
+            // this_week is the same rolling window as next_week, not a
+            // calendar week: start of today through the end of the seventh day.
+            case 'this_week':
             case 'next_week':
                 startDate = startOfToday.clone();
                 endDate = startOfToday.clone().add(7, 'days').endOf('day');
