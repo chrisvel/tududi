@@ -239,6 +239,35 @@ describe('RecurringTaskService - UTC Consistency', () => {
             expect(result.getUTCDate()).toBeLessThanOrEqual(7);
         });
 
+        it('does not skip February after a last Friday on the 30th', () => {
+            // 30 January 2026 is the last (5th-week) Friday of January.
+            const lastFridayOfJanuary = new Date(
+                Date.UTC(2026, 0, 30, 0, 0, 0, 0)
+            );
+            const result = calculateMonthlyWeekdayRecurrence(
+                lastFridayOfJanuary,
+                1,
+                5,
+                5
+            );
+
+            expect(result.toISOString()).toBe('2026-02-27T00:00:00.000Z');
+        });
+
+        it('does not skip November after a last Saturday on the 31st', () => {
+            const lastSaturdayOfOctober = new Date(
+                Date.UTC(2026, 9, 31, 0, 0, 0, 0)
+            );
+            const result = calculateMonthlyWeekdayRecurrence(
+                lastSaturdayOfOctober,
+                1,
+                6,
+                5
+            );
+
+            expect(result.toISOString()).toBe('2026-11-28T00:00:00.000Z');
+        });
+
         it('should handle 3rd Friday of month', () => {
             const someFriday = new Date(Date.UTC(2026, 2, 20, 0, 0, 0, 0));
             const result = calculateMonthlyWeekdayRecurrence(
