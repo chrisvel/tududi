@@ -677,7 +677,7 @@ Create a new smart view (saved search).
 | `search_query` | string | No | Text search query |
 | `is_pinned` | boolean | No | Pin to sidebar (default: false) |
 | `priority` | string | No | Priority filter: `low`, `medium`, `high` |
-| `due` | string | No | Due date filter (e.g. `today`, `this_week`) |
+| `due` | string | No | Due date filter: `today`, `tomorrow`, `this_week`, `next_week`, `next_month`. `this_week` matches `next_week`: today through the end of the seventh day |
 | `tags` | string[] | No | Tag filters |
 
 **Example:**
@@ -690,6 +690,8 @@ Create a new smart view (saved search).
     "is_pinned": true
 }
 ```
+
+`this_week` keeps tasks due from today through the end of the seventh day.
 
 ---
 
@@ -705,7 +707,7 @@ Update an existing smart view.
 | `search_query` | string | No | New search query |
 | `is_pinned` | boolean | No | Pin or unpin from sidebar |
 | `priority` | string | No | New priority filter |
-| `due` | string | No | New due date filter |
+| `due` | string | No | New due date filter: `today`, `tomorrow`, `this_week`, `next_week`, `next_month` |
 | `tags` | string[] | No | New tag filters |
 
 ---

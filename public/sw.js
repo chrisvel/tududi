@@ -10,7 +10,22 @@ const SYNC_QUEUE = 'tududi-sync-queue';
 // hand callers a stale/synthetic result instead of a real one.
 // Push subscriptions belong to the device and session at the time they are
 // made; replaying one later could tie the device to the wrong account.
-const NO_QUEUE_PATHS = ['/api/inbox/analyze-text', '/api/push/'];
+// Signing in only means something right now, and its body carries a
+// password or a one-time code: it must not sit in IndexedDB, and a queued
+// "202" would look like a sign-in that worked.
+const NO_QUEUE_PATHS = [
+    '/api/inbox/analyze-text',
+    '/api/push/',
+    '/api/login',
+    '/api/register',
+    '/api/forgot-password',
+    '/api/reset-password',
+    '/api/resend-verification',
+    '/api/sign-in-link/',
+    '/api/oidc/',
+    '/api/profile/mfa',
+    '/api/auth/reverify',
+];
 
 // The development build registers this worker as /sw.js?push-only so push
 // notifications can be tried on the dev server. In that mode nothing is

@@ -586,6 +586,26 @@ describe('Universal Search Routes', () => {
                 expect(tasks.length).toBeGreaterThanOrEqual(2); // Should include today, tomorrow, and next week
             });
 
+            it('should filter tasks due this week the same as next week', async () => {
+                const response = await agent.get('/api/search').query({
+                    due: 'this_week',
+                    filters: 'Task',
+                });
+
+                expect(response.status).toBe(200);
+                const names = response.body.results
+                    .filter((r) => r.type === 'Task')
+                    .map((task) => task.name);
+                expect(names).toEqual(
+                    expect.arrayContaining([
+                        'Task due today',
+                        'Task due tomorrow',
+                        'Task due next week',
+                    ])
+                );
+                expect(names).not.toContain('Task due next month');
+            });
+
             it('should filter tasks due next month', async () => {
                 const response = await agent.get('/api/search').query({
                     due: 'next_month',

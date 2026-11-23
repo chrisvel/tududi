@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import i18n from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,9 @@ const Login: React.FC = () => {
     const [captcha, setCaptcha] = useState<CaptchaConfig | null>(null);
     const [captchaToken, setCaptchaToken] = useState<string | null>(null);
     const [passwordAuthEnabled, setPasswordAuthEnabled] = useState(true);
+    const [authMethods, setAuthMethods] = useState<
+        'loading' | 'ready' | 'unavailable'
+    >('loading');
     // Password (or SSO) accepted, the 2FA code still to come.
     const [mfaStep, setMfaStep] = useState(false);
     const [oidcProviders, setOidcProviders] = useState<
@@ -116,44 +119,52 @@ const Login: React.FC = () => {
         checkRegistration();
     }, []);
 
-    // Fetch OIDC providers
-    useEffect(() => {
-        const fetchProviders = async () => {
-            try {
-                const response = await fetch(getApiPath('oidc/providers'), {
-                    credentials: 'include',
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    setOidcProviders(data.providers || []);
-                }
-            } catch (err) {
-                console.error('Error fetching OIDC providers:', err);
-            }
+    // Which ways of signing in the server offers. Until both answers are in
+    // nothing is drawn: guessing "password" on a failed request would show a
+    // form the server has turned off.
+    const loadAuthMethods = useCallback(async () => {
+        setAuthMethods('loading');
+        const readJson = async (path: string) => {
+            const response = await fetch(getApiPath(path), {
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error(`${path}: ${response.status}`);
+            return response.json();
         };
-        fetchProviders();
+        const [passwordAuth, providers] = await Promise.allSettled([
+            readJson('password-auth-status'),
+            readJson('oidc/providers'),
+        ]);
+        const passwordEnabled =
+            passwordAuth.status === 'fulfilled' &&
+            typeof passwordAuth.value?.enabled === 'boolean'
+                ? passwordAuth.value.enabled
+                : null;
+        const providerList =
+            providers.status === 'fulfilled' &&
+            Array.isArray(providers.value?.providers)
+                ? providers.value.providers
+                : null;
+        [passwordAuth, providers].forEach((result) => {
+            if (result.status === 'rejected') {
+                console.error('Error loading sign-in methods:', result.reason);
+            }
+        });
+
+        // The password answer decides whether the form may show, and with
+        // password off the provider list is the only way in.
+        if (passwordEnabled === null || (!passwordEnabled && !providerList)) {
+            setAuthMethods('unavailable');
+            return;
+        }
+        setPasswordAuthEnabled(passwordEnabled);
+        setOidcProviders(providerList || []);
+        setAuthMethods('ready');
     }, []);
 
-    // Check if password authentication is enabled
     useEffect(() => {
-        const checkPasswordAuth = async () => {
-            try {
-                const response = await fetch(
-                    getApiPath('password-auth-status'),
-                    {
-                        credentials: 'include',
-                    }
-                );
-                if (response.ok) {
-                    const data = await response.json();
-                    setPasswordAuthEnabled(data.enabled);
-                }
-            } catch (err) {
-                console.error('Error checking password auth status:', err);
-            }
-        };
-        checkPasswordAuth();
-    }, []);
+        loadAuthMethods();
+    }, [loadAuthMethods]);
 
     useEffect(() => {
         fetchCaptchaConfig().then(setCaptcha);
@@ -335,13 +346,36 @@ const Login: React.FC = () => {
                                 />
                             )}
 
-                            {!mfaStep && (
+                            {!mfaStep && authMethods === 'unavailable' && (
+                                <div
+                                    className="text-center text-gray-600 dark:text-gray-400"
+                                    data-testid="login-unavailable"
+                                >
+                                    <p className="mb-4">
+                                        {t(
+                                            'auth.sign_in_unavailable',
+                                            'Could not load the sign-in options. Check your connection and try again.'
+                                        )}
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={loadAuthMethods}
+                                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                                        data-testid="login-retry"
+                                    >
+                                        {t('common.retry', 'Try again')}
+                                    </button>
+                                </div>
+                            )}
+
+                            {!mfaStep && authMethods === 'ready' && (
                                 <OIDCProviderButtons
                                     providers={oidcProviders}
                                 />
                             )}
 
                             {!mfaStep &&
+                                authMethods === 'ready' &&
                                 oidcProviders.length > 0 &&
                                 passwordAuthEnabled && (
                                     <div className="relative mb-6">
@@ -359,71 +393,74 @@ const Login: React.FC = () => {
                                     </div>
                                 )}
 
-                            {!mfaStep && passwordAuthEnabled && (
-                                <form onSubmit={handleSubmit}>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="email"
-                                            className="block text-gray-600 dark:text-gray-300 mb-1"
+                            {!mfaStep &&
+                                authMethods === 'ready' &&
+                                passwordAuthEnabled && (
+                                    <form onSubmit={handleSubmit}>
+                                        <div className="mb-4">
+                                            <label
+                                                htmlFor="email"
+                                                className="block text-gray-600 dark:text-gray-300 mb-1"
+                                            >
+                                                {t('auth.email', 'Email')}
+                                            </label>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                value={email}
+                                                onChange={(e) =>
+                                                    setEmail(e.target.value)
+                                                }
+                                                className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                                data-testid="login-email"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label
+                                                htmlFor="password"
+                                                className="block text-gray-600 dark:text-gray-300 mb-1"
+                                            >
+                                                {t('auth.password', 'Password')}
+                                            </label>
+                                            <input
+                                                type="password"
+                                                id="password"
+                                                name="password"
+                                                value={password}
+                                                onChange={(e) =>
+                                                    setPassword(e.target.value)
+                                                }
+                                                className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                                data-testid="login-password"
+                                                required
+                                            />
+                                        </div>
+                                        <button
+                                            type="submit"
+                                            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                                            data-testid="login-submit"
                                         >
-                                            {t('auth.email', 'Email')}
-                                        </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            value={email}
-                                            onChange={(e) =>
-                                                setEmail(e.target.value)
-                                            }
-                                            className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            data-testid="login-email"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="mb-4">
-                                        <label
-                                            htmlFor="password"
-                                            className="block text-gray-600 dark:text-gray-300 mb-1"
-                                        >
-                                            {t('auth.password', 'Password')}
-                                        </label>
-                                        <input
-                                            type="password"
-                                            id="password"
-                                            name="password"
-                                            value={password}
-                                            onChange={(e) =>
-                                                setPassword(e.target.value)
-                                            }
-                                            className="w-full px-4 py-2 border dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            data-testid="login-password"
-                                            required
-                                        />
-                                    </div>
-                                    <button
-                                        type="submit"
-                                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                                        data-testid="login-submit"
-                                    >
-                                        {t('auth.login', 'Login')}
-                                    </button>
-                                    <div className="mt-4 text-center">
-                                        <Link
-                                            to="/forgot-password"
-                                            className="text-sm text-blue-500 hover:text-blue-600"
-                                            data-testid="login-forgot-link"
-                                        >
-                                            {t(
-                                                'auth.forgot_password_link',
-                                                'Forgot your password?'
-                                            )}
-                                        </Link>
-                                    </div>
-                                </form>
-                            )}
+                                            {t('auth.login', 'Login')}
+                                        </button>
+                                        <div className="mt-4 text-center">
+                                            <Link
+                                                to="/forgot-password"
+                                                className="text-sm text-blue-500 hover:text-blue-600"
+                                                data-testid="login-forgot-link"
+                                            >
+                                                {t(
+                                                    'auth.forgot_password_link',
+                                                    'Forgot your password?'
+                                                )}
+                                            </Link>
+                                        </div>
+                                    </form>
+                                )}
 
-                            {!passwordAuthEnabled &&
+                            {authMethods === 'ready' &&
+                                !passwordAuthEnabled &&
                                 oidcProviders.length === 0 && (
                                     <div className="text-center text-gray-600 dark:text-gray-400">
                                         {t(
@@ -434,6 +471,7 @@ const Login: React.FC = () => {
                                 )}
 
                             {!mfaStep &&
+                                authMethods === 'ready' &&
                                 registrationEnabled &&
                                 passwordAuthEnabled && (
                                     <div className="mt-6 text-center text-gray-600 dark:text-gray-400">

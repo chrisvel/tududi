@@ -128,6 +128,7 @@ sync      → replay queued mutations (Background Sync API)
 | API `GET` `/api/*` | `handleApiGet` | Network-first; on success write to `tududi-api-v1`; on network failure serve stale cache; if no cache return `503 { offline: true }` |
 | API mutations `/api/*` | `handleApiMutation` | Attempt network; if offline queue to IndexedDB, return `202 { queued: true }` with an `X-Tududi-Queued: 1` header; register Background Sync tag `tududi-sync` |
 | Stateless POST endpoints (e.g. `/api/inbox/analyze-text`) | `handleApiNoQueue` | Network-only; on failure return `503 { offline: true }` — never queued, since there's nothing meaningful to replay |
+| Sign-in endpoints (`/api/login`, `/api/register`, password reset, sign-in links, `/api/oidc/*`, 2FA) | `handleApiNoQueue` | Network-only; never queued, so a password or one-time code is not stored in IndexedDB and an offline sign-in is not answered with a `202` |
 | Navigation (`mode: navigate`) | inline | Network-first; fall back to cached `/` shell for SPA routing |
 
 ### Cache names
