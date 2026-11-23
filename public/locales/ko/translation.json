@@ -1608,7 +1608,22 @@
     "linkedNoteCreate": "노트 만들기",
     "linkedNoteCreateFailed": "노트를 만들 수 없습니다.",
     "backgroundImage": "배경",
-    "noBackground": "배경 없음"
+    "noBackground": "배경 없음",
+    "overview": {
+      "search": "제목과 내용 검색...",
+      "allTags": "모든 태그",
+      "allProjects": "모든 프로젝트",
+      "noProject": "프로젝트 없음",
+      "columnTitle": "제목",
+      "columnPreview": "미리보기",
+      "columnProject": "프로젝트",
+      "columnTags": "태그",
+      "columnUpdated": "수정일",
+      "columnCreated": "생성일",
+      "columns": "열",
+      "showMore": "더 보기",
+      "resizeColumn": "{{column}} 열의 너비를 조절합니다. Alt와 화살표 키로 열을 옮깁니다."
+    }
   },
   "tags": {
     "loading": "태그 로딩 중...",

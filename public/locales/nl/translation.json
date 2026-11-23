@@ -1610,7 +1610,22 @@
     "linkedNoteCreate": "Notitie maken",
     "linkedNoteCreateFailed": "De notitie kon niet worden gemaakt.",
     "backgroundImage": "Achtergrond",
-    "noBackground": "Geen achtergrond"
+    "noBackground": "Geen achtergrond",
+    "overview": {
+      "search": "Zoek in titels en inhoud...",
+      "allTags": "Alle tags",
+      "allProjects": "Alle projecten",
+      "noProject": "Geen project",
+      "columnTitle": "Titel",
+      "columnPreview": "Voorbeeld",
+      "columnProject": "Project",
+      "columnTags": "Tags",
+      "columnUpdated": "Bijgewerkt",
+      "columnCreated": "Aangemaakt",
+      "columns": "Kolommen",
+      "showMore": "Meer tonen",
+      "resizeColumn": "Wijzig de breedte van de kolom {{column}}. Alt en een pijltoets verplaatsen hem."
+    }
   },
   "tags": {
     "loading": "Tags laden...",

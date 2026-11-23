@@ -28,7 +28,7 @@ import {
 } from '../constants/contentBackgrounds';
 import NoteFocusMode from './Note/NoteFocusMode';
 import NoteEditorView from './Note/NoteEditorView';
-import NoteCard from './Shared/NoteCard';
+import NotesOverview from './Note/NotesOverview';
 import NewItemButton from './Shared/NewItemButton';
 import BlankSlate from './Shared/BlankSlate';
 import { noteMatchesFocus, useFocus } from '../utils/focus';
@@ -64,9 +64,7 @@ const Notes: React.FC = () => {
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
     const [noteToShare, setNoteToShare] = useState<Note | null>(null);
-    // Notes are browsed via the sidebar's folder tree now, not a list on
-    // this page - this page is the editor/preview pane only. `orderBy`
-    // still picks which note auto-selects first on load.
+    // /notes is the table of notes; /notes/:uid is the editor.
     const orderBy = 'updated_at:desc';
     const [showDiscardDialog, setShowDiscardDialog] = useState(false);
     const [saveStatus, setSaveStatus] = useState<
@@ -80,7 +78,12 @@ const Notes: React.FC = () => {
     // "new note" action; deduplicated per location entry below.
     const newNoteSignal = (location.state as { newNote?: number } | null)
         ?.newNote;
+    const blankNoteOpen = !!(location.state as { blankNote?: boolean } | null)
+        ?.blankNote;
     const newNoteSignalRef = useRef<number | null>(null);
+    // Set once the user has left a blank note, so its save still landing
+    // doesn't pull them back into the editor.
+    const leftBlankNoteRef = useRef(false);
 
     const editingNoteColor = editingNote ? editingNote.color : undefined;
     const previewNoteColor = previewNote ? previewNote.color : undefined;
@@ -180,7 +183,7 @@ const Notes: React.FC = () => {
                 const { saved, created } = await persistNote(noteToSave);
                 if (!isMountedRef.current) return;
                 setEditingNote((current) => mergeSavedNote(current, saved));
-                if (created) {
+                if (created && !leftBlankNoteRef.current) {
                     navigate(`/notes/${saved.uid}`, { replace: true });
                 }
                 setSaveStatus('saved');
@@ -298,6 +301,8 @@ const Notes: React.FC = () => {
         setEditingNote(null);
         if (previewNote) {
             handleSelectNote(previewNote);
+        } else {
+            navigate('/notes', { replace: true });
         }
     };
 
@@ -416,6 +421,7 @@ const Notes: React.FC = () => {
             : undefined;
         debouncedSave.flush();
         pendingCreateRef.current = null;
+        leftBlankNoteRef.current = false;
         setPreviewNote(null);
         setEditingNote({
             title: '',
@@ -443,7 +449,7 @@ const Notes: React.FC = () => {
         if (newNoteSignal && newNoteSignalRef.current !== newNoteSignal) {
             newNoteSignalRef.current = newNoteSignal;
             startNewNote();
-            navigate('/notes', { replace: true, state: {} });
+            navigate('/notes', { replace: true, state: { blankNote: true } });
         }
     }, [newNoteSignal, startNewNote, navigate]);
 
@@ -498,32 +504,25 @@ const Notes: React.FC = () => {
         }
     }, [hasLoaded]);
 
-    // The note in the URL is unavailable: fall back to the first note once
-    // the list has loaded.
+    // The note in the URL is unavailable: go to the table once the list has
+    // loaded.
     useEffect(() => {
-        if (!urlNoteMissing || !hasLoaded || previewNote) return;
-        const isDesktop = window.innerWidth >= 768;
-        if (isDesktop && sortedNotes.length > 0) {
-            handleSelectNote(sortedNotes[0]);
-        }
-    }, [urlNoteMissing, hasLoaded, sortedNotes, previewNote]);
+        if (!urlNoteMissing || !uid || !hasLoaded || previewNote) return;
+        navigate('/notes', { replace: true });
+    }, [urlNoteMissing, uid, hasLoaded, previewNote, navigate]);
 
+    // Arriving at plain /notes (sidebar, breadcrumb, Back) closes whatever is
+    // open and shows the table. A blank note being written lives at /notes as
+    // well and marks itself in the location state.
     useEffect(() => {
-        if (newNoteSignal) return;
-        if (
-            !uid &&
-            sortedNotes.length > 0 &&
-            !previewNote &&
-            !isEditing &&
-            !hasAutoSelected.current
-        ) {
-            const isDesktop = window.innerWidth >= 768;
-            if (isDesktop) {
-                handleSelectNote(sortedNotes[0]);
-                hasAutoSelected.current = true;
-            }
-        }
-    }, [sortedNotes, previewNote, uid, isEditing]);
+        if (uid || newNoteSignal || blankNoteOpen) return;
+        if (!isEditing && !previewNote) return;
+        leftBlankNoteRef.current = true;
+        leaveEditing();
+        setPreviewNote(null);
+        setSaveStatus('saved');
+        setIsFocusMode(false);
+    }, [location.key]);
 
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
@@ -564,23 +563,34 @@ const Notes: React.FC = () => {
         );
     }
 
+    // The same route as the sidebar's + button, so Back and the breadcrumb
+    // return to the table.
+    const openNewNote = () =>
+        navigate('/notes', { state: { newNote: Date.now() } });
+
     const notesHeader = (
-        <div className="flex items-center justify-between gap-2 mb-6">
+        <div className="flex items-center justify-between gap-2 mb-8">
             <h2 className="text-2xl font-light">{t('notes.title', 'Notes')}</h2>
             <NewItemButton
                 label={t('notes.new', 'New Note')}
-                onClick={startNewNote}
+                onClick={openNewNote}
                 testId="new-note-button"
             />
         </div>
     );
 
+    // The table and the empty state sit like every other list page; an open
+    // note keeps the edge-to-edge editor with its color and photo.
+    const showsList = !(isEditing && editingNote) && !previewNote;
+
     return (
         <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-            <div className="flex-1 flex flex-col min-h-0 overflow-hidden pt-2">
+            <div
+                className={`flex-1 flex flex-col min-h-0 overflow-hidden ${showsList ? 'pt-4 md:px-4' : 'pt-2'}`}
+            >
                 <div className="flex flex-1 min-h-0 overflow-hidden">
                     <div
-                        className={`relative flex flex-1 flex-col overflow-hidden h-full backdrop-blur-sm ${activeNoteColor ? '' : 'bg-white/85 dark:bg-gray-900/85'} ${activeNotePhoto ? 'bg-cover bg-center [--note-tint:rgb(255_255_255/0.75)] dark:[--note-tint:rgb(17_24_39/0.75)]' : ''}`}
+                        className={`relative flex flex-1 flex-col overflow-hidden h-full ${showsList ? '' : 'backdrop-blur-sm'} ${activeNoteColor || showsList ? '' : 'bg-white/85 dark:bg-gray-900/85'} ${activeNotePhoto ? 'bg-cover bg-center [--note-tint:rgb(255_255_255/0.75)] dark:[--note-tint:rgb(17_24_39/0.75)]' : ''}`}
                         style={activeNoteStyle}
                     >
                         {activeNotePhoto && (
@@ -613,55 +623,43 @@ const Notes: React.FC = () => {
                                 onOpenFocusMode={() => setIsFocusMode(true)}
                             />
                         ) : previewNote ? null : sortedNotes.length > 0 ? (
-                            // No note selected yet (mobile lands here since
-                            // it skips auto-selecting the most recent note,
-                            // and desktop briefly does too before that
-                            // effect runs). Show every note to pick from
-                            // instead of a dead-end placeholder (#1527).
-                            <div className="flex-1 overflow-y-auto p-6">
-                                {notesHeader}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                                    {sortedNotes.map((note) => (
-                                        <NoteCard
-                                            key={note.uid}
-                                            note={note}
-                                            showActions={false}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                            <NotesOverview onNewNote={openNewNote} />
                         ) : hasLoaded ? (
-                            <div className="flex-1 overflow-y-auto p-6">
-                                {notesHeader}
-                                <BlankSlate
-                                    title={t(
-                                        'notes.noNotesYet',
-                                        'No notes yet.'
-                                    )}
-                                    hint={t(
-                                        'notes.blankSlateHint',
-                                        'Notes hold what you want to keep, like meeting notes, ideas or reference material. Write in Markdown, link a note to a project and tag it to find it later.'
-                                    )}
-                                    actions={[
-                                        {
-                                            label: t(
-                                                'notes.blankSlateNew',
-                                                'Write your first note'
-                                            ),
-                                            icon: PlusIcon,
-                                            onClick: startNewNote,
-                                        },
-                                        {
-                                            label: t(
-                                                'notes.blankSlateProjects',
-                                                'Go to projects'
-                                            ),
-                                            icon: FolderIcon,
-                                            to: '/projects',
-                                        },
-                                    ]}
-                                />
-                                <FocusEmptyHint className="mx-auto mt-4 max-w-md" />
+                            <div className="flex-1 overflow-y-auto">
+                                <div className="w-full px-4 sm:px-6 lg:px-8 pt-4 pb-8">
+                                    <div className="w-full max-w-7xl mx-auto">
+                                        {notesHeader}
+                                        <BlankSlate
+                                            title={t(
+                                                'notes.noNotesYet',
+                                                'No notes yet.'
+                                            )}
+                                            hint={t(
+                                                'notes.blankSlateHint',
+                                                'Notes hold what you want to keep, like meeting notes, ideas or reference material. Write in Markdown, link a note to a project and tag it to find it later.'
+                                            )}
+                                            actions={[
+                                                {
+                                                    label: t(
+                                                        'notes.blankSlateNew',
+                                                        'Write your first note'
+                                                    ),
+                                                    icon: PlusIcon,
+                                                    onClick: openNewNote,
+                                                },
+                                                {
+                                                    label: t(
+                                                        'notes.blankSlateProjects',
+                                                        'Go to projects'
+                                                    ),
+                                                    icon: FolderIcon,
+                                                    to: '/projects',
+                                                },
+                                            ]}
+                                        />
+                                        <FocusEmptyHint className="mx-auto mt-4 max-w-md" />
+                                    </div>
+                                </div>
                             </div>
                         ) : null}
                     </div>

@@ -61,9 +61,6 @@ describe('SidebarNotes', () => {
         renderNotes();
 
         expect(
-            screen.queryByPlaceholderText('Search notes...')
-        ).not.toBeInTheDocument();
-        expect(
             document.querySelector('.rounded-xl.bg-gray-50')
         ).not.toBeInTheDocument();
     });
@@ -72,9 +69,9 @@ describe('SidebarNotes', () => {
         mockNotes = [{ uid: 'a1', title: 'First note', content: '' }];
         renderNotes();
 
-        expect(
-            screen.getByPlaceholderText('Search notes...')
-        ).toBeInTheDocument();
         expect(screen.getByText('First note')).toBeInTheDocument();
+        expect(
+            screen.queryByPlaceholderText('Search notes...')
+        ).not.toBeInTheDocument();
     });
 });

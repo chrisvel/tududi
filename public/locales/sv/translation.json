@@ -1610,7 +1610,22 @@
     "linkedNoteCreate": "Skapa anteckning",
     "linkedNoteCreateFailed": "Det gick inte att skapa anteckningen.",
     "backgroundImage": "Bakgrund",
-    "noBackground": "Ingen bakgrund"
+    "noBackground": "Ingen bakgrund",
+    "overview": {
+      "search": "Sök i titlar och innehåll...",
+      "allTags": "Alla taggar",
+      "allProjects": "Alla projekt",
+      "noProject": "Inget projekt",
+      "columnTitle": "Titel",
+      "columnPreview": "Förhandsvisning",
+      "columnProject": "Projekt",
+      "columnTags": "Taggar",
+      "columnUpdated": "Uppdaterad",
+      "columnCreated": "Skapad",
+      "columns": "Kolumner",
+      "showMore": "Visa fler",
+      "resizeColumn": "Ändra bredden på kolumnen {{column}}. Alt och en piltangent flyttar den."
+    }
   },
   "tags": {
     "loading": "Laddar taggar...",

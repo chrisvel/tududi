@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Location } from 'react-router-dom';
 import {
     BookOpenIcon,
     ChevronRightIcon,
-    MagnifyingGlassIcon,
     PlusIcon,
 } from '@heroicons/react/24/outline';
 import { Note } from '../../entities/Note';
@@ -27,13 +26,11 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
 }) => {
     const { t } = useTranslation();
     const [isExpanded, setIsExpanded] = useSidebarSectionExpanded('notes');
-    const [searchQuery, setSearchQuery] = useState('');
 
     const notes = useStore((state) => state.notesStore.notes);
     const hasLoaded = useStore((state) => state.notesStore.hasLoaded);
     const loadNotes = useStore((state) => state.notesStore.loadNotes);
 
-    const projects = useStore((state) => state.projectsStore.projects);
     const projectsHasLoaded = useStore(
         (state) => state.projectsStore.hasLoaded
     );
@@ -45,6 +42,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
         }
     }, [hasLoaded, loadNotes]);
 
+    // The Notes page and Focus read projects from the store.
     useEffect(() => {
         if (!projectsHasLoaded) {
             loadProjects();
@@ -122,25 +120,10 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
 
             {isExpanded && notes.length > 0 && (
                 <div className="mt-1 mb-1.5 rounded-xl bg-gray-50 py-1 dark:bg-white/[0.03]">
-                    <div className="flex items-center gap-[6px] ml-[30px] mr-[10px] mt-1 mb-1 px-[8px] py-[3px] rounded-md bg-white dark:bg-white/5">
-                        <MagnifyingGlassIcon className="h-3 w-3 text-gray-400 dark:text-gray-500 flex-shrink-0" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder={t(
-                                'notes.searchPlaceholder',
-                                'Search notes...'
-                            )}
-                            className="w-full min-w-0 bg-transparent border-none focus:ring-0 focus:outline-none text-[12px] text-gray-600 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500"
-                        />
-                    </div>
                     <SidebarNotesTree
                         notes={notes}
-                        projects={projects}
                         location={location}
                         handleNavClick={handleNavClick}
-                        searchQuery={searchQuery}
                     />
                 </div>
             )}

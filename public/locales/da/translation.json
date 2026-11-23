@@ -1610,7 +1610,22 @@
     "linkedNoteCreate": "Opret note",
     "linkedNoteCreateFailed": "Noten kunne ikke oprettes.",
     "backgroundImage": "Baggrund",
-    "noBackground": "Ingen baggrund"
+    "noBackground": "Ingen baggrund",
+    "overview": {
+      "search": "Søg i titler og indhold...",
+      "allTags": "Alle tags",
+      "allProjects": "Alle projekter",
+      "noProject": "Intet projekt",
+      "columnTitle": "Titel",
+      "columnPreview": "Forhåndsvisning",
+      "columnProject": "Projekt",
+      "columnTags": "Tags",
+      "columnUpdated": "Opdateret",
+      "columnCreated": "Oprettet",
+      "columns": "Kolonner",
+      "showMore": "Vis flere",
+      "resizeColumn": "Ændr bredden på kolonnen {{column}}. Alt og en piletast flytter den."
+    }
   },
   "tags": {
     "loading": "Indlæser tags...",

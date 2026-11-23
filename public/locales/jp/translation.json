@@ -1326,7 +1326,22 @@
     "linkedNoteCreate": "ノートを作成",
     "linkedNoteCreateFailed": "ノートを作成できませんでした。",
     "backgroundImage": "背景",
-    "noBackground": "背景なし"
+    "noBackground": "背景なし",
+    "overview": {
+      "search": "タイトルと本文を検索...",
+      "allTags": "すべてのタグ",
+      "allProjects": "すべてのプロジェクト",
+      "noProject": "プロジェクトなし",
+      "columnTitle": "タイトル",
+      "columnPreview": "プレビュー",
+      "columnProject": "プロジェクト",
+      "columnTags": "タグ",
+      "columnUpdated": "更新日",
+      "columnCreated": "作成日",
+      "columns": "列",
+      "showMore": "さらに表示",
+      "resizeColumn": "{{column}}列の幅を変更します。Altと矢印キーで列を移動します。"
+    }
   },
   "tags": {
     "loading": "タグを読み込み中...",

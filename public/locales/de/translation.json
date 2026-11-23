@@ -527,7 +527,22 @@
     "linkedNoteCreate": "Notiz erstellen",
     "linkedNoteCreateFailed": "Die Notiz konnte nicht erstellt werden.",
     "backgroundImage": "Hintergrund",
-    "noBackground": "Kein Hintergrund"
+    "noBackground": "Kein Hintergrund",
+    "overview": {
+      "search": "Titel und Inhalt durchsuchen...",
+      "allTags": "Alle Tags",
+      "allProjects": "Alle Projekte",
+      "noProject": "Kein Projekt",
+      "columnTitle": "Titel",
+      "columnPreview": "Vorschau",
+      "columnProject": "Projekt",
+      "columnTags": "Tags",
+      "columnUpdated": "Aktualisiert",
+      "columnCreated": "Erstellt",
+      "columns": "Spalten",
+      "showMore": "Mehr anzeigen",
+      "resizeColumn": "Breite der Spalte {{column}} ändern. Alt und eine Pfeiltaste verschieben sie."
+    }
   },
   "recurrence": {
     "none": "Keine",

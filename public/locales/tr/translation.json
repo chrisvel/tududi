@@ -1610,7 +1610,22 @@
     "linkedNoteCreate": "Not oluştur",
     "linkedNoteCreateFailed": "Not oluşturulamadı.",
     "backgroundImage": "Arka plan",
-    "noBackground": "Arka plan yok"
+    "noBackground": "Arka plan yok",
+    "overview": {
+      "search": "Başlık ve içerikte ara...",
+      "allTags": "Tüm etiketler",
+      "allProjects": "Tüm projeler",
+      "noProject": "Projesiz",
+      "columnTitle": "Başlık",
+      "columnPreview": "Önizleme",
+      "columnProject": "Proje",
+      "columnTags": "Etiketler",
+      "columnUpdated": "Güncellendi",
+      "columnCreated": "Oluşturuldu",
+      "columns": "Sütunlar",
+      "showMore": "Daha fazla göster",
+      "resizeColumn": "{{column}} sütununun genişliğini değiştirin. Alt ve bir ok tuşu onu taşır."
+    }
   },
   "tags": {
     "loading": "Etiketler yükleniyor...",

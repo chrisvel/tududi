@@ -1608,7 +1608,22 @@
     "linkedNoteCreate": "Buat catatan",
     "linkedNoteCreateFailed": "Catatan tidak dapat dibuat.",
     "backgroundImage": "Latar",
-    "noBackground": "Tanpa latar"
+    "noBackground": "Tanpa latar",
+    "overview": {
+      "search": "Cari judul dan isi...",
+      "allTags": "Semua tag",
+      "allProjects": "Semua proyek",
+      "noProject": "Tanpa proyek",
+      "columnTitle": "Judul",
+      "columnPreview": "Pratinjau",
+      "columnProject": "Proyek",
+      "columnTags": "Tag",
+      "columnUpdated": "Diperbarui",
+      "columnCreated": "Dibuat",
+      "columns": "Kolom",
+      "showMore": "Tampilkan lagi",
+      "resizeColumn": "Ubah lebar kolom {{column}}. Alt dan tombol panah memindahkannya."
+    }
   },
   "tags": {
     "loading": "Memuat tag...",

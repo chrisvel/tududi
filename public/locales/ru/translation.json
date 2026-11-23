@@ -1614,7 +1614,22 @@
     "linkedNoteCreate": "Создать заметку",
     "linkedNoteCreateFailed": "Не удалось создать заметку.",
     "backgroundImage": "Фон",
-    "noBackground": "Без фона"
+    "noBackground": "Без фона",
+    "overview": {
+      "search": "Поиск по заголовкам и тексту...",
+      "allTags": "Все теги",
+      "allProjects": "Все проекты",
+      "noProject": "Без проекта",
+      "columnTitle": "Заголовок",
+      "columnPreview": "Превью",
+      "columnProject": "Проект",
+      "columnTags": "Теги",
+      "columnUpdated": "Обновлена",
+      "columnCreated": "Создана",
+      "columns": "Столбцы",
+      "showMore": "Показать ещё",
+      "resizeColumn": "Измените ширину столбца {{column}}. Alt и стрелка перемещают его."
+    }
   },
   "tags": {
     "loading": "Загрузка тегов...",
