@@ -1101,7 +1101,22 @@
     "linkedNoteCreate": "Δημιουργία σημείωσης",
     "linkedNoteCreateFailed": "Δεν ήταν δυνατή η δημιουργία της σημείωσης.",
     "backgroundImage": "Φόντο",
-    "noBackground": "Χωρίς φόντο"
+    "noBackground": "Χωρίς φόντο",
+    "overview": {
+      "search": "Αναζήτηση σε τίτλους και περιεχόμενο...",
+      "allTags": "Όλες οι ετικέτες",
+      "allProjects": "Όλα τα έργα",
+      "noProject": "Χωρίς έργο",
+      "columnTitle": "Τίτλος",
+      "columnPreview": "Προεπισκόπηση",
+      "columnProject": "Έργο",
+      "columnTags": "Ετικέτες",
+      "columnUpdated": "Ενημέρωση",
+      "columnCreated": "Δημιουργία",
+      "columns": "Στήλες",
+      "showMore": "Εμφάνιση περισσότερων",
+      "resizeColumn": "Αλλαγή πλάτους της στήλης {{column}}. Το Alt με ένα βέλος τη μετακινεί."
+    }
   },
   "projectItem": {
     "edit": "Επεξεργασία",

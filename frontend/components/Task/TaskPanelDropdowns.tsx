@@ -49,8 +49,15 @@ const usePortalMenu = () => {
             }
             setIsOpen(false);
         };
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setIsOpen(false);
+        };
         document.addEventListener('mousedown', onPointerDown);
-        return () => document.removeEventListener('mousedown', onPointerDown);
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            document.removeEventListener('mousedown', onPointerDown);
+            document.removeEventListener('keydown', onKeyDown);
+        };
     }, [isOpen]);
 
     return { isOpen, setIsOpen, position, triggerRef, menuRef };
@@ -203,6 +210,245 @@ export const TaskStatusDropdown: React.FC<TaskStatusDropdownProps> = ({
     );
 };
 
+export interface PickerOption {
+    value: string;
+    label: string;
+}
+
+interface PickerSharedProps {
+    options: PickerOption[];
+    emptyLabel: string;
+    ariaLabel: string;
+    searchPlaceholder: string;
+    // Options shown as muted choices, like "No project"
+    mutedValues?: string[];
+    Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    testId?: string;
+    searchTestId?: string;
+    // 'panel' sits on the white task panel; 'page' on the grey page behind
+    // list views, like the notes table filters.
+    tone?: 'panel' | 'page';
+    // Always show the search box; otherwise it appears once the list is long.
+    searchable?: boolean;
+}
+
+const PICKER_TRIGGER_TONES = {
+    panel: 'bg-gray-100 hover:bg-gray-200/70 dark:bg-gray-900 dark:hover:bg-gray-900/70',
+    page: 'bg-white shadow-sm hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-900/70',
+};
+
+interface PickerMenuProps extends PickerSharedProps {
+    selectedValues: string[];
+    // null is the empty choice at the top of the menu
+    onPick: (value: string | null) => void;
+    multiple: boolean;
+}
+
+// The searchable menu on tasks and in the notes table: a button showing the
+// choice, and a list under it with a search box once it is long.
+const PickerMenu: React.FC<PickerMenuProps> = ({
+    selectedValues,
+    onPick,
+    multiple,
+    options,
+    emptyLabel,
+    ariaLabel,
+    searchPlaceholder,
+    mutedValues = [],
+    Icon,
+    testId,
+    searchTestId,
+    tone = 'panel',
+    searchable = false,
+}) => {
+    const { isOpen, setIsOpen, position, triggerRef, menuRef } =
+        usePortalMenu();
+    const [query, setQuery] = useState('');
+
+    useEffect(() => {
+        if (!isOpen) setQuery('');
+    }, [isOpen]);
+
+    const selected = options.filter((option) =>
+        selectedValues.includes(option.value)
+    );
+    const triggerMuted =
+        selected.length === 0 ||
+        selected.every((option) => mutedValues.includes(option.value));
+    const triggerLabel =
+        selected.length === 0
+            ? emptyLabel
+            : selected.length === 1
+              ? selected[0].label
+              : `${selected[0].label} +${selected.length - 1}`;
+    const needle = query.trim().toLowerCase();
+    const choices = options.filter((option) =>
+        option.label.toLowerCase().includes(needle)
+    );
+
+    const pick = (value: string | null) => {
+        onPick(value);
+        if (!multiple) setIsOpen(false);
+    };
+
+    const optionClass = (active: boolean) =>
+        `flex w-full items-center gap-2 px-3 py-2 text-left text-sm ${
+            active
+                ? 'bg-blue-50 font-semibold text-blue-900 dark:bg-blue-900/30 dark:text-blue-100'
+                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700/60'
+        }`;
+
+    return (
+        <>
+            <button
+                ref={triggerRef}
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                aria-haspopup="listbox"
+                aria-expanded={isOpen}
+                aria-label={ariaLabel}
+                data-testid={testId}
+                className={`inline-flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-sm text-gray-900 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-gray-100 ${PICKER_TRIGGER_TONES[tone]}`}
+            >
+                <span className="flex min-w-0 items-center gap-2">
+                    <Icon
+                        className={`h-4 w-4 flex-shrink-0 ${
+                            triggerMuted
+                                ? 'text-gray-400 dark:text-gray-500'
+                                : 'text-blue-500 dark:text-blue-400'
+                        }`}
+                    />
+                    <span
+                        className={`truncate ${
+                            triggerMuted
+                                ? 'text-gray-500 dark:text-gray-400'
+                                : ''
+                        }`}
+                    >
+                        {triggerLabel}
+                    </span>
+                </span>
+                <ChevronDownIcon className="h-4 w-4 flex-shrink-0 text-gray-500 dark:text-gray-400" />
+            </button>
+            {isOpen &&
+                createPortal(
+                    <div
+                        ref={menuRef}
+                        data-portal-menu
+                        className={menuClass}
+                        style={{
+                            top: position.top,
+                            left: position.left,
+                            width: position.width,
+                        }}
+                    >
+                        {(searchable || options.length > 8) && (
+                            <div className="px-2 pb-1 pt-1">
+                                <input
+                                    autoFocus
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    placeholder={searchPlaceholder}
+                                    className="w-full rounded-md bg-gray-100 px-2.5 py-1.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100"
+                                    data-testid={searchTestId}
+                                />
+                            </div>
+                        )}
+                        <div role="listbox" aria-multiselectable={multiple}>
+                            <button
+                                type="button"
+                                role="option"
+                                aria-selected={selected.length === 0}
+                                onClick={() => pick(null)}
+                                className={optionClass(selected.length === 0)}
+                            >
+                                <Icon className="h-4 w-4 text-gray-300 dark:text-gray-600" />
+                                {emptyLabel}
+                            </button>
+                            {choices.map((option) => {
+                                const active = selectedValues.includes(
+                                    option.value
+                                );
+                                return (
+                                    <button
+                                        key={option.value}
+                                        type="button"
+                                        role="option"
+                                        aria-selected={active}
+                                        onClick={() => pick(option.value)}
+                                        className={optionClass(active)}
+                                    >
+                                        <Icon
+                                            className={`h-4 w-4 flex-shrink-0 ${
+                                                mutedValues.includes(
+                                                    option.value
+                                                )
+                                                    ? 'text-gray-300 dark:text-gray-600'
+                                                    : 'text-blue-500 dark:text-blue-400'
+                                            }`}
+                                        />
+                                        <span className="min-w-0 flex-1 truncate">
+                                            {option.label}
+                                        </span>
+                                        {multiple && active && (
+                                            <CheckIcon className="h-4 w-4 flex-shrink-0" />
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>,
+                    document.body
+                )}
+        </>
+    );
+};
+
+interface PickerDropdownProps extends PickerSharedProps {
+    value: string | null;
+    onChange: (value: string | null) => void;
+}
+
+export const PickerDropdown: React.FC<PickerDropdownProps> = ({
+    value,
+    onChange,
+    ...shared
+}) => (
+    <PickerMenu
+        {...shared}
+        multiple={false}
+        selectedValues={value === null ? [] : [value]}
+        onPick={onChange}
+    />
+);
+
+interface MultiPickerDropdownProps extends PickerSharedProps {
+    values: string[];
+    onChange: (values: string[]) => void;
+}
+
+// The menu stays open so several can be ticked; the empty choice clears them.
+export const MultiPickerDropdown: React.FC<MultiPickerDropdownProps> = ({
+    values,
+    onChange,
+    ...shared
+}) => (
+    <PickerMenu
+        {...shared}
+        multiple
+        selectedValues={values}
+        onPick={(value) => {
+            if (value === null) {
+                onChange([]);
+            } else if (values.includes(value)) {
+                onChange(values.filter((v) => v !== value));
+            } else {
+                onChange([...values, value]);
+            }
+        }}
+    />
+);
+
 interface PanelProject {
     id: number;
     name: string;
@@ -221,130 +467,31 @@ export const TaskProjectDropdown: React.FC<TaskProjectDropdownProps> = ({
     projects,
 }) => {
     const { t } = useTranslation();
-    const { isOpen, setIsOpen, position, triggerRef, menuRef } =
-        usePortalMenu();
-    const [query, setQuery] = useState('');
 
-    useEffect(() => {
-        if (!isOpen) setQuery('');
-    }, [isOpen]);
-
-    const selected = projects.find((project) => project.id === value) ?? null;
     // Finished projects stay out of the list unless the task is already in one
-    const choices = projects
+    const options = projects
         .filter(
             (project) =>
                 project.id === value ||
                 (project.status !== 'done' && project.status !== 'cancelled')
         )
-        .filter((project) =>
-            project.name.toLowerCase().includes(query.trim().toLowerCase())
-        )
-        .sort((a, b) => a.name.localeCompare(b.name));
-
-    const select = (projectId: number | null) => {
-        onChange(projectId);
-        setIsOpen(false);
-    };
-
-    const optionClass = (active: boolean) =>
-        `flex w-full items-center gap-2 px-3 py-2 text-left text-sm ${
-            active
-                ? 'bg-blue-50 font-semibold text-blue-900 dark:bg-blue-900/30 dark:text-blue-100'
-                : 'text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700/60'
-        }`;
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((project) => ({ value: String(project.id), label: project.name }));
 
     return (
-        <>
-            <button
-                ref={triggerRef}
-                type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                aria-haspopup="listbox"
-                aria-expanded={isOpen}
-                aria-label={t('forms.project', 'Project')}
-                data-testid="task-project-select"
-                className="inline-flex w-full items-center justify-between gap-2 rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-900 transition-colors hover:bg-gray-200/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-900/70"
-            >
-                <span className="flex min-w-0 items-center gap-2">
-                    <FolderIcon
-                        className={`h-4 w-4 flex-shrink-0 ${
-                            selected
-                                ? 'text-blue-500 dark:text-blue-400'
-                                : 'text-gray-400 dark:text-gray-500'
-                        }`}
-                    />
-                    <span
-                        className={`truncate ${
-                            selected ? '' : 'text-gray-500 dark:text-gray-400'
-                        }`}
-                    >
-                        {selected
-                            ? selected.name
-                            : t('tasks.noProject', 'No project')}
-                    </span>
-                </span>
-                <ChevronDownIcon className="h-4 w-4 flex-shrink-0 text-gray-500 dark:text-gray-400" />
-            </button>
-            {isOpen &&
-                createPortal(
-                    <div
-                        ref={menuRef}
-                        data-portal-menu
-                        className={menuClass}
-                        style={{
-                            top: position.top,
-                            left: position.left,
-                            width: position.width,
-                        }}
-                    >
-                        {projects.length > 8 && (
-                            <div className="px-2 pb-1 pt-1">
-                                <input
-                                    autoFocus
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    placeholder={t(
-                                        'projects.searchPlaceholder',
-                                        'Search projects...'
-                                    )}
-                                    className="w-full rounded-md bg-gray-100 px-2.5 py-1.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-900 dark:text-gray-100"
-                                    data-testid="task-project-search"
-                                />
-                            </div>
-                        )}
-                        <div role="listbox">
-                            <button
-                                type="button"
-                                role="option"
-                                aria-selected={value === null}
-                                onClick={() => select(null)}
-                                className={optionClass(value === null)}
-                            >
-                                <FolderIcon className="h-4 w-4 text-gray-300 dark:text-gray-600" />
-                                {t('tasks.noProject', 'No project')}
-                            </button>
-                            {choices.map((project) => (
-                                <button
-                                    key={project.id}
-                                    type="button"
-                                    role="option"
-                                    aria-selected={project.id === value}
-                                    onClick={() => select(project.id)}
-                                    className={optionClass(
-                                        project.id === value
-                                    )}
-                                >
-                                    <FolderIcon className="h-4 w-4 flex-shrink-0 text-blue-500 dark:text-blue-400" />
-                                    <span className="truncate">
-                                        {project.name}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>,
-                    document.body
-                )}
-        </>
+        <PickerDropdown
+            value={value === null ? null : String(value)}
+            onChange={(next) => onChange(next === null ? null : Number(next))}
+            options={options}
+            emptyLabel={t('tasks.noProject', 'No project')}
+            ariaLabel={t('forms.project', 'Project')}
+            searchPlaceholder={t(
+                'projects.searchPlaceholder',
+                'Search projects...'
+            )}
+            Icon={FolderIcon}
+            testId="task-project-select"
+            searchTestId="task-project-search"
+        />
     );
 };

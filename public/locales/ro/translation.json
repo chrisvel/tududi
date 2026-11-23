@@ -1614,7 +1614,22 @@
     "linkedNoteCreate": "Creează nota",
     "linkedNoteCreateFailed": "Nota nu a putut fi creată.",
     "backgroundImage": "Fundal",
-    "noBackground": "Fără fundal"
+    "noBackground": "Fără fundal",
+    "overview": {
+      "search": "Caută în titluri și conținut...",
+      "allTags": "Toate etichetele",
+      "allProjects": "Toate proiectele",
+      "noProject": "Fără proiect",
+      "columnTitle": "Titlu",
+      "columnPreview": "Previzualizare",
+      "columnProject": "Proiect",
+      "columnTags": "Etichete",
+      "columnUpdated": "Actualizată",
+      "columnCreated": "Creată",
+      "columns": "Coloane",
+      "showMore": "Arată mai multe",
+      "resizeColumn": "Redimensionează coloana {{column}}. Alt și o săgeată o mută."
+    }
   },
   "tags": {
     "loading": "Se încarcă etichetele...",

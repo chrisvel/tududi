@@ -1610,7 +1610,22 @@
     "linkedNoteCreate": "Създай бележка",
     "linkedNoteCreateFailed": "Бележката не можа да бъде създадена.",
     "backgroundImage": "Фон",
-    "noBackground": "Без фон"
+    "noBackground": "Без фон",
+    "overview": {
+      "search": "Търсене в заглавия и съдържание...",
+      "allTags": "Всички етикети",
+      "allProjects": "Всички проекти",
+      "noProject": "Без проект",
+      "columnTitle": "Заглавие",
+      "columnPreview": "Преглед",
+      "columnProject": "Проект",
+      "columnTags": "Етикети",
+      "columnUpdated": "Обновена",
+      "columnCreated": "Създадена",
+      "columns": "Колони",
+      "showMore": "Покажи още",
+      "resizeColumn": "Промени ширината на колона {{column}}. Alt и стрелка я местят."
+    }
   },
   "tags": {
     "loading": "Зареждане на тагове...",

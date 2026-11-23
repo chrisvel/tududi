@@ -1608,7 +1608,22 @@
     "linkedNoteCreate": "创建笔记",
     "linkedNoteCreateFailed": "无法创建笔记。",
     "backgroundImage": "背景",
-    "noBackground": "无背景"
+    "noBackground": "无背景",
+    "overview": {
+      "search": "搜索标题和内容...",
+      "allTags": "所有标签",
+      "allProjects": "所有项目",
+      "noProject": "无项目",
+      "columnTitle": "标题",
+      "columnPreview": "预览",
+      "columnProject": "项目",
+      "columnTags": "标签",
+      "columnUpdated": "更新时间",
+      "columnCreated": "创建时间",
+      "columns": "列",
+      "showMore": "显示更多",
+      "resizeColumn": "调整“{{column}}”列的宽度。按 Alt 和方向键移动该列。"
+    }
   },
   "tags": {
     "loading": "加载标签...",

@@ -1612,7 +1612,22 @@
     "linkedNoteCreate": "Créer la note",
     "linkedNoteCreateFailed": "Impossible de créer la note.",
     "backgroundImage": "Arrière-plan",
-    "noBackground": "Aucun arrière-plan"
+    "noBackground": "Aucun arrière-plan",
+    "overview": {
+      "search": "Rechercher dans les titres et le contenu...",
+      "allTags": "Tous les tags",
+      "allProjects": "Tous les projets",
+      "noProject": "Sans projet",
+      "columnTitle": "Titre",
+      "columnPreview": "Aperçu",
+      "columnProject": "Projet",
+      "columnTags": "Tags",
+      "columnUpdated": "Mise à jour",
+      "columnCreated": "Création",
+      "columns": "Colonnes",
+      "showMore": "Afficher plus",
+      "resizeColumn": "Redimensionner la colonne {{column}}. Alt et une flèche la déplacent."
+    }
   },
   "tags": {
     "loading": "Chargement des étiquettes...",

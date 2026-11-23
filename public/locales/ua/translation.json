@@ -649,7 +649,22 @@
     "linkedNoteCreate": "Створити нотатку",
     "linkedNoteCreateFailed": "Не вдалося створити нотатку.",
     "backgroundImage": "Фон",
-    "noBackground": "Без фону"
+    "noBackground": "Без фону",
+    "overview": {
+      "search": "Пошук у заголовках і тексті...",
+      "allTags": "Усі теги",
+      "allProjects": "Усі проєкти",
+      "noProject": "Без проєкту",
+      "columnTitle": "Заголовок",
+      "columnPreview": "Попередній перегляд",
+      "columnProject": "Проєкт",
+      "columnTags": "Теги",
+      "columnUpdated": "Оновлено",
+      "columnCreated": "Створено",
+      "columns": "Стовпці",
+      "showMore": "Показати ще",
+      "resizeColumn": "Змініть ширину стовпця {{column}}. Alt і стрілка переміщують його."
+    }
   },
   "recurrence": {
     "none": "Немає",

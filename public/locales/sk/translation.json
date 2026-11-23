@@ -1641,7 +1641,22 @@
         },
         "deleteNote": "Odstrániť poznámku",
         "deleteNoteConfirm": "Naozaj chcete odstrániť poznámku „{{title}}“?",
-        "untitled": "Poznámka bez názvu"
+        "untitled": "Poznámka bez názvu",
+        "overview": {
+            "search": "Hľadať v názvoch a obsahu...",
+            "allTags": "Všetky štítky",
+            "allProjects": "Všetky projekty",
+            "noProject": "Bez projektu",
+            "columnTitle": "Názov",
+            "columnPreview": "Náhľad",
+            "columnProject": "Projekt",
+            "columnTags": "Štítky",
+            "columnUpdated": "Upravené",
+            "columnCreated": "Vytvorené",
+            "columns": "Stĺpce",
+            "showMore": "Zobraziť viac",
+            "resizeColumn": "Zmeňte šírku stĺpca {{column}}. Alt a šípka ho presúvajú."
+        }
     },
     "tags": {
         "addTag": "Pridať štítok",

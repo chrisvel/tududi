@@ -1612,7 +1612,22 @@
     "linkedNoteCreate": "Criar nota",
     "linkedNoteCreateFailed": "Não foi possível criar a nota.",
     "backgroundImage": "Fundo",
-    "noBackground": "Sem fundo"
+    "noBackground": "Sem fundo",
+    "overview": {
+      "search": "Pesquisar títulos e conteúdo...",
+      "allTags": "Todas as etiquetas",
+      "allProjects": "Todos os projetos",
+      "noProject": "Sem projeto",
+      "columnTitle": "Título",
+      "columnPreview": "Pré-visualização",
+      "columnProject": "Projeto",
+      "columnTags": "Etiquetas",
+      "columnUpdated": "Atualizada",
+      "columnCreated": "Criada",
+      "columns": "Colunas",
+      "showMore": "Mostrar mais",
+      "resizeColumn": "Redimensionar a coluna {{column}}. Alt e uma seta movem-na."
+    }
   },
   "tags": {
     "loading": "Carregando tags...",

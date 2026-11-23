@@ -5,6 +5,11 @@ import '@testing-library/jest-dom';
 import { MemoryRouter, Routes, Route, Link } from 'react-router-dom';
 import Notes from '../components/Notes';
 
+jest.mock('../components/Note/NotesOverview', () => ({
+    __esModule: true,
+    default: () => <div data-testid="notes-table" />,
+}));
+
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, fallback?: string) => fallback ?? key,

@@ -1618,7 +1618,22 @@
     "linkedNoteCreate": "إنشاء ملاحظة",
     "linkedNoteCreateFailed": "تعذّر إنشاء الملاحظة.",
     "backgroundImage": "الخلفية",
-    "noBackground": "بلا خلفية"
+    "noBackground": "بلا خلفية",
+    "overview": {
+      "search": "ابحث في العناوين والمحتوى...",
+      "allTags": "كل الوسوم",
+      "allProjects": "كل المشاريع",
+      "noProject": "بلا مشروع",
+      "columnTitle": "العنوان",
+      "columnPreview": "معاينة",
+      "columnProject": "المشروع",
+      "columnTags": "الوسوم",
+      "columnUpdated": "آخر تحديث",
+      "columnCreated": "تاريخ الإنشاء",
+      "columns": "الأعمدة",
+      "showMore": "عرض المزيد",
+      "resizeColumn": "غيّر عرض عمود {{column}}. اضغط Alt مع سهم لنقله."
+    }
   },
   "tags": {
     "loading": "جاري تحميل العلامات...",

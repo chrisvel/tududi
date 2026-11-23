@@ -1611,7 +1611,22 @@
     "linkedNoteCreate": "Opprett notat",
     "linkedNoteCreateFailed": "Kunne ikke opprette notatet.",
     "backgroundImage": "Bakgrunn",
-    "noBackground": "Ingen bakgrunn"
+    "noBackground": "Ingen bakgrunn",
+    "overview": {
+      "search": "Søk i titler og innhold...",
+      "allTags": "Alle tagger",
+      "allProjects": "Alle prosjekter",
+      "noProject": "Uten prosjekt",
+      "columnTitle": "Tittel",
+      "columnPreview": "Forhåndsvisning",
+      "columnProject": "Prosjekt",
+      "columnTags": "Tagger",
+      "columnUpdated": "Oppdatert",
+      "columnCreated": "Opprettet",
+      "columns": "Kolonner",
+      "showMore": "Vis flere",
+      "resizeColumn": "Endre bredden på kolonnen {{column}}. Alt og en piltast flytter den."
+    }
   },
   "tags": {
     "loading": "Laster etiketter...",

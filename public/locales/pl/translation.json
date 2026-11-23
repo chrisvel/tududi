@@ -1614,7 +1614,22 @@
     "linkedNoteCreate": "Utwórz notatkę",
     "linkedNoteCreateFailed": "Nie udało się utworzyć notatki.",
     "backgroundImage": "Tło",
-    "noBackground": "Bez tła"
+    "noBackground": "Bez tła",
+    "overview": {
+      "search": "Szukaj w tytułach i treści...",
+      "allTags": "Wszystkie tagi",
+      "allProjects": "Wszystkie projekty",
+      "noProject": "Bez projektu",
+      "columnTitle": "Tytuł",
+      "columnPreview": "Podgląd",
+      "columnProject": "Projekt",
+      "columnTags": "Tagi",
+      "columnUpdated": "Zaktualizowano",
+      "columnCreated": "Utworzono",
+      "columns": "Kolumny",
+      "showMore": "Pokaż więcej",
+      "resizeColumn": "Zmień szerokość kolumny {{column}}. Alt i strzałka ją przesuwają."
+    }
   },
   "tags": {
     "loading": "Ładowanie tagów...",

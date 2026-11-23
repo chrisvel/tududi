@@ -1614,7 +1614,22 @@
     "linkedNoteCreate": "Ustvari zapisek",
     "linkedNoteCreateFailed": "Zapiska ni bilo mogoče ustvariti.",
     "backgroundImage": "Ozadje",
-    "noBackground": "Brez ozadja"
+    "noBackground": "Brez ozadja",
+    "overview": {
+      "search": "Iskanje po naslovih in vsebini...",
+      "allTags": "Vse oznake",
+      "allProjects": "Vsi projekti",
+      "noProject": "Brez projekta",
+      "columnTitle": "Naslov",
+      "columnPreview": "Predogled",
+      "columnProject": "Projekt",
+      "columnTags": "Oznake",
+      "columnUpdated": "Posodobljeno",
+      "columnCreated": "Ustvarjeno",
+      "columns": "Stolpci",
+      "showMore": "Pokaži več",
+      "resizeColumn": "Spremenite širino stolpca {{column}}. Alt in puščica ga premakneta."
+    }
   },
   "tags": {
     "loading": "Nalagam oznake...",

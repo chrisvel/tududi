@@ -4,6 +4,11 @@ import '@testing-library/jest-dom';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Notes from '../components/Notes';
 
+jest.mock('../components/Note/NotesOverview', () => ({
+    __esModule: true,
+    default: () => <div data-testid="notes-table" />,
+}));
+
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
         t: (key: string, fallback?: string) => fallback ?? key,
@@ -138,7 +143,7 @@ describe('Notes stale-cache fallback (#1523)', () => {
         ).not.toBeInTheDocument();
     });
 
-    it('falls back to the first note only once the direct fetch confirms the note is unavailable', async () => {
+    it('goes to the table once the direct fetch confirms the note is unavailable', async () => {
         mockFetchNoteBySlug.mockRejectedValue(new Error('Not found'));
 
         renderNotesAt('does-not-exist');
@@ -147,8 +152,6 @@ describe('Notes stale-cache fallback (#1523)', () => {
             expect(mockFetchNoteBySlug).toHaveBeenCalledWith('does-not-exist');
         });
 
-        expect(
-            await screen.findByDisplayValue(ownNote.title)
-        ).toBeInTheDocument();
+        expect(await screen.findByTestId('notes-table')).toBeInTheDocument();
     });
 });
