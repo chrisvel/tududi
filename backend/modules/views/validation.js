@@ -1,7 +1,7 @@
 'use strict';
 
 const { ValidationError } = require('../../shared/errors');
-const { TASK_STATUS_FILTERS } = require('../search/validation');
+const { DATE_FILTERS, TASK_STATUS_FILTERS } = require('../search/validation');
 
 function validateName(name) {
     if (!name || name.trim() === '') {
@@ -18,4 +18,25 @@ function validateTaskStatus(taskStatus) {
     return taskStatus;
 }
 
-module.exports = { validateName, validateTaskStatus };
+function validateDateFilter(value, message) {
+    if (!value) return null;
+    if (!DATE_FILTERS.includes(value)) {
+        throw new ValidationError(message);
+    }
+    return value;
+}
+
+function validateDue(due) {
+    return validateDateFilter(due, 'Invalid due date filter');
+}
+
+function validateDefer(defer) {
+    return validateDateFilter(defer, 'Invalid defer date filter');
+}
+
+module.exports = {
+    validateName,
+    validateTaskStatus,
+    validateDue,
+    validateDefer,
+};

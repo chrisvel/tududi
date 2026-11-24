@@ -1610,7 +1610,22 @@
     "linkedNoteCreate": "Luo muistiinpano",
     "linkedNoteCreateFailed": "Muistiinpanoa ei voitu luoda.",
     "backgroundImage": "Tausta",
-    "noBackground": "Ei taustaa"
+    "noBackground": "Ei taustaa",
+    "overview": {
+      "search": "Hae otsikoista ja sisällöstä...",
+      "allTags": "Kaikki tunnisteet",
+      "allProjects": "Kaikki projektit",
+      "noProject": "Ei projektia",
+      "columnTitle": "Otsikko",
+      "columnPreview": "Esikatselu",
+      "columnProject": "Projekti",
+      "columnTags": "Tunnisteet",
+      "columnUpdated": "Päivitetty",
+      "columnCreated": "Luotu",
+      "columns": "Sarakkeet",
+      "showMore": "Näytä lisää",
+      "resizeColumn": "Muuta sarakkeen {{column}} leveyttä. Alt ja nuolinäppäin siirtävät sitä."
+    }
   },
   "tags": {
     "loading": "Ladataan tageja...",

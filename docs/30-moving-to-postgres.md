@@ -90,6 +90,8 @@ Every row gets a new numeric id; references between rows are kept through uids.
 
 Rows keep their original created and updated dates, finished projects keep their completion date, and tasks keep their due time. A subtask whose parent was deleted before the backup comes across as a top-level task.
 
+Daily plans, comment edits, task relations and calendar feeds keep their dates only when the backup comes from 1.15.2 or later; an older backup gives them the import time.
+
 ## What You Set Up Again
 
 - **API tokens.** Create new ones and update your scripts, MCP clients and integrations.

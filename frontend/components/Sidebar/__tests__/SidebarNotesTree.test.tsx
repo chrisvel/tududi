@@ -19,14 +19,12 @@ const location = {
     key: 'k',
 } as any;
 
-const renderTree = (notes: Note[], projects: any[] = []) =>
+const renderTree = (notes: Note[]) =>
     render(
         <SidebarNotesTree
             notes={notes}
-            projects={projects}
             location={location}
             handleNavClick={jest.fn()}
-            searchQuery=""
         />
     );
 
@@ -75,18 +73,36 @@ describe('SidebarNotesTree sections', () => {
         tags: i === 0 ? [{ name: 'ideas' }] : [],
     }));
 
-    it('shows Recent once there are enough notes', () => {
+    it('lists the three most recent notes', () => {
         renderTree(manyNotes);
 
         expect(screen.getByText('Recent')).toBeInTheDocument();
-        // Newest note sits in Recent and in the full list below it.
-        expect(screen.getAllByText('Note 5')).toHaveLength(2);
+        expect(screen.getByText('Note 5')).toBeInTheDocument();
+        expect(screen.getByText('Note 3')).toBeInTheDocument();
+        expect(screen.queryByText('Note 2')).not.toBeInTheDocument();
     });
 
-    it('hides Recent with only a few notes', () => {
+    it('shows Recent with only a few notes too', () => {
         renderTree(manyNotes.slice(0, 2));
 
-        expect(screen.queryByText('Recent')).not.toBeInTheDocument();
+        expect(screen.getByText('Recent')).toBeInTheDocument();
+        expect(screen.getByText('Note 0')).toBeInTheDocument();
+    });
+
+    it('has no project folders', () => {
+        renderTree([
+            {
+                uid: 'p1',
+                title: 'In project',
+                content: '',
+                project_uid: 'proj',
+                project: { id: 1, uid: 'proj', name: 'Blog' },
+            },
+        ]);
+
+        expect(screen.queryByText('Blog')).not.toBeInTheDocument();
+        expect(screen.queryByText('Projects')).not.toBeInTheDocument();
+        expect(screen.getByText('In project')).toBeInTheDocument();
     });
 
     it('filters the list by a tag chip and clears it on a second click', () => {
@@ -98,28 +114,9 @@ describe('SidebarNotesTree sections', () => {
         expect(chip).toHaveAttribute('aria-pressed', 'true');
         expect(screen.queryByText('Recent')).not.toBeInTheDocument();
         expect(screen.getByText('Note 0')).toBeInTheDocument();
-        expect(screen.queryByText('Note 3')).not.toBeInTheDocument();
+        expect(screen.queryByText('Note 5')).not.toBeInTheDocument();
 
         fireEvent.click(chip);
-        expect(screen.getByText('Note 2')).toBeInTheDocument();
-    });
-
-    it('gives notes without a project their own folder next to projects', () => {
-        renderTree(
-            [
-                {
-                    uid: 'p1',
-                    title: 'In project',
-                    content: '',
-                    project_uid: 'proj',
-                },
-                { uid: 'l1', title: 'Loose', content: '' },
-            ],
-            [{ uid: 'proj', name: 'Blog' }]
-        );
-
-        expect(screen.getByText('Blog')).toBeInTheDocument();
-        expect(screen.getByText('No project')).toBeInTheDocument();
-        expect(screen.queryByText('Loose')).not.toBeInTheDocument();
+        expect(screen.getByText('Note 5')).toBeInTheDocument();
     });
 });

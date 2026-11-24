@@ -257,6 +257,16 @@ Hover the left edge of a paragraph, heading, list item, quote, code block or tab
 
 ## Note Views
 
+### Notes Table
+
+`/notes` is a table of every note you can see. Opening a note goes to `/notes/:uid`, and the breadcrumb at the top leads back. The sidebar's notes panel keeps the three most recent notes and tag chips next to it. Picking a tag there lists its latest notes.
+
+- **Sort** by title, project, tags, updated or created by clicking a column heading. Updated, newest first, is the default.
+- **Move** a column by dragging its heading, and **resize** it by dragging its right edge. Double-click the edge to reset the width. The resize handle takes the arrow keys, and Alt with an arrow moves the column. **Hide or show** any column except the title from the Columns menu. Sort, order, widths and hidden columns are remembered per browser.
+- **Search** the title and content. Every word has to appear, in any order.
+- **Filter** by several tags and several projects, including notes with no project. A note shows if it has any of the ticked tags and is in any of the ticked projects. Search and filters are kept in the address, so Back returns to the same view.
+- A Focus narrows the table like the rest of Notes. It shows 100 rows at a time, with Show more for the rest. On phones only the title and updated date show.
+
 ### List View (Left Panel)
 
 **Default behavior:**

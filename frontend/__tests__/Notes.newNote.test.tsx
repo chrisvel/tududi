@@ -2,8 +2,13 @@ import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { MemoryRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Notes from '../components/Notes';
+
+jest.mock('../components/Note/NotesOverview', () => ({
+    __esModule: true,
+    default: () => <div data-testid="notes-table" />,
+}));
 
 jest.mock('react-i18next', () => ({
     useTranslation: () => ({
@@ -176,7 +181,9 @@ describe('Notes new-note flow', () => {
         );
 
         // The note stays open in the editor after saving
-        expect(await screen.findByDisplayValue('Groceries')).toBeInTheDocument();
+        expect(
+            await screen.findByDisplayValue('Groceries')
+        ).toBeInTheDocument();
 
         // Let the 1s autosave debounce flush so no timer is pending at
         // teardown (prevents the jest force-exit warning).
@@ -185,5 +192,62 @@ describe('Notes new-note flow', () => {
         });
 
         unmount();
+    });
+});
+
+describe('Notes table and editor', () => {
+    const note = { uid: 'n1', title: 'Groceries', content: 'milk' };
+    const GoToNotes = () => {
+        const navigate = useNavigate();
+        return <button onClick={() => navigate('/notes')}>go to notes</button>;
+    };
+    const renderAt = (entry: any) =>
+        render(
+            <MemoryRouter initialEntries={[entry]}>
+                <GoToNotes />
+                <Routes>
+                    <Route path="/notes" element={<Notes />} />
+                    <Route path="/notes/:uid" element={<Notes />} />
+                </Routes>
+            </MemoryRouter>
+        );
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        storeState = {
+            ...baseStoreState,
+            notesStore: { ...baseStoreState.notesStore, notes: [note] },
+        };
+    });
+
+    it('shows the table at /notes instead of opening the latest note', () => {
+        renderAt('/notes');
+        expect(screen.getByTestId('notes-table')).toBeInTheDocument();
+        expect(
+            screen.queryByPlaceholderText('notes.titlePlaceholder')
+        ).not.toBeInTheDocument();
+    });
+
+    it('goes back to the table from an open note', async () => {
+        renderAt('/notes/n1');
+        expect(
+            await screen.findByDisplayValue('Groceries')
+        ).toBeInTheDocument();
+
+        await userEvent.click(screen.getByText('go to notes'));
+
+        expect(await screen.findByTestId('notes-table')).toBeInTheDocument();
+        expect(screen.queryByDisplayValue('Groceries')).not.toBeInTheDocument();
+    });
+
+    it('goes back to the table from a blank note', async () => {
+        renderAt({ pathname: '/notes', state: { newNote: 7 } });
+        expect(
+            screen.getByPlaceholderText('notes.titlePlaceholder')
+        ).toBeInTheDocument();
+
+        await userEvent.click(screen.getByText('go to notes'));
+
+        expect(await screen.findByTestId('notes-table')).toBeInTheDocument();
     });
 });

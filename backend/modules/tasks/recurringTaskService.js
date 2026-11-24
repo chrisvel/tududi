@@ -1,4 +1,39 @@
+const moment = require('moment-timezone');
 const { getWeekdayInTimezone } = require('../../utils/timezone-utils');
+
+// The monthly calculations read calendar fields in UTC, but a due date is the
+// user's local day (stored as the end of that day in UTC). Run them on the
+// local date and clock, then turn the result back into an instant.
+const inLocalTime = (fromDate, timezone, calculate) => {
+    const local = moment.tz(fromDate, timezone);
+    const next = calculate(
+        new Date(
+            Date.UTC(
+                local.year(),
+                local.month(),
+                local.date(),
+                local.hours(),
+                local.minutes(),
+                local.seconds(),
+                local.milliseconds()
+            )
+        )
+    );
+    return moment
+        .tz(
+            {
+                year: next.getUTCFullYear(),
+                month: next.getUTCMonth(),
+                date: next.getUTCDate(),
+                hour: next.getUTCHours(),
+                minute: next.getUTCMinutes(),
+                second: next.getUTCSeconds(),
+                millisecond: next.getUTCMilliseconds(),
+            },
+            timezone
+        )
+        .toDate();
+};
 
 const calculateNextDueDate = (task, fromDate, timezone = 'UTC') => {
     if (
@@ -29,24 +64,30 @@ const calculateNextDueDate = (task, fromDate, timezone = 'UTC') => {
             );
 
         case 'monthly':
-            return calculateMonthlyRecurrence(
-                startDate,
-                task.recurrence_interval || 1,
-                task.recurrence_month_day
+            return inLocalTime(startDate, timezone, (date) =>
+                calculateMonthlyRecurrence(
+                    date,
+                    task.recurrence_interval || 1,
+                    task.recurrence_month_day
+                )
             );
 
         case 'monthly_weekday':
-            return calculateMonthlyWeekdayRecurrence(
-                startDate,
-                task.recurrence_interval || 1,
-                task.recurrence_weekday,
-                task.recurrence_week_of_month
+            return inLocalTime(startDate, timezone, (date) =>
+                calculateMonthlyWeekdayRecurrence(
+                    date,
+                    task.recurrence_interval || 1,
+                    task.recurrence_weekday,
+                    task.recurrence_week_of_month
+                )
             );
 
         case 'monthly_last_day':
-            return calculateMonthlyLastDayRecurrence(
-                startDate,
-                task.recurrence_interval || 1
+            return inLocalTime(startDate, timezone, (date) =>
+                calculateMonthlyLastDayRecurrence(
+                    date,
+                    task.recurrence_interval || 1
+                )
             );
 
         default:
@@ -189,12 +230,14 @@ const calculateMonthlyWeekdayRecurrence = (
     weekday,
     weekOfMonth
 ) => {
-    const nextDate = new Date(fromDate);
-    nextDate.setUTCMonth(nextDate.getUTCMonth() + interval);
+    // Step to the target month from its year and month, not with setUTCMonth:
+    // from the 29th-31st that overflows into the month after (30 January +
+    // 1 month = "30 February" = 2 March), which would skip a month.
+    const totalMonths = fromDate.getUTCMonth() + interval;
+    const targetYear = fromDate.getUTCFullYear() + Math.floor(totalMonths / 12);
+    const targetMonth = totalMonths % 12;
 
-    const firstOfMonth = new Date(
-        Date.UTC(nextDate.getUTCFullYear(), nextDate.getUTCMonth(), 1)
-    );
+    const firstOfMonth = new Date(Date.UTC(targetYear, targetMonth, 1));
     const firstWeekday = firstOfMonth.getUTCDay();
 
     const daysToAdd = (weekday - firstWeekday + 7) % 7;
@@ -204,7 +247,7 @@ const calculateMonthlyWeekdayRecurrence = (
     const targetDate = new Date(firstOccurrence);
     targetDate.setUTCDate(firstOccurrence.getUTCDate() + (weekOfMonth - 1) * 7);
 
-    if (targetDate.getUTCMonth() !== nextDate.getUTCMonth()) {
+    if (targetDate.getUTCMonth() !== targetMonth) {
         targetDate.setUTCDate(targetDate.getUTCDate() - 7);
     }
 
@@ -283,7 +326,6 @@ const calculateVirtualOccurrences = (
     startFrom = null,
     userTimezone = 'UTC'
 ) => {
-    const moment = require('moment-timezone');
     const occurrences = [];
 
     // Parse start date properly in user's timezone

@@ -1608,7 +1608,22 @@
     "linkedNoteCreate": "Tạo ghi chú",
     "linkedNoteCreateFailed": "Không thể tạo ghi chú.",
     "backgroundImage": "Hình nền",
-    "noBackground": "Không có hình nền"
+    "noBackground": "Không có hình nền",
+    "overview": {
+      "search": "Tìm trong tiêu đề và nội dung...",
+      "allTags": "Tất cả thẻ",
+      "allProjects": "Tất cả dự án",
+      "noProject": "Không có dự án",
+      "columnTitle": "Tiêu đề",
+      "columnPreview": "Xem trước",
+      "columnProject": "Dự án",
+      "columnTags": "Thẻ",
+      "columnUpdated": "Cập nhật",
+      "columnCreated": "Ngày tạo",
+      "columns": "Cột",
+      "showMore": "Xem thêm",
+      "resizeColumn": "Đổi độ rộng cột {{column}}. Alt và phím mũi tên để di chuyển cột."
+    }
   },
   "tags": {
     "loading": "Đang tải thẻ...",

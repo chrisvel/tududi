@@ -239,6 +239,35 @@ describe('RecurringTaskService - UTC Consistency', () => {
             expect(result.getUTCDate()).toBeLessThanOrEqual(7);
         });
 
+        it('does not skip February after a last Friday on the 30th', () => {
+            // 30 January 2026 is the last (5th-week) Friday of January.
+            const lastFridayOfJanuary = new Date(
+                Date.UTC(2026, 0, 30, 0, 0, 0, 0)
+            );
+            const result = calculateMonthlyWeekdayRecurrence(
+                lastFridayOfJanuary,
+                1,
+                5,
+                5
+            );
+
+            expect(result.toISOString()).toBe('2026-02-27T00:00:00.000Z');
+        });
+
+        it('does not skip November after a last Saturday on the 31st', () => {
+            const lastSaturdayOfOctober = new Date(
+                Date.UTC(2026, 9, 31, 0, 0, 0, 0)
+            );
+            const result = calculateMonthlyWeekdayRecurrence(
+                lastSaturdayOfOctober,
+                1,
+                6,
+                5
+            );
+
+            expect(result.toISOString()).toBe('2026-11-28T00:00:00.000Z');
+        });
+
         it('should handle 3rd Friday of month', () => {
             const someFriday = new Date(Date.UTC(2026, 2, 20, 0, 0, 0, 0));
             const result = calculateMonthlyWeekdayRecurrence(
@@ -677,6 +706,47 @@ describe('RecurringTaskService - UTC Consistency', () => {
             expect(result.getUTCMinutes()).toBe(0);
             expect(result.getUTCSeconds()).toBe(0);
             expect(result.getUTCMilliseconds()).toBe(0);
+        });
+
+        it('should keep a monthly due date on its local day in the user timezone', () => {
+            const localDay = (date, tz) =>
+                moment.tz(date, tz).format('YYYY-MM-DD');
+            // date-only due dates are stored as the end of the local day
+            const endOfDay = (day, tz) =>
+                moment.tz(day, tz).endOf('day').toDate();
+
+            const monthly = {
+                recurrence_type: 'monthly',
+                recurrence_interval: 1,
+                recurrence_month_day: 15,
+            };
+            const lastDay = {
+                recurrence_type: 'monthly_last_day',
+                recurrence_interval: 1,
+            };
+
+            for (const tz of ['America/New_York', 'Europe/Berlin']) {
+                expect(
+                    localDay(
+                        calculateNextDueDate(
+                            monthly,
+                            endOfDay('2026-03-15', tz),
+                            tz
+                        ),
+                        tz
+                    )
+                ).toBe('2026-04-15');
+                expect(
+                    localDay(
+                        calculateNextDueDate(
+                            lastDay,
+                            endOfDay('2026-03-31', tz),
+                            tz
+                        ),
+                        tz
+                    )
+                ).toBe('2026-04-30');
+            }
         });
 
         it('should handle null or invalid input gracefully', () => {

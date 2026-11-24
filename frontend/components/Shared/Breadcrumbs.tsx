@@ -23,7 +23,7 @@ const labelFromSlug = (uidSlug: string): string => {
 
 const Breadcrumbs: React.FC = () => {
     const { t } = useTranslation();
-    const { pathname } = useLocation();
+    const { pathname, state } = useLocation();
     const areas = useStore((s) => s.areasStore.areas);
     const projects = useStore((s) => s.projectsStore.projects);
     const tags = useStore((s) => s.tagsStore.tags);
@@ -34,9 +34,12 @@ const Breadcrumbs: React.FC = () => {
     const tasks = useStore((s) => s.tasksStore.tasks);
 
     const [, section, param] = pathname.split('/');
-    if (!section || !param) return null;
+    // Notes keeps its trail on the table too, so the top of the page doesn't
+    // jump between the table and a note.
+    const isNotesRoot = section === 'notes' && !param;
+    if (!section || (!param && !isNotesRoot)) return null;
 
-    const uid = extractUidFromSlug(param);
+    const uid = param ? extractUidFromSlug(param) : '';
     // Entities link their area by uid or by numeric id, depending on
     // which endpoint loaded them.
     const areaCrumbs = (
@@ -125,10 +128,18 @@ const Breadcrumbs: React.FC = () => {
         }
         case 'note':
         case 'notes': {
+            if (isNotesRoot && !(state as any)?.blankNote) {
+                crumbs = [{ label: t('sidebar.notes', 'Notes') }];
+                break;
+            }
             const note = notes.find((n) => n.uid === uid);
             crumbs = [
                 { label: t('sidebar.notes', 'Notes'), to: '/notes' },
-                { label: note?.title || labelFromSlug(param) },
+                {
+                    label: isNotesRoot
+                        ? t('notes.new', 'New Note')
+                        : note?.title || labelFromSlug(param),
+                },
             ];
             break;
         }

@@ -1,34 +1,4 @@
 import { Note } from '../entities/Note';
-import { Project } from '../entities/Project';
-
-export interface ProjectFolderNode {
-    kind: 'project';
-    key: string;
-    uid: string;
-    name: string;
-    color?: string;
-    notes: Note[];
-    count: number;
-}
-
-export interface NotesTreeData {
-    rootFolders: ProjectFolderNode[];
-    rootNotes: Note[];
-}
-
-export type TreeRow =
-    | { type: 'section-header'; key: string; label: string }
-    | {
-          type: 'folder';
-          key: string;
-          label: string;
-          color?: string;
-          count: number;
-          depth: number;
-          expanded: boolean;
-      }
-    | { type: 'note'; key: string; note: Note; depth: number }
-    | { type: 'more'; key: string; folderKey: string; count: number };
 
 export interface NoteTagSummary {
     name: string;
@@ -42,6 +12,11 @@ const getNoteProjectUid = (note: Note): string | undefined =>
 const compareLabels = (a: string, b: string) =>
     a.localeCompare(b, undefined, { sensitivity: 'base' });
 
+const sortableText = (note: Note, field: 'project' | 'tags'): string =>
+    field === 'project'
+        ? getNoteProject(note)?.name || ''
+        : (note.tags || note.Tags || []).map((tag) => tag.name).join(' ');
+
 export const sortNotesByOrder = (notes: Note[], orderBy: string): Note[] => {
     const [field, direction] = orderBy.split(':');
     const isAsc = direction === 'asc';
@@ -51,10 +26,26 @@ export const sortNotesByOrder = (notes: Note[], orderBy: string): Note[] => {
         let valueB: string | number;
 
         switch (field) {
-            case 'title':
-                valueA = a.title?.toLowerCase() || '';
-                valueB = b.title?.toLowerCase() || '';
-                break;
+            case 'title': {
+                // Natural order, so "Note 9" comes before "Note 10".
+                const order = (a.title || '').localeCompare(
+                    b.title || '',
+                    undefined,
+                    { numeric: true, sensitivity: 'base' }
+                );
+                return isAsc ? order : -order;
+            }
+            case 'project':
+            case 'tags': {
+                const textA = sortableText(a, field);
+                const textB = sortableText(b, field);
+                // Rows without a value stay last in both directions.
+                if (!textA || !textB) {
+                    return textA ? -1 : textB ? 1 : 0;
+                }
+                const order = compareLabels(textA, textB);
+                return isAsc ? order : -order;
+            }
             case 'updated_at':
                 valueA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
                 valueB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
@@ -73,212 +64,41 @@ export const sortNotesByOrder = (notes: Note[], orderBy: string): Note[] => {
 };
 
 /**
- * Filters notes by title for the sidebar's search box. Matching is
- * substring/case-insensitive against the title only - the tree is a quick
- * browse/peek list, not a full-text search.
+ * Full-text search for the notes table. Every word has to appear in the
+ * title or the content, in any order.
  */
-export const filterNotesByQuery = (notes: Note[], query: string): Note[] => {
-    const trimmed = query.trim().toLowerCase();
-    if (!trimmed) return notes;
+export const searchNotes = (notes: Note[], query: string): Note[] => {
+    const words = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (words.length === 0) return notes;
 
-    return notes.filter((note) =>
-        (note.title || '').toLowerCase().includes(trimmed)
-    );
+    return notes.filter((note) => {
+        const text = `${note.title || ''}\n${note.content || ''}`.toLowerCase();
+        return words.every((word) => text.includes(word));
+    });
 };
 
-/**
- * Builds the flat Project-folder / rootless-note structure for the notes
- * tree from data already available in the frontend stores. Projects are a
- * flat top level (no Area grouping) - a project only appears if it has at
- * least one note, so empty folders don't clutter what is a notes browser,
- * not a project browser.
- */
-export const buildNotesTree = (
-    notes: Note[],
-    projects: Project[],
-    orderBy: string
-): NotesTreeData => {
-    const projectsByUid = new Map<string, Project>();
-    projects.forEach((project) => {
-        if (project.uid) projectsByUid.set(project.uid, project);
-    });
-
-    const notesByProjectUid = new Map<string, Note[]>();
-    const rootNotes: Note[] = [];
-
-    notes.forEach((note) => {
-        const projectUid = getNoteProjectUid(note);
-        if (!projectUid) {
-            rootNotes.push(note);
-            return;
-        }
-        const list = notesByProjectUid.get(projectUid);
-        if (list) {
-            list.push(note);
-        } else {
-            notesByProjectUid.set(projectUid, [note]);
-        }
-    });
-
-    const rootFolders: ProjectFolderNode[] = [];
-
-    notesByProjectUid.forEach((projectNotes, projectUid) => {
-        const project = projectsByUid.get(projectUid);
-        const fallbackProject = getNoteProject(projectNotes[0]);
-        const name = project?.name || fallbackProject?.name || projectUid;
-
-        rootFolders.push({
-            kind: 'project',
-            key: `project:${projectUid}`,
-            uid: projectUid,
-            name,
-            color: project?.color,
-            notes: sortNotesByOrder(projectNotes, orderBy),
-            count: projectNotes.length,
-        });
-    });
-
-    rootFolders.sort((a, b) => compareLabels(a.name, b.name));
-
-    return {
-        rootFolders,
-        rootNotes: sortNotesByOrder(rootNotes, orderBy),
-    };
-};
-
-interface FlattenParams {
-    tree: NotesTreeData;
-    expanded: Record<string, boolean>;
-    forceExpandAll: boolean;
-    labels: { folders: string; noProject?: string };
-    // Notes shown per open folder before a "N more" row. No limit if unset.
-    folderLimit?: number;
-    // Folders the user asked to see in full.
-    showAll?: Record<string, boolean>;
-}
-
-export const NO_PROJECT_FOLDER_KEY = 'project:none';
-
-const isExpanded = (
-    key: string,
-    expanded: Record<string, boolean>,
-    forceExpandAll: boolean
-) => (forceExpandAll ? true : !!expanded[key]);
-
-/**
- * Turns the tree + current expand-state into the flat row array the
- * virtualized list renders. When `forceExpandAll` is set (an active search
- * query), every folder is shown expanded regardless of persisted state - the
- * tree passed in has already been filtered to matching notes only, so every
- * folder present here necessarily contains a match.
- */
-export const flattenVisibleRows = ({
-    tree,
-    expanded,
-    forceExpandAll,
-    labels,
-    folderLimit,
-    showAll = {},
-}: FlattenParams): TreeRow[] => {
-    const rows: TreeRow[] = [];
-
-    if (tree.rootFolders.length === 0 && tree.rootNotes.length === 0) {
-        return rows;
-    }
-
-    rows.push({
-        type: 'section-header',
-        key: 'section:folders',
-        label: labels.folders,
-    });
-
-    // With a noProject label, notes without a project get a folder of their
-    // own at the end instead of sitting loose under the folders.
-    const folders: Pick<
-        ProjectFolderNode,
-        'key' | 'name' | 'color' | 'notes' | 'count'
-    >[] = labels.noProject
-        ? tree.rootNotes.length > 0
-            ? [
-                  ...tree.rootFolders,
-                  {
-                      key: NO_PROJECT_FOLDER_KEY,
-                      name: labels.noProject,
-                      notes: tree.rootNotes,
-                      count: tree.rootNotes.length,
-                  },
-              ]
-            : tree.rootFolders
-        : tree.rootFolders;
-
-    folders.forEach((folder) => {
-        const folderExpanded = isExpanded(folder.key, expanded, forceExpandAll);
-        rows.push({
-            type: 'folder',
-            key: folder.key,
-            label: folder.name,
-            color: folder.color,
-            count: folder.count,
-            depth: 0,
-            expanded: folderExpanded,
-        });
-
-        if (!folderExpanded) return;
-
-        const limited =
-            folderLimit !== undefined &&
-            !forceExpandAll &&
-            !showAll[folder.key] &&
-            folder.notes.length > folderLimit;
-        const visibleNotes = limited
-            ? folder.notes.slice(0, folderLimit)
-            : folder.notes;
-
-        visibleNotes.forEach((note) => {
-            rows.push({
-                type: 'note',
-                key: `note:${note.uid}`,
-                note,
-                depth: 1,
-            });
-        });
-
-        if (limited) {
-            rows.push({
-                type: 'more',
-                key: `more:${folder.key}`,
-                folderKey: folder.key,
-                count: folder.notes.length - visibleNotes.length,
-            });
-        }
-    });
-
-    if (labels.noProject) return rows;
-
-    tree.rootNotes.forEach((note) => {
-        rows.push({
-            type: 'note',
-            key: `root-note:${note.uid}`,
-            note,
-            depth: 0,
-        });
-    });
-
-    return rows;
-};
-
-/**
- * Expand-state key for the folder containing a given note, used to seed the
- * tree's default expand state around the currently active note.
- */
-export const getActiveFolderKeys = (
-    note: Note | null | undefined
-): string[] => {
-    if (!note) return [];
-    const projectUid = getNoteProjectUid(note);
-    if (!projectUid) return [];
-
-    return [`project:${projectUid}`];
+// One line of plain text from a note's Markdown, for a table row.
+export const getNotePreview = (
+    content: string | null | undefined,
+    maxLength = 160
+): string => {
+    if (!content) return '';
+    const text = content
+        .replace(/^(```|~~~).*$/gm, '')
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+        .replace(
+            /\[\[([^\]|]+)(\|([^\]]+))?\]\]/g,
+            (_, target, __, label) => label || target
+        )
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+        .replace(
+            /^\s{0,3}(#{1,6}\s+|>\s?|[-*+]\s+(\[[ xX]\]\s+)?|\d+\.\s+)/gm,
+            ''
+        )
+        .replace(/(\*\*|__|~~|`|\*)/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 };
 
 const getNoteTags = (note: Note) => note.tags || note.Tags || [];
@@ -311,4 +131,42 @@ export const filterNotesByTag = (
     return notes.filter((note) =>
         getNoteTags(note).some((tag) => tag?.name === tagName)
     );
+};
+
+// The Project filter's value for notes that have no project.
+export const NO_PROJECT_FILTER = 'none';
+
+// Notes in any of the projects. No values means no filter.
+export const filterNotesByProjects = (
+    notes: Note[],
+    projectUids: string[]
+): Note[] => {
+    if (projectUids.length === 0) return notes;
+    return notes.filter((note) =>
+        projectUids.includes(getNoteProjectUid(note) || NO_PROJECT_FILTER)
+    );
+};
+
+// Notes with any of the tags. No values means no filter.
+export const filterNotesByTags = (
+    notes: Note[],
+    tagNames: string[]
+): Note[] => {
+    if (tagNames.length === 0) return notes;
+    return notes.filter((note) =>
+        getNoteTags(note).some((tag) => tagNames.includes(tag?.name))
+    );
+};
+
+export const collectNoteProjects = (
+    notes: Note[]
+): { uid: string; name: string }[] => {
+    const names = new Map<string, string>();
+    notes.forEach((note) => {
+        const project = getNoteProject(note);
+        if (project?.uid) names.set(project.uid, project.name);
+    });
+    return [...names.entries()]
+        .map(([uid, name]) => ({ uid, name }))
+        .sort((a, b) => compareLabels(a.name, b.name));
 };
