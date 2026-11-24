@@ -3,6 +3,7 @@ import { updateUiSettings } from './profileService';
 import type { Area } from '../entities/Area';
 import type { Project } from '../entities/Project';
 import type { Tag } from '../entities/Tag';
+import { projectAreaUid } from './projectArea';
 
 // A Focus narrows the app to one area, optionally one project inside it,
 // and a set of tags. Lists send it as query params on every request and
@@ -97,8 +98,7 @@ export const isFocusDangling = (
         const project = projects.find((p) => p.uid === focus.project_uid);
         if (!project) return true;
         if (focus.area_uid) {
-            const projectAreaUid = project.area?.uid ?? project.area_uid;
-            if (projectAreaUid !== focus.area_uid) return true;
+            if (projectAreaUid(project, areas) !== focus.area_uid) return true;
         }
     }
     return false;
@@ -119,8 +119,7 @@ export const projectMatchesFocus = (
     if (!focus) return true;
     if (focus.project_uid && project.uid !== focus.project_uid) return false;
     if (focus.area_uid) {
-        const areaUid = project.area?.uid ?? project.area_uid;
-        if (areaUid !== focus.area_uid) return false;
+        if (projectAreaUid(project) !== focus.area_uid) return false;
     }
     if (focus.tags && focus.tags.length > 0) {
         const own = lowerSet(tagNamesOf(project.tags));
@@ -148,8 +147,9 @@ export const noteMatchesFocus = (
         const project = projectUid
             ? projects.find((p) => p.uid === projectUid)
             : undefined;
-        const areaUid = project?.area?.uid ?? project?.area_uid;
-        if (areaUid !== focus.area_uid) return false;
+        if (!project || projectAreaUid(project) !== focus.area_uid) {
+            return false;
+        }
     }
     if (focus.tags && focus.tags.length > 0) {
         const own = lowerSet(tagNamesOf(note.tags ?? note.Tags));

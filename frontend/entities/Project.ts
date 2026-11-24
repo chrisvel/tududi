@@ -26,6 +26,7 @@ export interface Project {
     description?: string;
     pin_to_sidebar?: boolean;
     area?: Area;
+    Area?: Area | null;
     area_id?: number | null;
     area_uid?: string | null;
     goal_id?: number | null;
