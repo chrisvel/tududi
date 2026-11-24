@@ -135,6 +135,56 @@ describe('client-side matching', () => {
     });
 });
 
+describe('projects as GET /api/projects returns them', () => {
+    // area_id and the Area association, no area_uid or area.
+    const apiProjects = [
+        {
+            id: 10,
+            uid: 'launch',
+            name: 'Launch',
+            area_id: 1,
+            Area: { id: 1, uid: 'work', name: 'Work' },
+        },
+        {
+            id: 11,
+            uid: 'garden',
+            name: 'Garden',
+            area_id: 2,
+            Area: { id: 2, uid: 'home', name: 'Home' },
+        },
+    ] as unknown as Project[];
+
+    it('keeps an area and project Focus that still fits', () => {
+        expect(
+            isFocusDangling(
+                { area_uid: 'work', project_uid: 'launch' },
+                areas,
+                apiProjects
+            )
+        ).toBe(false);
+        expect(
+            isFocusDangling(
+                { area_uid: 'work', project_uid: 'garden' },
+                areas,
+                apiProjects
+            )
+        ).toBe(true);
+    });
+
+    it('matches projects and notes by area', () => {
+        expect(projectMatchesFocus(apiProjects[0], { area_uid: 'work' })).toBe(
+            true
+        );
+        expect(projectMatchesFocus(apiProjects[1], { area_uid: 'work' })).toBe(
+            false
+        );
+        const note = { project: { uid: 'garden' } };
+        expect(noteMatchesFocus(note, { area_uid: 'home' }, apiProjects)).toBe(
+            true
+        );
+    });
+});
+
 describe('mergeFocusTags', () => {
     it('adds focus tags the text did not already carry', () => {
         expect(
