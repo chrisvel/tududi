@@ -231,6 +231,21 @@
       "done": "Terminé",
       "dropHere": "Déposez ici"
     },
+    "boardScope": {
+      "areas": "Domaines",
+      "projects": "Projets",
+      "area": "Domaine",
+      "project": "Projet",
+      "activeFilters": "Filtres actifs",
+      "removeFilter": "Retirer le filtre {{name}}",
+      "clearAll": "Tout effacer",
+      "notFound": "Un filtre ne correspond à rien de visible pour vous (supprimé, non partagé ou inconnu) ; il est marqué en rouge.",
+      "lookupFailed": "Impossible de charger certains filtres.",
+      "tag": "Étiquette",
+      "tags": "Étiquettes",
+      "priority": "Priorité",
+      "priorities": "Priorité"
+    },
     "chaseUp": "Relancer",
     "habit": "Habitude",
     "assignedTo": "Assigné à",
