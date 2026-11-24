@@ -10,6 +10,8 @@ import TaskItem from '../Task/TaskItem';
 import { getCsrfToken } from '../../utils/csrfService';
 import { isQueuedOfflineResponse } from '../../utils/authUtils';
 import { TASK_SHEET_CLASS } from '../Task/taskSheet';
+import { fetchBoardTasks, useBoardScope } from '../Boards/useBoardScope';
+import BoardScopeFilter, { BoardScopeProblem } from '../Boards/BoardScopeFilter';
 
 const COLUMN_STATUS: Record<string, number> = {
     not_started: 0,
@@ -130,6 +132,8 @@ const COL_CONFIG: Record<
 const KanbanBoard: React.FC = () => {
     const { t } = useTranslation();
     const projects: Project[] = useStore((state: any) => state.projectsStore.projects);
+    const boardScope = useBoardScope();
+    const { fetchKey } = boardScope;
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
@@ -143,25 +147,30 @@ const KanbanBoard: React.FC = () => {
     const [settingsOpen, setSettingsOpen] = useState(false);
     const settingsRef = useRef<HTMLDivElement>(null);
 
+    // Refetches whenever the URL filters change (pickers, chips, Back /
+    // Forward), and drops a response that arrives after they moved on.
     useEffect(() => {
+        let cancelled = false;
         const fetchTasks = async () => {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(
-                    getApiPath('tasks?client_side_filtering=true&limit=10000&offset=0')
+                const scoped = await fetchBoardTasks(
+                    'client_side_filtering=true&limit=10000&offset=0',
+                    fetchKey
                 );
-                if (!res.ok) throw new Error('Failed to fetch tasks');
-                const data = await res.json();
-                setTasks(data.tasks || []);
+                if (!cancelled) setTasks(scoped);
             } catch (e) {
-                setError((e as Error).message);
+                if (!cancelled) setError((e as Error).message);
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
         fetchTasks();
-    }, []);
+        return () => {
+            cancelled = true;
+        };
+    }, [fetchKey]);
 
     useEffect(() => {
         if (!settingsOpen) return;
@@ -349,6 +358,17 @@ const KanbanBoard: React.FC = () => {
                     )}
                 </div>
             </div>
+
+            <BoardScopeFilter
+                scope={boardScope.scope}
+                entries={boardScope.entries}
+                onChange={boardScope.setScope}
+                className="px-4 sm:px-6 mb-4"
+            />
+            <BoardScopeProblem
+                entries={boardScope.entries}
+                className="mx-4 sm:mx-6 mb-4"
+            />
 
             {loading && (
                 <p className="text-sm text-gray-500 dark:text-gray-400">{t('common.loading', 'Loading...')}</p>

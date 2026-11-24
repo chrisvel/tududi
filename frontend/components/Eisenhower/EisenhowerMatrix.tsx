@@ -8,6 +8,8 @@ import { Project } from '../../entities/Project';
 import TaskItem from '../Task/TaskItem';
 import { getCsrfToken } from '../../utils/csrfService';
 import { TASK_SHEET_CLASS } from '../Task/taskSheet';
+import { fetchBoardTasks, useBoardScope } from '../Boards/useBoardScope';
+import BoardScopeFilter, { BoardScopeProblem } from '../Boards/BoardScopeFilter';
 
 const URGENT_TAG = 'urgent';
 
@@ -32,6 +34,8 @@ const QUADRANT_AXES: Record<string, { important: boolean; urgent: boolean }> = {
 const EisenhowerMatrix: React.FC = () => {
     const { t } = useTranslation();
     const projects: Project[] = useStore((state: any) => state.projectsStore.projects);
+    const boardScope = useBoardScope();
+    const { fetchKey } = boardScope;
 
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
@@ -43,25 +47,30 @@ const EisenhowerMatrix: React.FC = () => {
     // Counter per quadrant to handle dragLeave bubbling from child elements
     const dragEnterCounters = useRef<Record<string, number>>({});
 
+    // Refetches whenever the URL filters change (pickers, chips, Back /
+    // Forward), and drops a response that arrives after they moved on.
     useEffect(() => {
+        let cancelled = false;
         const fetchTasks = async () => {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch(
-                    getApiPath('tasks?client_side_filtering=true&status=active&limit=10000&offset=0')
+                const scoped = await fetchBoardTasks(
+                    'client_side_filtering=true&status=active&limit=10000&offset=0',
+                    fetchKey
                 );
-                if (!res.ok) throw new Error('Failed to fetch tasks');
-                const data = await res.json();
-                setTasks(data.tasks || []);
+                if (!cancelled) setTasks(scoped);
             } catch (e) {
-                setError((e as Error).message);
+                if (!cancelled) setError((e as Error).message);
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
         fetchTasks();
-    }, []);
+        return () => {
+            cancelled = true;
+        };
+    }, [fetchKey]);
 
     const quadrants: Quadrant[] = useMemo(() => {
         const active = tasks.filter((t) => {
@@ -349,6 +358,17 @@ const EisenhowerMatrix: React.FC = () => {
                     </p>
                 </div>
             </div>
+
+            <BoardScopeFilter
+                scope={boardScope.scope}
+                entries={boardScope.entries}
+                onChange={boardScope.setScope}
+                className="mb-4"
+            />
+            <BoardScopeProblem
+                entries={boardScope.entries}
+                className="mb-4"
+            />
 
             {loading && (
                 <p className="text-sm text-gray-500 dark:text-gray-400">{t('common.loading', 'Loading...')}</p>
