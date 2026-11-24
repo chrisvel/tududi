@@ -468,6 +468,7 @@ async function exportLinkedRecords(userId) {
                 mentioned_person_uids: jsonColumn(c.mentioned_person_uids, []),
                 deleted_at: c.deleted_at,
                 created_at: c.created_at,
+                updated_at: c.updated_at,
             })),
         comment_reactions: reactions
             .filter((r) => commentUid[r.comment_id])
@@ -484,12 +485,16 @@ async function exportLinkedRecords(userId) {
                 source_task_uid: taskUid[r.source_task_id],
                 target_task_uid: taskUid[r.target_task_id],
                 relation_type: r.relation_type,
+                created_at: r.created_at,
+                updated_at: r.updated_at,
             })),
         daily_plans: plans.map((p) => ({
             uid: p.uid,
             plan_date: p.plan_date,
             started_at: p.started_at,
             ai_wrap_up: p.ai_wrap_up,
+            created_at: p.created_at,
+            updated_at: p.updated_at,
             items: (p.Items || [])
                 .filter((i) => taskUid[i.task_id])
                 .map((i) => ({
@@ -506,6 +511,8 @@ async function exportLinkedRecords(userId) {
             url_host: f.url_host,
             color: f.color,
             show_on_calendar: f.show_on_calendar,
+            created_at: f.created_at,
+            updated_at: f.updated_at,
         })),
         webhooks: webhooks.map((w) => ({
             uid: w.uid,

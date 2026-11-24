@@ -209,6 +209,27 @@ describe('Backup of comments, plans, feeds, webhooks and orders', () => {
         expect(JSON.stringify(d)).not.toContain('whsec_test');
     });
 
+    it('exports the dates of comments, relations, plans and feeds', async () => {
+        await DailyPlan.update(
+            { created_at: new Date('2026-01-02T08:00:00Z') },
+            { where: { user_id: seeded.user.id }, silent: true }
+        );
+        const d = (await exportUserData(seeded.user.id)).data;
+        for (const row of [
+            ...d.comments,
+            ...d.task_relations,
+            ...d.daily_plans,
+            ...d.calendar_feeds,
+        ]) {
+            expect(row.created_at).toBeTruthy();
+            expect(row.updated_at).toBeTruthy();
+        }
+        const plan = d.daily_plans[0];
+        expect(new Date(plan.created_at).toISOString()).toBe(
+            '2026-01-02T08:00:00.000Z'
+        );
+    });
+
     it('imports them into another account linked to the new rows', async () => {
         const backup = await exportUserData(seeded.user.id);
         const stats = await importUserData(target.id, backup);
