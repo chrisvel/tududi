@@ -139,6 +139,10 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
 
     const proPlan = catalog?.plans.find((p) => p.key === 'pro');
     const isPro = isPaidPlan(status?.plan);
+    // A comp that runs out (say, while moving off an old billing provider)
+    // keeps Pro now but still needs a way to subscribe before it ends.
+    const compEnds =
+        status?.reason === 'override' && !!status.override?.expires_at;
     const plans = status ? purchasablePlans(status) : [];
     const teamPlans = plans.filter((p) => p.key !== 'pro');
     const chosenPlan = plans.find((p) => p.key === planKey) || plans[0];
@@ -388,7 +392,7 @@ const BillingTab: React.FC<BillingTabProps> = ({ isActive }) => {
                         </div>
                     )}
 
-                    {!isPro &&
+                    {(!isPro || compEnds) &&
                         status.checkout_available &&
                         proPlan &&
                         chosenPlan && (
