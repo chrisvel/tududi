@@ -137,6 +137,26 @@ describe('BillingTab', () => {
         );
     });
 
+    it('offers checkout during a comp that ends, but not a lasting one', async () => {
+        const comped = (expires_at: string | null) =>
+            status({
+                plan: 'pro',
+                reason: 'override',
+                status: 'canceled',
+                override: { plan: 'pro', expires_at, reason: null },
+            });
+
+        mockStatus.mockResolvedValue(comped('2027-01-31T00:00:00.000Z'));
+        const { unmount } = renderTab();
+        expect(await screen.findByTestId('billing-upgrade')).toBeVisible();
+        unmount();
+
+        mockStatus.mockResolvedValue(comped(null));
+        renderTab();
+        expect(await screen.findByText('Complimentary access.')).toBeVisible();
+        expect(screen.queryByTestId('billing-upgrade')).toBeNull();
+    });
+
     it('shows the seats in use on a Team plan, and no upgrade card', async () => {
         mockStatus.mockResolvedValue(
             status({
