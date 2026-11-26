@@ -325,12 +325,20 @@ const PERSON_PATTERN = new RegExp(
     `(^|\\s)@(?:(${QUOTED_NAME_NONEMPTY})|([^\\s"@]+))`,
     'u'
 );
+// A loop, not /[.,;:!?)]+$/, which takes quadratic time on a long run of
+// punctuation that is not at the end.
+const trimTrailingPunctuation = (value) => {
+    let end = value.length;
+    while (end > 0 && '.,;:!?)'.includes(value.charAt(end - 1))) end--;
+    return value.slice(0, end);
+};
+
 const parsePersonRef = (text) => {
     const match = PERSON_PATTERN.exec(text);
     if (!match) return null;
-    const name = (match[2] ? readTokenName(match[2]) : match[3] || '')
-        .replace(/[.,;:!?)]+$/, '')
-        .trim();
+    const name = trimTrailingPunctuation(
+        match[2] ? readTokenName(match[2]) : match[3] || ''
+    ).trim();
     if (!name) return null;
     const start = match.index + match[1].length;
     const raw = match[2] ? match[0].slice(match[1].length) : `@${name}`;
@@ -350,11 +358,7 @@ const parseAreaRefs = (text) => {
     while ((match = pattern.exec(text)) !== null) {
         let name = (match[2] ? readTokenName(match[2]) : match[3] || '').trim();
         // Trailing sentence punctuation is not part of an unquoted name
-        if (!match[2]) {
-            let end = name.length;
-            while (end > 0 && '.,;:!?)'.includes(name.charAt(end - 1))) end--;
-            name = name.slice(0, end);
-        }
+        if (!match[2]) name = trimTrailingPunctuation(name);
         if (!name) continue;
         const raw = match[2] ? match[0].slice(match[1].length) : `~${name}`;
         refs.push({
