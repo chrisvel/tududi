@@ -187,18 +187,6 @@ const config = {
                 team: parseJsonEnv(process.env.STRIPE_TEAM_PRICES_JSON),
             },
         },
-        lemonsqueezy: {
-            apiKey: process.env.LEMONSQUEEZY_API_KEY,
-            storeId: process.env.LEMONSQUEEZY_STORE_ID,
-            webhookSecret: process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
-            apiBase: process.env.LEMONSQUEEZY_API_BASE || undefined,
-            variants: {
-                proMonthly: process.env.LEMONSQUEEZY_VARIANT_PRO_MONTHLY,
-                proAnnual: process.env.LEMONSQUEEZY_VARIANT_PRO_ANNUAL,
-                // Team plans: {"team_5":{"month":"123","year":"456"}}
-                team: parseJsonEnv(process.env.LEMONSQUEEZY_TEAM_VARIANTS_JSON),
-            },
-        },
         paddle: {
             apiKey: process.env.PADDLE_API_KEY,
             // Client-side token (live_… or test_…) for Paddle.js; public.
@@ -212,18 +200,13 @@ const config = {
             prices: parseJsonEnv(process.env.PADDLE_PRICES_JSON),
         },
         // Which provider sells new subscriptions. Explicit BILLING_PROVIDER
-        // wins; otherwise Paddle when it has a key, then Lemon Squeezy when
-        // it has a key and Stripe does not, else Stripe. Subscriptions bought
-        // through another configured provider are still managed there.
+        // wins; otherwise Paddle when it has a key, else Stripe.
+        // Subscriptions bought through another configured provider are still
+        // managed there.
         billing: {
             provider:
                 process.env.BILLING_PROVIDER ||
-                (process.env.PADDLE_API_KEY
-                    ? 'paddle'
-                    : process.env.LEMONSQUEEZY_API_KEY &&
-                        !process.env.STRIPE_SECRET_KEY
-                      ? 'lemonsqueezy'
-                      : 'stripe'),
+                (process.env.PADDLE_API_KEY ? 'paddle' : 'stripe'),
         },
     },
 
