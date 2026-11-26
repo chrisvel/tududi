@@ -68,7 +68,7 @@ class BillingService {
         const account = await repository.findAccountByUserId(userId);
         const provider = this.provider();
         // Who manages this account's subscription, which can be a provider
-        // that no longer sells (a Lemon Squeezy subscription, say).
+        // that no longer sells (a Stripe subscription, say).
         const manager = providers.providerFor(account);
         const configured = providers.isBillingConfigured();
         const prices = provider.configuredPrices();

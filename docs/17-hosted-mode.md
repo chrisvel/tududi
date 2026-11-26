@@ -219,10 +219,9 @@ All three are removed with the account by `services/accountErasureService.js`.
 
 ## Payments
 
-Plans are sold through one of three providers, chosen by `BILLING_PROVIDER`
-(`paddle`, `lemonsqueezy` or `stripe`; when unset, Paddle is used if
-`PADDLE_API_KEY` is set, then Lemon Squeezy if only its key is present,
-Stripe otherwise). tududi never sees card details with any of them. The
+Plans are sold through one of two providers, chosen by `BILLING_PROVIDER`
+(`paddle` or `stripe`; when unset, Paddle is used if `PADDLE_API_KEY` is
+set, Stripe otherwise). tududi never sees card details with any of them. The
 billing tab, the webhook endpoint and the admin page are the same for all;
 only the credentials differ.
 
@@ -232,8 +231,7 @@ billing tab, "Manage subscription", sync and cancellation go to the
 provider in `billing_accounts.provider`, and that provider's webhooks are
 still applied. The one webhook URL tells providers apart by their signature
 header. Once such a subscription ends, the next checkout goes through the
-selling provider. The hosted tududi sells through Paddle and keeps its
-earlier Lemon Squeezy subscriptions this way.
+selling provider. The hosted tududi sells through Paddle.
 
 **Paddle** (Paddle Billing) is a merchant of record: it charges VAT and
 issues the invoices. Each plan is a product with a monthly and a yearly
@@ -271,30 +269,6 @@ plans, so the billing tab offers the other plans at the same interval and
 `POST /api/billing/plan` moves the subscription (prorated immediately); a
 plan with fewer seats than are in use is refused.
 
-**Lemon Squeezy** is a merchant of record too, and sold the hosted tududi
-before Paddle.
-
-| Variable | Meaning |
-|---|---|
-| `LEMONSQUEEZY_API_KEY` | API key from Settings > API |
-| `LEMONSQUEEZY_STORE_ID` | numeric store id |
-| `LEMONSQUEEZY_WEBHOOK_SECRET` | signing secret of the webhook below |
-| `LEMONSQUEEZY_VARIANT_PRO_MONTHLY` | variant id of the monthly Pro subscription |
-| `LEMONSQUEEZY_VARIANT_PRO_ANNUAL` | variant id of the annual Pro subscription |
-| `LEMONSQUEEZY_TEAM_VARIANTS_JSON` | Team variants, `{"team_5":{"month":"123","year":"456"}}`; put them in the same product as Pro so the portal offers them as plan changes |
-
-Create one product ("tududi Pro") with a subscription variant per
-interval, then a webhook at `https://your-host/api/billing/webhook` with the
-events `subscription_created`, `subscription_updated`,
-`subscription_cancelled`, `subscription_resumed`, `subscription_expired`,
-`subscription_paused`, `subscription_unpaused`,
-`subscription_payment_success`, `subscription_payment_failed` and
-`subscription_payment_recovered`. A cancelled subscription keeps Pro until
-its `ends_at`; `expired` drops to Free. "Manage subscription" opens the
-Lemon Squeezy customer portal. The success redirect carries no reference,
-so the app re-reads the newest subscription for the account's email when
-the billing tab reloads.
-
 **Stripe** is Checkout plus the Customer Portal:
 
 | Variable | Meaning |
@@ -314,9 +288,8 @@ events `checkout.session.completed`, `customer.subscription.created`,
 
 For all of them, the endpoint reads the raw body, verifies the signature, records
 every event id in `billing_events` (a redelivered event is acknowledged and
-not applied twice; Paddle's is its `event_id`, and Lemon Squeezy
-sends none, so the resource id plus its `updated_at` stands in), drops an update older than the last one
-applied, and answers 500 on an internal fault so the provider retries.
+not applied twice; Paddle's is its `event_id`), drops an update older
+than the last one applied, and answers 500 on an internal fault so the provider retries.
 
 Endpoints (all 404 on a self-hosted instance):
 

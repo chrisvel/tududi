@@ -1,16 +1,14 @@
 const crypto = require('crypto');
 const request = require('supertest');
 
-// Paddle and Lemon Squeezy are reached over plain fetch, so both APIs are
-// stood in for by one routed mock of global.fetch. Tests shape
-// `paddle.subscriptions` / `ls.subscriptions` and read `calls`.
+// Paddle is reached over plain fetch, so its API is stood in for by a routed
+// mock of global.fetch. Tests shape `paddle.subscriptions` and read `calls`.
 const paddle = {
     subscriptions: {},
     customers: [],
     transactions: {},
     checkoutUrl: null,
 };
-const ls = { subscriptions: {} };
 let calls = [];
 
 const jsonResponse = (status, body) => ({
@@ -27,15 +25,6 @@ function mockFetch(url, options = {}) {
     const method = options.method || 'GET';
     const href = String(url);
     const body = options.body ? JSON.parse(options.body) : null;
-
-    if (href.startsWith('https://api.lemonsqueezy.com/v1')) {
-        const path = href.replace('https://api.lemonsqueezy.com/v1', '');
-        calls.push({ api: 'ls', method, path, body });
-        const m = path.match(/^\/subscriptions\/(\d+)$/);
-        const sub = m && ls.subscriptions[m[1]];
-        if (sub) return jsonResponse(200, { data: sub });
-        return jsonResponse(500, { error: `unmocked ${method} ${path}` });
-    }
 
     const path = href.replace('https://api.paddle.com', '');
     calls.push({ api: 'paddle', method, path, body });
@@ -103,7 +92,6 @@ const TEAM3_YEAR = 'pri_team3_year';
 const TEAM5_MONTH = 'pri_team5_month';
 const TEAM5_YEAR = 'pri_team5_year';
 const WEBHOOK_SECRET = 'pdl_ntfset_test_secret';
-const LS_SECRET = 'ls_whsec_test';
 
 const login = async (user) => {
     const agent = request.agent(app);
@@ -186,7 +174,6 @@ describe('Billing with Paddle', () => {
         paddle.customers = [];
         paddle.transactions = {};
         paddle.checkoutUrl = null;
-        ls.subscriptions = {};
         calls = [];
         user = await createTestUser({
             email: `paddle_${Date.now()}@example.com`,
@@ -202,9 +189,6 @@ describe('Billing with Paddle', () => {
         config.hosted.paddle.clientToken = undefined;
         config.hosted.paddle.webhookSecret = undefined;
         config.hosted.paddle.prices = {};
-        config.hosted.lemonsqueezy.apiKey = undefined;
-        config.hosted.lemonsqueezy.storeId = undefined;
-        config.hosted.lemonsqueezy.webhookSecret = undefined;
         entitlements.invalidate();
     });
 
@@ -442,112 +426,28 @@ describe('Billing with Paddle', () => {
         });
     });
 
-    describe('next to Lemon Squeezy subscriptions', () => {
-        const lsSubscription = (overrides = {}) => ({
-            type: 'subscriptions',
-            id: '42',
-            attributes: {
-                customer_id: 77,
-                variant_id: 1002,
-                status: 'active',
-                cancelled: false,
-                renews_at: '2027-09-06T10:00:00.000000Z',
-                ends_at: null,
-                updated_at: '2026-10-28T10:00:00.000000Z',
-                urls: {
-                    customer_portal:
-                        'https://tududi.lemonsqueezy.com/billing?expires=1',
-                },
-                ...overrides,
-            },
+    it('sells through Paddle to an account left over from an old provider', async () => {
+        await BillingAccount.create({
+            user_id: user.id,
+            provider: 'lemonsqueezy',
+            provider_customer_id: '77',
+            provider_subscription_id: '42',
+            status: 'canceled',
+            plan: 'free',
         });
 
-        beforeEach(async () => {
-            config.hosted.lemonsqueezy.apiKey = 'ls_test_key';
-            config.hosted.lemonsqueezy.storeId = '1';
-            config.hosted.lemonsqueezy.webhookSecret = LS_SECRET;
-            await BillingAccount.create({
-                user_id: user.id,
-                provider: 'lemonsqueezy',
-                provider_customer_id: '77',
-                provider_subscription_id: '42',
-                status: 'active',
-                plan: 'pro',
-            });
-            ls.subscriptions['42'] = lsSubscription();
-        });
+        const status = await agent.get('/api/billing');
+        expect(status.body.provider.name).toBe('paddle');
+        expect(status.body.portal_available).toBe(false);
+        expect(status.body.checkout_available).toBe(true);
 
-        it('keeps managing the subscription at Lemon Squeezy', async () => {
-            const status = await agent.get('/api/billing');
-            expect(status.body.provider.name).toBe('lemonsqueezy');
-            expect(status.body.portal_available).toBe(true);
-            expect(status.body.plan_change_available).toBe(false);
-
-            const portal = await agent.post('/api/billing/portal');
-            expect(portal.body.url).toContain('lemonsqueezy.com/billing');
-            const change = await agent
-                .post('/api/billing/plan')
-                .send({ plan: 'team_5' });
-            expect(change.status).toBe(400);
-            expect(calls.some((c) => c.api === 'paddle')).toBe(false);
-        });
-
-        it('still applies Lemon Squeezy webhooks', async () => {
-            const body = JSON.stringify({
-                meta: { event_name: 'subscription_cancelled', custom_data: {} },
-                data: lsSubscription({
-                    status: 'cancelled',
-                    cancelled: true,
-                    ends_at: '2027-09-06T10:00:00.000000Z',
-                }),
-            });
-            const res = await request(app)
-                .post('/api/billing/webhook')
-                .set(
-                    'x-signature',
-                    crypto
-                        .createHmac('sha256', LS_SECRET)
-                        .update(body)
-                        .digest('hex')
-                )
-                .set('content-type', 'application/json')
-                .send(body);
-            expect(res.status).toBe(200);
-            expect(res.body.handled).toBe(true);
-            const a = await account(user);
-            expect(a.provider).toBe('lemonsqueezy');
-            expect(a.cancel_at_period_end).toBe(true);
-        });
-
-        it('cancels at Lemon Squeezy when the account is deleted', async () => {
-            const res = await agent
-                .delete('/api/profile')
-                .send({ password: 'password123' });
-            expect(res.status).toBe(204);
-            expect(
-                calls.some(
-                    (c) =>
-                        c.api === 'ls' &&
-                        c.method === 'DELETE' &&
-                        c.path === '/subscriptions/42'
-                )
-            ).toBe(true);
-            expect(await User.findByPk(user.id)).toBeNull();
-        });
-
-        it('sells the next subscription through Paddle once it has ended', async () => {
-            await BillingAccount.update(
-                { status: 'canceled', plan: 'free' },
-                { where: { user_id: user.id } }
-            );
-            const res = await agent
-                .post('/api/billing/checkout')
-                .send({ interval: 'year', plan: 'team_5' });
-            expect(res.status).toBe(200);
-            expect(res.body.paddle.transaction_id).toBe('txn_1');
-            const txn = calls.find((c) => c.path === '/transactions');
-            expect(txn.body.items[0].price_id).toBe(TEAM5_YEAR);
-        });
+        const res = await agent
+            .post('/api/billing/checkout')
+            .send({ interval: 'year', plan: 'team_5' });
+        expect(res.status).toBe(200);
+        expect(res.body.paddle.transaction_id).toBe('txn_1');
+        const txn = calls.find((c) => c.path === '/transactions');
+        expect(txn.body.items[0].price_id).toBe(TEAM5_YEAR);
     });
 
     it('cancels at once at Paddle when the account is deleted', async () => {

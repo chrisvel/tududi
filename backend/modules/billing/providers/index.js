@@ -3,8 +3,8 @@
 const { getConfig } = require('../../../config/config');
 
 // The payment providers behind hosted-mode billing: Stripe (Checkout +
-// Customer Portal), and Lemon Squeezy and Paddle (merchants of record that
-// handle VAT and invoices). One of them sells new subscriptions; a
+// Customer Portal) and Paddle (merchant of record that handles VAT and
+// invoices). One of them sells new subscriptions; a
 // subscription bought through another keeps being managed, synced and
 // cancelled there, and its webhooks keep being applied. Each exposes the
 // same surface to the billing service:
@@ -47,7 +47,6 @@ class WebhookSignatureError extends Error {
 
 const PROVIDERS = {
     stripe: () => require('./stripe'),
-    lemonsqueezy: () => require('./lemonsqueezy'),
     paddle: () => require('./paddle'),
 };
 

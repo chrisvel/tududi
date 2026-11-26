@@ -43,7 +43,7 @@ const login = async (email, password = 'password123') => {
 const subscribe = (userId) =>
     BillingAccount.create({
         user_id: userId,
-        provider: 'lemonsqueezy',
+        provider: 'paddle',
         provider_subscription_id: `sub_${userId}`,
         provider_subscription_item_id: `item_${userId}`,
         status: 'active',
@@ -52,11 +52,11 @@ const subscribe = (userId) =>
 
 const enableHosted = () => {
     config.hosted.enabled = true;
-    config.hosted.billing.provider = 'lemonsqueezy';
-    config.hosted.lemonsqueezy.apiKey = 'ls_test_key';
-    config.hosted.lemonsqueezy.storeId = '1';
-    config.hosted.lemonsqueezy.webhookSecret = 'secret';
-    config.hosted.lemonsqueezy.variants.proMonthly = '100';
+    config.hosted.billing.provider = 'paddle';
+    config.hosted.paddle.apiKey = 'pdl_test_key';
+    config.hosted.paddle.clientToken = 'test_token';
+    config.hosted.paddle.webhookSecret = 'secret';
+    config.hosted.paddle.prices = { pro: { month: 'pri_100' } };
     plans._resetCache();
     entitlements.invalidate();
 };
@@ -64,10 +64,10 @@ const enableHosted = () => {
 const disableHosted = () => {
     config.hosted.enabled = false;
     config.hosted.billing.provider = 'stripe';
-    config.hosted.lemonsqueezy.apiKey = undefined;
-    config.hosted.lemonsqueezy.storeId = undefined;
-    config.hosted.lemonsqueezy.webhookSecret = undefined;
-    config.hosted.lemonsqueezy.variants.proMonthly = undefined;
+    config.hosted.paddle.apiKey = undefined;
+    config.hosted.paddle.clientToken = undefined;
+    config.hosted.paddle.webhookSecret = undefined;
+    config.hosted.paddle.prices = {};
     plans._resetCache();
     entitlements.invalidate();
 };

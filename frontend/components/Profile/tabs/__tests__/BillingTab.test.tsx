@@ -69,7 +69,7 @@ const status = (overrides: Record<string, unknown> = {}) => ({
     seats: { members: 0, used: 1, seats: 1 },
     billing_configured: true,
     pricing: { currency: 'EUR', monthly: 5, annual: 50 },
-    provider: { name: 'lemonsqueezy', display_name: 'Lemon Squeezy' },
+    provider: { name: 'paddle', display_name: 'Paddle' },
     checkout_available: true,
     portal_available: false,
     intervals: { month: true, year: true },

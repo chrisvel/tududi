@@ -16,28 +16,15 @@ const entitlements = require('../../services/entitlementsService');
 const rolesService = require('../../services/rolesService');
 const { createTestUser } = require('../helpers/testUtils');
 
-// Lemon Squeezy is reached over plain fetch. Seats come from the Team plan,
-// so adding or removing a member must never change the subscription:
-// every PATCH is recorded and the tests expect none.
-const ls = { patches: [] };
+// The payment provider is reached over plain fetch. Seats come from the
+// Team plan, so adding or removing a member must never change the
+// subscription: every write to the provider is recorded and the tests expect
+// none.
+const billingApi = { writes: [] };
 const realFetch = global.fetch;
 const mockFetch = async (url, init = {}) => {
-    const path = String(url).replace('https://api.lemonsqueezy.com/v1', '');
-    const match = path.match(/^\/subscription-items\/([^/]+)$/);
-    if (match && init.method === 'PATCH') {
-        const body = JSON.parse(init.body);
-        const quantity = body.data.attributes.quantity;
-        ls.patches.push({ id: match[1], quantity });
-        return new Response(
-            JSON.stringify({
-                data: {
-                    type: 'subscription-items',
-                    id: match[1],
-                    attributes: { quantity },
-                },
-            }),
-            { status: 200 }
-        );
+    if (init.method && init.method !== 'GET') {
+        billingApi.writes.push({ url: String(url), method: init.method });
     }
     return new Response('not found', { status: 404 });
 };
@@ -53,7 +40,7 @@ const login = async (email, password = 'password123') => {
 const subscribe = (userId, fields = {}) =>
     BillingAccount.create({
         user_id: userId,
-        provider: 'lemonsqueezy',
+        provider: 'paddle',
         provider_subscription_id: `sub_${userId}`,
         provider_subscription_item_id: `item_${userId}`,
         status: 'active',
@@ -78,14 +65,14 @@ describe('Cloud seats', () => {
         config.hosted.enabled = true;
         config.hosted.trialDays = 0;
         config.hosted.requireSubscription = true;
-        config.hosted.billing.provider = 'lemonsqueezy';
-        config.hosted.lemonsqueezy.apiKey = 'ls_test_key';
-        config.hosted.lemonsqueezy.storeId = '1';
-        config.hosted.lemonsqueezy.webhookSecret = 'secret';
-        config.hosted.lemonsqueezy.variants.proMonthly = '100';
+        config.hosted.billing.provider = 'paddle';
+        config.hosted.paddle.apiKey = 'pdl_test_key';
+        config.hosted.paddle.clientToken = 'test_token';
+        config.hosted.paddle.webhookSecret = 'secret';
+        config.hosted.paddle.prices = { pro: { month: 'pri_100' } };
         plans._resetCache();
         entitlements.invalidate();
-        ls.patches = [];
+        billingApi.writes = [];
 
         owner = await createTestUser({
             email: `owner_${Date.now()}@example.com`,
@@ -99,10 +86,10 @@ describe('Cloud seats', () => {
         config.hosted.trialDays = 7;
         config.hosted.requireSubscription = false;
         config.hosted.billing.provider = 'stripe';
-        config.hosted.lemonsqueezy.apiKey = undefined;
-        config.hosted.lemonsqueezy.storeId = undefined;
-        config.hosted.lemonsqueezy.webhookSecret = undefined;
-        config.hosted.lemonsqueezy.variants.proMonthly = undefined;
+        config.hosted.paddle.apiKey = undefined;
+        config.hosted.paddle.clientToken = undefined;
+        config.hosted.paddle.webhookSecret = undefined;
+        config.hosted.paddle.prices = {};
         delete process.env.TUDUDI_PLANS_JSON;
         plans._resetCache();
         entitlements.invalidate();
@@ -146,7 +133,7 @@ describe('Cloud seats', () => {
             });
 
             expect(res.status).toBe(201);
-            expect(ls.patches).toEqual([]);
+            expect(billingApi.writes).toEqual([]);
 
             const ent = await entitlements.getEntitlements(res.body.id);
             expect(ent.reason).toBe('seat');
@@ -176,14 +163,14 @@ describe('Cloud seats', () => {
 
             expect(res.status).toBe(201);
             expect(res.body.email).toBeNull();
-            expect(ls.patches).toHaveLength(0);
+            expect(billingApi.writes).toHaveLength(0);
         });
 
         it('is refused without a subscription and creates nothing', async () => {
             const res = await addMember(ownerAgent, { name: 'Emma' });
 
             expect(res.status).toBe(402);
-            expect(ls.patches).toHaveLength(0);
+            expect(billingApi.writes).toHaveLength(0);
             expect(await User.count({ where: { name: 'Emma' } })).toBe(0);
         });
 
@@ -199,7 +186,7 @@ describe('Cloud seats', () => {
                 limit: 0,
                 plan: 'pro',
             });
-            expect(ls.patches).toHaveLength(0);
+            expect(billingApi.writes).toHaveLength(0);
             expect(await User.count({ where: { name: 'Emma' } })).toBe(0);
         });
 
@@ -224,7 +211,7 @@ describe('Cloud seats', () => {
             // A paid plan can move to a bigger bucket, so no contact reason.
             expect(res.body.details).not.toHaveProperty('reason');
             expect(await User.count({ where: { name: 'Mia' } })).toBe(0);
-            expect(ls.patches).toHaveLength(0);
+            expect(billingApi.writes).toHaveLength(0);
         });
 
         it('keeps the members after a move to a smaller plan, but adds no more', async () => {
@@ -260,7 +247,7 @@ describe('Cloud seats', () => {
             const res = await addMember(ownerAgent, { name: 'Emma' });
 
             expect(res.status).toBe(201);
-            expect(ls.patches).toHaveLength(0);
+            expect(billingApi.writes).toHaveLength(0);
         });
 
         it('tells a full comped Team plan to contact us', async () => {
@@ -311,7 +298,7 @@ describe('Cloud seats', () => {
             await subscribe(owner.id);
             const res = await addMember(ownerAgent, { name: 'Emma' });
             member = res.body;
-            ls.patches = [];
+            billingApi.writes = [];
         });
 
         it('lets the owner rename a member', async () => {
@@ -366,7 +353,7 @@ describe('Cloud seats', () => {
 
             expect(res.status).toBe(204);
             expect(await User.findByPk(member.id)).toBeNull();
-            expect(ls.patches).toEqual([]);
+            expect(billingApi.writes).toEqual([]);
             const billing = await ownerAgent.get('/api/billing');
             expect(billing.body.seats.used).toBe(1);
         });
