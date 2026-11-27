@@ -33,6 +33,23 @@ const devResources = isDevelopment
       }
     : undefined;
 
+// Nothing renders until the first translation file has loaded or failed, so
+// a request that stalls (a proxy or a flaky mobile connection) must not leave
+// the page blank: give up after a few seconds and fall back to English.
+const LOCALE_TIMEOUT_MS = 5000;
+
+const fetchWithTimeout = (
+    input: RequestInfo | URL,
+    init?: RequestInit
+): Promise<Response> => {
+    if (typeof AbortController === 'undefined') return fetch(input, init);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), LOCALE_TIMEOUT_MS);
+    return fetch(input, { ...init, signal: controller.signal }).finally(() =>
+        clearTimeout(timer)
+    );
+};
+
 const i18nInstance = i18n
     .use(Backend)
     .use(LanguageDetector)
@@ -85,9 +102,13 @@ i18nInstance
         },
         defaultNS: 'translation',
         ns: ['translation'],
+        // The default (5 retries, doubling from 350ms) holds the page blank
+        // for about 11 seconds when the locale files cannot be reached.
+        maxRetries: 1,
         backend: {
             loadPath: 'locales/{{lng}}/{{ns}}.json',
             queryStringParams: { v: '2' },
+            alternateFetch: fetchWithTimeout,
             requestOptions: {
                 cache: 'default',
                 credentials: 'same-origin',

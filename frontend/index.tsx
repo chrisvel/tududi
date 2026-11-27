@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { mutate } from 'swr';
@@ -13,6 +13,7 @@ import { getBasePath } from './config/paths';
 import { prefetchNoteFromPath } from './utils/notesService';
 import { captureSharedPayload } from './utils/shareTargetService';
 import BlogApp from './components/Blog/BlogApp';
+import LoadingScreen from './components/Shared/LoadingScreen';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -115,19 +116,23 @@ const container = document.getElementById('root');
 if (container) {
     const root = createRoot(container);
     const basename = getBasePath();
+    // useTranslation suspends until the first translation file is in. Without
+    // a fallback here the page stays blank for that whole wait.
     root.render(
         <I18nextProvider i18n={i18n}>
-            <BrowserRouter basename={basename || undefined}>
-                {isBlogSite ? (
-                    <BlogApp basePath="" />
-                ) : (
-                    <ToastProvider>
-                        <TelegramStatusProvider>
-                            <App />
-                        </TelegramStatusProvider>
-                    </ToastProvider>
-                )}
-            </BrowserRouter>
+            <Suspense fallback={<LoadingScreen fullScreen />}>
+                <BrowserRouter basename={basename || undefined}>
+                    {isBlogSite ? (
+                        <BlogApp basePath="" />
+                    ) : (
+                        <ToastProvider>
+                            <TelegramStatusProvider>
+                                <App />
+                            </TelegramStatusProvider>
+                        </ToastProvider>
+                    )}
+                </BrowserRouter>
+            </Suspense>
         </I18nextProvider>
     );
 }
