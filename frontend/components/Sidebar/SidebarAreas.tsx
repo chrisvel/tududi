@@ -45,7 +45,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
     const isAreasPageActive = location.pathname === '/areas';
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] max-md:min-h-[44px] text-[13.5px] max-md:text-[16px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             location.pathname === path
                 ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]'
                 : ''
@@ -61,7 +61,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
     return (
         <ul className="flex flex-col">
             <li
-                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-[8px] cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
+                className={`group flex justify-between items-center px-[10px] py-[4px] max-md:min-h-[44px] rounded-[8px] cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
                     isAreasPageActive ? 'bg-gray-100 dark:bg-white/5' : ''
                 }`}
                 onClick={() => {
@@ -69,7 +69,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                 }}
             >
                 <span
-                    className={`flex items-center text-[10.5px] tracking-[0.01em] font-semibold uppercase hover:text-gray-900 dark:hover:text-white ${
+                    className={`flex items-center text-[10.5px] max-md:text-[13px] tracking-[0.01em] font-semibold uppercase hover:text-gray-900 dark:hover:text-white ${
                         isAreasPageActive
                             ? 'text-gray-900 dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
@@ -102,7 +102,7 @@ const SidebarAreas: React.FC<SidebarAreasProps> = ({
                     )}
                     {areas.length > 0 && (
                         <>
-                            <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">
+                            <span className="text-[10.5px] max-md:text-[13px] text-gray-400 dark:text-gray-500 tabular-nums">
                                 {areas.length}
                             </span>
                             <button

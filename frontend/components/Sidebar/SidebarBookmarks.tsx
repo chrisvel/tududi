@@ -77,7 +77,7 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
     const isActive = (path: string) => location.pathname === path;
 
     const itemClass = (path: string) =>
-        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+        `group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] max-md:min-h-[44px] text-[13.5px] max-md:text-[16px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             isActive(path) ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
 
@@ -133,14 +133,14 @@ const SidebarBookmarks: React.FC<SidebarBookmarksProps> = ({
     return (
         <div className="flex flex-col">
             <div
-                className="flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer"
+                className="flex justify-between items-center px-[10px] py-[4px] max-md:min-h-[44px] rounded-md cursor-pointer"
                 onClick={() => {
                     const next = !isExpanded;
                     setIsExpanded(next);
                     localStorage.setItem('bookmarksSidebarCollapsed', String(!next));
                 }}
             >
-                <span className="flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase text-gray-400 dark:text-[oklch(58%_0.006_95)] hover:text-gray-900 dark:hover:text-white">
+                <span className="flex items-center gap-[6px] text-[10.5px] max-md:text-[13px] tracking-[0.01em] font-semibold uppercase text-gray-400 dark:text-[oklch(58%_0.006_95)] hover:text-gray-900 dark:hover:text-white">
                     <PushPinIcon className="h-[14px] w-[14px]" />
                     {t('sidebar.bookmarks', 'Favorites')}
                 </span>

@@ -60,7 +60,7 @@ const SidebarNotesTree: React.FC<SidebarNotesTreeProps> = ({
     );
 
     const itemClass = (isActive: boolean) =>
-        `flex justify-between items-center gap-2 rounded-[8px] py-[4px] pr-[10px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+        `flex justify-between items-center gap-2 rounded-[8px] py-[4px] max-md:min-h-[44px] pr-[10px] text-[13.5px] max-md:text-[16px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
             isActive ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
         }`;
 

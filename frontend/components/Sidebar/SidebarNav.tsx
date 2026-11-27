@@ -190,14 +190,14 @@ const SidebarNav: React.FC<SidebarNavProps> = ({
                             handleNavClick(link.path, link.title, link.icon)
                         }
                         data-testid={`sidebar-nav-${link.path.replace(/^\//, '').replace(/\?.*$/, '')}`}
-                        className={`w-full flex items-center gap-[5px] px-[10px] py-[4px] rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
+                        className={`w-full flex items-center gap-[5px] max-md:gap-3 px-[10px] py-[4px] max-md:min-h-[44px] rounded-[8px] transition-colors duration-150 ${isActive(link.path, link.query)}`}
                     >
                         <span
-                            className={`flex-shrink-0 ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-400 dark:text-[oklch(55%_0.006_95)]'}`}
+                            className={`flex-shrink-0 max-md:[&>svg]:h-5 max-md:[&>svg]:w-5 ${isActiveLink(link.path, link.query) ? 'text-blue-600 dark:text-[oklch(68%_0.14_250)]' : 'text-gray-400 dark:text-[oklch(55%_0.006_95)]'}`}
                         >
                             {link.icon}
                         </span>
-                        <span className="flex-1 text-left text-[13.5px]">
+                        <span className="flex-1 text-left text-[13.5px] max-md:text-[16px]">
                             {link.title}
                         </span>
                         {link.path === '/today' && planProgress && (

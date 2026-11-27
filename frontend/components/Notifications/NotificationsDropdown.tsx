@@ -326,7 +326,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={handleToggle}
-                className="relative flex items-center focus:outline-none"
+                className="relative flex items-center justify-center max-md:h-11 max-md:w-11 focus:outline-none"
                 aria-label={t('profile.notifications')}
             >
                 <BellIcon className="h-6 w-6 text-gray-700 dark:text-gray-300" />
@@ -339,7 +339,7 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
 
             {isOpen && (
                 <div
-                    className={`absolute right-0 mt-2 w-96 rounded-lg shadow-lg z-50 ${
+                    className={`absolute right-0 mt-2 w-96 max-md:fixed max-md:left-2 max-md:right-2 max-md:w-auto rounded-lg shadow-lg z-50 ${
                         isDarkMode ? 'bg-gray-800' : 'bg-white'
                     } border ${
                         isDarkMode ? 'border-gray-700' : 'border-gray-200'

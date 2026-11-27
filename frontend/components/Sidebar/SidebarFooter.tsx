@@ -225,10 +225,10 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
             {/* Toolbar row: + create, all entities | dark mode */}
             <div className="border-t border-gray-100 dark:border-white/10 px-[14px] py-[10px] flex items-center justify-between">
                 {/* Plus / Create dropdown + all entities launcher */}
-                <div className="relative flex items-center gap-1.5">
+                <div className="relative flex items-center gap-1.5 max-md:gap-3">
                     <button
                         onClick={toggleDropdown}
-                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        className="flex items-center justify-center w-[22px] h-[22px] max-md:w-11 max-md:h-11 max-md:[&>svg]:h-6 max-md:[&>svg]:w-6 rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
                         aria-label={t('sidebar.createNew')}
                     >
                         <PlusIcon className="h-4 w-4" />
@@ -249,7 +249,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                                             onClick={() =>
                                                 handleDropdownSelect(label)
                                             }
-                                            className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
+                                            className="w-full text-left px-3 py-2 max-md:min-h-[44px] text-sm max-md:text-base text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-150"
                                         >
                                             <div className="flex items-center">
                                                 {icon}
@@ -270,7 +270,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
 
                     <button
                         onClick={() => setIsLauncherOpen(true)}
-                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        className="flex items-center justify-center w-[22px] h-[22px] max-md:w-11 max-md:h-11 max-md:[&>svg]:h-6 max-md:[&>svg]:w-6 rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
                         aria-label={t('sidebar.allEntities', 'All entities')}
                         title={t('sidebar.allEntities', 'All entities')}
                         data-testid="app-launcher-button"
@@ -280,7 +280,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                 </div>
 
                 {/* Right side: telegram + feedback + dark mode */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 max-md:gap-3">
                     {telegramStatus !== 'none' && (
                         <div
                             className="flex items-center justify-center"
@@ -303,7 +303,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     )}
                     <button
                         onClick={() => setIsFeedbackOpen(true)}
-                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        className="flex items-center justify-center w-[22px] h-[22px] max-md:w-11 max-md:h-11 max-md:[&>svg]:h-6 max-md:[&>svg]:w-6 rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
                         aria-label={t('feedback.title', 'Send feedback')}
                         title={t('feedback.title', 'Send feedback')}
                         data-testid="feedback-button"
@@ -312,7 +312,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({
                     </button>
                     <button
                         onClick={toggleDarkMode}
-                        className="flex items-center justify-center w-[22px] h-[22px] rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
+                        className="flex items-center justify-center w-[22px] h-[22px] max-md:w-11 max-md:h-11 max-md:[&>svg]:h-6 max-md:[&>svg]:w-6 rounded-[5px] focus:outline-none text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-150"
                         aria-label={t('sidebar.toggleDarkMode')}
                     >
                         {isDarkMode ? (

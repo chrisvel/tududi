@@ -7,6 +7,14 @@
     /* Scale down everything by 10% by setting base font-size to 90% */
     font-size: 90%;
   }
+
+  /* Phones: back to the browser default (16px) so text is readable without
+     pinch-zoom, which is disabled in the viewport meta tag. */
+  @media (max-width: 767px) {
+    html {
+      font-size: 100%;
+    }
+  }
 }
 
 .spinner {

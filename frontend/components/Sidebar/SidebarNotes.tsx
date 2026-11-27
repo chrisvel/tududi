@@ -52,7 +52,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
     return (
         <div className="flex flex-col">
             <div
-                className={`group flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
+                className={`group flex justify-between items-center px-[10px] py-[4px] max-md:min-h-[44px] rounded-md cursor-pointer hover:bg-gray-100 dark:hover:bg-white/5 ${
                     location.pathname.startsWith('/notes')
                         ? 'bg-gray-100 dark:bg-white/5'
                         : ''
@@ -62,7 +62,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                 }}
             >
                 <span
-                    className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
+                    className={`flex items-center gap-[6px] text-[10.5px] max-md:text-[13px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         location.pathname.startsWith('/notes')
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'
@@ -93,7 +93,7 @@ const SidebarNotes: React.FC<SidebarNotesProps> = ({
                     </button>
                     {notes.length > 0 && (
                         <>
-                            <span className="text-[10.5px] text-gray-400 dark:text-gray-500 tabular-nums">
+                            <span className="text-[10.5px] max-md:text-[13px] text-gray-400 dark:text-gray-500 tabular-nums">
                                 {notes.length}
                             </span>
                             <button
