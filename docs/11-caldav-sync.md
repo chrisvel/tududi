@@ -608,6 +608,17 @@ Tududi supports CalDAV recurring tasks via RRULE (RFC 5545):
 4. Check conflict list for unresolved conflicts
 5. Review backend logs for sync errors
 
+### Duplicate or Reappearing Tasks (Ghost Tasks)
+
+**Symptoms:** A task created in a CalDAV client shows up more than once in Tududi, or comes back after you delete it. An older copy will not stay deleted.
+
+**Cause:** A resource URL and the UID inside the VTODO are two different things (RFC 4791 5.3.2), and a client keeps its own UID while naming the file itself. Older versions stored the file name from the URL as the task's uid and discarded the UID the client sent, so the client saw its own task change identity on the next sync and uploaded it again - one more row every time - while a UID the server never stored could not be matched to the row it belonged to.
+
+**Solutions:**
+1. Update Tududi. The client's UID is now the task's identity, and the name it uploaded under is kept beside it (`tasks.caldav_resource_name`), so the client gets its own UID back and stops re-uploading.
+2. Delete the duplicate rows that were created before the update. Their UID was thrown away before it was stored, so they cannot be reconnected to the client's task; once they are gone, the client uploads the task once and deletions stick.
+3. A `409 no-uid-conflict` means the client is uploading a UID that already belongs to another resource. The response names the resource that owns it - point the client at that URL, or delete the resource the client no longer recognises.
+
 ### Recurring Tasks Missing
 
 **Symptoms:** Only first instance appears
