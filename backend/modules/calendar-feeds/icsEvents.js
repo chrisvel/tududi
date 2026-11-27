@@ -10,6 +10,62 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // the exact, zone-aware check.
 const WINDOW_PAD_DAYS = 3;
 
+const PROPERTY_NAME = /^([A-Za-z-]+)[;:]/;
+
+// The date part of a DTSTART/DTEND line as a day count, or null when it
+// cannot be read (the event is then kept).
+function lineDayNumber(line) {
+    const value = line.slice(line.lastIndexOf(':') + 1);
+    const match = /^(\d{4})(\d{2})(\d{2})/.exec(value);
+    if (!match) return null;
+    return dayNumber(Number(match[1]), Number(match[2]), Number(match[3]));
+}
+
+// Big feeds (years of work meetings) are mostly one-off events long past,
+// which no view ever shows. Dropping them before parsing keeps the parsed
+// copy, held per process for 15 minutes, small. Series and THISANDFUTURE
+// exceptions are always kept, since they reach forward in time.
+function dropPastEvents(text, keepFromDay) {
+    const lines = text.replace(/\r?\n[ \t]/g, '').split(/\r?\n/);
+    const kept = [];
+    let block = null;
+    let reachesForward = false;
+    let lastDay = null;
+
+    for (const line of lines) {
+        if (block === null) {
+            if (line === 'BEGIN:VEVENT') {
+                block = [line];
+                reachesForward = false;
+                lastDay = null;
+            } else {
+                kept.push(line);
+            }
+            continue;
+        }
+
+        block.push(line);
+        const name = (PROPERTY_NAME.exec(line) || [])[1];
+        const upper = name ? name.toUpperCase() : '';
+        if (upper === 'RRULE' || upper === 'RDATE') {
+            reachesForward = true;
+        } else if (upper === 'RECURRENCE-ID') {
+            if (/;RANGE=THISANDFUTURE/i.test(line)) reachesForward = true;
+        } else if (upper === 'DTSTART' || upper === 'DTEND') {
+            const day = lineDayNumber(line);
+            if (day === null) reachesForward = true;
+            else if (lastDay === null || day > lastDay) lastDay = day;
+        } else if (line === 'END:VEVENT') {
+            if (reachesForward || lastDay === null || lastDay >= keepFromDay) {
+                kept.push(...block);
+            }
+            block = null;
+        }
+    }
+    if (block) kept.push(...block);
+    return kept.join('\r\n');
+}
+
 function parseCalendar(text) {
     const root = new ICAL.Component(ICAL.parse(text));
 
@@ -327,4 +383,10 @@ function eventsForDate(events, date, userTimezone) {
     );
 }
 
-module.exports = { parseCalendar, eventsForDate, eventsForRange };
+module.exports = {
+    parseCalendar,
+    dropPastEvents,
+    dayNumber,
+    eventsForDate,
+    eventsForRange,
+};

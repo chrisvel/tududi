@@ -14,7 +14,11 @@ const { AppError, ValidationError } = require('../../shared/errors');
 
 const MAX_REDIRECTS = 5;
 const TIMEOUT_MS = 10000;
-const MAX_BYTES = 5 * 1024 * 1024;
+// A busy Google work calendar runs well past 5 MB and Google offers no way to
+// trim it (#2126). Old one-off events are dropped before parsing, so only the
+// download itself is this large.
+const MAX_MEGABYTES = 50;
+const MAX_BYTES = MAX_MEGABYTES * 1024 * 1024;
 
 class FeedFetchError extends Error {}
 
@@ -77,7 +81,7 @@ function describeFetchError(err) {
         err.code === 'ERR_BAD_RESPONSE' &&
         /maxContentLength/.test(err.message)
     ) {
-        return 'The calendar is larger than 5 MB';
+        return `The calendar is larger than ${MAX_MEGABYTES} MB`;
     }
     if (err.cause instanceof AppError) {
         return err.cause.message;
@@ -138,4 +142,4 @@ async function fetchFeed(url) {
     throw new FeedFetchError('The calendar redirected too many times');
 }
 
-module.exports = { fetchFeed, normalizeFeedUrl, FeedFetchError };
+module.exports = { fetchFeed, normalizeFeedUrl, FeedFetchError, MAX_BYTES };
