@@ -80,7 +80,7 @@ const SortableViewItem: React.FC<SortableViewItemProps> = ({
         <li
             ref={setNodeRef}
             style={style}
-            className={`group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] text-[13.5px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
+            className={`group flex justify-between items-center rounded-[8px] pl-[30px] pr-[10px] py-[4px] max-md:min-h-[44px] text-[13.5px] max-md:text-[16px] cursor-pointer text-gray-500 dark:text-[oklch(82%_0.006_95)] hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${
                 isActive ? 'bg-gray-100 dark:bg-[oklch(24%_0.015_250)]' : ''
             } ${isDragging ? 'opacity-50' : ''}`}
             onClick={handleClick}
@@ -269,13 +269,13 @@ const SidebarViews: React.FC<SidebarViewsProps> = ({
     return (
         <ul className="flex flex-col">
             <li
-                className="flex justify-between items-center px-[10px] py-[4px] rounded-md cursor-pointer"
+                className="flex justify-between items-center px-[10px] py-[4px] max-md:min-h-[44px] rounded-md cursor-pointer"
                 onClick={() => {
                     if (orderedViews.length > 0) setIsExpanded((v) => !v);
                 }}
             >
                 <span
-                    className={`flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
+                    className={`flex items-center gap-[6px] text-[10.5px] max-md:text-[13px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-black dark:hover:text-white ${
                         isActiveView('/views')
                             ? 'text-black dark:text-white'
                             : 'text-gray-400 dark:text-[oklch(58%_0.006_95)]'

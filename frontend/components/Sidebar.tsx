@@ -233,11 +233,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                         <button
                             type="button"
                             onClick={() => setIsSidebarOpen(false)}
-                            className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-300/50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                            className="p-2 max-md:h-12 max-md:w-12 max-md:flex max-md:items-center max-md:justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-300/50 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                             aria-label="Collapse Sidebar"
                             data-testid="sidebar-collapse"
                         >
-                            <SidebarPanelIcon className="h-5 w-5" />
+                            <SidebarPanelIcon className="h-5 w-5 max-md:h-7 max-md:w-7" />
                         </button>
                     </div>
                     <div className="flex-1 min-h-0 overflow-y-auto px-2.5 pt-3 pb-4">

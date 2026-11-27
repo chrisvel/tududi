@@ -44,8 +44,8 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
 
     return (
         <ul className="flex flex-col">
-            <li className="flex justify-between items-center px-[10px] py-[4px] rounded-md">
-                <span className="flex items-center gap-[6px] text-[10.5px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-gray-900 dark:hover:text-white text-gray-400 dark:text-[oklch(58%_0.006_95)]" onClick={toggleCollapsed}>
+            <li className="flex justify-between items-center px-[10px] py-[4px] max-md:min-h-[44px] rounded-md">
+                <span className="flex items-center gap-[6px] text-[10.5px] max-md:text-[13px] tracking-[0.01em] font-semibold uppercase cursor-pointer hover:text-gray-900 dark:hover:text-white text-gray-400 dark:text-[oklch(58%_0.006_95)]" onClick={toggleCollapsed}>
                     <ChartBarIcon className="h-[14px] w-[14px]" />
                     {t('sidebar.insights', 'Insights')}
                 </span>
@@ -65,7 +65,7 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
                         {links.map((link) => (
                             <div
                                 key={link.path}
-                                className={`flex items-center gap-[4px] rounded-[8px] px-[10px] py-[4px] text-[13.5px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${isActive(link.path)}`}
+                                className={`flex items-center gap-[4px] rounded-[8px] px-[10px] py-[4px] max-md:min-h-[44px] text-[13.5px] max-md:text-[16px] cursor-pointer hover:bg-gray-100 dark:hover:bg-[oklch(24%_0.015_250)] ${isActive(link.path)}`}
                                 onClick={() => handleNavClick(link.path, link.title, link.icon)}
                             >
                                 {link.icon}

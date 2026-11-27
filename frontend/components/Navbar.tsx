@@ -211,15 +211,15 @@ const Navbar: React.FC<NavbarProps> = ({
                         <>
                             <button
                                 onClick={() => setIsSidebarOpen(true)}
-                                className="sm:hidden p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                                className="sm:hidden p-2 h-12 w-12 flex items-center justify-center rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                                 aria-label="Expand Sidebar"
                                 data-testid="sidebar-expand"
                             >
-                                <SidebarPanelIcon className="h-5 w-5" />
+                                <SidebarPanelIcon className="h-7 w-7" />
                             </button>
                             <Link
                                 to="/"
-                                className="sm:hidden flex items-center justify-center h-9 w-9"
+                                className="sm:hidden flex items-center justify-center h-11 w-11"
                                 aria-label="tududi"
                                 data-testid="navbar-logo"
                             >
@@ -239,13 +239,13 @@ const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* Right section - Actions and user menu */}
-                <div className="flex items-center justify-end space-x-2 sm:space-x-4 px-4 sm:px-6 lg:px-8 flex-shrink-0">
+                <div className="flex items-center justify-end space-x-2 sm:space-x-4 max-md:px-2 px-4 sm:px-6 lg:px-8 flex-shrink-0">
                     {/* Mobile search toggle button */}
                     <button
                         onClick={() =>
                             setIsMobileSearchOpen(!isMobileSearchOpen)
                         }
-                        className="md:hidden flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-full focus:outline-none transition-all duration-200 p-2"
+                        className="md:hidden flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-full focus:outline-none transition-all duration-200 p-2 justify-center h-11 w-11"
                         aria-label={t('navigation.toggleSearch')}
                         title={t('navigation.search')}
                     >
@@ -258,7 +258,7 @@ const Navbar: React.FC<NavbarProps> = ({
                         aria-haspopup="dialog"
                         aria-expanded={captureOpen}
                         data-testid="capture-navbar-button"
-                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-all duration-200 px-2 py-2 md:px-3 md:py-2"
+                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 transition-all duration-200 px-2 py-2 max-md:h-11 max-md:w-11 max-md:justify-center md:px-3 md:py-2"
                         aria-label={t('navigation.quickInboxCapture')}
                         title={t('navigation.quickInboxCapture')}
                     >
@@ -272,7 +272,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     <div className="relative" ref={dropdownRef}>
                         <button
                             onClick={toggleDropdown}
-                            className="flex items-center focus:outline-none"
+                            className="flex items-center justify-center max-md:h-11 max-md:w-11 focus:outline-none"
                             aria-label={t('navigation.userMenu')}
                         >
                             {currentUser?.avatar_image ? (
@@ -290,10 +290,10 @@ const Navbar: React.FC<NavbarProps> = ({
                         {isDropdownOpen && (
                             <div
                                 ref={dropdownRef}
-                                className="absolute right-0 top-full mt-2 min-w-48 w-max bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700"
+                                className="absolute right-0 top-full mt-2 min-w-48 w-max max-md:max-w-[calc(100vw-24px)] bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 border border-gray-200 dark:border-gray-700"
                             >
                                 {currentUser?.email && (
-                                    <div className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600 flex items-center">
+                                    <div className="px-4 py-2 max-md:min-h-12 max-md:text-[17px] max-md:break-words text-sm text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-600 flex items-center">
                                         <EnvelopeIcon className="h-4 w-4 mr-2" />
                                         {currentUser.email}
                                     </div>
@@ -302,7 +302,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                 {currentUser?.is_admin && (
                                     <Link
                                         to="/admin"
-                                        className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        className="flex items-center justify-between px-4 py-2 max-md:min-h-12 max-md:text-[17px] text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         onClick={() => setIsDropdownOpen(false)}
                                         data-testid="navbar-admin-link"
                                     >
@@ -325,7 +325,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                 )}
                                 <Link
                                     to="/profile"
-                                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="flex items-center px-4 py-2 max-md:min-h-12 max-md:text-[17px] text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
                                     <Cog6ToothIcon className="h-4 w-4 mr-2 shrink-0" />
@@ -336,7 +336,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                 </Link>
                                 <Link
                                     to="/backup"
-                                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="flex items-center px-4 py-2 max-md:min-h-12 max-md:text-[17px] text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() => setIsDropdownOpen(false)}
                                 >
                                     <CircleStackIcon className="h-4 w-4 mr-2 shrink-0" />
@@ -348,7 +348,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                 {!featureFlags.hosted && (
                                     <Link
                                         to="/about"
-                                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                        className="flex items-center px-4 py-2 max-md:min-h-12 max-md:text-[17px] text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         onClick={() => setIsDropdownOpen(false)}
                                     >
                                         <InformationCircleIcon className="h-4 w-4 mr-2 shrink-0" />
@@ -361,7 +361,7 @@ const Navbar: React.FC<NavbarProps> = ({
                                         setIsDropdownOpen(false);
                                         handleLogout();
                                     }}
-                                    className="w-full flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    className="w-full flex items-center px-4 py-2 max-md:min-h-12 max-md:text-[17px] text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <ArrowRightStartOnRectangleIcon className="h-4 w-4 mr-2 shrink-0" />
                                     {t('navigation.logout', 'Logout')}
