@@ -1,5 +1,7 @@
 const {
     parseCalendar,
+    dropPastEvents,
+    dayNumber,
     eventsForDate,
     eventsForRange,
 } = require('../../../modules/calendar-feeds/icsEvents');
@@ -9,6 +11,7 @@ const {
     fetchFeed,
     normalizeFeedUrl,
     FeedFetchError,
+    MAX_BYTES,
 } = require('../../../modules/calendar-feeds/fetcher');
 
 const ICS = [
@@ -500,5 +503,89 @@ describe('fetchFeed', () => {
         const config = get.mock.calls[0][1];
         expect(config.httpsAgent.keepAlive).toBe(true);
         expect(config.httpAgent.keepAlive).toBe(true);
+        expect(config.maxContentLength).toBe(MAX_BYTES);
+        expect(MAX_BYTES).toBeGreaterThanOrEqual(50 * 1024 * 1024);
+    });
+});
+
+describe('dropPastEvents', () => {
+    const keepFrom = dayNumber(2026, 1, 1);
+    const feed = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'BEGIN:VEVENT',
+        'UID:old-meeting',
+        'DTSTART:20200310T090000Z',
+        'DTEND:20200310T100000Z',
+        'BEGIN:VALARM',
+        'ACTION:DISPLAY',
+        'END:VALARM',
+        'END:VEVENT',
+        'BEGIN:VEVENT',
+        'UID:old-series',
+        'DTSTART;TZID=Europe/Athens:20190101T080000',
+        'DTEND;TZID=Europe/Athens:20190101T083000',
+        'RRULE:FREQ=WEEKLY;BYDAY=MO',
+        'END:VEVENT',
+        'BEGIN:VEVENT',
+        'UID:old-series',
+        'RECURRENCE-ID;TZID=Europe/Athens:20190107T080000',
+        'DTSTART;TZID=Europe/Athens:20190107T090000',
+        'DTEND;TZID=Europe/Athens:20190107T093000',
+        'END:VEVENT',
+        'BEGIN:VEVENT',
+        'UID:old-series',
+        'RECURRENCE-ID;RANGE=THISANDFUTURE;TZID=Europe/Athens:20190114T080000',
+        'DTSTART;TZID=Europe/Athens:20190114T100000',
+        'DTEND;TZID=Europe/Athens:20190114T103000',
+        'END:VEVENT',
+        'BEGIN:VEVENT',
+        'UID:recent',
+        'DTSTART;VALUE=DATE:20260924',
+        'DTEND;VALUE=DATE:20260925',
+        // A folded line is unfolded, not split into a stray property.
+        'SUMMARY:Name',
+        '  day',
+        'END:VEVENT',
+        'BEGIN:VEVENT',
+        'UID:long-trip',
+        'DTSTART;VALUE=DATE:20251220',
+        'DTEND;VALUE=DATE:20260110',
+        'END:VEVENT',
+        'END:VCALENDAR',
+    ].join('\r\n');
+
+    it('drops one-off events that ended before the cutoff', () => {
+        const uids = parseCalendar(dropPastEvents(feed, keepFrom)).map(
+            (event) => event.uid
+        );
+        expect(uids).not.toContain('old-meeting');
+        expect(uids).toEqual(
+            expect.arrayContaining(['old-series', 'recent', 'long-trip'])
+        );
+    });
+
+    it('keeps series and their THISANDFUTURE exceptions, drops old moves', () => {
+        const trimmed = dropPastEvents(feed, keepFrom);
+        expect(trimmed).toContain('RRULE:FREQ=WEEKLY;BYDAY=MO');
+        expect(trimmed).toContain('RANGE=THISANDFUTURE');
+        expect(trimmed).not.toContain('20190107T090000');
+        expect(trimmed).toContain('SUMMARY:Name day');
+    });
+
+    it('leaves a feed with nothing old untouched in meaning', () => {
+        const before = eventsForRange(
+            parseCalendar(ICS),
+            '2026-09-21',
+            '2026-09-27',
+            'Europe/Athens'
+        );
+        const after = eventsForRange(
+            parseCalendar(dropPastEvents(ICS, keepFrom)),
+            '2026-09-21',
+            '2026-09-27',
+            'Europe/Athens'
+        );
+        expect(after).toEqual(before);
     });
 });

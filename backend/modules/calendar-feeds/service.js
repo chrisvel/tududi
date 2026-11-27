@@ -8,7 +8,12 @@ const {
     getCurrentDateInTimezone,
 } = require('../../utils/timezone-utils');
 const { fetchFeed, normalizeFeedUrl, FeedFetchError } = require('./fetcher');
-const { parseCalendar, eventsForRange } = require('./icsEvents');
+const {
+    parseCalendar,
+    dropPastEvents,
+    dayNumber,
+    eventsForRange,
+} = require('./icsEvents');
 const moment = require('moment-timezone');
 
 const CACHE_TTL_MS = 15 * 60 * 1000;
@@ -19,6 +24,18 @@ const MAX_FEEDS_PER_USER = 10;
 const MAX_RANGE_DAYS = 62;
 const COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/;
 const MAX_CACHED_RANGES = 12;
+// One-off events that ended longer ago than this are not kept from a feed.
+const KEEP_PAST_DAYS = 400;
+
+function readFeed(text) {
+    const now = new Date();
+    const today = dayNumber(
+        now.getUTCFullYear(),
+        now.getUTCMonth() + 1,
+        now.getUTCDate()
+    );
+    return parseCalendar(dropPastEvents(text, today - KEEP_PAST_DAYS));
+}
 
 // Parsed feeds per process, keyed by feed uid, with the ranges already
 // expanded from each copy. A feed changes rarely and Google only refreshes
@@ -70,7 +87,7 @@ function encryptUrl(url) {
 async function loadAndCheck(url) {
     try {
         const text = await fetchFeed(url);
-        return parseCalendar(text);
+        return readFeed(text);
     } catch (err) {
         if (err instanceof FeedFetchError) {
             throw new ValidationError(err.message);
@@ -159,7 +176,7 @@ async function loadFeedEntry(feed, refresh = false) {
 
     try {
         const url = secretCipher.decrypt(feed.url_encrypted);
-        const entry = newCacheEntry(parseCalendar(await fetchFeed(url)));
+        const entry = newCacheEntry(readFeed(await fetchFeed(url)));
         cache.set(feed.uid, entry);
         await feed.update({ last_fetched_at: new Date(), last_error: null });
         return entry;
