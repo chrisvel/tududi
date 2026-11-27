@@ -86,34 +86,47 @@ jest.mock('../AreaModal', () => ({
     default: () => null,
 }));
 
-jest.mock('../../../store/useStore', () => ({
-    useStore: (selector: any) =>
-        selector({
-            areasStore: {
-                areas: [area],
-                isLoading: false,
-                loadAreas: jest.fn(),
-                setAreas: mockSetAreas,
-            },
-            projectsStore: {
-                projects,
-                hasLoaded: true,
-                isLoading: false,
-                loadProjects: jest.fn(),
-            },
-            tasksStore: {
-                tasks: [],
-                setTasks: jest.fn(),
-            },
-            goalsStore: {
-                goals,
-                hasLoaded: true,
-                isLoading: false,
-                loadGoals: jest.fn(),
-                setGoals: jest.fn(),
-            },
-        }),
+const mockFetchProjects = jest.fn(() => Promise.resolve(projects));
+const mockSetProjects = jest.fn();
+const mockLoadGoals = jest.fn();
+
+jest.mock('../../../utils/projectsService', () => ({
+    fetchProjects: (...args: unknown[]) => mockFetchProjects(...(args as [])),
 }));
+
+jest.mock('../../../store/useStore', () => {
+    const buildState = () => ({
+        areasStore: {
+            areas: [area],
+            isLoading: false,
+            loadAreas: jest.fn(),
+            setAreas: mockSetAreas,
+        },
+        projectsStore: {
+            projects,
+            hasLoaded: true,
+            isLoading: false,
+            loadProjects: jest.fn(),
+            setProjects: mockSetProjects,
+        },
+        tasksStore: {
+            tasks: [],
+            setTasks: jest.fn(),
+        },
+        goalsStore: {
+            goals,
+            hasLoaded: true,
+            isLoading: false,
+            loadGoals: mockLoadGoals,
+            setGoals: jest.fn(),
+        },
+    });
+    let state: ReturnType<typeof buildState> | undefined;
+    const getState = () => (state ??= buildState());
+    const useStore = (selector: any) => selector(getState());
+    useStore.getState = getState;
+    return { useStore };
+});
 
 const renderPage = () =>
     render(
@@ -202,5 +215,35 @@ describe('AreaDetails leaving a shared area', () => {
         await waitFor(() =>
             expect(mockNavigate).toHaveBeenCalledWith('/areas')
         );
+    });
+});
+
+describe('AreaDetails refreshing', () => {
+    beforeEach(() => {
+        mockFetchProjects.mockClear();
+        mockSetProjects.mockClear();
+        mockLoadGoals.mockClear();
+    });
+
+    it('fetches projects and goals again when the area opens', async () => {
+        renderPage();
+        await screen.findByText('Project one');
+
+        await waitFor(() => expect(mockSetProjects).toHaveBeenCalled());
+        expect(mockFetchProjects).toHaveBeenCalledWith('all', '');
+        expect(mockLoadGoals).toHaveBeenCalledWith(true);
+    });
+
+    it('fetches again when the window comes back into focus', async () => {
+        renderPage();
+        await screen.findByText('Project one');
+        await waitFor(() => expect(mockSetProjects).toHaveBeenCalled());
+        mockFetchProjects.mockClear();
+        mockLoadGoals.mockClear();
+
+        fireEvent.focus(window);
+
+        await waitFor(() => expect(mockFetchProjects).toHaveBeenCalled());
+        expect(mockLoadGoals).toHaveBeenCalledWith(true);
     });
 });

@@ -84,20 +84,23 @@ const AreaDetails: React.FC = () => {
         setIsLoading(areasStore.isLoading && !found);
     }, [areaUid, areasStore.areas, areasStore.isLoading]);
 
-    const loadAreaTasks = useCallback(async () => {
-        if (!area?.uid) return;
-        setLoadingTasks(true);
-        try {
-            const result = await fetchTasks(
-                `?area_uid=${area.uid}&type=all&status=all`
-            );
-            setAreaTasks(result.tasks || []);
-        } catch {
-            setAreaTasks([]);
-        } finally {
-            setLoadingTasks(false);
-        }
-    }, [area?.uid]);
+    const loadAreaTasks = useCallback(
+        async (silent = false) => {
+            if (!area?.uid) return;
+            if (!silent) setLoadingTasks(true);
+            try {
+                const result = await fetchTasks(
+                    `?area_uid=${area.uid}&type=all&status=all`
+                );
+                setAreaTasks(result.tasks || []);
+            } catch {
+                if (!silent) setAreaTasks([]);
+            } finally {
+                if (!silent) setLoadingTasks(false);
+            }
+        },
+        [area?.uid]
+    );
 
     useEffect(() => {
         if (area?.uid) loadAreaTasks();
@@ -108,6 +111,31 @@ const AreaDetails: React.FC = () => {
         const list = await fetchProjects('all', '');
         useStore.getState().projectsStore.setProjects(list);
     };
+
+    // Projects, goals and tasks can be added elsewhere (MCP, the API,
+    // another tab), so fetch them again when the area opens and whenever
+    // the window comes back into view.
+    useEffect(() => {
+        if (!areaUid) return;
+        refreshProjects().catch(() => undefined);
+        useStore.getState().goalsStore.loadGoals(true);
+    }, [areaUid]);
+
+    useEffect(() => {
+        if (!area?.uid) return;
+        const refresh = () => {
+            if (document.visibilityState !== 'visible') return;
+            refreshProjects().catch(() => undefined);
+            useStore.getState().goalsStore.loadGoals(true);
+            loadAreaTasks(true);
+        };
+        window.addEventListener('focus', refresh);
+        document.addEventListener('visibilitychange', refresh);
+        return () => {
+            window.removeEventListener('focus', refresh);
+            document.removeEventListener('visibilitychange', refresh);
+        };
+    }, [area?.uid, loadAreaTasks]);
 
     const { cardActions, modals: projectModals } = useProjectCardActions(() =>
         refreshProjects()
