@@ -148,6 +148,33 @@ describe('reading mode on touch screens (#1767)', () => {
     });
 });
 
+describe('link clicks while editing', () => {
+    const doc = 'see [site](https://example.com) and https://bare.dev\n\ntail';
+
+    it('opens a link on a plain click when the caret is elsewhere', () => {
+        const open = jest.spyOn(window, 'open').mockImplementation(() => null);
+        const { parent, cleanup } = mount(doc);
+        const links = parent.querySelectorAll('[data-href]');
+        mousedown(links[0]);
+        mousedown(links[1]);
+        expect(open.mock.calls).toEqual([
+            ['https://example.com', '_blank', 'noopener,noreferrer'],
+            ['https://bare.dev', '_blank', 'noopener,noreferrer'],
+        ]);
+        open.mockRestore();
+        cleanup();
+    });
+
+    it('places the caret instead when the link syntax is showing', () => {
+        const open = jest.spyOn(window, 'open').mockImplementation(() => null);
+        const { parent, cleanup } = mount(doc, [], 6);
+        mousedown(parent.querySelector('[data-href]') as Element);
+        expect(open).not.toHaveBeenCalled();
+        open.mockRestore();
+        cleanup();
+    });
+});
+
 describe('code block copy button (#1767)', () => {
     const doc = '```js\nconst a = 1;\nconst b = 2;\n```\n\ntail';
 

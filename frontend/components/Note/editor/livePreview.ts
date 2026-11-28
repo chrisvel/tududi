@@ -49,6 +49,17 @@ const INLINE_MARKER_NODES = new Set([
     'CodeMark',
 ]);
 
+// While the caret is away the link shows only its text and opens on a
+// plain click; with the caret in it, clicks place the caret for editing.
+const linkClass = (show: boolean) =>
+    show ? 'cm-md-link' : 'cm-md-link cm-md-link-rendered';
+
+export const bareLinkHref = (text: string): string => {
+    if (/^[a-z][a-z0-9+.-]*:/i.test(text)) return text;
+    if (/^[^\s@]+@[^\s@]+$/.test(text)) return `mailto:${text}`;
+    return `https://${text}`;
+};
+
 const WIKILINK = /\[\[([^[\]\n]+?)\]\]/g;
 const LIST_INDENT = '1.6em';
 
@@ -153,6 +164,39 @@ export function buildLivePreview(
                     return;
                 }
 
+                // A bare URL, email or <autolink>. Links inside [text](url)
+                // and images are handled with their parent below.
+                if (name === 'URL') {
+                    const parent = ref.node.parent;
+                    if (
+                        !parent ||
+                        ['Link', 'Image', 'LinkReference'].includes(parent.name)
+                    ) {
+                        return;
+                    }
+                    const owner =
+                        parent.name === 'Autolink' ? parent : ref.node;
+                    addMark(
+                        ref.from,
+                        ref.to,
+                        linkClass(touches(owner.from, owner.to)),
+                        {
+                            'data-href': bareLinkHref(
+                                state.sliceDoc(ref.from, ref.to)
+                            ),
+                        }
+                    );
+                    return;
+                }
+
+                if (name === 'Autolink') {
+                    const show = touches(ref.from, ref.to);
+                    for (const mark of ref.node.getChildren('LinkMark')) {
+                        marker(mark.from, mark.to, show);
+                    }
+                    return;
+                }
+
                 if (name === 'Link' || name === 'Image') {
                     const url = ref.node.getChild('URL');
                     const marks = ref.node.getChildren('LinkMark');
@@ -175,7 +219,7 @@ export function buildLivePreview(
                         return false;
                     }
 
-                    addMark(textFrom, textTo, 'cm-md-link', {
+                    addMark(textFrom, textTo, linkClass(show), {
                         'data-href': state.sliceDoc(url.from, url.to),
                     });
                     marker(marks[0].from, marks[0].to, show);

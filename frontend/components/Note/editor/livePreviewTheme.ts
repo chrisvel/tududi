@@ -29,9 +29,10 @@ export const livePreviewTheme = EditorView.baseTheme({
         textUnderlineOffset: '2px',
         textDecorationColor: 'rgba(128,128,128,0.6)',
     },
-    '&.cm-mod-pressed .cm-md-link, &.cm-mod-pressed .cm-md-wikilink': {
-        cursor: 'pointer',
-    },
+    '.cm-md-link-rendered, &.cm-mod-pressed .cm-md-link, &.cm-mod-pressed .cm-md-wikilink':
+        {
+            cursor: 'pointer',
+        },
     '.cm-md-wikilink': {
         textUnderlineOffset: '2px',
         textDecorationColor: 'rgba(128,128,128,0.6)',
