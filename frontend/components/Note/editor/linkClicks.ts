@@ -5,10 +5,11 @@ export interface LinkClickOptions {
     onOpenWikilink?: (title: string, event: MouseEvent) => void;
 }
 
-// Plain clicks place the caret (so links stay editable); Cmd/Ctrl-click
-// follows them, as in Obsidian. A note link shown as a chip (caret away
-// from it) also opens on a plain click, and so does any link in a note
-// open for reading, where there is no caret to place.
+// A link shown as its text only (caret away from it) opens on a plain
+// click, as in Obsidian's live preview. With the caret inside, its syntax
+// shows and plain clicks place the caret so it stays editable; Cmd/Ctrl-
+// click still follows it. Any link in a note open for reading opens on a
+// plain click, since there is no caret to place.
 export const linkClickHandlers = ({ onOpenWikilink }: LinkClickOptions) =>
     EditorView.domEventHandlers({
         mousedown(event, view) {
@@ -20,7 +21,10 @@ export const linkClickHandlers = ({ onOpenWikilink }: LinkClickOptions) =>
                 event.metaKey ||
                 event.ctrlKey ||
                 !view.state.facet(EditorView.editable);
-            if (!modified && !el.classList.contains('cm-md-wikilink-chip')) {
+            const rendered =
+                el.classList.contains('cm-md-wikilink-chip') ||
+                el.classList.contains('cm-md-link-rendered');
+            if (!modified && !rendered) {
                 return false;
             }
 

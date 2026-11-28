@@ -124,9 +124,44 @@ describe('live preview decorations', () => {
             { from: 0, to: state.doc.length },
         ]);
         const items = flatten(decorations);
-        expect(has(items, 'mark:cm-md-link', 5, 9)).toBe(true);
+        expect(has(items, 'mark:cm-md-link cm-md-link-rendered', 5, 9)).toBe(
+            true
+        );
         expect(has(items, 'hide', 4, 5)).toBe(true);
         expect(has(items, 'hide', 9, 25)).toBe(true);
+    });
+
+    it('keeps a link editable while the caret is in it', () => {
+        const items = inline('see [docs](https://x.dev) now\ntail', 7);
+        expect(has(items, 'mark:cm-md-link', 5, 9)).toBe(true);
+        expect(has(items, 'mark:cm-md-marker', 4, 5)).toBe(true);
+    });
+
+    it('links bare URLs, emails and autolinks', () => {
+        const doc =
+            'a https://x.dev b <https://y.dev> me@x.dev www.z.dev\ntail';
+        const state = stateFor(doc);
+        const marks: Record<string, string> = {};
+        const iter = buildLivePreview(state, [
+            { from: 0, to: state.doc.length },
+        ]).decorations.iter();
+        while (iter.value) {
+            const spec: any = iter.value.spec;
+            if (spec.class?.includes('cm-md-link-rendered')) {
+                marks[state.sliceDoc(iter.from, iter.to)] =
+                    spec.attributes['data-href'];
+            }
+            iter.next();
+        }
+        expect(marks).toEqual({
+            'https://x.dev': 'https://x.dev',
+            'https://y.dev': 'https://y.dev',
+            'me@x.dev': 'mailto:me@x.dev',
+            'www.z.dev': 'https://www.z.dev',
+        });
+        const items = inline(doc);
+        expect(has(items, 'hide', 18, 19)).toBe(true);
+        expect(has(items, 'hide', 32, 33)).toBe(true);
     });
 
     it('marks wikilinks but ignores them inside inline code', () => {
