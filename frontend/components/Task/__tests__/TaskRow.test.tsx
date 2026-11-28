@@ -145,7 +145,7 @@ jest.mock('../../Shared/MarkdownRenderer', () => ({
 // focused on row layout + expansion. The stub only picks a status.
 jest.mock('../TaskStatusControl', () => ({
     __esModule: true,
-    default: ({ task, onTaskUpdate }: any) => (
+    default: ({ task, onTaskUpdate, onToggleCompletion }: any) => (
         <div data-testid="status-control">
             {['in_progress', 'done'].map((status) => (
                 <button
@@ -154,6 +154,13 @@ jest.mock('../TaskStatusControl', () => ({
                     onClick={() => onTaskUpdate?.({ ...task, status })}
                 />
             ))}
+            {onToggleCompletion && (
+                <button
+                    type="button"
+                    aria-label={`complete ${task.name}`}
+                    onClick={() => onToggleCompletion()}
+                />
+            )}
         </div>
     ),
 }));
@@ -632,6 +639,92 @@ describe('TaskRow', () => {
             );
             expect(onTaskUpdate).not.toHaveBeenCalled();
         });
+    });
+
+    it('does not ask about open blockers after the blocking subtasks are completed (#2083)', async () => {
+        const subtask = baseTask({
+            id: 2,
+            uid: 'sub-1',
+            name: 'Book hotel',
+            status: 'not_started',
+        });
+        const parent = baseTask({
+            is_blocked: true,
+            blocked_by_count: 1,
+            subtasks: [subtask],
+        });
+        const updateTaskMock = tasksService.updateTask as jest.Mock;
+        updateTaskMock.mockReset();
+        updateTaskMock.mockResolvedValue({ ...subtask, status: 'done' });
+        const toggleMock = tasksService.toggleTaskCompletion as jest.Mock;
+        toggleMock.mockReset();
+        toggleMock.mockResolvedValue({
+            ...parent,
+            status: 'done',
+            is_blocked: false,
+            blocked_by_count: 0,
+        });
+        const fetchMock = tasksService.fetchTaskByUid as jest.Mock;
+        fetchMock.mockReset();
+        fetchMock.mockResolvedValue({
+            ...parent,
+            is_blocked: false,
+            blocked_by_count: 0,
+        });
+
+        renderRow(parent);
+        expect(screen.getByTestId('task-blocked-badge')).toBeInTheDocument();
+
+        fireEvent.click(screen.getByTitle('Show subtasks'));
+        const donePicks = await screen.findAllByLabelText('pick done');
+        fireEvent.click(donePicks[donePicks.length - 1]);
+
+        await waitFor(() =>
+            expect(updateTaskMock).toHaveBeenCalledWith('sub-1', {
+                status: 'done',
+            })
+        );
+        // The list row must drop the stale blocker count before the parent
+        // is completed, otherwise the confirmation still fires.
+        await waitFor(() =>
+            expect(screen.queryByTestId('task-blocked-badge')).toBeNull()
+        );
+
+        fireEvent.click(
+            screen.getByRole('button', { name: 'complete Buy tickets' })
+        );
+
+        await waitFor(() =>
+            expect(toggleMock).toHaveBeenCalledWith(
+                'task-1',
+                expect.objectContaining({ uid: 'task-1' })
+            )
+        );
+        expect(screen.queryByText('Task is blocked')).not.toBeInTheDocument();
+        expect(
+            screen.queryByText(/Complete it anyway/)
+        ).not.toBeInTheDocument();
+    });
+
+    it('still asks before completing a task the server says is blocked', async () => {
+        const parent = baseTask({
+            is_blocked: true,
+            blocked_by_count: 1,
+        });
+        const fetchMock = tasksService.fetchTaskByUid as jest.Mock;
+        fetchMock.mockReset();
+        fetchMock.mockResolvedValue(parent);
+        const toggleMock = tasksService.toggleTaskCompletion as jest.Mock;
+        toggleMock.mockReset();
+
+        renderRow(parent);
+        fireEvent.click(
+            screen.getByRole('button', { name: 'complete Buy tickets' })
+        );
+
+        expect(await screen.findByText('Task is blocked')).toBeInTheDocument();
+        expect(screen.getByText(/Complete it anyway/)).toBeInTheDocument();
+        expect(toggleMock).not.toHaveBeenCalled();
     });
 
     describe('status picked on a subtask row (#1914)', () => {
