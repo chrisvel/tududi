@@ -18,6 +18,7 @@ import {
     RectangleGroupIcon,
     RectangleStackIcon,
     ShieldCheckIcon,
+    SparklesIcon,
     Squares2X2Icon,
     TagIcon,
     UserGroupIcon,
@@ -263,6 +264,15 @@ const AppLauncherModal: React.FC<AppLauncherModalProps> = ({
                 title: t('sidebar.reports', 'Reports'),
                 Icon: ChartBarIcon,
                 gradient: 'from-emerald-400 to-teal-600',
+            },
+            {
+                id: 'daily-brief',
+                group: 'sections',
+                orderKey: 'insights',
+                path: '/insights/daily-brief',
+                title: t('sidebar.dailyBrief', 'Daily Brief'),
+                Icon: SparklesIcon,
+                gradient: 'from-blue-400 to-indigo-600',
             },
             templatesEnabled && {
                 id: 'templates',

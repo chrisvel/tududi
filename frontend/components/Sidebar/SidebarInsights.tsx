@@ -5,6 +5,7 @@ import {
     ChartBarIcon,
     LightBulbIcon,
     ChevronRightIcon,
+    SparklesIcon,
 } from '@heroicons/react/24/outline';
 
 interface SidebarInsightsProps {
@@ -39,6 +40,11 @@ const SidebarInsights: React.FC<SidebarInsightsProps> = ({ handleNavClick, locat
             path: '/insights/reports',
             title: t('sidebar.reports', 'Reports'),
             icon: <ChartBarIcon className="h-4 w-4 flex-shrink-0" />,
+        },
+        {
+            path: '/insights/daily-brief',
+            title: t('sidebar.dailyBrief', 'Daily Brief'),
+            icon: <SparklesIcon className="h-4 w-4 flex-shrink-0" />,
         },
     ];
 
